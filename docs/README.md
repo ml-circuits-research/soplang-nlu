@@ -34,3 +34,7 @@ When many cases receive the same grade, examine a sample early and split recurri
 ## Syntactic evidence
 
 Pass parsed facts from the configured worlds to createSyntaxReader in lib/syntax.mjs and call the returned function with the current text. Load worlds/w.syntax/schema.sop to check the resulting SOP. Token wires preserve every non-whitespace token, with half-open UTF-16 offsets. Repeated pos values are lexical possibilities. Cues record potential discourse functions and polarity markers. Expression wires retain multiword matches. Phrase wires describe local hypotheses with explicit token links for heads, determiners and modifiers. Overlapping hypotheses remain available to the strategy. tokensWithPos counts lexical recognition; it does not measure correct attachment or semantic coverage.
+
+## Comparing execution time
+
+Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. It opens one reader, awaits each proposal and closes the reader. Persist timing with each run, including startup, proposal time, shutdown, total wall time, throughput and median and 95th-percentile latency. Save per-input latency in sample order. Record hardware, runtime versions, model and world configuration, worker count and proposal budget. Record evaluator and reviewer time separately. Compare case-level outcomes in both directions to identify which strategy handles an attachment, ambiguity or unsupported phrase better.
