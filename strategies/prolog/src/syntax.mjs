@@ -157,13 +157,18 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     };
     if (kinds.length===1 && !groundedName) semanticEvidence.push({
       wire:id,key:'kind',sourceSlot:'head',source:span(phrase.head)});
+    const modifierRole=([start,end])=>{
+      const readings=forms[start].filter(form=>form.end===end);
+      return readings.some(form=>form.pos.includes('noun')) &&
+        !readings.some(form=>form.pos.includes('adjective')) ? 'compound' : 'modifier';
+    };
     if (color.length===1) for (const range of phrase.modifiers) {
       if (forms[range[0]].some(form=>form.end===range[1] && form.colors.some(([,value])=>value===color[0]))) {
-        semanticEvidence.push({wire:id,key:'color',sourceSlot:'modifier',source:span(range)});
+        semanticEvidence.push({wire:id,key:'color',sourceSlot:modifierRole(range),source:span(range)});
       }
     }
     lines.push('@'+id+' nlu.entity'+identity+nominalModifier(phrase.determiner,'determiner')+
-      phrase.modifiers.map(range=>nominalModifier(range,'modifier')).join('')+
+      phrase.modifiers.map(range=>nominalModifier(range,modifierRole(range))).join('')+
       atom('kind',kinds.length===1 && !groundedName?kinds[0]:undefined)+atom('color',color.length===1?color[0]:undefined));
     return id;
   }
@@ -199,12 +204,20 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     const act=possibleAct(clause,request);
     const targets=request ? candidate.filter(wire=>wire.type==='w.request.target' &&
       field(wire,'request')==='$'+request.id) : [];
-    const subjects=clause.subjects.map(phrase=>entity(phrase));
+    const entitiesBySource=new Map();
+    const remember=(phrase,options)=> {
+      const wire=entity(phrase,options);
+      entitiesBySource.set(phrase.from,wire);
+      return wire;
+    };
+    const subjects=clause.subjects.map(phrase=>remember(phrase));
     const subject=group(subjects,clause.subjectCoordinations);
-    const objects=clause.objects.map(phrase=>entity(phrase,targets));
+    const objects=clause.objects.map(phrase=>remember(phrase,targets));
     let indirectObject=clause.indirect[0] && entity(clause.indirect[0]);
     for (const item of clause.relations) {
-      const target=group(item.entities.map(phrase=>entity(phrase)),item.coordinations);
+      const selectedOwner=item.cue[0]===attachment?.cue ? attachment.owner : item.owner;
+      const ownerWire=entitiesBySource.get(selectedOwner);
+      const target=group(item.entities.map(phrase=>remember(phrase)),item.coordinations);
       const relation='r'+nextRelation++;
       const relationKind = ()=>semanticEvidence.push({wire:relation,key:'kind',sourceSlot:'cue',source:span(item.cue)});
       const licensed = item.markers.filter(([license])=>license==='*' || act===license);
@@ -217,9 +230,8 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
       }
       const kind = item.kinds[0]==='agent' ? 'agent' :
         roles.length===1 ? roles[0] : uniq(licensed.map(([, ,marker])=>marker))[0] ?? item.kinds[0];
-      const owner = item.attachment==='subject' ? subject ?? id :
-        item.cue[0]===attachment && item.attachment==='ambiguous' && objects.length ?
-          objects.at(-1) : clause.predicate[0]===clause.predicate[1] ? subject ?? id : id;
+      const owner = ownerWire ?? (item.attachment==='subject' ||
+        clause.predicate[0]===clause.predicate[1] ? subject ?? id : id);
       relationKind();
       lines.push('@'+relation+' nlu.relation'+atom('kind',kind)+ref('from',owner)+ref('to',target)+raw('cue',item.cue));
     }
@@ -307,9 +319,8 @@ export function createNativeSyntax(worlds, analyse) {
     const enriched=candidates.map(candidate=>circuit(text,source,forms,analysis,parse(candidate.sop)));
     const decorated=candidates.map((candidate,index)=>({...candidate,
       analysisSop:enriched[index].sop,analysisEvidence:enriched[index].semanticEvidence}));
-    const alternatives=analysis.clauses.filter(clause=>clause.objects.length)
-      .flatMap(clause=>clause.relations.filter(relation=>relation.attachment==='ambiguous'))
-      .slice(0,4).map(relation=>circuit(text,source,forms,analysis,undefined,relation.cue[0]));
+    const alternatives=analysis.attachments
+      .map(attachment=>circuit(text,source,forms,analysis,undefined,attachment));
     const proposals=new Map([base,...alternatives,...enriched].map(proposal=>[proposal.sop,proposal]));
     return {analyses:[...proposals.values()],candidates:decorated};
   };

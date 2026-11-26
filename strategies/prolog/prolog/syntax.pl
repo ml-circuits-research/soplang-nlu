@@ -3,10 +3,48 @@
 :- use_module(library(apply)).
 :- use_module(library(pairs)).
 
-syntax_analysis(Q, _{clauses:Clauses}) :-
+syntax_analysis(Q, _{clauses:Clauses,attachments:Attachments}) :-
     length(Q.tokens, End),
     segments(Q,0,End,[],Segments),
-    maplist(analyse_clause(Q),Segments,Clauses).
+    maplist(analyse_clause(Q),Segments,Clauses),
+    findall(Score-Choice, attachment_choice(Clauses,Score,Choice), Choices),
+    keysort(Choices,Ranked),
+    pairs_values(Ranked,Order),
+    first_two(Order,Attachments).
+
+first_two([A,B|_],[A,B]) :- !.
+first_two(Order,Order).
+
+attachment_choice(Clauses,Score,_{cue:Cue,owner:Owner}) :-
+    member(Clause,Clauses),
+    ( clause_attachment_choice(Clause,Score,Cue,Owner)
+    ; attachment_choice(Clause.embedded,Score,_{cue:Cue,owner:Owner}) ).
+
+clause_attachment_choice(Clause,Score,Cue,Owner) :-
+    member(Relation,Clause.relations), Relation.attachment=="ambiguous",
+    Relation.cue=[Cue,_],
+    ( last(Clause.objects,Object), Owner=Object.from, Score is Cue
+    ; append(_, [Prior,Relation|_], Clause.relations),
+      Prior.end=:=Cue, last(Prior.entities,Anchor), Owner=Anchor.from, Score is Cue+1 ).
+
+nominal_attachments(_,[],_,[]).
+nominal_attachments(Q,[Relation|Tail],Owners,[Attached|AttachedTail]) :-
+    ( Relation.cue=[Cue,After], After=:=Cue+1, unquoted_word(Q,Cue,"of"), last(Owners,Head) ->
+        Attached=Relation.put(owner,Head.from)
+    ; Relation.cue=[Cue,After], After=:=Cue+1, unquoted_word(Q,Cue,"by"),
+      last(Owners,Direction), Direction.head=[Side,_], unquoted_word(Q,Side,SideWord),
+      memberchk(SideWord,["left","right","up","down"]),
+      Relation.entities=[Measure], measurement(Q,Measure) ->
+        Attached=Relation.put(_{kinds:["measure"],markers:[],attachment:"clause"})
+    ; Attached=Relation ),
+    nominal_attachments(Q,Tail,Relation.entities,AttachedTail).
+
+measurement(Q,Phrase) :-
+    Phrase.head=[At,_], unquoted_word(Q,At,Unit),
+    memberchk(Unit,["step","steps","spot","spots","space","spaces","pixel","pixels","inch","inches",
+      "foot","feet","centimeter","centimeters","centimetre","centimetres","meter","meters","metre","metres"]),
+    ( Phrase.determiner=[Number,_] ; member([Number,_],Phrase.modifiers) ),
+    token_pos(Q,Number,"numeral"), !.
 
 form_at(Q,At,Form) :- nth0(At,Q.forms,Forms), member(Form,Forms).
 word_at(Q,At,Raw) :- nth0(At,Q.tokens,[Raw,_]).
@@ -192,7 +230,7 @@ nominal_prefix(Q,At,End) :-
     nominal_prefix(Q,F.end,End).
 
 subject_before(Q,At,End) :-
-    subject_phrase(Q,At,End,Phrase,_), Phrase\==none.
+    subject_arguments(Q,At,End,[_|_],_,_).
 
 initial_auxiliary(Q,At,End) :-
     between(At,End,Start), form_at(Q,Start,F), F.end=<End,
@@ -212,7 +250,8 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
         prefix_items(Q,At,P,Aux,BeforeNegation),
         post_negations(Q,A,End,NegEnd,AfterNegation),
         append(BeforeNegation,AfterNegation,Negation),
-        subject_phrase(Q,First,P,Subject0,SubjectRelations),
+        subject_arguments(Q,First,P,Subjects0,SubjectRelations,SubjectJoins0),
+        ( Subjects0=[Subject0|_] -> true ; Subject0=none ),
         clause_adverbs(Q,At,P,PrefixAdverbs),
         edge_adverbs(Q,NegEnd,End,AfterAdverbs,BeforeAdverbs,BodyAdverbs),
         append(PrefixAdverbs,BodyAdverbs,Adverbs),
@@ -225,14 +264,16 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
           complement(Q,OperandStart,OperandEnd,Acts,BodyEnd,Complement),
           operands(Q,OperandStart,BodyEnd,OperandActs,Indirect,Objects0,BodyRelations,Coordinations),
           complement_relations(Q,Complement,OperandEnd,ComplementRelations),
-          append([SubjectRelations,BodyRelations,ComplementRelations],Relations0) ),
+          nominal_attachments(Q,BodyRelations,Objects0,AttachedBody),
+          append([SubjectRelations,AttachedBody,ComplementRelations],Relations0) ),
         ( Subject0==none, token_flag(Q,P,copula), Objects0=[Inverted|Others],
           (Question\=[] ; question_term(Q,Term)) -> Subject=Inverted, Objects=Others
         ; Subject=Subject0, Objects=Objects0 ),
         ( Subject\==none, token_flag(Q,P,participle), auxiliary_copula(Q,Aux) ->
           maplist(passive_relation(Q),Relations0,Relations)
         ; Relations=Relations0 ),
-        none_as_list(Subject,Subjects), SubjectCoordinations=[],
+        ( Subject0==none -> none_as_list(Subject,Subjects), SubjectCoordinations=[]
+        ; Subjects=Subjects0, SubjectCoordinations=SubjectJoins0 ),
         clause_type(Subject,Question,Term,Q,Kind)
     ; P=End, A=End, Acts=[], Aux=[], Negation=[], Complement=[], Adverbs=[], Particle=[], Indirect=[],
       Embedded=[], VisibleEnd=End, VisibleTerm=Term,
@@ -329,12 +370,24 @@ post_negations(Q,At,End,Start,[[At,Next]|Rest]) :-
     Next is At+1, post_negations(Q,Next,End,Start,Rest).
 post_negations(_,At,_,At,[]).
 
-subject_phrase(Q,At,End,Phrase,Relations) :-
+subject_arguments(Q,At,End,Subjects,Relations,Coordinations) :-
+    subject_start(Q,At,End,Start),
+    ( once((between(Start,End,Stop), Stop>Start,
+        slice_nominals(Q,Start,Stop,Subjects,Stop,Coordinations), Coordinations\=[],
+        auxiliary_tail(Q,Stop,End))) ->
+        Relations=[]
+    ; subject_phrase(Q,Start,End,Subject,Relations),
+      none_as_list(Subject,Subjects), Coordinations=[] ).
+
+subject_start(Q,At,End,Start) :-
     At<End, form_at(Q,At,F), F.end=<End,
     ( F.auxiliary==true ; F.negation==true ; F.question==true ; F.skip==true ;
       F.adverb==true, \+ memberchk("pronoun",F.pos) ; memberchk("condition",F.joiner) ), !,
-    subject_phrase(Q,F.end,End,Phrase,Relations).
-subject_phrase(Q,At,End,Phrase,Relations) :-
+    subject_start(Q,F.end,End,Start).
+subject_start(_,At,_,At).
+
+subject_phrase(Q,At0,End,Phrase,Relations) :-
+    subject_start(Q,At0,End,At),
     At<End,
     once((between(At,End,Stop), Stop>At, subject_nominal(Q,At,Stop,Phrase,Relations),
       auxiliary_tail(Q,Stop,End))), !.
@@ -388,11 +441,24 @@ operands(Q,At,End,Acts,Indirect,Objects,Relations,Coordinations) :-
     prepositions(Q,ObjectEnd,End,Relations).
 
 slice_nominals(Q,At,End,[Noun|Rest],Stop,Links) :-
-    phrase_end(Q,At,End,E), E>At, noun_phrase(Q,At,E,Noun), !,
-    ( joiner(Q,E,End,After,Kind), slice_nominals(Q,After,End,Rest,Stop,Tail), Rest=[First|_] ->
+    nominal_slice(Q,At,End,Noun,E), !,
+    ( nominal_joiner(Q,E,End,After,Kind), slice_nominals(Q,After,End,Rest,Stop,Tail), Rest=[First|_] ->
         Links=[_{from:Noun.from,to:First.from,cue:[E,After],kind:Kind}|Tail]
     ; Rest=[], Stop=E, Links=[] ).
 slice_nominals(_,At,_,[],At,[]).
+
+nominal_joiner(Q,At,End,After,Kind) :- joiner(Q,At,End,After,Kind).
+nominal_joiner(Q,At,End,After,Kind) :-
+    word_at(Q,At,","), Next is At+1, Next<End,
+    ( joiner(Q,Next,End,After,Kind) -> true
+    ; After=Next, Kind="coordination" ).
+
+nominal_slice(Q,At,End,Noun,Stop) :-
+    Last is End-1,
+    between(At,Last,Stop), Stop>At,
+    ( preposition(Q,Stop,End,_,_) ; joiner(Q,Stop,End,_,_) ; word_at(Q,Stop,",") ),
+    noun_phrase(Q,At,Stop,Noun), !.
+nominal_slice(Q,At,End,Noun,End) :- noun_phrase(Q,At,End,Noun).
 
 phrase_end(Q,At,End,Stop) :-
     Last is End-1,
@@ -413,7 +479,7 @@ prepositions(Q,At,End,Relations) :-
     ; Next is At+1, prepositions(Q,Next,End,Relations) ).
 
 preposition(Q,At,End,After,Form) :-
-    form_at(Q,At,Form), Form.end<End, Form.preposition\=[], After=Form.end, !.
+    form_at(Q,At,Form), Form.end<End, Form.preposition\=[], After=Form.end.
 
 noun_phrase(Q,At,End,_{from:At,to:End,head:[],determiner:[],modifiers:[],pronoun:[],name:[First,Last],kinds:[],colors:[]}) :-
     First is At+1, Last is End-1, First<Last,
@@ -427,9 +493,35 @@ noun_phrase(Q,At,End,_{from:At,to:End,head:[Head,End],determiner:Det,modifiers:M
     At<End, noun_determiner(Q,At,End,Det,First), First<End,
     ( ( letter_name(Q,First,End) ; Det=[], First>0, name_span(Q,First,End) ) ->
         Head=First, Mods=[], Colors=[], Kinds=[], Name=[First,End]
-    ; noun_head(Q,First,End,Head,Kinds), modifier_series(Q,First,Head,Mods,Colors) -> Name=[]
+    ; nominal_structure(Q,First,End,Det,Head,Kinds,Mods,Colors) -> Name=[]
     ; name_span(Q,First,End) -> Head=First, Mods=[], Colors=[], Kinds=[], Name=[First,End]
     ), !.
+
+nominal_structure(Q,First,End,Det,Head,Kinds,Mods,Colors) :-
+    noun_head(Q,First,End,Head,Kinds),
+    nominal_modifiers(Q,First,Head,Det,Mods,Colors).
+nominal_structure(Q,First,End,Det,Head,[],Mods,Colors) :-
+    Det\=[],
+    Head is End-1, Head>=First,
+    unknown_nominal_word(Q,Head),
+    modifier_series(Q,First,Head,Mods,Colors).
+
+nominal_modifiers(Q,First,Head,_,Mods,Colors) :-
+    modifier_series(Q,First,Head,Mods,Colors).
+nominal_modifiers(Q,First,Head,Det,Mods,Colors) :-
+    Det\=[], First<Head,
+    % The overt determiner and a recognized head license one unknown nominal modifier.
+    Last is Head-1, between(First,Last,Unknown),
+    unknown_nominal_word(Q,Unknown), Next is Unknown+1,
+    modifier_series(Q,First,Unknown,Before,LeftColors),
+    modifier_series(Q,Next,Head,After,RightColors),
+    append(Before,[[Unknown,Next]|After],Mods), append(LeftColors,RightColors,Colors).
+
+unknown_nominal_word(Q,At) :-
+    unquoted_word(Q,At,_),
+    form_at(Q,At,F), F.end=:=At+1, F.word==true,
+    F.pos=[], F.acts=[], F.preposition=[], F.joiner=[],
+    F.auxiliary==false, F.negation==false, F.question==false, F.skip==false, F.adverb==false.
 
 noun_determiner(Q,At,End,[At,After],After) :-
     form_at(Q,At,F), F.end<End,
@@ -440,12 +532,21 @@ noun_determiner(_,At,_,[],At).
 noun_head(Q,First,End,Start,Kinds) :-
     Last is End-1,
     between(First,Last,Start), form_at(Q,Start,F), F.end=:=End,
-    ( F.kinds\=[] ; memberchk("noun",F.pos) ), Kinds=F.kinds.
+    ( F.kinds\=[] ; memberchk("noun",F.pos)
+    ; directional_head(Q,First,End,Start) ), Kinds=F.kinds.
+
+directional_head(Q,Start,End,Start) :-
+    End=:=Start+1, Prior is Start-1,
+    unquoted_word(Q,Prior,"the"), unquoted_word(Q,Start,Side),
+    memberchk(Side,["left","right"]).
 
 modifier_series(_,At,At,[],[]) :- !.
 modifier_series(Q,At,End,[[At,Next]|Modifiers],Colors) :-
     At<End, form_at(Q,At,F), Next=F.end, Next=<End,
-    ( memberchk("adjective",F.pos) ; memberchk("numeral",F.pos) ; Next=:=At+1, F.kinds\=[] ),
+    \+ memberchk("pronoun",F.pos), \+ memberchk("determiner",F.pos),
+    F.auxiliary==false, F.negation==false, F.question==false, F.skip==false,
+    ( memberchk("adjective",F.pos) ; memberchk("numeral",F.pos) ; Next=:=At+1, F.kinds\=[]
+    ; memberchk("noun",F.pos), \+ memberchk("verb",F.pos) ),
     modifier_series(Q,Next,End,Modifiers,Rest),
     append(F.colors,Rest,Colors).
 

@@ -145,3 +145,32 @@ test('Prolog keeps clock and decimal evidence indivisible', {skip}, async () => 
     await reader.close()
   }
 })
+
+test('Prolog composes noun phrases, lists and nested prepositional relations', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Hide the sales chart.', [/head="chart" determiner="the" compound="sales"/u]],
+      ['Draw a blue wug.', [/head="wug" determiner="a" modifier="blue" color=blue/u], [/kind=/u]],
+      ['Draw the brick wall of the house.', [/compound="brick"/u, /kind=of from=\$e1 to=\$e2/u]],
+      ['Draw the cat at the bottom of the picture.', [
+        /kind=at from=\$c1 to=\$e2/u, /kind=of from=\$e2 to=\$e3/u
+      ]],
+      ['Move the ball to the right by one spot.', [/head="right"/u, /kind=measure from=\$c1 to=\$e3 cue="by"/u]],
+      ['The dog and the cat moved.', [/form=declarative predicate="moved" subject=\$g1/u]],
+      ['Draw a cat, a dog, and a bird.', [/member=\$e1 member=\$e2 member=\$e3 cue="," cue=", and"/u]]
+    ]
+    for (const [text, expected, excluded=[]] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      assert.ok(result.candidates.length >= 1 && result.candidates.length <= 3)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+      for (const expression of excluded) assert.doesNotMatch(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})
