@@ -121,3 +121,27 @@ test('Prolog segments detached gratitude and preserves nominal or quoted mention
     await reader.close()
   }
 })
+
+test('Prolog keeps clock and decimal evidence indivisible', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Please, book Focus room for Planning on 2026-12-03 from 11:00 UTC for 45 minutes. Thanks!', [
+        /unresolved="[^"]*11:00 UTC"/u, /expression="Thanks" speech_act=gratitude/u
+      ]],
+      ['1.2', [/form=fragment unresolved="1\.2"/u]],
+      ['Set width to -1.2. Thanks!', [/unresolved="to -1\.2"/u, /expression="Thanks" speech_act=gratitude/u]],
+      ['Draw 1.2 circles.', [/head="circles" quantity="1\.2"/u]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.ok(candidate.check.coverage.allAccountedFor, text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})

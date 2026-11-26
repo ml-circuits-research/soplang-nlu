@@ -30,8 +30,7 @@ segments(Q,At,End,Cue,Segments) :-
     ; Segments=[segment(At,End,[],Cue)] ).
 
 boundary(Q,_,Cut,End,Stop,[Cut,After],After,[]) :-
-    sentence_mark(Q,Cut,Raw),
-    \+ decimal_boundary(Q,Raw,Cut),
+    sentence_mark(Q,Cut,_),
     terminator_run(Q,Cut,End,After), Stop=Cut, After<End.
 boundary(Q,_,Cut,End,Cut,[],Next,[Cut,Next,"gratitude_boundary"]) :-
     separator_at(Q,Cut), Next is Cut+1,
@@ -113,10 +112,6 @@ terminator_run(Q,At,End,After) :-
     ( At<End, sentence_mark(Q,At,_) ->
         Next is At+1, terminator_run(Q,Next,End,After)
     ; After=At ).
-
-decimal_boundary(Q,".",At) :-
-    Prior is At-1, After is At+1,
-    token_pos(Q,Prior,"numeral"), token_pos(Q,After,"numeral").
 
 joiner(Q,At,End,After,Kind) :-
     form_at(Q,At,F), F.end<End, member(Kind,F.joiner),

@@ -8,7 +8,7 @@ const field = (wire,key) => {
 };
 const uniq = values => [...new Set(values.filter(Boolean))];
 const lexicalWord = /[\p{L}\p{M}\p{N}_]/u;
-const numerals = /^\p{N}+$/u;
+const numerals = /^(?:\p{N}+|[+-]?[0-9]*\.[0-9]+)$/u;
 const discourse = new Set(['filler','politeness','interjection']);
 const coordinationKind = kind => kind==='coordination' ? 'conjunctive' : kind==='addition' ? 'additive' : kind;
 
