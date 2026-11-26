@@ -33,6 +33,18 @@ test('neuro-Prolog projects dependency evidence into independent, source-grounde
         /kind=sequence member=\$c0 member=\$c8 cue=", then"/u, /predicate="add" direct_object=\$e10/u
       ]],
       ['Give me a greenhouse next to the house.', [/kind=near .*cue="next to"/u]],
+      ['Show a colour-blind-safe palette.', [/head="palette" determiner="a" modifier="colour-blind-safe"/u]],
+      ['Let us move the box.', [/form=nonfinite predicate="move"/u]],
+      ['Before I forget, change the avatar so that it looks happier, but keep everything else', [
+        /kind=contrast .*cue=", but"/u, /kind=purpose .*cue="so that"/u, /kind=temporal .*cue="Before"/u,
+        /pronoun="everything" modifier="else"/u
+      ]],
+      ['Make a bench by the tent; on top of that, put a lantern on the bench', [
+        /kind=sequence .*cue=";"/u, /form=imperative predicate="Make"/u, /form=imperative predicate="put"/u
+      ]],
+      ['I want Decision a little bit taller.', [
+        /predicate="want" subject=.*direct_object=.*result_complement="taller" degree="a little bit"/u
+      ]],
       ['Start on 2027-02-19.', [/kind=time .*cue="on"/u, /head="2027-02-19"/u]],
       ['Thanks for sorting the calendar!', [
         /expression="Thanks" speech_act=gratitude/u, /kind=reason .*cue="for"/u,

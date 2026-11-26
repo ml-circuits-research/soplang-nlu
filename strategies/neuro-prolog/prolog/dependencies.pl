@@ -54,26 +54,50 @@ project_single(Q,Context,T,Ref,Wires) :-
     ; child(Q,T,Cop), Cop.dep=="cop" -> clause(Q,T,Ref,Wires)
     ; token_id(c,T,Ref),
       entity(Q,T,Entity,Contents),
-      Wires=[wire(Ref,clause,T.i,[atom(form,fragment),ref(topic,Entity)])|Contents] ).
+      findall(M,(child(Q,T,Join),Join.dep=="cc",Join.i<T.i,
+        text(Join,Word),memberchk(Word,["and","or","but"]),quoted(marker,Join,M)),Markers),
+      append([atom(form,fragment),ref(topic,Entity)],Markers,Fields),
+      Wires=[wire(Ref,clause,T.i,Fields)|Contents] ).
 
 member_ref(Ref,ref(member,Ref)).
 coordination_kind(Q,Cues,Kind) :-
-    ( member(q(cue,S,E),Cues), between(S,E,I), I<E, token(Q,I,T), text(T,"then") -> Kind=sequence
+    ( member(q(cue,S,E),Cues), between(S,E,I), I<E, token(Q,I,T), text(T,Word), memberchk(Word,["then",";"]) -> Kind=sequence
     ; member(q(cue,S,E),Cues), between(S,E,I), I<E, token(Q,I,T), text(T,X),memberchk(X,["or","nor"]) -> Kind=disjunctive
     ; member(q(cue,S,E),Cues), between(S,E,I), I<E, token(Q,I,T), text(T,X),memberchk(X,["but","yet"]) -> Kind=contrast
+    ; member(q(cue,S,E),Cues), between(S,E,I), I<E, token(Q,I,T), text(T,"so") -> Kind=consequence
     ; Kind=conjunctive ).
 
 conjoined(Q,T,Context,Members,Cues) :-
-    findall(M-Cue,(child(Q,T,M),same_class(T,Context,M),coordinated_edge(Q,T,M,Cue)),Pairs),
+    findall(M-Cue,coordination_member(Q,T,Context,M,Cue),Pairs),
     Pairs\=[], pairs_keys_values(Pairs,Conj,Cues),
     findall(I-M,(member(M,[T|Conj]),I=M.i),Ranked),keysort(Ranked,Sorted),pairs_values(Sorted,Members).
+
+coordination_member(Q,T,Context,M,Cue) :-
+    child(Q,T,M),same_class(T,Context,M),coordinated_edge(Q,T,M,Cue),
+    \+ promoted_imperative(Q,T,M).
+coordination_member(Q,T,Context,M,Cue) :-
+    child(Q,T,Subordinate), child(Q,Subordinate,M),
+    same_class(T,Context,M),promoted_imperative(Q,Subordinate,M),
+    join_cue(Q,Subordinate,M,Cue).
+
+% A bare imperative after a marked subordinate is coordinated with the matrix
+% when the overt break is contrastive or sequential.
+promoted_imperative(Q,Subordinate,Member) :-
+    memberchk(Subordinate.dep,["advcl","ccomp"]),
+    child(Q,Subordinate,Marker),Marker.dep=="mark",
+    Member.dep=="conj", Member.tag=="VB", \+ finite_subject(Q,Member),
+    children(Q,Member,["aux","auxpass"],[]),
+    join_cue(Q,Subordinate,Member,q(cue,Start,End)),
+    Last is End-1, between(Start,Last,I),token(Q,I,Cue),text(Cue,Word),
+    memberchk(Word,["but","then","yet"]), !.
 
 coordinated_edge(Q,T,M,Cue) :-
     join_cue(Q,T,M,Cue),
     ( M.dep=="conj"
-    ; predicate(T),predicate(M),memberchk(M.dep,["dep","advcl","parataxis"]),M.i>T.i,
+    ; predicate(T),predicate(M),memberchk(M.dep,["dep","advcl","parataxis"]),
       Cue=q(cue,S,E), Last is E-1,
-      between(S,Last,I), token(Q,I,Marker),text(Marker,Word),memberchk(Word,["then","but","yet"]),
+      between(S,Last,I), token(Q,I,Marker),text(Marker,Word),
+      ( Word==";" ; M.i>T.i, memberchk(Word,["then","but","yet"]) ),
       children(Q,M,["mark"],[]) ), !.
 
 without_claims(Cues,wire(ID,Type,At,Fields),wire(ID,Type,At,Kept)) :-
@@ -82,21 +106,27 @@ overlaps_claim(Cues,q(_,S,E)) :-
     member(q(_,A,B),Cues),S<B,A<E.
 
 same_class(_,clause,T) :- predicate(T), !.
-same_class(_,entity,T) :- nominal(T), !.
+same_class(Head,entity,T) :-
+    ( nominal(T) ; Head.pos=="ADJ",T.pos=="ADJ" ), !.
 same_class(Head,top,T) :- (predicate(Head) -> predicate(T) ; nominal(T)).
 
 join_cue(Q,Parent,Member,q(cue,Start,End)) :-
     Min is min(Parent.i,Member.i), Max is max(Parent.i,Member.i)-1,
     findall(I-T,(between(Min,Max,I),token(Q,I,T),join_token(T)),Marks),
-    last(Marks,I-T), span(T,Begin,End0),
+    preferred_join_marker(Marks,I-T), span(T,Begin,End0),
     ( text(T,"then"), J is I-1,token(Q,J,Join),text(Join,"and") -> Before=J
     ; Before=Begin ),
     J0 is Before-1,
     ( token(Q,J0,Comma), Comma.text=="," -> Start=J0 ; Start=Before ),
     ( text(T,"and"),next(Q,T,After),text(After,"then") -> End is After.i+1 ; End=End0 ).
 
+preferred_join_marker(Marks,Best) :-
+    exclude(comma_mark,Marks,Explicit), Explicit\=[], last(Explicit,Best), !.
+preferred_join_marker(Marks,Best) :- last(Marks,Best).
+comma_mark(_-T) :- T.text==",".
+
 join_token(T) :- memberchk(T.dep,["cc","advmod","punct"]),
-    text(T,Word),memberchk(Word,["and","or","nor","but","yet","then",","]).
+    text(T,Word),memberchk(Word,["and","or","nor","but","yet","so","then",",",";"]).
 
 clause(Q,T,ID,[wire(ID,clause,T.i,Fields)|Children]) :-
     token_id(c,T,ID),
@@ -110,8 +140,8 @@ clause(Q,T,ID,[wire(ID,clause,T.i,Fields)|Children]) :-
 clause_core(Q,T,[atom(form,Form)|Fields]) :-
     clause_form(Q,T,Form),
     ( child(Q,T,Cop),Cop.dep=="cop" ->
-        quoted(predicate,Cop,Predicate), quoted(result_complement,T,Result), Fields=[Predicate,Result]
-    ; quoted(predicate,T,Predicate),Fields=[Predicate] ).
+        quoted(predicate,Cop,Predicate), word_claim(Q,result_complement,T,Result), Fields=[Predicate,Result]
+    ; word_claim(Q,predicate,T,Predicate),Fields=[Predicate] ).
 
 clause_form(Q,T,nonfinite) :-
     memberchk(T.dep,["xcomp","pcomp","acl","relcl","ccomp","advcl"]),
@@ -124,7 +154,8 @@ clause_form(Q,T,interrogative) :-
     ; child(Q,T,Mark),Mark.dep=="punct",Mark.text=="?"
     ; memberchk(T.dep,["ROOT","conj"]), child(Q,T,Wh),wh_token(Wh) ), !.
 clause_form(Q,T,declarative) :- finite_subject(Q,T), !.
-clause_form(_,T,imperative) :- T.tag=="VB", !.
+clause_form(_,T,imperative) :-
+    ( T.tag=="VB" ; T.dep=="ROOT",T.tag=="VBD",text(T,T.lemma) ), !.
 clause_form(_,T,nonfinite) :- memberchk(T.tag,["VBG","VBN"]), !.
 clause_form(_,_,declarative).
 
@@ -154,7 +185,9 @@ edge(Q,clause,T,_,C,[Field],[]) :-
     child(Q,T,Object), memberchk(Object.dep,["dobj","obj"]),quoted(result_complement,C,Field), !.
 edge(Q,Type,_,ID,C,[],Wires) :-
     C.dep=="advmod", adjacent_preposition(Q,C,Prep),
-    pp_with_cue(Q,Type,ID,Prep,C.i,Wires), !.
+    multiword_cue_start(Q,C,Start), pp_with_cue(Q,Type,ID,Prep,Start,Wires), !.
+edge(Q,clause,T,_,C,[],[]) :-
+    C.dep=="advmod", text(C,"else"), previous(Q,C,P), child(Q,T,P), indefinite_pronoun(P), !.
 edge(_,clause,_,_,C,[Field],[]) :-
     C.dep=="advmod", memberchk(C.pos,["ADV","PART"]), quoted(adverb,C,Field), !.
 edge(Q,clause,T,ID,C,[],[Link|Wires]) :-
@@ -164,6 +197,12 @@ edge(Q,clause,T,ID,C,[],[Link|Wires]) :-
     quoted(cue,C,Cue), relation_wire(C,Kind,ID,Ref,[Cue],Link), !.
 edge(_,clause,_,_,C,[Field],[]) :-
     C.dep=="prt",quoted(particle,C,Field), !.
+edge(Q,clause,_,_,C,[Field],[]) :-
+    C.dep=="prep", children(Q,C,["pobj","pcomp"],[]),
+    text(C,Word),memberchk(Word,["back","down","off","out","over","up"]),quoted(particle,C,Field), !.
+edge(Q,clause,_,ID,C,[],[Link|Wires]) :-
+    C.dep=="npadvmod", nominal(C), temporal_nominal(Q,C),
+    project(Q,C,entity,Ref,Wires), relation_wire(C,time,ID,Ref,[],Link), !.
 edge(_,clause,_,_,C,[Field],[]) :-
     C.dep=="mark",quoted(marker,C,Field), !.
 edge(_,clause,_,_,C,[Field],[]) :-
@@ -172,35 +211,49 @@ edge(Q,clause,_,ID,C,[],[Link|Wires]) :-
     memberchk(C.dep,["csubj","csubjpass"]), predicate(C),
     project(Q,C,clause,Ref,Wires),
     relation_wire(C,clausal_subject,ID,Ref,[],Link), !.
-edge(Q,clause,T,_,C,[Field],Wires) :-
+edge(Q,clause,_,_,C,[ref(Role,Ref)],Wires) :-
     memberchk(C.dep,["nsubj","nsubjpass","expl","dobj","obj","iobj","dative"]),
     nominal(C), !,
-    ( wh_token(C), C.i<T.i, C.pos=="PRON" ->
-        quoted(question,C,Field),Wires=[]
-    ; argument_role(C.dep,Role),
-      project(Q,C,entity,Ref,Wires),
-      Field=ref(Role,Ref) ).
-edge(Q,clause,T,_,C,[ref(direct_object,Object),Result],Wires) :-
+    argument_role(C.dep,Role), project(Q,C,entity,Ref,Wires).
+edge(Q,clause,T,ID,C,[ref(direct_object,Object)|Fields],Wires) :-
     memberchk(C.dep,["ccomp","xcomp"]),
     result_word(T,C), children(Q,C,["nsubj","nsubjpass","obj","compound"],[Target]), nominal(Target),
-    project(Q,Target,entity,Object,Wires),
-    quoted(result_complement,C,Result), !.
+    project(Q,Target,entity,Object,TargetWires),
+    predicative_phrase(Q,C,ID,Fields,Attachments),
+    append(TargetWires,Attachments,Wires), !.
 edge(_,clause,_,_,C,[Field],[]) :-
     memberchk(C.dep,["acomp","oprd"]), C.pos=="ADJ", quoted(result_complement,C,Field), !.
 edge(Q,clause,_,_,C,[ref(predicative_entity,Ref)],Wires) :-
     memberchk(C.dep,["attr","oprd"]), nominal(C),
     project(Q,C,entity,Ref,Wires), !.
-edge(Q,clause,_,_,C,[ref(clausal_complement,Ref)],Wires) :-
+edge(Q,clause,T,_,C,[ref(clausal_complement,Ref)],Wires) :-
     memberchk(C.dep,["ccomp","xcomp"]), predicate(C),
-    project(Q,C,clause,Ref,Wires), !.
+    project(Q,C,clause,Ref,Parsed),
+    ( bare_infinitival_control(Q,T,C) ->
+        token_id(c,C,ClauseID), maplist(nonfinite_clause(ClauseID),Parsed,Wires)
+    ; Wires=Parsed ), !.
 edge(Q,clause,_,ID,C,[],Wires) :-
     memberchk(C.dep,["advcl","parataxis"]), predicate(C),
     dependent_clause(Q,ID,C,Wires), !.
+edge(Q,clause,_,ID,C,[],[Link|Wires]) :-
+    C.dep=="advcl", predicate(C), memberchk(C.tag,["VBG","VBN"]), children(Q,C,["mark","nsubj","nsubjpass"],[]),
+    project(Q,C,clause,Ref,Wires), relation_wire(C,accompanying,ID,Ref,[],Link), !.
 edge(Q,Type,T,ID,C,[],Wires) :-
     memberchk(C.dep,["prep","agent","dative"]),C.pos=="ADP",
     pp(Q,Type,T,ID,C,Wires), !.
 edge(Q,entity,T,ID,C,Fields,Wires) :-
     entity_edge(Q,T,ID,C,Fields,Wires).
+
+bare_infinitival_control(Q,Parent,Child) :-
+    memberchk(Parent.lemma,["let","make","have","help"]),
+    Child.tag=="VB",children(Q,Child,["aux","auxpass","mark"],[]),
+    child(Q,Child,Subject),Subject.dep=="nsubj",Subject.i>Parent.i,Subject.i<Child.i,
+    ( Subject.tag=="PRP", text(Subject,Pronoun),memberchk(Pronoun,["me","you","him","her","it","us","them"])
+    ; Subject.pos=="PROPN" ), !.
+
+nonfinite_clause(ClauseID,wire(ID,clause,At,Fields),wire(ID,clause,At,[atom(form,nonfinite)|Rest])) :-
+    ID==ClauseID, !, exclude(field_is(form),Fields,Rest).
+nonfinite_clause(_,Wire,Wire).
 
 argument_role("nsubj",subject).
 argument_role("nsubjpass",subject).
@@ -220,10 +273,29 @@ contracted_aux(Q,T,A) :-
     next(Q,A,N),child(Q,T,N),N.dep=="neg",negative_span(Q,T,N,S,_),S=:=A.i.
 
 result_word(Parent,Child) :-
-    memberchk(Parent.lemma,["make","set","paint","color","colour","turn","keep","leave","render"]),
+    memberchk(Parent.lemma,["make","set","paint","color","colour","turn","keep","leave","render","want"]),
     ( Child.pos=="ADJ"
     ; text(Child,Color),memberchk(Color,["black","blue","brown","gray","green","grey","orange","pink","purple",
       "red","white","yellow","cyan","magenta","teal","violet"]) ).
+
+predicative_phrase(Q,T,ID,[Result|Degrees],Wires) :-
+    word_claim(Q,result_complement,T,Result),
+    findall(Degree,(child(Q,T,D),degree_expression(Q,D,Degree)),Degrees),
+    findall(PP,(child(Q,T,P),P.dep=="prep",pp(Q,clause,T,ID,P,PP)),Phrases),
+    append(Phrases,Wires).
+
+degree_expression(_,D,Field) :-
+    D.dep=="advmod", D.pos=="ADV", quoted(degree,D,Field), !.
+degree_expression(Q,D,q(degree,Start,End)) :-
+    D.dep=="npadvmod", text(D,"bit"),
+    child(Q,D,Little), Little.dep=="amod", text(Little,"little"), Little.i=:=D.i-1,
+    child(Q,D,A), A.dep=="det", text(A,"a"), A.i=:=Little.i-1,
+    Start=A.i, End is D.i+1.
+
+indefinite_pronoun(T) :-
+    T.pos=="PRON",text(T,Word),
+    memberchk(Word,["everything","anything","something","nothing","everybody","anybody","somebody","nobody",
+      "everyone","anyone","someone","noone"]).
 
 polite(T) :- text(T,Word),memberchk(Word,["please","hey","ok","okay","well"]),memberchk(T.dep,["intj","discourse","advmod"]).
 
@@ -236,7 +308,10 @@ entity(Q,T,ID,Wires) :-
         Wires=[wire(ID,entity,T.i,[Value,Zone])]
     ; nominal_head(Q,T,Identity,Owned),
       child_projection(Q,T,ID,entity,Banks,Trees),
-      append(Banks,Args0),append(Trees,Children),
+      append(Banks,Base),append(Trees,Children),
+      ( indefinite_pronoun(T),next(Q,T,Else),text(Else,"else") ->
+          quoted(modifier,Else,Qualifier),Args0=[Qualifier|Base]
+      ; Args0=Base ),
       exclude(inside_owned(Owned),Args0,Args),
       select_single_slots(Args,Modifiers),
       Wires=[wire(ID,entity,T.i,[Identity|Modifiers])|Children] ).
@@ -244,10 +319,10 @@ entity(Q,T,ID,Wires) :-
 nominal_head(Q,T,q(name,Start,End),[Start,End]) :-
     T.pos=="PROPN", compound_name_start(Q,T,Start), Start<T.i,
     End is T.i+1, !.
-nominal_head(_,T,Identity,[]) :-
+nominal_head(Q,T,Identity,[]) :-
     ( T.pos=="PRON" -> Field=pronoun
     ; T.pos=="PROPN" -> Field=name
-    ; Field=head ), quoted(Field,T,Identity).
+    ; Field=head ), word_claim(Q,Field,T,Identity).
 
 compound_name_start(Q,T,Start) :-
     previous(Q,T,P),P.pos=="PROPN",child(Q,T,P),
@@ -256,14 +331,23 @@ compound_name_start(_,T,T.i).
 
 inside_owned([Start,End],q(_,I,J)) :- I>=Start,J=<End.
 
+entity_edge(Q,T,_,C,[Field],[]) :-
+    C.dep=="predet", child(Q,T,D),D.dep=="det", D.i=:=C.i+1,
+    End is D.i+1, Field=q(determiner,C.i,End), !.
+entity_edge(Q,T,_,C,[],[]) :-
+    C.dep=="det", previous(Q,C,P),child(Q,T,P),P.dep=="predet", !.
 entity_edge(_,_,_,C,[Field],[]) :-
     memberchk(C.dep,["det","predet"]), determiner(C), quoted(determiner,C,Field), !.
 entity_edge(Q,_,_,C,[Field|Degrees],[]) :-
     memberchk(C.dep,["nummod","quantmod"]), quoted(quantity,C,Field),
     findall(D,(child(Q,C,A),A.dep=="advmod",quoted(degree,A,D)),Degrees), !.
+entity_edge(Q,_,ID,C,[],[Link|Wires]) :-
+    C.dep=="amod", C.pos=="ADJ", conjoined(Q,C,entity,_,_),
+    project(Q,C,entity,Ref,Wires),
+    relation_wire(C,modifier,ID,Ref,[],Link), !.
 entity_edge(Q,_,_,C,[Field|Degrees],[]) :-
     C.dep=="amod", ( C.pos=="ADJ" ; memberchk(C.tag,["VBG","VBN"]) ),
-    quoted(modifier,C,Field),
+    word_claim(Q,modifier,C,Field),
     findall(D,(child(Q,C,A),A.dep=="advmod",quoted(degree,A,D)),Degrees), !.
 entity_edge(Q,_,_,C,Fields,[]) :-
     memberchk(C.dep,["compound","flat","name"]), word(C), compound_fields(Q,C,Fields), !.
@@ -298,9 +382,14 @@ nominal_annotation(Q,C,Target,label,wire(Target,entity,Start,[q(name,Start,End)]
     token_id(l,Name,Target).
 
 compound_fields(Q,T,[Field|Tail]) :-
-    quoted(compound,T,Field),
-    findall(Bank,(child(Q,T,C),memberchk(C.dep,["compound","flat","name"]),word(C),compound_fields(Q,C,Bank)),Banks),
+    word_claim(Q,compound,T,Field),
+    findall(Bank,(child(Q,T,C),compound_child_fields(Q,C,Bank)),Banks),
     append(Banks,Tail).
+
+compound_child_fields(Q,C,Fields) :-
+    memberchk(C.dep,["compound","flat","name"]),word(C),compound_fields(Q,C,Fields).
+compound_child_fields(Q,C,[Field]) :-
+    C.dep=="amod", C.pos=="ADJ", word_claim(Q,modifier,C,Field).
 
 relocated_adverb(Q,Parent,Field) :-
     member(C,Q.tokens), C.dep=="advmod", text(C,Word),memberchk(Word,["instead","again","also"]),
@@ -311,17 +400,24 @@ adjunct_ancestor(Q,T,Parent) :-
     token(Q,T.head,H), H.i=\=T.i,
     ( H.i=:=Parent.i ; \+ predicate(H),adjunct_ancestor(Q,H,Parent) ).
 
+multiword_cue_start(Q,C,Start) :-
+    previous(Q,C,P),child(Q,C,P),P.dep=="advmod",
+    text(P,Word),memberchk(Word,["right","just","directly","immediately"]), !,
+    Start=P.i.
+multiword_cue_start(_,C,C.i).
+
 adjacent_preposition(Q,C,Prep) :-
     text(C,Word),memberchk(Word,["next","straight","directly","just","right"]),
     next(Q,C,Prep),child(Q,C,Prep),Prep.dep=="prep", !.
 
-pp(Q,Type,_,ID,C,Wires) :- pp_with_cue(Q,Type,ID,C,C.i,Wires).
+pp(Q,Type,_,ID,C,Wires) :-
+    multiword_cue_start(Q,C,Start), pp_with_cue(Q,Type,ID,C,Start,Wires).
 
 pp_with_cue(Q,_,ID,C,Start,[Link|Contents]) :-
     children(Q,C,["pobj","pcomp"],[Endpoint|_]),
     ( predicate(Endpoint) -> Context=clause ; Context=entity ),
     project(Q,Endpoint,Context,Ref,Contents),
-    ( token(Q,Start,Lead), Start<C.i, text(Lead,"next"),text(C,"to") -> Kind=near
+    ( previous(Q,C,Lead), Start<C.i, text(Lead,"next"),text(C,"to") -> Kind=near
     ; pp_kind(Q,C,Endpoint,Kind) ),
     End is C.i+1,
     relation_wire(C,Kind,ID,Ref,[q(cue,Start,End)],Link).
@@ -352,6 +448,11 @@ temporal_zone(Q,T,Time) :-
     text(T,Zone),memberchk(Zone,["utc","gmt","am","pm"]),
     previous(Q,T,Time),Time.pos=="NUM",sub_string(Time.text,_,_,_,":").
 
+temporal_nominal(_,T) :- temporal_word(T), !.
+temporal_nominal(Q,T) :-
+    memberchk(T.lemma,["morning","afternoon","evening","night","week","month","year"]),
+    child(Q,T,Cue), text(Cue,Word),memberchk(Word,["tomorrow","today","yesterday","this","next","last"]), !.
+
 temporal_word(T) :-
     text(T,Word),memberchk(Word,["monday","tuesday","wednesday","thursday","friday","saturday","sunday",
       "today","tomorrow","yesterday","utc","gmt"]), !.
@@ -366,15 +467,24 @@ dependent_clause(Q,ID,T,[Link|Wires]) :-
     children(Q,T,["mark"],[Marker|_]),
     subordinate_kind(Marker,Kind),
     project(Q,T,clause,Ref,Raw),
-    strip_wire_field(Raw,Ref,marker,Wires),
-    quoted(cue,Marker,Cue), relation_wire(T,Kind,ID,Ref,[Cue],Link).
+    token_id(c,T,ClauseID),
+    strip_wire_field(Raw,ClauseID,marker,Wires),
+    subordinate_span(Q,T,Marker,Cue), relation_wire(T,Kind,ID,Ref,[Cue],Link).
+
+subordinate_span(Q,Clause,Marker,q(cue,Start,End)) :-
+    span(Marker,Start,Stop),
+    ( text(Marker,"so"),next(Q,Marker,That), text(That,"that"),
+      child(Q,Clause,That),That.dep=="mark" -> End is Stop+1
+    ; End=Stop ).
 
 subordinate_kind(T,Kind) :-
     text(T,Word),
     ( Word=="because" -> Kind=reason
     ; memberchk(Word,["while","when","once","after","before"]) -> Kind=temporal
     ; Word=="if" -> Kind=condition
-    ; Word=="although" -> Kind=concession ), !.
+    ; Word=="although" -> Kind=concession
+    ; Word=="since" -> Kind=since
+    ; Word=="so" -> Kind=purpose ), !.
 
 strip_wire_field([],_,_,[]).
 strip_wire_field([wire(ID,Type,At,Fields)|More],Target,Key,[wire(ID,Type,At,Clean)|Tail]) :-
@@ -393,8 +503,42 @@ select_single_slots([F|Tail],[F|Chosen]) :-
 
 protected_token(Q,T) :- gratitude(Q,T,_,_,_), !.
 protected_token(Q,T) :-
+    hyphenated(Q,T,Start,End),
+    hyphenated_head(Q,Start,End,Head), T.i=\=Head, !.
+protected_token(Q,T) :-
     First is max(0,T.i-4), Last is T.i-1, between(First,Last,Start),
     token(Q,Start,Candidate),date_span(Q,Candidate,Start,End),T.i<End, !.
+
+% A hyphenated orthographic word claims its contiguous source once, under
+% the dependency token whose head leaves that word.
+word_claim(Q,Key,T,q(Key,Start,End)) :-
+    hyphenated(Q,T,Start,End),hyphenated_head(Q,Start,End,T.i), !.
+word_claim(_,Key,T,Field) :- quoted(Key,T,Field).
+
+hyphenated(Q,T,Start,End) :-
+    ( hyphen(T), previous(Q,T,Word), hyphen_word(Word)
+    ; hyphen_word(T), Word=T ),
+    hyphen_start(Q,Word,Start), hyphen_end(Q,Word,End),
+    End-Start>=3.
+
+hyphen_start(Q,T,Start) :-
+    previous(Q,T,Dash),hyphen(Dash),adjacent(Dash,T),
+    previous(Q,Dash,Word),hyphen_word(Word),adjacent(Word,Dash), !,
+    hyphen_start(Q,Word,Start).
+hyphen_start(_,T,T.i).
+
+hyphen_end(Q,T,End) :-
+    next(Q,T,Dash),hyphen(Dash),adjacent(T,Dash),
+    next(Q,Dash,Word),hyphen_word(Word),adjacent(Dash,Word), !,
+    hyphen_end(Q,Word,End).
+hyphen_end(_,T,End) :- End is T.i+1.
+
+hyphen(T) :- memberchk(T.text,["-","‐","‑"]).
+hyphen_word(T) :- word(T),string_chars(T.text,Letters),member(Letter,Letters),char_type(Letter,alpha), !.
+hyphenated_head(Q,Start,End,Head) :-
+    Last is End-1,
+    findall(I,(between(Start,Last,I),token(Q,I,W),hyphen_word(W),
+      ( W.head<Start ; W.head>=End ; W.head=:=I )),[Head]).
 
 quote_pair("\"","\"").
 quote_pair("“","”").
@@ -448,7 +592,7 @@ gap_fields([S-Key|Tail],Q,Wires,[ID-q(Field,S,E)|Rest]) :-
     E0 is S+1,
     ( memberchk(Key,[terminator,unresolved]) -> gap_run(Tail,Key,E0,E,Remaining)
     ; E=E0,Remaining=Tail ),
-    gap_owner(Q,S,Wires,ID),
+    gap_owner(Q,S,Key,Wires,ID),
     Field=Key,
     gap_fields(Remaining,Q,Wires,Rest).
 
@@ -456,12 +600,15 @@ gap_run([I-Key|Rest],Key,I,End,Tail) :- !,
     After is I+1,gap_run(Rest,Key,After,End,Tail).
 gap_run(Tail,_,End,End,Tail).
 
-gap_owner(Q,I,Wires,ID) :-
+gap_owner(_,I,terminator,Wires,ID) :-
+    findall(At-Ref,(member(wire(Ref,clause,At,_),Wires),At<I),Ahead),
+    keysort(Ahead,Sorted),last(Sorted,_-ID), !.
+gap_owner(Q,I,_,Wires,ID) :-
     token(Q,I,T),
     ( member(wire(ID,clause,At,_),Wires),At=:=T.head -> true
     ; findall(D-Ref,(member(wire(Ref,clause,At,_),Wires),D is abs(I-At)),ByDist),
       keysort(ByDist,[_-ID|_]) ), !.
-gap_owner(_,_,[wire(ID,_,_,_)|_],ID).
+gap_owner(_,_,_,[wire(ID,_,_,_)|_],ID).
 
 attach_claims(Claims,wire(ID,Type,At,Fields),wire(ID,Type,At,Updated)) :-
     findall(F,member(ID-F,Claims),Available),

@@ -27,11 +27,15 @@ function rank(text,validate,neural,symbolic) {
   }
   const valid=[...distinct.values()].filter(({check})=>check.valid)
   const complete=valid.filter(({check})=>hasCompleteSource(check))
-  if (complete.length) return complete.slice(0,3).map(({candidate})=>candidate)
-  return valid.sort((a,b)=>
+  const ranked=complete.length ? complete : valid.sort((a,b)=>
     a.check.sourceGaps.materialUnresolved+a.check.sourceGaps.materialUncovered-
     b.check.sourceGaps.materialUnresolved-b.check.sourceGaps.materialUncovered
-  ).slice(0,3).map(({candidate})=>candidate)
+  )
+  return {
+    analyses:ranked.slice(0,3).map(({candidate})=>candidate),
+    projectionFindings:[...distinct.values()].filter(({candidate,check})=>
+      candidate.origin==='dependency-prolog' && !check.valid).map(({check})=>check.findings)
+  }
 }
 
 export const neuroProlog = {
@@ -66,11 +70,13 @@ export const neuroProlog = {
       if (pure.status==='fulfilled' && pure.value.analysisDiagnostics?.error) {
         errors.push(pure.value.analysisDiagnostics.error)
       }
-      const analyses=rank(text,validate,neural.status==='fulfilled'?neural.value:[],
+      const {analyses,projectionFindings}=rank(text,validate,neural.status==='fulfilled'?neural.value:[],
         pure.status==='fulfilled'?pure.value.analyses:[])
       return {analyses,analysisDiagnostics:{
         solver:'swipl',status:errors.length?(analyses.length?'partial':'error'):'ok',
-        model:dependencies.metadata,...(errors.length?{error:errors.join(' | ')}:{})
+        model:dependencies.metadata,
+        ...(projectionFindings.length?{projectionFindings}:{}),
+        ...(errors.length?{error:errors.join(' | ')}:{})
       }}
     }
 
