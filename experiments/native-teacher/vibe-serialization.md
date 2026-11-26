@@ -78,3 +78,16 @@ The escaped quotation marks in the SOP literal are part of the source evidence. 
 For quantified lookups, attach restrictions to the entity. In "Italicise every diamond in sight", `every` quantifies `diamond` and the phrase `in sight` restricts which diamonds to select. Keep the phrase on the entity lookup, not as an adverb of italicising. A location stated as an instruction's destination can instead attach to the action. Keep the difference between selection and requested change.
 
 For "Let us book Lab", preserve `Let` as the imperative predicate and `book` as the nonfinite predicate with its own object. The reference to the single written `us` can supply the embedded subject. Treat an unquoted multiword title in a title slot as one written name when it names a single item. An ordinary modifier and noun in a lookup remain separate.
+
+An entity needs one grounded anchor of its own. Use `head` for a noun, `name` for a name, `pronoun` for a standalone pronoun, and `literal` for a standalone number or ordinal. `quantity` alone is not an anchor. In "Draw three circles", quote "three" in the circle entity's quantity. In "Choose two and four", use `literal="two"` and `literal="four"` on two entities. A demonstrative used alone, as in "Move those", is a pronoun. When it introduces a noun it is a determiner.
+
+"4 wide and 3 tall" can use a fragment pointing to a coordination of two numeric entities.
+
+```sop
+@c nlu.clause form=fragment topic=$group
+@w nlu.entity literal="4" modifier="wide"
+@h nlu.entity literal="3" modifier="tall"
+@group nlu.coordination kind=additive member=$w member=$h cue="and"
+```
+
+All members of a coordination must have the same wire type. A clause's direct object, indirect object, subject, topic and predicative entity point to entities or entity coordinations. A coordinated clause complement uses clausal_complement. Quote a single occurrence of "then" as either the sequence cue or the clause connective. Quote a single occurrence of "not" once, even when it both contrasts and negates a qualifier. Include nonfinite markers and every determiner written in the source.
