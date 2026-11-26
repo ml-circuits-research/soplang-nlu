@@ -101,6 +101,57 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       assert.match(temporal.sop, /adverb="now"/)
     })
 
+    await t.test('composes compounds, modal inversion, and separately grounded degree', async () => {
+      const [analysis] = await analyse('Could you move the office chair much closer')
+      assert.match(analysis.sop, /determiner="the" compound="office" head="chair"/)
+      assert.match(analysis.sop, /form=interrogative predicate="move".*auxiliary="Could".*subject=\$e1 direct_object=\$e2 degree="much" result_complement="closer"/)
+      assert.deepEqual(analysis.unresolved, [])
+      const [statement] = await analyse('The dog and the cat ran.')
+      assert.match(statement.sop, /kind=additive member=\$e1 member=\$e2 cue="and"/)
+      assert.match(statement.sop, /form=declarative predicate="ran".*subject=\$coord1/)
+      assert.doesNotMatch(statement.sop, /act=place/)
+    })
+
+    await t.test('grounds marked and bare nonfinite complements', async () => {
+      const [marked] = await analyse('I need you to pack the seat cushion.')
+      assert.match(marked.sop, /predicate="need".*clausal_complement=\$c2 subject=\$e1 direct_object=\$e2/)
+      assert.match(marked.sop, /form=nonfinite marker="to" predicate="pack".*direct_object=\$e3/)
+      assert.match(marked.sop, /compound="seat" head="cushion"/)
+      assert.deepEqual(marked.unresolved, [])
+      const [bare] = await analyse('Make the lamp glow.')
+      assert.match(bare.sop, /predicate="Make".*clausal_complement=\$c2 direct_object=\$e1/)
+      assert.match(bare.sop, /form=nonfinite predicate="glow"/)
+      assert.deepEqual(bare.unresolved, [])
+    })
+
+    await t.test('keeps relative attachments and measured complements compositional', async () => {
+      const [relative] = await analyse('The old man saw the girl who carried a bag.')
+      assert.match(relative.sop, /kind=subject_relative from=\$e2 to=\$c2 cue="who"/)
+      assert.match(relative.sop, /form=declarative predicate="carried".*direct_object=\$e3/)
+      assert.doesNotMatch(relative.sop, /form=interrogative|clausal_complement=/)
+      assert.deepEqual(relative.unresolved, [])
+      const [measured] = await analyse('Make his moustache thirty percent bigger.')
+      assert.match(measured.sop, /determiner="his" head="moustache"/)
+      assert.match(measured.sop, /direct_object=\$e1 degree="thirty percent" result_complement="bigger"/)
+      assert.deepEqual(measured.unresolved, [])
+    })
+
+    await t.test('separates coordinated attachments and reserves compound preposition evidence', async () => {
+      const [sequence] = await analyse('Add a circle, and then make it red.')
+      assert.match(sequence.sop, /kind=sequence member=\$c1 member=\$c2 cue="," cue="and" cue="then"/)
+      assert.deepEqual(sequence.unresolved, [])
+      const [landmarks] = await analyse('Move the circle beside the square and the triangle.')
+      assert.match(landmarks.sop, /kind=additive member=\$e2 member=\$e3 cue="and"/)
+      assert.match(landmarks.sop, /kind=near from=\$c1 to=\$coord1 cue="beside"/)
+      assert.deepEqual(landmarks.unresolved, [])
+      const readings = await analyse('Take the circle out of the picture.')
+      assert.ok(readings.length <= 3)
+      assert.ok(readings.some(({sop}) => sop.includes('cue="out of"')))
+      for (const {sop} of readings) {
+        if (sop.includes('cue="out of"')) assert.doesNotMatch(sop, /particle="out"/)
+      }
+    })
+
     await t.test('separates initial, final and standalone gratitude from argument roles', async () => {
       for (const [text, phrase, separated] of [
         ['Thanks, move it.', 'Thanks', true],

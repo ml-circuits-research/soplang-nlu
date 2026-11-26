@@ -27,7 +27,7 @@ function emitAnalysis(decoded, kb, objective) {
 
   function coordination(items, cues) {
     const id = 'coord' + ++coordinationCount
-    const kind = cues.some((index) => tokens[index].lower === 'or') ? 'alternative' : 'additive'
+    const kind = cues.some((index) => tokens[index].lower === 'then') ? 'sequence' : cues.some((index) => tokens[index].lower === 'or') ? 'alternative' : 'additive'
     lines.push(wire(id, 'coordination', [
       'kind=' + kind,
       ...items.map((item) => refField('member', item)),
@@ -40,12 +40,17 @@ function emitAnalysis(decoded, kb, objective) {
     const id = 'e' + index
     const head = tokens[item.head]
     const fields = []
-    for (let modifier = item.start; modifier < item.head; modifier++) {
+    let headStart = item.head
+    if (head.pos === 'proper') {
+      while (headStart > item.start && tokens[headStart - 1].pos === 'proper') headStart--
+    }
+    for (let modifier = item.start; modifier < headStart; modifier++) {
       if (modifier === question) continue
       const token = tokens[modifier]
       const key = token.pos === 'determiner' && !fields.some((field) => field.startsWith('determiner=')) ? 'determiner'
         : token.pos === 'numeral' && !fields.some((field) => field.startsWith('quantity=')) ? 'quantity'
-        : 'modifier'
+        : token.pos === 'noun' || token.pos === 'proper' ? 'compound'
+        : token.pos === 'adverb' ? 'degree' : 'modifier'
       fields.push(quote(key, modifier))
       const color = kb.domain.colours.get(token.lower)
       if (token.pos === 'adjective' && typeof color === 'string' && atom(color) &&
@@ -57,7 +62,7 @@ function emitAnalysis(decoded, kb, objective) {
     if (head.pos === 'pronoun') {
       fields.push(quote('pronoun', item.head))
     } else if (head.pos === 'proper' || head.pos === 'quote') {
-      fields.push(quote('name', item.head))
+      fields.push(quote('name', headStart, item.head))
     } else {
       fields.push(quote('head', item.head))
       const shape = head.lemmas.map((lemma) => kb.domain.shapes.get(lemma)).find((value) => typeof value === 'string')
@@ -82,8 +87,13 @@ function emitAnalysis(decoded, kb, objective) {
     const roles = (role) => items.filter((item) => item.role === role && entities.has(item))
     const subject = roles('subject')
     const objects = roles(predicate ? 'object' : 'fragment')
+    const initial = tokens.slice(clause.start, predicate?.index ?? clause.start)
+      .find((token) => !token.filler && !token.negation && token.pos !== 'adverb')
+    const auxiliaryInversion = initial?.pos === 'auxiliary' && subject.some((item) => item.start > initial.index)
     const form = clause.gratitude ? 'fragment'
-      : question !== undefined || tokens[terminator]?.surface === '?' ? 'interrogative'
+      : predicate && clause.relativeClause ? 'declarative'
+      : predicate && (clause.marker !== undefined || clause.nonfinite) ? 'nonfinite'
+      : question !== undefined || auxiliaryInversion || tokens[terminator]?.surface === '?' ? 'interrogative'
       : !predicate ? 'fragment' : subject.length ? 'declarative' : 'imperative'
     const fields = ['form=' + form]
     if (clause.gratitude) {
@@ -92,9 +102,12 @@ function emitAnalysis(decoded, kb, objective) {
         [{slot: 'expression', text: surface(clause.start, clause.expressionEnd)}], 'Z3 discourse lexicon')
       fields.push(...clause.separators.map((separator) => quote('separator', separator)))
     }
+    if (clause.marker !== undefined) fields.push(quote('marker', clause.marker))
     if (predicate) {
       fields.push(quote('predicate', predicate.index))
-      if (clause.action) {
+      const directiveFrame = form === 'imperative' || form === 'nonfinite' ||
+        (auxiliaryInversion && subject.some(({head}) => tokens[head].lower === 'you'))
+      if (clause.action && directiveFrame) {
         const source = [{slot: 'predicate', text: tokens[predicate.index].surface}]
         if (clause.action.source !== undefined) {
           source.push({slot: 'particle', text: tokens[clause.action.source].surface})
@@ -118,6 +131,17 @@ function emitAnalysis(decoded, kb, objective) {
           refField('from', id), refField('to', child), quote('cue', clause.complementCue)]))
       }
     }
+    if (clause.relative !== undefined && clauses[clause.relative].predicate) {
+      const host = items.findLast((item) => entities.has(item) && item.end === clause.relativeCue - 1)
+      if (host) {
+        const relative = clauses[clause.relative]
+        const subject = relative.entities.some((item) => item.role === 'subject')
+        const kind = subject ? 'object_relative' : 'subject_relative'
+        lines.push(wire('rel' + ++relationCount, 'relation', ['kind=' + kind,
+          refField('from', entities.get(host)), refField('to', 'c' + (clause.relative + 1)),
+          quote('cue', clause.relativeCue)]))
+      }
+    }
     if (terminator !== undefined) fields.push(quote('terminator', terminator))
     const roleReference = (role, group) => {
       if (!group.length) return
@@ -131,10 +155,11 @@ function emitAnalysis(decoded, kb, objective) {
     roleReference('indirect_object', roles('indirect'))
     const complement = items.find((item) => item.role === 'complement')
     if (complement) {
-      fields.push(quote('result_complement', complement.start, complement.end))
+      if (complement.start < complement.head) fields.push(quote('degree', complement.start, complement.head - 1))
+      fields.push(quote('result_complement', complement.head))
       const color = kb.domain.colours.get(tokens[complement.head].lower)
       meaning(id, fields, 'result_color', color,
-        [{slot: 'result_complement', text: surface(complement.start, complement.end)}], 'Z3 colour vocabulary')
+        [{slot: 'result_complement', text: surface(complement.head)}], 'Z3 colour vocabulary')
     }
     for (const particle of items.filter(({role}) => role === 'particle')) {
       fields.push(quote('particle', particle.start, particle.end))
@@ -168,7 +193,7 @@ function emitAnalysis(decoded, kb, objective) {
     if (clause.gratitude) continue
     clauseGroup.push(id)
     if (clause.coordinator !== undefined) {
-      clauseCues.push(clause.coordinator)
+      clauseCues.push(...clause.coordinators)
     } else {
       if (clauseGroup.length > 1) coordination(clauseGroup, clauseCues)
       clauseGroup = []
@@ -196,7 +221,7 @@ function emitAnalysis(decoded, kb, objective) {
 
 export async function analyseWithZ3(text, {kb, lexicon, runner, timeout, topK = 4}) {
   const encoded = encodeSyntaxAnalysis(text, kb, lexicon)
-  const limit = Math.min(8, Math.max(1, topK))
+  const limit = Math.min(4, Math.max(1, topK))
   const solved = await runner.solve(encoded.smt, encoded.query, {timeout, topK: limit, blockVars: encoded.block})
   if (!solved.ok) return {analyses: [], analysisDiagnostics: {solver: 'z3', status: solved.status, error: solved.error}}
   const analyses = []
@@ -209,6 +234,7 @@ export async function analyseWithZ3(text, {kb, lexicon, runner, timeout, topK = 
     if (seen.has(analysis.sop)) continue
     seen.add(analysis.sop)
     analyses.push(analysis)
+    if (analyses.length >= Math.min(3, limit)) break
   }
   return {analyses, analysisDiagnostics: {solver: 'z3', status: solved.status, solvedModels: solved.solutions.length}}
 }

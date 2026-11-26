@@ -2,10 +2,11 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { unquoteSop } from './contracts.mjs'
+import { loadVerbFrames } from '../../../lib/verb-frames.mjs'
 import { sopFiles } from './kb/overlays.mjs'
 
 const lexicalTypes = new Set(['k.words.sense', 'w.lang.en.closed', 'w.lang.en.neg', 'w.lang.en.skip',
-  'w.lang.en.cue', 'w.lang.en.fn'])
+  'w.lang.en.cue', 'w.lang.en.fn', 'en.valency.verb'])
 const normalize = (raw) => unquoteSop(raw).toLowerCase().replaceAll('’', "'")
 
 export async function loadAnalysisLexicon(kb, worldPaths = []) {
@@ -59,5 +60,5 @@ export async function loadAnalysisLexicon(kb, worldPaths = []) {
     }
   }
   const gratitude = new Set([...gratitudeLeads].filter((lead) => tailPoliteness.has(lead)))
-  return {classes, negative, negativeEndings, filler, gratitude}
+  return {classes, negative, negativeEndings, filler, gratitude, verbFrames: loadVerbFrames(parse, [...wires.values()])}
 }

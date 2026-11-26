@@ -6,9 +6,14 @@ const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
 const modifierTags = ['determiner', 'adjective', 'numeral', 'ordinal']
 const linkingVerbs = new Set(['be', 'become', 'feel', 'look', 'remain', 'seem', 'smell', 'sound', 'taste'])
+const degreeAdverbs = new Set(['considerably', 'far', 'less', 'more', 'much', 'slightly', 'too', 'very'])
+const directionalAdverbs = new Set(['down', 'out', 'over', 'up', 'upside'])
 const temporalAdverbs = new Set(['now', 'today', 'tomorrow', 'yesterday', 'tonight', 'already'])
 const contentVerbs = new Set(['believe', 'know', 'say', 'think', 'see', 'hear', 'hope', 'notice', 'remember'])
+const infinitivalVerbs = new Set(['agree', 'ask', 'decide', 'expect', 'hope', 'like', 'need', 'offer', 'plan', 'promise', 'refuse', 'try', 'want'])
+const objectControlVerbs = new Set(['ask', 'expect', 'like', 'need', 'want'])
 const quotedArgumentVerbs = new Set(['call', 'label', 'name', 'print', 'quote', 'rename', 'say', 'type', 'write'])
+const measureUnits = new Set(['%', 'percent', 'percentage', 'time', 'times'])
 const clockPrepositions = new Map([['at', 'time'], ['from', 'from'], ['until', 'until'], ['to', 'to']])
 const timeZone = /^(?:UTC|GMT|[ECMP][SD]T|CET|CEST|EET|EEST|BST|IST|JST)$/u
 const numericFrames = new Map([
@@ -39,12 +44,14 @@ function inputTokens(text, kb, lexicon) {
     if (kb.grammar.pronouns.has(lower)) tags.add('pronoun')
     if (kb.grammar.determiners.has(lower)) tags.add('determiner')
     if (kb.grammar.prepositions.has(lower) || lower === 'than') tags.add('preposition')
-    if (kb.grammar.auxiliaries.has(lower)) tags.add('auxiliary')
+    if (kb.grammar.auxiliaries.has(lower) || lower === "let's") tags.add('auxiliary')
     if (kb.grammar.joiners.has(lower)) tags.add('conjunction')
     if (kb.grammar.ordinals.has(lower)) tags.add('ordinal')
     if (particles.has(lower)) tags.add('particle')
     const literal = match.groups.date ? 'date' : match.groups.clock ? 'clock' : match.groups.decimal ? 'decimal' : undefined
-    const numeric = literal || /^\p{N}+$/u.test(surface) || (lower !== 'one' && tags.has('numeral'))
+    const cardinal = kb.grammar.numbers.get(lower)
+    const numeric = literal || /^\p{N}+$/u.test(surface) ||
+      (lower !== 'one' && (tags.has('numeral') || (cardinal && !cardinal.ordinal)))
     if (numeric) tags.add('numeral')
     if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
     if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size)) tags.add('proper')
@@ -52,7 +59,7 @@ function inputTokens(text, kb, lexicon) {
     if (kb.domain.colours.has(lower) || /(?:able|ible|ous|less)$/u.test(lower)) tags.add('adjective')
     const negation = lexicon.negative.has(lower) || [...lexicon.negativeEndings].some((suffix) => lower.endsWith(suffix))
     if (negation && !tags.size) tags.add('adverb')
-    if (temporalAdverbs.has(lower)) tags.add('adverb')
+    if (temporalAdverbs.has(lower) || degreeAdverbs.has(lower)) tags.add('adverb')
     const filler = !temporalAdverbs.has(lower) && (lexicon.filler.has(lower) || kb.isFillerWord(lower))
     const copula = /^(?:am|is|are|was|were|be|been|being)$/.test(lower)
     if (copula) tags.add('verb')
@@ -97,7 +104,10 @@ function predicateCandidates(tokens, start, end) {
     const weight = token.acts.length || token.linking ? 9 : 3
     const beginning = index === start
       || tokens.slice(start, index).every((t) => t.negation || t.filler || t.tags.some((tag) => ['auxiliary', 'adverb'].includes(tag)))
-    candidates.push({index, weight: weight + (beginning ? 9 : 0)})
+    const formalSubject = tokens.slice(start, index).some((item) =>
+      item.tags.includes('determiner') || item.tags.includes('pronoun'))
+    const inflected = token.lemmas.some((lemma) => lemma !== token.lower)
+    candidates.push({index, weight: weight + (beginning ? 14 : formalSubject && inflected ? 7 : 0)})
   }
   return candidates
 }
@@ -162,28 +172,90 @@ function clauseRanges(tokens, discourse) {
       add(index - 1)
       if (clauses.at(-1)?.end === index - 1) clauses.at(-1).terminator = index
       start = index + 1
-    } else if (index > start && (token.tags.includes('conjunction') || token.surface === ',') &&
+    } else if (index > start && (token.tags.includes('conjunction') || token.surface === ',' || token.lower === 'then') &&
       !discourse.has(index + 1)) {
       const left = predicateCandidates(tokens, start, index - 1)
       let next = index + 1
-      while (tokens[next] && (tokens[next].filler || tokens[next].negation || tokens[next].lower === 'then')) next++
-      if (left.length && tokens[next]?.tags.includes('verb')
-          && (tokens[next].acts.length || !tokens[next].tags.includes('noun'))) {
+      const coordinators = [index]
+      while (tokens[next]?.tags.includes('conjunction') || tokens[next]?.lower === 'then') coordinators.push(next++)
+      while (tokens[next] && (tokens[next].filler || tokens[next].negation)) next++
+      const explicitSubject = tokens[next]?.tags.includes('pronoun') &&
+        predicateCandidates(tokens, next, Math.min(tokens.length - 1, next + 4))
+          .some(({index: predicate}) => predicate > next && !hardBoundary.has(tokens[predicate - 1].surface))
+      if (left.length && (explicitSubject || (tokens[next]?.tags.includes('verb') &&
+          (tokens[next].acts.length || !tokens[next].tags.includes('noun'))))) {
         add(index - 1)
         clauses.at(-1).coordinator = index
-        start = index + 1
+        clauses.at(-1).coordinators = coordinators
+        start = coordinators.at(-1) + 1
+        index = coordinators.at(-1)
       }
     }
   }
   add(tokens.length - 1)
   const expanded = []
   for (const clause of clauses) {
+    const infinitival = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end)
+      .map(({index}) => {
+        const lemmas = tokens[index].lemmas
+        if (!lemmas.some((lemma) => infinitivalVerbs.has(lemma)) &&
+            !tokens[index].frames.has('infinitive') && !tokens[index].frames.has('object_infinitive')) return null
+        const window = lemmas.some((lemma) => objectControlVerbs.has(lemma)) ||
+          tokens[index].frames.has('object_infinitive') ? 6 : 1
+        const marker = tokens.slice(index + 1, Math.min(clause.end, index + window) + 1)
+          .find((token) => token.lower === 'to' && tokens[token.index + 1]?.tags.includes('verb'))
+        return marker ? {index, marker: marker.index} : null
+      }).find(Boolean)
+    if (infinitival) {
+      expanded.push({start: clause.start, end: infinitival.marker - 1, complement: expanded.length + 1})
+      expanded.push({...clause, start: infinitival.marker + 1, marker: infinitival.marker})
+      continue
+    }
+    const bare = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
+      tokens[index].frames.has('object_bare_infinitive') &&
+      tokens[index].lemmas.some((lemma) => ['have', 'help', 'let', 'make'].includes(lemma)))
+    if (bare) {
+      const child = predicateCandidates(tokens, bare.index + 2, clause.end).find(({index}) => {
+        const heads = nominalCandidates(tokens, bare.index + 1, index - 1)
+        return heads.some((head) => head.start === bare.index + 1 && head.end === index - 1) &&
+          !tokens[index].tags.includes('adjective') &&
+          (!tokens[index].tags.includes('noun') || (index === clause.end && tokens[index].frames.has('intransitive')) ||
+            tokens[index + 1]?.tags.includes('preposition') ||
+            tokens[index + 1]?.tags.includes('determiner') || tokens[index - 1].tags.includes('pronoun'))
+      })
+      if (child) {
+        expanded.push({start: clause.start, end: child.index - 1, complement: expanded.length + 1})
+        expanded.push({...clause, start: child.index, nonfinite: true})
+        continue
+      }
+    }
+    const relative = !clause.gratitude && tokens.slice(clause.start + 2, clause.end)
+      .find((token) => {
+        if (!['who', 'which', 'that'].includes(token.lower)) return false
+        const host = tokens[token.index - 1]
+        if (!host.tags.some((tag) => tag === 'noun' || tag === 'proper')) return false
+        const parent = predicateCandidates(tokens, clause.start, token.index - 2)
+        const child = predicateCandidates(tokens, token.index + 1, clause.end)
+        return parent.length && child.some(({index}) =>
+          index === token.index + 1 || nominalCandidates(tokens, token.index + 1, index - 1)
+            .some((entity) => entity.start === token.index + 1 && entity.end === index - 1))
+      })
+    if (relative) {
+      expanded.push({start: clause.start, end: relative.index - 1,
+        relative: expanded.length + 1, relativeCue: relative.index})
+      expanded.push({...clause, start: relative.index + 1, relativeClause: true})
+      continue
+    }
     const matrix = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
-      index > clause.start && tokens[index].lemmas.some((lemma) => contentVerbs.has(lemma)))
+      index >= clause.start && (tokens[index].lemmas.some((lemma) => contentVerbs.has(lemma)) ||
+        tokens[index].frames.has('finite_clause')))
     const cue = matrix && tokens[matrix.index + 1]?.lower === 'that' ? matrix.index + 1 : undefined
     const start = matrix ? (cue ?? matrix.index) + 1 : clause.end + 1
     const hasSubject = tokens[start]?.tags.some((tag) => ['determiner', ...nominalTags].includes(tag))
-    const embedded = hasSubject && predicateCandidates(tokens, start, clause.end).find(({index}) => index > start)
+    const embedded = hasSubject && predicateCandidates(tokens, start, clause.end).find(({index}) =>
+      index > start && (cue !== undefined || tokens[index].tags.includes('auxiliary') ||
+        tokens[index - 1].tags.includes('auxiliary') || /(?:s|ed)$/u.test(tokens[index].lower) ||
+        tokens[start].tags.includes('pronoun')))
     if (embedded) {
       expanded.push({start: clause.start, end: matrix.index, complement: expanded.length + 1, complementCue: cue})
       expanded.push({...clause, start})
@@ -199,16 +271,37 @@ function nominalCandidates(tokens, first, last) {
   for (let head = first; head <= last; head++) {
     const token = tokens[head]
     const tags = token.tags.filter((tag) => nominalTags.includes(tag))
-    if (!tags.length) continue
-    let start = head
-    while (start > first && !tokens[start].tags.includes('determiner') &&
-        tokens[start - 1].tags.some((tag) => modifierTags.includes(tag))) start--
-    for (let index = start; index <= head; index++) {
-      const constraints = [disjunction(tags.map((tag) => tokenTag(head, tag)))]
-      for (let modifier = index; modifier < head; modifier++) {
-        constraints.push(disjunction(modifierTags.filter((tag) => tokens[modifier].tags.includes(tag)).map((tag) => tokenTag(modifier, tag))))
-      }
-      entities.push({start: index, end: head, head, tags, constraints})
+    if (!tags.length || degreeAdverbs.has(token.lower) ||
+        (measureUnits.has(token.lower) && tokens[head - 1]?.tags.includes('numeral') &&
+          tokens[head + 1]?.tags.includes('adjective')) ||
+        (token.tags.includes('preposition') && directionalAdverbs.has(token.lower))) continue
+    const constraints = [disjunction(tags.map((tag) => tokenTag(head, tag)))]
+    entities.push({start: head, end: head, head, tags, constraints})
+    if (tags.every((tag) => tag === 'pronoun' || tag === 'quote')) continue
+
+    let phase = 'compound'
+    const prefix = []
+    for (let index = head - 1; index >= Math.max(first, head - 6); index--) {
+      const previous = tokens[index]
+      const after = tokens[index + 1]
+      const adjoiningNominal = previous.tags.some((tag) => tag === 'noun' || tag === 'proper')
+      const boundedByDeterminer = tokens.slice(Math.max(first, index - 4), index).some((token, offset, prefix) =>
+        token.tags.includes('determiner') && prefix.slice(offset + 1).every((item) =>
+          item.tags.some((tag) => ['adjective', 'noun', 'proper'].includes(tag)) && !item.tags.includes('preposition')))
+      const compound = phase === 'compound' && adjoiningNominal &&
+        !previous.filler && !previous.tags.includes('preposition') && !previous.tags.includes('adjective') &&
+        !directionalAdverbs.has(previous.lower) &&
+        (!previous.tags.includes('verb') || previous.tags.includes('proper') ||
+          boundedByDeterminer)
+      const degree = phase === 'modifier' && degreeAdverbs.has(previous.lower) && after.tags.includes('adjective')
+      const modifiers = previous.tags.filter((tag) => modifierTags.includes(tag))
+      const alternatives = compound ? ['noun', 'proper'] : degree ? ['adverb'] : modifiers
+      const available = alternatives.filter((tag) => previous.tags.includes(tag))
+      if (!available.length) break
+      prefix.unshift(disjunction(available.map((tag) => tokenTag(index, tag))))
+      entities.push({start: index, end: head, head, tags, constraints: [...constraints, ...prefix]})
+      if (!compound) phase = 'modifier'
+      if (modifiers.includes('determiner')) break
     }
   }
   return entities
@@ -220,10 +313,12 @@ function prepositionsOf(tokens, clause, kb) {
     let key = ''
     for (let last = first; last <= Math.min(clause.end, first + 5); last++) {
       key += (last === first ? '' : ' ') + tokens[last].lower
-      if (kb.grammar.prepositions.has(key) || key === 'than') {
+      const lateral = /^on the (left|right) of$/u.test(key)
+        ? kb.grammar.prepositions.get(key.replace(/^on/u, 'to')) : undefined
+      if (kb.grammar.prepositions.has(key) || lateral || key === 'than') {
         const previous = prepositions.at(-1)
         if (previous?.start === first) prepositions.pop()
-        const info = kb.grammar.prepositions.get(key) ?? {rel: 'comparison'}
+        const info = kb.grammar.prepositions.get(key) ?? lateral ?? {rel: 'comparison'}
         prepositions.push({start: first, end: last, kind: info.rel ?? 'prepositional', space: info.space})
       }
     }
@@ -260,6 +355,9 @@ function numericLandmark(tokens, prep, clause, predicates, kb) {
 
 export function encodeSyntaxAnalysis(text, kb, lexicon) {
   const tokens = inputTokens(text, kb, lexicon)
+  for (const token of tokens) {
+    token.frames = new Set(token.lemmas.flatMap((lemma) => [...(lexicon.verbFrames?.get(lemma) ?? [])]))
+  }
   const discourse = detachedGratitude(tokens, kb, lexicon.gratitude)
   const clauses = clauseRanges(tokens, discourse)
   for (const {start} of discourse.values()) {
@@ -270,13 +368,13 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
   const block = []
   const push = (formula) => assertions.push(`(assert ${formula})`)
   const prefer = (formula, weight) => assertions.push(`(assert-soft ${formula} :weight ${weight})`)
-  const select = (prefix, clauseIndex, itemIndex, condition, weight) => {
+  const select = (prefix, clauseIndex, itemIndex, condition, weight, structural = true) => {
     const variable = `${prefix}${clauseIndex}_${itemIndex}`
     assertions.push(`(declare-const ${variable} Bool)`)
     push(`(=> ${variable} ${condition})`)
     prefer(variable, weight)
     query.push(variable)
-    block.push(variable)
+    if (structural) block.push(variable)
     return variable
   }
   const atMostOne = (variables) => {
@@ -285,6 +383,10 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
 
   for (const token of tokens) {
     const variable = `p${token.index}`
+    if (token.tags.length === 1) {
+      assertions.push(`(define-fun ${variable} () Int ${allowedTags.indexOf(token.tags[0])})`)
+      continue
+    }
     assertions.push(`(declare-const ${variable} Int)`)
     push(disjunction(token.tags.map((tag) => tokenTag(token.index, tag))))
     prefer(tokenTag(token.index, token.tags[0]), 1)
@@ -321,12 +423,19 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
 
     for (const entity of clause.gratitude ? [] : nominals) {
-      const inverted = (predicate) => tokens[predicate.index].copula && tokens[clause.start].lower === 'where'
+      const inverted = (predicate) => tokens[predicate.index].copula &&
+        clause.start < predicate.index && kb.grammar.whWords.has(tokens[clause.start].lower)
+      const subjectOrder = predicates.filter((predicate) => predicate.index > entity.end &&
+        (predicate.index === entity.end + 1 ||
+          tokens.slice(entity.end + 1, predicate.index).every((token) =>
+            token.negation || token.filler || token.tags.some((tag) => ['auxiliary', 'adverb'].includes(tag))) ||
+          tokens.slice(entity.end + 1, predicate.index).some((token) => token.tags.includes('conjunction')) ||
+          prepositions.some((prep) => prep.start === entity.end + 1 && prep.end < predicate.index)))
+
       const preceding = predicates.filter((predicate) => predicate.index < entity.start && !inverted(predicate) &&
         !(tokens[predicate.index].linking && entity.start === entity.head &&
           tokens[entity.head].tags.includes('adjective') && !tokens[entity.head].tags.includes('proper')))
-      const following = predicates.filter((predicate) => predicate.index > entity.end ||
-        (inverted(predicate) && predicate.index < entity.start))
+      const following = [...subjectOrder, ...predicates.filter((predicate) => inverted(predicate) && predicate.index < entity.start)]
       const weight = 11 + 6 * (entity.end - entity.start)
       const conditions = prepositions.filter((prep) => prep.start <= entity.end)
         .map((prep) => `(not ${prepConstraint(prep)})`)
@@ -353,7 +462,8 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
       const matchingThemes = themes.filter((theme) => theme.start === entity.end + 1)
       if (!matchingThemes.length) continue
       const benefactives = predicates.filter((predicate) => predicate.index === entity.start - 1 &&
-        tokens[predicate.index].lemmas.some((lemma) => kb.grammar.benefactiveVerbs.has(lemma)))
+        (tokens[predicate.index].frames.has('double_object') ||
+          tokens[predicate.index].lemmas.some((lemma) => kb.grammar.benefactiveVerbs.has(lemma))))
       variants(entity, 'indirect', benefactives, 13, [
         disjunction(matchingThemes.map(({variable}) => variable)),
         disjunction(heads.map((tag) => tokenTag(entity.head, tag)))
@@ -392,6 +502,12 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
         variants({...entity, start: head - 1, constraints: [constraint, tokenTag(head - 1, 'adverb')]},
           'complement', preceding.filter((predicate) => predicate.index < head - 1), 8, conditions)
       }
+      if (head > clause.start + 1 && token.tags.includes('adjective') &&
+          measureUnits.has(modifier.lower) && tokens[head - 2].tags.includes('numeral')) {
+        variants({...entity, start: head - 2, constraints: [tokenTag(head, 'adjective'), tokenTag(head - 2, 'numeral')]},
+          'complement', preceding.filter((predicate) => predicate.index < head - 2), 15, conditions)
+      }
+
     }
 
     for (const prep of prepositions) {
@@ -420,11 +536,13 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
         }
         if (!options.length) options.push(addEntity(item, 'prepositional', [], weight, {prep}))
         atMostOne(options.map(({variable}) => variable))
-        if (prep.kind === 'between' && tokens[entity.end + 1]?.tags.includes('conjunction')) {
+        const cue = tokens[entity.end + 1]
+        if (cue?.tags.includes('conjunction')) {
           for (const option of options) {
             for (const member of nominals.filter((nominal) => nominal.start === entity.end + 2)) {
-              addEntity(member, 'prepositional-member', [option.variable,
-                tokenTag(entity.end + 1, 'conjunction')], 10 + 6 * (member.end - member.start), {parent: option})
+              const bonus = prep.kind === 'between' ? 3 : 0
+              addEntity(member, 'prepositional-member', [option.variable, tokenTag(cue.index, 'conjunction')],
+                10 + bonus + 6 * (member.end - member.start), {parent: option})
             }
           }
         }
@@ -442,11 +560,30 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
     for (const variables of coordinatedGroups.values()) atMostOne(variables)
 
+    for (const predicate of predicates) {
+      const {frames} = tokens[predicate.index]
+      const rolePreferences = [
+        ['object', 'transitive', 'intransitive'],
+        ['indirect', 'double_object'],
+        ['complement', 'predicative', undefined, 'object_predicative'],
+        ['prepositional', 'oblique', undefined, 'object_oblique']
+      ]
+      for (const [role, positive, negative, other] of rolePreferences) {
+        const choices = clause.entities.filter((entity) => entity.role === role &&
+          entity.start > predicate.index).map(({variable}) => variable)
+        if (!choices.length) continue
+        const occupiesRole = disjunction(choices)
+        if (frames.has(positive) || frames.has(other)) prefer(`(=> ${predicate.variable} ${occupiesRole})`, 2)
+        else if (negative && frames.has(negative)) prefer(`(=> ${predicate.variable} (not ${occupiesRole}))`, 2)
+      }
+    }
+
     const complements = clause.entities.filter(({role}) => role === 'complement')
     atMostOne(complements.map(({variable}) => variable))
     const occupied = Array.from({length: clause.end - clause.start + 1}, () => [])
     for (const {index, variable} of predicates) occupied[index - clause.start].push(variable)
-    for (const {start, end, variable} of clause.entities) {
+    for (const {start, end, variable, prep} of clause.entities) {
+      if (prep) for (let index = prep.start; index <= prep.end; index++) occupied[index - clause.start].push(variable)
       for (let index = start; index <= end; index++) occupied[index - clause.start].push(variable)
     }
     for (const variables of occupied) atMostOne(variables)
@@ -474,7 +611,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
           if (!evidence.length) return []
           conditions.push(disjunction(evidence.map(({variable}) => variable)))
         }
-        const variable = select(`a${index}_`, clauseIndex, senseIndex++, conjunction(conditions), 1)
+        const variable = select(`a${index}_`, clauseIndex, senseIndex++, conjunction(conditions), 1, false)
         return [{act, variable, conditions, source}]
       })
       predicate.acts = [
@@ -496,7 +633,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     const prior = clauses[index - 1]
     const next = clauses[index]
     if (prior.coordinator === undefined) continue
-    const cue = tokens[prior.coordinator].lower
+    const cue = prior.coordinators.map((position) => tokens[position].lower).find((word) => word === 'and' || word === 'or')
     if (cue !== 'and' && cue !== 'or') continue
     const negativePredicates = prior.predicates.filter((predicate) =>
       tokens.slice(prior.start, predicate.index).some((token) => token.negation)).map(({variable}) => variable)
@@ -520,7 +657,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
 }
 
 export function decodeSyntaxAnalysis(encoded, model) {
-  const tokens = encoded.tokens.map((token) => ({...token, pos: allowedTags[model.get(`p${token.index}`)] ?? 'unknown'}))
+  const tokens = encoded.tokens.map((token) => ({...token, pos: allowedTags[model.get(`p${token.index}`)] ?? token.tags[0]}))
   const clauses = encoded.clauses.map((clause) => {
     const predicate = clause.predicates.find(({variable}) => model.get(variable))
     return {...clause, gratitude: model.get(clause.expression) === true, predicate, action: predicate?.acts.find(({variable}) => model.get(variable)),
