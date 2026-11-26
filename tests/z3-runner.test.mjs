@@ -52,3 +52,30 @@ test('retains the UTF-8 SMT script until asynchronous WASM evaluation completes'
     await runner.close()
   }
 })
+
+test('returns one feasible assignment if Z3 cannot report the objective', async () => {
+  const submitted = []
+  const runner = await createZ3Runner({module: {init: async () => ({
+    Context: class {ptr = 1},
+    Z3: {
+      eval_smtlib2_string(context,script) {
+        if (!script.includes('(check-sat)')) return ''
+        submitted.push(script)
+        return 'sat\n(error "line 8 column 15: check-sat has not been called with latest objectives")\n((x true))'
+      }
+    }
+  })}})
+  try {
+    const draft='(declare-const x Bool)\n(assert x)'
+    const result=await runner.solve(draft,['x'],{topK:2,blockVars:['x']})
+    assert.equal(result.ok,true)
+    assert.deepEqual(result.solutions,[new Map([['x',true]])])
+    assert.deepEqual(result.objectives,[null])
+    assert.equal(submitted.length,1)
+    const missing=await runner.solve(draft,['x','y'])
+    assert.equal(missing.ok,false)
+    assert.equal(missing.status,'error')
+  } finally {
+    await runner.close()
+  }
+})

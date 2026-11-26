@@ -195,6 +195,21 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
       const raw = await evaluate(ctx.ptr, script);
       const parsed = parseSmtValues(raw);
       const diagnostics = String(raw).split(/\r?\n/).filter((line) => /^\s*\(error\b/.test(line));
+      const feasibleWithoutObjective = parsed.status === 'sat' && queryVars.length > 0 &&
+        parsed.objective === null && queryVars.every(name => parsed.values.has(name)) &&
+        diagnostics.length > 0 && diagnostics.every(line =>
+          /: check-sat has not been called with latest objectives"\)\s*$/.test(line));
+      if (feasibleWithoutObjective) {
+        // A complete model is available, but its objective cannot be used
+        // to rank alternatives. Preserve earlier optimized solutions.
+        if (solutions.length === 0) {
+          solutions.push(parsed.values);
+          objectives.push(null);
+        }
+        ctx = new Context(`nl_formaliser_recover_${solveCount}`);
+        initialised = false;
+        break;
+      }
       // The batch still asks for a model after a non-satisfiable check. This
       // diagnostic is expected when the last available proposal was blocked.
       const unexpected = diagnostics.some((line) => parsed.status === 'sat' ||
