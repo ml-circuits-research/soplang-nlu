@@ -23,3 +23,9 @@ We replayed the same raw response through a local pass that removes only surplus
 A single request returned all 256 results in about 225 seconds. Its first version passed 180/256. Most misses were source delimiters or terminal punctuation, including 38 document readings that omitted both quote marks. Replaying the saved responses with exact literal-delimiter recovery and clause punctuation cleanup yielded 244/256 (95.3%) static passes without a second model call.
 
 The first twelve hash-selected static passes included one material role error. In “italicise every diamond in sight”, the circuit attached “in sight” to italicising, where the phrase should restrict the scope of “every diamond”. Counting that case caps plausible coverage at 243/256 (94.9%). Full-corpus conversion remains gated on the user's plausibility threshold.
+
+## 384 source-only inputs in one call
+
+DeepSeek returned all 384 results in 230 seconds without draft circuits. The first static pass accepted 357/384 (93.0%). Drawing had 95/96 passes and calendar and document had 96/96 each. Diagram inputs accounted for 26 of the 27 failures. The leading causes were numeric or demonstrative entities without a grounded head, name, pronoun or literal, followed by double claims of connectors and missing source tokens.
+
+A local replay promoted written numeric amounts and ordinals to literal anchors when a graph had no entity anchor, and standalone demonstratives to pronoun anchors. It recovered seven circuits, bringing static coverage to 364/384 (94.8%) without another model call. We added corresponding worked examples and instructions to the prompt. This pilot falls below the conversion threshold even before plausibility review. A 500-row single-file request now exercises the problematic diagram domain.
