@@ -20,18 +20,18 @@ async function open({knowledgeDir = process.env.SOP_KNOWLEDGE_DIR, schemaPaths, 
       const complete = hasCompleteSource(validate(text, greedy.sop))
       const analyses = complete ? [greedy] : []
       const seen = new Set([greedy.sop])
-      let acceptedAlternatives = 0
+      let completeAlternatives = 0
       for (const {score, tokens: graph} of alternatives.toSorted((a, b) => b.score - a.score)) {
         const reading = projectDependencies(text, graph)
         if (seen.has(reading.sop)) continue
         seen.add(reading.sop)
         if (!hasCompleteSource(validate(text, reading.sop))) continue
         analyses.push({...reading, beamScore: score})
-        if (++acceptedAlternatives === 2) break
+        if (++completeAlternatives === 2) break
       }
       return {analyses: analyses.length ? analyses : [greedy],
         analysisDiagnostics: {...diagnostics, status: 'ok', greedyComplete: complete,
-          dependencyAlternatives: alternatives.length, acceptedAlternatives}}
+          dependencyAlternatives: alternatives.length, completeAlternatives}}
     } catch (error) {
       return {analyses: [], analysisDiagnostics: {...diagnostics, status: 'error', error: error.message}}
     }
