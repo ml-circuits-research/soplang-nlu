@@ -1,7 +1,6 @@
 import {existsSync,readFileSync,writeFileSync} from 'node:fs'
 import {join,resolve} from 'node:path'
-import {gzipSync,gunzipSync} from 'node:zlib'
-import {matchReviewedReferences,nativeReferenceDigest} from '../native-references.mjs'
+import {gunzipSync} from 'node:zlib'
 import {summarizeReview} from './report.mjs'
 
 const [runArg,reviewArg] = process.argv.slice(2)
@@ -10,16 +9,10 @@ const run = resolve(runArg), review = resolve(reviewArg)
 const json = path => JSON.parse(readFileSync(path,'utf8'))
 const env = json(join(run,'environment.json'))
 if (env.evaluatedSchema !== 'nlu') throw Error('Native predictions required.')
-let rows = gunzipSync(readFileSync(join(review,'native-judgments.jsonl.gz'))).toString().trim().split('\n').map(line => JSON.parse(line))
+const rows = gunzipSync(readFileSync(join(review,'native-judgments.jsonl.gz'))).toString().trim().split('\n').map(line => JSON.parse(line))
+if (rows.some(row=>!['all','mixed','none'].includes(row.outcome))) throw Error('Expected a native v3 whole-set evaluation.')
 const referenceFile = join(run,'native-references.json.gz')
-if (existsSync(referenceFile)) {
-  const references = JSON.parse(gunzipSync(readFileSync(referenceFile)))
-  if (nativeReferenceDigest(references) !== env.nativeReferenceSha256) throw Error('Native reference snapshot digest mismatch.')
-  const witnesses = gunzipSync(readFileSync(join(review,'accepted-witnesses.jsonl.gz'))).toString().trim().split('\n').filter(Boolean).map(line=>JSON.parse(line))
-  rows = matchReviewedReferences(rows,witnesses,references)
-  writeFileSync(join(review,'reference-graded.jsonl.gz'),gzipSync(rows.map(row=>JSON.stringify(row)).join('\n')+'\n'))
-}
-const adjudication = json(join(review,'native-summary.json'))
+const adjudication = json(join(run,'source-review-v2','native-summary.json'))
 const {engines} = summarizeReview(rows.map(row => ({...row,diagnostics:[]})))
 const names = ['z3','prolog-worlds','prolog-example-transfer']
 const display = ['Z3','Symbolic Prolog','Prolog example transfer']
@@ -32,14 +25,18 @@ const levelRows = Array.from({length:11}, (_,i) => {
   const level = 'L'+i
   return table([(i<5?'🔴 ':i<8?'🟠 ':'🟢 ')+level,...names.map(name=>pct(engines[name].roundedPercentages[level]))])
 })
-const reviewText = readFileSync(new URL('./native-legend.md',import.meta.url),'utf8')
+const outcomeSummary = json(join(review,'native-summary.json'))
+const reviewText = readFileSync(new URL('./native-v3-legend.md',import.meta.url),'utf8')
 const legend = reviewText.slice(reviewText.indexOf('| Level |'), reviewText.indexOf('\n\n',reviewText.indexOf('| Level |')))
 const report = [
   '# Native NLU paired benchmark',
-  'The three strategies read the same '+env.sample+' frozen text records from WebMeet dataset revision `'+env.revision.slice(0,12)+'`. Generation used '+env.workers+' workers per strategy. Percentages below have one denominator per strategy and are rounded by largest remainder so each column totals 100.0%.',
+  'The three strategies read the same '+env.sample+' frozen text records from WebMeet dataset revision `'+env.revision.slice(0,12)+'`. Generation used '+env.workers+' workers per strategy. Each column has one denominator. The level percentages use largest-remainder rounding.',
+  [table(['Candidate-set outcome',...display]),table(['---','---:','---:','---:']),
+    ...[['none','None acceptable'],['mixed','Some acceptable'],['all','All acceptable']].map(([key,label]) =>
+      table([label,...names.map(name=>outcomeSummary.engines[name].outcomes.percentages[key].toFixed(2)+'%')]))].join('\n'),
   [table(['Level',...display]),table(['---','---:','---:','---:']),...levelRows,table(['**Total**',...names.map(()=>'100.0%')])].join('\n'),
   legend,
-  'Green levels meet the acceptance threshold. Static-only cases receive L0 or L2. The model judge reads the source and complete eligible circuits. Semantic keys are optional. '+(existsSync(referenceFile) ? 'L9 denotes an accepted circuit matching a native annotation frozen before this run.' : 'The frozen CSV references use w.request and provide no directly comparable native gold, so L9 and L10 are unavailable on this run.'),
+  'L7 denotes a mixture of acceptable and unacceptable candidates. Green levels require every public candidate to be acceptable. An empty set is L0. Optional semantic keys are judged when emitted. '+(existsSync(referenceFile) ? 'L9 requires the entire acceptable set to match the frozen native references, independently of order.' : 'The frozen CSV references use w.request and provide no directly comparable native gold, so L9 and L10 are unavailable on this run.'),
   '## Timing and structural checks',
   [table(['Strategy','Wall time','Median request','p95 request','Passed final prefilter']),table(['---','---:','---:','---:','---:','---:']),
     ...timings.map((t,i)=>table([display[i],(t.wallMs/1000).toFixed(2)+' s',t.medianMs.toFixed(2)+' ms',t.p95Ms.toFixed(2)+' ms',pct(100*adjudication.engines[names[i]].modelReviewed/env.sample)]))].join('\n'),
@@ -48,7 +45,7 @@ const report = [
 ]
 if (existsSync(join(run,'candidate-audit/top1-vs-any-summary.json'))) {
   report.push('## Alternatives and independent checks',
-    'The [first-candidate audit](candidate-audit/top1-vs-any-summary.json) compares the first publicly returned candidate with the best whole reading. The [cross-strategy comparison](symbolic-agreement.md) checks graphs up to local identifiers and ordering, and reports the effect of optional semantic enrichment.',
+    'The [v3 set evaluation](source-review-v3/README.md) classifies every message as none, some or all acceptable. The [cross-strategy comparison](symbolic-agreement.md) checks graphs up to local identifiers and ordering, and reports the effect of optional semantic enrichment.',
     'The [blinded reviewer comparison](source-review-v2/terra-comparison/README.md) measures agreement over the same complete candidate groups. The [preliminary filter audit](preliminary-filter-audit.md) replays the source checks on all generated circuits. The [candidate inventory](candidate-audit/candidate-inventory-summary.json) records the stricter independent checks used for native annotation publication.')
 }
 writeFileSync(join(run,'README.md'),report.join('\n\n')+'\n')
