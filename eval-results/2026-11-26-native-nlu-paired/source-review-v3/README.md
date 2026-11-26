@@ -4,9 +4,9 @@ Each strategy was measured on the same **1,861 messages**. The unit is one sourc
 
 | Strategy | ALL | MIXED | NONE |
 | --- | ---: | ---: | ---: |
-| Z3 | 141 (7.58%) | 52 (2.79%) | 1,668 (89.63%) |
-| Prolog | 170 (9.14%) | 11 (0.59%) | 1,680 (90.27%) |
-| Prolog example transfer | 160 (8.60%) | 22 (1.18%) | 1,679 (90.22%) |
+| Z3 | 7.58% | 2.79% | 89.63% |
+| Prolog | 9.14% | 0.59% | 90.27% |
+| Prolog example transfer | 8.60% | 1.18% | 90.22% |
 
 Percentages use the largest remainder method at two decimal places, so each row sums to 100%. The full L0–L10 counts and percentages are in `native-summary.json`. L7 is MIXED and L8 is ALL. L9 requires an acceptable complete list matching the full frozen native reference alternative set, and L10 requires an independently verified correction to defective frozen native references. This cohort predates the native annotations, so both levels remain empty. See the [v3 rubric](../../../tests/benchmark/meaning-review/native-v3-legend.md).
 
