@@ -10,6 +10,7 @@ const uniq = values => [...new Set(values.filter(Boolean))];
 const lexicalWord = /[\p{L}\p{M}\p{N}_]/u;
 const numerals = /^\p{N}+$/u;
 const discourse = new Set(['filler','politeness','interjection']);
+const coordinationKind = kind => kind==='coordination' ? 'conjunctive' : kind==='addition' ? 'additive' : kind;
 
 function nativeInput(text, worlds) {
   const quotes = quotedSpans(text);
@@ -62,6 +63,10 @@ function nativeInput(text, worlds) {
       pronoun:facts.pronoun ?? [], joiner:facts.joiner ?? [],
       auxiliary:Boolean(facts.auxiliary || facts.pos?.includes('auxiliary')),
       copula:Boolean(facts.copula), question:Boolean(facts.question),
+      adverb:Boolean(facts.adverb || facts.pos?.length===1 && facts.pos.includes('adverb') ||
+        facts.pos?.includes('adverb') && /ly$/u.test(surface)),
+      comparative:Boolean(facts.comparative), participle:Boolean(facts.participle),
+      clauseTaker:Boolean(facts.clauseTaker),
       negation:Boolean(facts.negation || worlds.scopeGrammar.predicateNegators.has(surface)),
       skip:Boolean(facts.cues?.some(cue=>discourse.has(cue))),
       word:lexicalWord.test(surface)
@@ -82,7 +87,26 @@ function nativeInput(text, worlds) {
     }
     return entries;
   });
-  return {source,packet:{tokens:source.map(({raw,quoted})=>[raw,quoted]),forms}};
+  const particles=[];
+  for (let start=0;start<source.length;start++) {
+    if (source[start].quoted) continue;
+    for (let at=start+1;at<Math.min(source.length,start+16);at++) {
+      if (source[at].quoted) break;
+      for (let end=at+1;end<=Math.min(source.length,at+4);end++) {
+        if (source[end-1].quoted) break;
+        const tail=source.slice(at,end).map(token=>token.key).join(' ');
+        if (!worlds.referenceCommands.particles.has(tail)) continue;
+        const head=source[start].key;
+        const pair=JSON.stringify([head,tail]);
+        const acts=uniq([...(worlds.referenceCommands.splitTargets.get(pair) ?? []),
+          ...(worlds.referenceCommands.verbs.get(pair) ?? []),
+          ...(worlds.syntaxLexicon(head+' '+tail).action ? lexical(head).acts : [])]);
+        if (acts.length) particles.push([start,at,end,acts]);
+      }
+    }
+  }
+  return {source,packet:{tokens:source.map(({raw,quoted})=>[raw,quoted]),forms,
+    recipientActs:worlds.syntaxRecipientActs,particles}};
 }
 
 function matchingRequest(clause,candidate,span) {
@@ -100,7 +124,7 @@ function possibleAct(clause, request) {
 
 function circuit(text,source,forms,analysis,candidate,attachment) {
   const lines=[];
-  const covered = new Set();
+  const covered = new Set(), semanticEvidence=[];
   let nextEntity = 1, nextRelation = 1, nextCoordination = 1;
   const span = ([at,end]) => at<end ? text.slice(source[at].start,source[end-1].end) : undefined;
   const raw = (name,range) => {
@@ -131,63 +155,106 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
       }
       return raw(role,range);
     };
+    if (kinds.length===1 && !groundedName) semanticEvidence.push({
+      wire:id,key:'kind',sourceSlot:'head',source:span(phrase.head)});
+    if (color.length===1) for (const range of phrase.modifiers) {
+      if (forms[range[0]].some(form=>form.end===range[1] && form.colors.some(([,value])=>value===color[0]))) {
+        semanticEvidence.push({wire:id,key:'color',sourceSlot:'modifier',source:span(range)});
+      }
+    }
     lines.push('@'+id+' nlu.entity'+identity+nominalModifier(phrase.determiner,'determiner')+
       phrase.modifiers.map(range=>nominalModifier(range,'modifier')).join('')+
-      atom('kind',kinds.length===1?kinds[0]:undefined)+atom('color',color.length===1?color[0]:undefined));
+      atom('kind',kinds.length===1 && !groundedName?kinds[0]:undefined)+atom('color',color.length===1?color[0]:undefined));
     return id;
   }
-  for (const {join} of analysis.clauses) {
+  function group(ids, joins) {
+    if (!joins.length) return ids[0];
+    const id='g'+nextCoordination++;
+    for (const join of joins) semanticEvidence.push({wire:id,key:'kind',sourceSlot:'cue',source:span(join.cue)});
+    lines.push('@'+id+' nlu.coordination'+atom('kind',coordinationKind(joins[0].kind))+
+      ids.map(member=>ref('member',member)).join('')+joins.map(join=>raw('cue',join.cue)).join(''));
+    return id;
+  }
+  const clauses=[];
+  function flatten(items) {
+    let previous;
+    for (const node of items) {
+      const id='c'+(clauses.length+1);
+      const entry={node,id,previous};
+      clauses.push(entry);
+      if (node.embedded.length) {
+        entry.embedded='c'+(clauses.length+1);
+        flatten(node.embedded);
+      }
+      previous=id;
+    }
+  }
+  flatten(analysis.clauses);
+  for (const {node:{join}} of clauses) {
     if (!join.length) continue;
     for (let at=join[0];at<join[1];at++) covered.add(at);
   }
-  for (const [index,clause] of analysis.clauses.entries()) {
-    const id='c'+(index+1);
+  for (const {node:clause,id,previous,embedded} of clauses) {
     const request=matchingRequest(clause,candidate,span);
     const act=possibleAct(clause,request);
     const targets=request ? candidate.filter(wire=>wire.type==='w.request.target' &&
       field(wire,'request')==='$'+request.id) : [];
     const subjects=clause.subjects.map(phrase=>entity(phrase));
-    const objectIds=new Map(clause.objects.map(phrase=>[phrase.from,entity(phrase,targets)]));
-    const objects=[...objectIds.values()];
-    const relations=clause.relations.map(item=>[item,entity(item.entity)]);
-    let indirectObject;
-    for (const [item,target] of relations) {
+    const subject=group(subjects,clause.subjectCoordinations);
+    const objects=clause.objects.map(phrase=>entity(phrase,targets));
+    let indirectObject=clause.indirect[0] && entity(clause.indirect[0]);
+    for (const item of clause.relations) {
+      const target=group(item.entities.map(phrase=>entity(phrase)),item.coordinations);
+      const relation='r'+nextRelation++;
+      const relationKind = ()=>semanticEvidence.push({wire:relation,key:'kind',sourceSlot:'cue',source:span(item.cue)});
       const licensed = item.markers.filter(([license])=>license==='*' || act===license);
       const roles = uniq(licensed.map(([,role])=>role).filter(role=>['source','destination','recipient','beneficiary'].includes(role)));
       if (roles.length===1 && ['recipient','beneficiary'].includes(roles[0]) && !indirectObject) {
         indirectObject=target;
-        lines.push('@r'+nextRelation+++' nlu.relation'+atom('kind',roles[0])+ref('from',id)+ref('to',target)+raw('cue',item.cue));
+        relationKind();
+        lines.push('@'+relation+' nlu.relation'+atom('kind',roles[0])+ref('from',id)+ref('to',target)+raw('cue',item.cue));
         continue;
       }
-      const kind = roles.length===1 ? roles[0] : uniq(licensed.map(([, ,relation])=>relation))[0] ?? item.kinds[0];
-      const owner = item.cue[0]===attachment && item.attachment==='ambiguous' && objects.length ?
-        objects.at(-1) : clause.predicate[0]===clause.predicate[1] ? subjects[0] ?? id : id;
-      lines.push('@r'+nextRelation+++' nlu.relation'+atom('kind',kind)+ref('from',owner)+ref('to',target)+raw('cue',item.cue));
+      const kind = item.kinds[0]==='agent' ? 'agent' :
+        roles.length===1 ? roles[0] : uniq(licensed.map(([, ,marker])=>marker))[0] ?? item.kinds[0];
+      const owner = item.attachment==='subject' ? subject ?? id :
+        item.cue[0]===attachment && item.attachment==='ambiguous' && objects.length ?
+          objects.at(-1) : clause.predicate[0]===clause.predicate[1] ? subject ?? id : id;
+      relationKind();
+      lines.push('@'+relation+' nlu.relation'+atom('kind',kind)+ref('from',owner)+ref('to',target)+raw('cue',item.cue));
     }
-    let object=objects[0];
-    if (clause.coordinations.length) {
-      object='g'+nextCoordination++;
-      lines.push('@'+object+' nlu.coordination'+atom('kind',clause.coordinations[0].kind)+
-        objects.map(member=>ref('member',member)).join('')+
-        clause.coordinations.map(coordinate=>raw('cue',coordinate.cue)).join(''));
-    }
+    const object=group(objects,clause.coordinations);
     if (clause.join.length) {
       const [start,end,kind]=clause.join;
       if (kind==='condition') {
-        lines.push('@r'+nextRelation+++' nlu.relation kind=condition'+
-          ref('from',id)+ref('to','c'+index)+raw('cue',[start,end]));
+        const relation='r'+nextRelation++;
+        semanticEvidence.push({wire:relation,key:'kind',sourceSlot:'cue',source:span([start,end])});
+        lines.push('@'+relation+' nlu.relation kind=condition'+
+          ref('from',id)+ref('to',previous)+raw('cue',[start,end]));
       } else {
-        lines.push('@g'+nextCoordination+++' nlu.coordination'+atom('kind',kind)+
-          ref('member','c'+index)+ref('member',id)+raw('cue',[start,end]));
+        const coordination='g'+nextCoordination++;
+        semanticEvidence.push({wire:coordination,key:'kind',sourceSlot:'cue',source:span([start,end])});
+        lines.push('@'+coordination+' nlu.coordination'+atom('kind',coordinationKind(kind))+
+          ref('member',previous)+ref('member',id)+raw('cue',[start,end]));
       }
     }
     const role = clause.predicate[0]===clause.predicate[1] ? 'topic' : 'subject';
     const resultColors=clause.complement.length ? uniq(forms[clause.complement[0]]
       .filter(form=>form.end===clause.complement[1]).flatMap(form=>form.colors.map(([,color])=>color))) : [];
-    const fields=raw('predicate',clause.predicate)+ref(role,subjects[0])+
-      ref('direct_object',object)+ref('indirect_object',indirectObject)+raw('result_complement',clause.complement)+
+    if (act) {
+      semanticEvidence.push({wire:id,key:'act',sourceSlot:'predicate',source:span(clause.predicate)});
+      if (clause.particle.length) semanticEvidence.push({wire:id,key:'act',sourceSlot:'particle',
+        source:span(clause.particle)});
+    }
+    if (clause.negation.length) for (const range of clause.negation) semanticEvidence.push({
+      wire:id,key:'polarity',sourceSlot:'negation',source:span(range)});
+    if (resultColors.length===1) semanticEvidence.push({wire:id,key:'result_color',
+      sourceSlot:'result_complement',source:span(clause.complement)});
+    const fields=raw('predicate',clause.predicate)+ref(role,subject)+
+      ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+raw('result_complement',clause.complement)+
       clause.auxiliary.map(range=>raw('auxiliary',range)).join('')+
       clause.negation.map(range=>raw('negation',range)).join('')+
+      clause.adverb.map(range=>raw('adverb',range)).join('')+raw('particle',clause.particle)+
       raw('question',clause.question)+raw('terminator',clause.terminator)+
       atom('polarity',clause.negation.length?'negative':undefined)+
       atom('result_color',resultColors.length===1 ? resultColors[0] : undefined);
@@ -213,7 +280,7 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     }
     lines.push('@'+id+' nlu.clause form='+clause.form+fields+atom('act',act)+gaps);
   }
-  return lines.join('\n');
+  return {sop:lines.join('\n'),semanticEvidence};
 }
 
 export function createNativeSyntax(worlds, analyse) {
@@ -231,12 +298,13 @@ export function createNativeSyntax(worlds, analyse) {
     }
     const {source,forms,analysis}=await loads.get(text);
     const base=circuit(text,source,forms,analysis);
-    const decorated=candidates.map(candidate=>({...candidate,
-      analysisSop:circuit(text,source,forms,analysis,parse(candidate.sop))}));
+    const enriched=candidates.map(candidate=>circuit(text,source,forms,analysis,parse(candidate.sop)));
+    const decorated=candidates.map((candidate,index)=>({...candidate,
+      analysisSop:enriched[index].sop,analysisEvidence:enriched[index].semanticEvidence}));
     const alternatives=analysis.clauses.filter(clause=>clause.objects.length)
       .flatMap(clause=>clause.relations.filter(relation=>relation.attachment==='ambiguous'))
       .slice(0,4).map(relation=>circuit(text,source,forms,analysis,undefined,relation.cue[0]));
-    const proposals=uniq([base,...alternatives,...decorated.map(candidate=>candidate.analysisSop)]);
-    return {analyses:proposals.map(sop=>({sop})),candidates:decorated};
+    const proposals=new Map([base,...alternatives,...enriched].map(proposal=>[proposal.sop,proposal]));
+    return {analyses:[...proposals.values()],candidates:decorated};
   };
 }

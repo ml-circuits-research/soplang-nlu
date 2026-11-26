@@ -68,7 +68,7 @@ const types = new Set([
   'pro.reader.request_intent_frame','pro.reader.unresolved_destination','w.lang.en.ellipsis.repeat','pro.reader.result_request','pro.reader.standing_position','pro.reader.incidental_modifier','pro.reader.closed_request','pro.reader.reference_command',removalWishType,
   'w.lang.en.lex','k.time.zone','pro.reader.argument_format',
   nativeTargetInventoryType, universalInventoryType, nominalSelectorType, 'pro.reader.universal_agreement', 'pro.reader.set_count', 'pro.reader.collection_question', 'core.type', 'core.word', 'std.schema.world', 'std.schema.kind', 'core.slot',
-  'k.actions.act', 'k.actions.verb', 'k.actions.role', 'k.actions.marking', 'w.request.key', 'pro.reader.target', 'pro.reader.spatial', 'pro.reader.literal', 'pro.reader.preservation', 'pro.reader.tuple',
+  'k.actions.act', 'k.actions.verb', 'k.actions.role', 'k.actions.action', 'k.actions.marking', 'w.request.key', 'pro.reader.target', 'pro.reader.spatial', 'pro.reader.literal', 'pro.reader.preservation', 'pro.reader.tuple',
   'k.layouts.slot','pro.reader.region_form','pro.reader.retention','k.values.direction','w.lang.en.prep.time','pro.reader.motion','pro.reader.measured_motion','pro.reader.owner_inventory','k.values.comparative','pro.reader.transformation','pro.reader.spatial_surface','pro.reader.spatial_modifier','pro.reader.argument_label','pro.reader.source_container','pro.reader.landmark_pair','pro.reader.set_exclusion','pro.reader.creation_role','pro.reader.coordinated_effects','pro.reader.member_action','pro.reader.trailing_discourse','pro.reader.discourse_edge','pro.reader.sentence_addition','pro.reader.benefactive','pro.reader.affected_lead','pro.reader.affected_source','pro.reader.owner_property','pro.reader.argument_sequence','pro.reader.compound_reference','pro.reader.nominal_class', 'pro.reader.fixed_property', 'pro.reader.identity', 'w.lang.en.arrangement', 'pro.reader.arguments', 'pro.reader.question_kind', 'pro.reader.scope_cue', 'pro.reader.instance_code',
   'w.lang.en.aux', 'w.lang.en.copula', 'w.lang.en.wh',
   'w.lang.en.cue', 'w.lang.en.number', 'w.lang.en.ordinal',
@@ -640,6 +640,8 @@ function compile(facts) {
     bodyLeads:{neutral:leadForms('neutral'),nominal:leadForms('nominal'),actionOnly:leadForms('action_only')},
     knownWords, requestKeys, negatives, fillerPhrases, discourse,
     syntaxLexicon:syntaxLexicon(facts,senses),
+    syntaxRecipientActs:[...new Set(facts('k.actions.role').filter(wire=>one(wire,'name')==='recipient')
+      .map(wire=>one(wire,'act')))],
     nominalSelectorRules,
     targetNameWords,
     nominalNumbers:compileNominalNumbers(facts),

@@ -1,6 +1,7 @@
 const wordPattern = /[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu;
 export const lexicalTokens = text => [...text.matchAll(wordPattern)];
 const key = text => lexicalTokens(text).map(([token])=>token.toLowerCase()).join(' ');
+const clausalClasses = new Set(['verb.cognition','verb.communication','verb.perception']);
 const decode = raw => raw?.startsWith('"') ? JSON.parse(raw) : raw;
 const values = (wire,slot) => (wire.attrs[slot] ?? []).map(decode);
 
@@ -19,6 +20,8 @@ export function syntaxLexicon(facts,senses) {
     }
   };
   words('w.lang.en.closed','pos',wire=>values(wire,'class'));
+  words('w.lang.en.closed','adverb',wire=>values(wire,'class').includes('adverb') ? ['adverb'] : []);
+  words('w.lang.en.closed','joiner',wire=>values(wire,'from').includes('w.lang.en.choice') ? ['disjunctive'] : []);
   words('w.lang.en.skip','cues',wire=>values(wire,'class'));
   words('w.lang.en.det','pos',()=>['determiner']);
   words('w.lang.en.pron','pos',()=>['pronoun']);
@@ -32,6 +35,17 @@ export function syntaxLexicon(facts,senses) {
   words('w.lang.en.neg.imperative','negation',()=>['negative']);
   words('w.lang.en.joiner','joiner',wire=>values(wire,'kind'));
   words('w.lang.en.prep','preposition',wire=>values(wire,'rel'));
+  words('w.lang.en.prep.time','preposition',wire=>values(wire,'rel'));
+  words('k.values.comparative','comparative',wire=>values(wire,'degree').includes('comparative') ? ['comparative'] : []);
+  for (const wire of facts('w.lang.en.irregular_form')) {
+    const [form]=values(wire,'form'), [vform]=values(wire,'vform');
+    if (vform) add(form,'pos','verb');
+    if (vform==='past_participle') add(form,'participle','participle');
+  }
+  for (const wire of facts('k.actions.action')) for (const surface of values(wire,'name')) {
+    if (surface.includes(' ')) add(surface,'action','action');
+  }
+  add('than','preposition','than');
   for (const wire of facts('w.lang.en.cue').filter(wire=>values(wire,'on').includes('place'))) {
     for (const lead of values(wire,'lead')) for (const relation of values(wire,'relation')) add(lead,'preposition',relation);
   }
@@ -39,8 +53,33 @@ export function syntaxLexicon(facts,senses) {
   return surface=>{
     if (cache.has(surface)) return cache.get(surface);
     const form = Object.fromEntries(Object.entries(forms.get(surface) ?? {}).map(([slot,bank])=>[slot,[...bank]]));
-    const lexical = senses(surface).flatMap(wire=>values(wire,'pos'));
-    if (lexical.length || form.pos) form.pos = [...new Set([...(form.pos ?? []),...lexical])];
+    const entries=senses(surface);
+    const lexical = entries.flatMap(wire=>values(wire,'pos'));
+    if (entries.some(wire=>values(wire,'supersense').some(sense=>clausalClasses.has(sense)))) {
+      form.clauseTaker=['clauseTaker'];
+    }
+    const combined = new Set([...(form.pos ?? []),...lexical]);
+    if (/^\p{L}{3,}$/u.test(surface)) {
+      const readStems = (stems, allowed) => [...new Set(stems.filter(Boolean)
+        .flatMap(stem=>senses(stem).flatMap(wire=>values(wire,'pos'))))].filter(pos=>allowed.includes(pos));
+      if (surface.endsWith('s') && (!combined.has('noun') || !combined.has('verb'))) {
+        const stems = [surface.slice(0,-1)];
+        if (surface.endsWith('es')) stems.push(surface.slice(0,-2));
+        if (surface.endsWith('ies')) stems.push(surface.slice(0,-3)+'y');
+        for (const pos of readStems(stems,['noun','verb'])) combined.add(pos);
+      }
+      if (surface.endsWith('ed') && !form.participle) {
+        const stem=surface.slice(0,-2);
+        const stems=[stem,surface.slice(0,-1)];
+        if (stem.at(-1)===stem.at(-2)) stems.push(stem.slice(0,-1));
+        if (readStems(stems,['verb']).length) {
+          combined.add('verb');
+          form.participle=['participle'];
+        }
+      }
+    }
+    if (form.comparative) combined.add('adjective');
+    if (combined.size) form.pos = [...combined];
     cache.set(surface,form);
     return form;
   };
