@@ -16,3 +16,11 @@ test('preserves native candidates and attaches syntax to the original text', asy
     await reader.close()
   }
 })
+
+import {prolog} from '../strategies/prolog/index.mjs'
+
+test('symbolic Prolog refuses model options before opening the engine', async () => {
+  for (const option of [{modelPath:'examples.json'}, {worldsOnly:false}, {model:{examples:[]}}]) {
+    await assert.rejects(createReader({strategy:prolog,...option}), /Unsupported symbolic Prolog options/)
+  }
+})

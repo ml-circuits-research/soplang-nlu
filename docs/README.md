@@ -61,7 +61,7 @@ try {
 }
 ```
 
-For Prolog import prolog from strategies/prolog/index.mjs and supply its engineDirectory. The adapter defaults to worlds-only operation. For experiments with a trained reader, provide an explicit modelPath. Its adapter accepts modelPath, worldsOnly, languageFrames and evidence. Its underlying loader currently uses the installed knowledge snapshot and SOP_WORLDS overlays. Supply analyseSyntax from createSyntaxReader when syntax evidence is required.
+For Prolog import prolog from strategies/prolog/index.mjs and supply its engineDirectory. The adapter always opens the worlds-only reader. Its only engine options are languageFrames and evidence. Passing a model or a model path raises a configuration error before opening the engine. Its underlying loader currently uses the installed knowledge snapshot and SOP_WORLDS overlays. Supply analyseSyntax from createSyntaxReader when syntax evidence is required.
 
 ## Replaying the legacy engines
 
