@@ -59,3 +59,15 @@ test('direct projection grounds interrogative and subordinate cues without exter
     'SCONJ/WRB/advmod/3', 'SCONJ/IN/mark/3', 'DET/DT/det/3', 'NOUN/NN/ROOT/3', 'PUNCT/./punct/3'
   ]), /form=fragment .*question="How about" topic=\$n2/)
 })
+
+test('a verbal complement separated by a semicolon stays an independent assertion', async () => {
+  const {separateWrittenClauses} = await import('../strategies/spacy-direct/clause-boundaries.mjs')
+  const tokens = [
+    ['it','PRON','PRP','nsubj',1], ['broke','VERB','VBD','ccomp',3], [';','PUNCT',':','punct',3],
+    ['remove','VERB','VB','ROOT',3], ['it','PRON','PRP','dobj',3]
+  ].map(([value,pos,tag,dep,head],index)=>({index,value,lower:value,pos,tag,dep,head}))
+  separateWrittenClauses(tokens)
+  assert.equal(tokens[1].dep,'ROOT')
+  assert.equal(tokens[1].head,1)
+  assert.equal(tokens[2].head,1)
+})

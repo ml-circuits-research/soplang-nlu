@@ -1,4 +1,5 @@
-import {repairClauseBoundaries} from './clause-boundaries.mjs'
+import {repairClauseBoundaries, separateQuestionRestarts, separateWrittenClauses} from './clause-boundaries.mjs'
+import {repairPredicateAttachments} from './predicate-attachments.mjs'
 import {repairNominalRoles} from './nominal-roles.mjs'
 
 const evidencePattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|(?<![\p{L}\p{N}])‘[^’\n]*’(?![\p{L}\p{N}])|(?<![\p{L}\p{N}])'(?:\\.|[^'\\\n])+'(?![\p{L}\p{N}])|\d{4}-\d{2}-\d{2}(?![\p{L}\p{M}\p{N}_])|\d{1,2}:\d{2}(?::\d{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:\d+\.\d+|\.\d+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}]+(?:[-‐‑][\p{L}\p{M}\p{N}]+)+|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu
@@ -117,6 +118,9 @@ export function projectDependencies(text, dependencies) {
   const tokens = align(text, dependencies)
   const nominalPairs = repairNominalRoles(tokens) ?? []
   repairClauseBoundaries(tokens)
+  const restarted = separateQuestionRestarts(tokens)
+  const writtenSequences = separateWrittenClauses(tokens)
+  repairPredicateAttachments(tokens)
   const children = Map.groupBy(tokens.filter((token) => token.head !== token.index), (token) => token.head)
   const under = (token) => children.get(token.index) ?? []
   // Generic dependency arcs often connect consecutive imperatives in
@@ -345,6 +349,11 @@ export function projectDependencies(text, dependencies) {
     return result
   }
 
+  for (const {left,right,cue} of writtenSequences) {
+    const sequence = make('coordination',cue[0],['kind=sequence',
+      ref('member',clauses.get(left.index)),ref('member',clauses.get(right.index))])
+    literal(sequence,'cue',cue,true)
+  }
   for (const [index,{governor,comma,join}] of prefixTopics) {
     const first = clauses.get(index)
     const next = clauses.get(governor.index)
@@ -451,6 +460,7 @@ export function projectDependencies(text, dependencies) {
       : questionEnding || question.length || inversion ? 'interrogative'
       : grammaticalSubject || !['VB', 'VBP'].includes(token.tag) ? 'declarative' : 'imperative'
     node.fields.push('form=' + form)
+    if (restarted.has(token.index)) node.fields.push('completion=interrupted')
     if (final) {
       const interior = ['—',':'].includes(final.value) && final.index + 1 < tokens.length && !boundaryMarks.has(final)
       literal(node, interior ? 'separator' : 'terminator', endingSpan, interior)
@@ -474,6 +484,7 @@ export function projectDependencies(text, dependencies) {
     }
     if (relativizer) attachments.set(token.index, relativizer)
     for (const part of parts) {
+      if (part.dep === 'restart_mark') literal(node, 'marker', [part])
       if (joiningAdverbs.has(part) || part === marker || question.includes(part) || part === relativizer || part === locationCue || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
       const reportedQuote = part.quoted && ['ccomp', 'xcomp', 'dep'].includes(part.dep) && reportingVerbs.has(token.lemma)
       const recipient = ['dobj', 'obj'].includes(part.dep) && recipientComplementVerbs.has(token.lemma) &&

@@ -62,3 +62,5 @@ first conjunct unspecified.
 A quantified prepositional relation can point through `measure` to an entity with its written unit and quantity. For example, “two inches from the edge” supplies a distance measure on the `from` relation.
 
 A coordination may group two or more relations of the same syntactic construction. Each relation retains its own endpoints and can carry a written negation. In “near Ben but not behind Jo”, only the second relation has a negation. The member types of a coordination used in a role must be permitted by that role's schema.
+
+A clause can carry `completion=interrupted` when a speaker begins a frame and restarts with a separately grounded clause. The model retains the overt auxiliary or marker, its participant, and the following question.
