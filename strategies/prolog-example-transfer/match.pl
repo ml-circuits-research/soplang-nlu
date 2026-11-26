@@ -24,7 +24,7 @@ matching_template(Query, _{index:Index, bounds:Bounds}) :-
     member(Bounds, Matches).
 
 match_pattern([], [], _, _, []).
-match_pattern([Literal|Pattern], [[Literal,_,_,_]|Tokens], Text, Index, [[Index,Next]|Bounds]) :-
+match_pattern([Literal|Pattern], [[_,Literal,_,_]|Tokens], Text, Index, [[Index,Next]|Bounds]) :-
     string(Literal), !,
     Next is Index + 1,
     match_pattern(Pattern, Tokens, Text, Next, Bounds).

@@ -61,7 +61,7 @@ function compileModel(model) {
 }
 
 function viable(indexed, input) {
-  const keys = input.map(([key]) => key)
+  const keys = input.map(([, raw]) => raw)
   const from = keys[0], to = keys.at(-1)
   const eligible = []
   for (const key of new Set(keys)) {

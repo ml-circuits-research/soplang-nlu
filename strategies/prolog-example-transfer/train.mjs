@@ -3,7 +3,7 @@ import {openKnowledge, withKnowledge} from '../prolog/src/knowledge.mjs'
 import {tokens} from '../prolog/src/lexicon.mjs'
 import {loadWorlds} from '../prolog/src/worlds.mjs'
 
-export const modelVersion = 1
+export const modelVersion = 2
 
 const numbers = /^[+-]?\d+(?:\.\d+)?$/u
 const dates = /^\d{4}-\d{2}-\d{2}$/u
@@ -15,11 +15,11 @@ const decode = raw => raw?.startsWith('"') ? JSON.parse(raw) : raw
 const field = (wire, key) => decode(wire.attrs[key]?.[0])
 
 function uniqueRange(input, value, [start, end]) {
-  const keys = tokens(value).map(token => token[0])
+  const keys = tokens(value).map(([, raw]) => raw)
   if (!keys.length) return
   let range
   for (let i = start; i + keys.length <= end; i++) {
-    if (!keys.every((key, j) => input[i + j][0] === key)) continue
+    if (!keys.every((key, j) => input[i + j][1] === key)) continue
     if (range) return
     range = [i, i + keys.length]
   }
@@ -84,7 +84,7 @@ function induce(input, text, wires, openAttributes) {
   for (const {range, kind} of ordered) {
     const [start, end] = range
     for (; i < start; i++) {
-      pattern.push(input[i][0])
+      pattern.push(input[i][1])
       boundaries.set(i + 1, pattern.length)
     }
     const slot = payloads.length
@@ -94,7 +94,7 @@ function induce(input, text, wires, openAttributes) {
     i = end
   }
   for (; i < input.length; i++) {
-    pattern.push(input[i][0])
+    pattern.push(input[i][1])
     boundaries.set(i + 1, pattern.length)
   }
   const lexicalAnchors = pattern.filter(part => typeof part === 'string' && word.test(part))
@@ -113,7 +113,6 @@ function induce(input, text, wires, openAttributes) {
     widths: ordered.map(({range}) => range[1] - range[0])}
 }
 
-const normalize = text => text.normalize('NFKC').toLowerCase().trim().replace(/\s+/gu, ' ')
 const widthLimits = {number: 6, date: 5, time: 5, quoted: 24, phrase: 12}
 
 export async function trainExampleTransfer(rows, {
@@ -137,7 +136,7 @@ export async function trainExampleTransfer(rows, {
           row.references.some(sop => typeof sop !== 'string')) {
         throw new TypeError('Expected training rows with text and an array of SOP reference strings')
       }
-      const textKey = normalize(row.text)
+      const textKey = row.text
       texts.add(textKey)
       const distinctReferences = new Set(row.references)
       training.inputCircuits += row.references.length
