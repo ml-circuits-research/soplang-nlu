@@ -111,6 +111,26 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       assert.doesNotMatch(landmark.sop, /@c2 nlu.clause/)
     })
 
+    await t.test('grounds genitive owners as separate entities with exact source evidence', async () => {
+      const [common] = await analyse("Move the old teacher's desk.")
+      assert.match(common.sop, /@p1 nlu.entity determiner="the" modifier="old" head="teacher's"/)
+      assert.match(common.sop, /@e1 nlu.entity possessor=\$p1 head="desk"/)
+      assert.match(common.sop, /predicate="Move".*direct_object=\$e1/)
+      assert.deepEqual(common.unresolved, [])
+      const [proper] = await analyse('Find Alice’s red notebook.')
+      assert.match(proper.sop, /@p1 nlu.entity name="Alice’s"/)
+      assert.match(proper.sop, /@e1 nlu.entity possessor=\$p1 modifier="red".*head="notebook"/)
+      assert.deepEqual(proper.unresolved, [])
+      const [ordinary] = await analyse("Let's change the chart.")
+      assert.doesNotMatch(ordinary.sop, /possessor=/)
+    })
+
+    await t.test('uses high-confidence lexical evidence for otherwise unknown adjectives', async () => {
+      const [reading] = await analyse('Because she was unhappy, I changed the plan.')
+      assert.match(reading.sop, /predicate="was".*result_complement="unhappy"/)
+      assert.deepEqual(reading.unresolved, [])
+    })
+
     await t.test('grounds licensed particles and embedded clause heads', async () => {
       const [phrasal] = await analyse('Take it apart.')
       assert.match(phrasal.sop, /predicate="Take" act=take_apart.*particle="apart"/)

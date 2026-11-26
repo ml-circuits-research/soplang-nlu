@@ -40,11 +40,26 @@ function emitAnalysis(decoded, kb, objective) {
     const id = 'e' + index
     const head = tokens[item.head]
     const fields = []
+    const contentStart = item.contentStart ?? item.start
+    if (item.possessor) {
+      const owner = item.possessor
+      const possessor = 'p' + index
+      const possessorFields = []
+      if (owner.determiner !== undefined) possessorFields.push(quote('determiner', owner.determiner))
+      for (let modifier = owner.start; modifier < owner.head; modifier++) {
+        if (modifier !== owner.determiner) possessorFields.push(quote('modifier', modifier))
+      }
+      const key = tokens[owner.head].genitive === 'proper' ? 'name' : 'head'
+      // The source tokenizer treats a fused genitive as one literal.
+      possessorFields.push(quote(key, owner.head))
+      lines.push(wire(possessor, 'entity', possessorFields))
+      fields.push(refField('possessor', possessor))
+    }
     let headStart = item.head
     if (head.pos === 'proper') {
-      while (headStart > item.start && tokens[headStart - 1].pos === 'proper') headStart--
+      while (headStart > contentStart && tokens[headStart - 1].pos === 'proper') headStart--
     }
-    for (let modifier = item.start; modifier < headStart; modifier++) {
+    for (let modifier = contentStart; modifier < headStart; modifier++) {
       if (modifier === question) continue
       const token = tokens[modifier]
       const key = token.pos === 'determiner' && !fields.some((field) => field.startsWith('determiner=')) ? 'determiner'
@@ -145,7 +160,8 @@ function emitAnalysis(decoded, kb, objective) {
     }
     if (clause.adjunct !== undefined) {
       const {kind, start, end} = clause.adjunctCue
-      lines.push(wire('rel' + ++relationCount, 'relation', ['kind=' + kind,
+      const relation = kind === 'consequence' && form === 'imperative' ? 'purpose' : kind
+      lines.push(wire('rel' + ++relationCount, 'relation', ['kind=' + relation,
         refField('from', id), refField('to', 'c' + (clause.adjunct + 1)), quote('cue', start, end)]))
       if (clause.adjunctSeparator !== undefined) fields.push(quote('separator', clause.adjunctSeparator))
     }

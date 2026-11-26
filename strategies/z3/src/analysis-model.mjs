@@ -5,6 +5,7 @@ const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner
   'auxiliary', 'preposition', 'conjunction', 'numeral', 'ordinal', 'particle', 'interjection', 'quote']
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
 const modifierTags = ['determiner', 'adjective', 'numeral', 'ordinal']
+const openClassTags = new Set(['noun', 'verb', 'adjective', 'adverb'])
 const monthNames = new Set(['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
   'september', 'october', 'november', 'december'])
 const modalAuxiliaries = new Set(['can', 'could', 'may', 'might', 'must', 'shall', 'should', 'will', 'would'])
@@ -32,7 +33,7 @@ const adjunctCues = [
   ['provided that', 'condition'], ['unless', 'condition'], ['if', 'condition'],
   ['because', 'reason'], ['although', 'concession'], ['though', 'concession'],
   ['after', 'time'], ['before', 'time'], ['once', 'time'], ['until', 'time'],
-  ['when', 'time'], ['while', 'time']
+  ['when', 'time'], ['while', 'time'], ['so', 'consequence']
 ].map(([words, kind]) => ({words: words.split(' '), kind}))
 
 function adjunctCueAt(tokens, at, end = tokens.length - 1) {
@@ -45,6 +46,7 @@ const interrogativeComplementVerbs = new Set(['ask', 'check', 'decide', 'discove
   'learn', 'see', 'test', 'verify', 'wonder'])
 const coordinatingCues = new Set(['and', 'or', 'but', 'nor', 'yet', 'then'])
 const hardBoundary = new Set(['.', ':', '!', '?', ';', '—'])
+const genitiveStem = /^(?<stem>[\p{L}\p{M}\p{N}]+)(?:'s|’s)$/iu
 const tokenTag = (index, tag) => `(= p${index} ${allowedTags.indexOf(tag)})`
 const disjunction = (clauses) => clauses.length ? `(or ${clauses.join(' ')})` : 'false'
 const conjunction = (clauses) => clauses.length ? `(and ${clauses.join(' ')})` : 'true'
@@ -58,6 +60,14 @@ function inputTokens(text, kb, lexicon) {
     const lower = surface.toLowerCase().replaceAll('’', "'")
     const tags = new Set(lexicon.classes.get(lower) ?? [])
     const lemmas = lemmatiseWord(lower, kb)
+    const owner = genitiveStem.exec(surface)?.groups.stem
+    const ownerKey = owner?.toLowerCase()
+    const possibleOwner = owner && lower !== "let's" && !kb.grammar.pronouns.has(ownerKey) &&
+      !kb.grammar.whWords.has(ownerKey)
+    const nounOwner = possibleOwner && (lexicon.classes.get(ownerKey)?.has('noun') ||
+      lexicon.posUsage.get(ownerKey)?.noun > 0)
+    const namedOwner = possibleOwner && /^\p{Lu}/u.test(owner)
+    const genitive = nounOwner ? 'noun' : namedOwner ? 'proper' : undefined
     for (const stem of lemmas) {
       for (const tag of lexicon.classes.get(stem) ?? []) {
         if (tag === 'verb' || tag === 'noun' || tag === 'adjective') tags.add(tag)
@@ -79,6 +89,13 @@ function inputTokens(text, kb, lexicon) {
     if (numeric) tags.add('numeral')
     if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
     if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size || monthNames.has(lower))) tags.add('proper')
+    if (![...tags].some((tag) => openClassTags.has(tag))) {
+      // WordNet can supply a category for otherwise unknown words. Keep the
+      // existing grammar categories for multiply attested surface forms.
+      const attested = Object.entries(lexicon.posUsage.get(lower) ?? {})
+        .filter(([tag, count]) => count > 0 && openClassTags.has(tag))
+      if (attested.length === 1) tags.add(attested[0][0])
+    }
     if (kb.domain.shapes.has(lower) || kb.catalog.familyWords.has(lower)) tags.add('noun')
     if (kb.domain.colours.has(lower) || /(?:able|ible|ous|less)$/u.test(lower)) tags.add('adjective')
     const negation = lexicon.negative.has(lower) || [...lexicon.negativeEndings].some((suffix) => lower.endsWith(suffix))
@@ -98,7 +115,7 @@ function inputTokens(text, kb, lexicon) {
     }
     const linking = copula || lemmas.some((lemma) => linkingVerbs.has(lemma))
     return {surface, index, start, lower, end: start + surface.length, tags: allowed.length ? allowed : ['unknown'],
-      acts, copula, linking, negation, filler, lemmas, literal}
+      acts, copula, linking, negation, filler, lemmas, literal, genitive}
   }).map((token, index, tokens) => {
     if (index > 0 && token.tags[0] === 'unknown' && /^\p{L}+$/u.test(token.surface) &&
         tokens[index - 1].tags.includes('determiner')) {
@@ -246,12 +263,18 @@ function splitAtCues(tokens, discourse, nominalsOf) {
 
 function finiteAdjunctPredicates(tokens, start, end, nominalsOf) {
   return predicateCandidates(tokens, start, end).filter(({index}) => {
-    const finite = !tokens[index].baseVerb || tokens[index].copula ||
-      tokens.slice(start, index).some((word) => word.tags.includes('auxiliary'))
-    return nominalsOf(start, index - 1).some((entity) => entity.start === start &&
-      (finite || tokens[entity.head].tags.includes('pronoun') || /s$/u.test(tokens[entity.head].lower)) &&
-      tokens.slice(entity.end + 1, index).every((word) => word.tags.includes('auxiliary') ||
-        word.negation || word.tags.includes('adverb')))
+    const predicate = tokens[index]
+    const auxiliary = tokens.slice(start, index).some((word) => word.tags.includes('auxiliary'))
+    if (!auxiliary && !predicate.baseVerb && predicate.lower.endsWith('ing')) return false
+    const inflected = !predicate.baseVerb || predicate.copula || auxiliary
+    return nominalsOf(start, index - 1).some((entity) => {
+      const subject = tokens[entity.head]
+      const permitsBare = ['i', 'you', 'we', 'they'].includes(subject.lower) ||
+        subject.tags.includes('noun') && !subject.tags.includes('proper') && /s$/u.test(subject.lower)
+      return entity.start === start && (inflected || permitsBare) &&
+        tokens.slice(entity.end + 1, index).every((word) => word.tags.includes('auxiliary') ||
+          word.negation || word.tags.includes('adverb'))
+    })
   }).map(({index}) => index)
 }
 
@@ -265,7 +288,7 @@ function adjunctPlans(tokens, clause, nominalsOf) {
     const separator = initial
       ? tokens.slice(cue.end + 1, clause.end).find((word) => word.surface === ',')?.index
       : tokens[index - 1]?.surface === ',' ? index - 1 : undefined
-    if (initial && separator === undefined) continue
+    if (initial && (separator === undefined || cue.kind === 'consequence')) continue
     const subordinateStart = cue.end + 1
     const subordinateEnd = initial ? separator - 1 : clause.end
     const matrixStart = initial ? separator + 1 : clause.start
@@ -381,7 +404,29 @@ function nominalCandidates(tokens, first, last) {
           tokens[head + 1]?.tags.includes('adjective')) ||
         (token.tags.includes('preposition') && directionalAdverbs.has(token.lower))) continue
     const constraints = [disjunction(tags.map((tag) => tokenTag(head, tag)))]
-    entities.push({start: head, end: head, head, tags, constraints})
+    const add = (start, conditions) => {
+      entities.push({start, end: head, head, tags, constraints: conditions})
+      const owner = tokens[start - 1]
+      if (start <= first || !owner.genitive || tokens[start].tags.includes('determiner')) return
+      let ownerStart = owner.index
+      let determiner
+      const ownerConstraints = []
+      if (owner.genitive === 'noun') {
+        while (ownerStart > first && owner.index - ownerStart < 4 &&
+               tokens[ownerStart - 1].tags.includes('adjective')) {
+          ownerStart--
+          ownerConstraints.push(tokenTag(ownerStart, 'adjective'))
+        }
+        if (ownerStart > first && tokens[ownerStart - 1].tags.includes('determiner')) {
+          determiner = --ownerStart
+          ownerConstraints.push(tokenTag(ownerStart, 'determiner'))
+        }
+      }
+      entities.push({start: ownerStart, end: head, head, tags, contentStart: start,
+        possessor: {start: ownerStart, head: owner.index, determiner},
+        constraints: [...conditions, ...ownerConstraints]})
+    }
+    add(head, constraints)
     if (tags.every((tag) => tag === 'pronoun' || tag === 'quote' || tag === 'numeral')) continue
 
     let phase = 'compound'
@@ -393,7 +438,7 @@ function nominalCandidates(tokens, first, last) {
       const boundedByDeterminer = tokens.slice(Math.max(first, index - 4), index).some((token, offset, prefix) =>
         token.tags.includes('determiner') && prefix.slice(offset + 1).every((item) =>
           item.tags.some((tag) => ['adjective', 'noun', 'proper'].includes(tag)) && !item.tags.includes('preposition')))
-      const compound = phase === 'compound' && adjoiningNominal &&
+      const compound = phase === 'compound' && adjoiningNominal && !previous.genitive &&
         !previous.filler && !previous.tags.includes('preposition') && !previous.tags.includes('adjective') &&
         !directionalAdverbs.has(previous.lower) &&
         (!previous.tags.includes('verb') || previous.tags.includes('proper') ||
@@ -404,7 +449,7 @@ function nominalCandidates(tokens, first, last) {
       const available = alternatives.filter((tag) => previous.tags.includes(tag))
       if (!available.length) break
       prefix.unshift(disjunction(available.map((tag) => tokenTag(index, tag))))
-      entities.push({start: index, end: head, head, tags, constraints: [...constraints, ...prefix]})
+      add(index, [...constraints, ...prefix])
       if (!compound) phase = 'modifier'
       if (modifiers.includes('determiner')) break
     }
@@ -634,7 +679,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon, {compact = false} = {}) 
       const following = [...subjectOrder, ...predicates.filter((predicate) => inverted(predicate) && predicate.index < entity.start)]
       const clippedModifier = tokens[entity.head].tags.includes('adjective') &&
         nominals.some((longer) => longer.start === entity.start && longer.head === entity.head + 1)
-      const weight = 11 + 6 * (entity.end - entity.start) - (clippedModifier ? 5 : 0)
+      const weight = 11 + 6 * (entity.end - entity.start) + (entity.possessor ? 2 : 0) - (clippedModifier ? 5 : 0)
       const conditions = prepositions.filter((prep) => prep.start <= entity.end)
         .map((prep) => `(not ${prepConstraint(prep)})`)
       const pronoun = kb.grammar.pronouns.get(tokens[entity.head].lower)
