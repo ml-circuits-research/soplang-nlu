@@ -6,7 +6,7 @@ import {createAnalysisValidator,hasCompleteSource} from '../../../lib/check-anal
 import {neuroSelector} from '../../../strategies/neuro-selector/index.mjs'
 import {openGraphWorker} from '../../../strategies/distilbert/index.mjs'
 import {encodeGraph} from '../../../strategies/distilbert/graph.mjs'
-import {directedGraph,sameDirectedGraph} from '../../../tests/benchmark/meaning-review/compare-symbolic-graphs.mjs'
+import {directedGraph,sameDirectedGraph} from '../../../lib/directed-graph.mjs'
 
 async function open({knowledgeDir,python,modelPath,device='cpu',...options}) {
   const {parse}=await import(pathToFileURL(join(resolve(knowledgeDir),'tools/sopworld/sopworld.mjs')))
