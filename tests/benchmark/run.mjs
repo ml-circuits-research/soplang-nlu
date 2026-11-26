@@ -4,6 +4,7 @@ import {mkdirSync,writeFileSync,readFileSync} from 'node:fs'
 import {resolve,join} from 'node:path'
 import {pathToFileURL} from 'node:url'
 import {gzipSync,gunzipSync} from 'node:zlib'
+import {compareAlternatives} from '../../lib/compare-alternatives.mjs'
 import {Worker} from 'node:worker_threads'
 import {cpus,platform,arch} from 'node:os'
 import {fileURLToPath} from 'node:url'
@@ -42,19 +43,19 @@ if (replay) {
   save('environment.json',metadata)
   writeFileSync(join(dir,'sample.json.gz'),gzipSync(JSON.stringify(rows.map(({score,...r})=>r))))
 }
-for(const strategy of replay ? ['prolog-worlds'] : ['z3','prolog','prolog-worlds']){
+for(const strategy of replay ? ['prolog-worlds'] : ['z3','prolog-worlds']){
   if (metadata.strategies[strategy]) throw Error('Configuration already recorded: '+strategy)
   const repo=join(base,(strategy==='prolog-worlds'?'prolog':strategy)+'-formaliser')
   const entry=join(repo,'src/reader.mjs')
   const options=strategy==='z3'?{topK:8,knowledgeDir:join(base,'sop-knowledge-worlds')}:{evidence:true,worldsOnly:strategy==='prolog-worlds'}
   const config={source:git(repo,'rev-parse','HEAD').trim(),workingDiffSha256:hash(git(repo,'diff','HEAD')),options}
-  if(strategy==='prolog') config.modelSha256=hash(readFileSync(join(repo,'.cache/model.json')))
+
   metadata.strategies[strategy]=config
   save('environment.json',metadata)
   const start=performance.now()
   console.log(strategy,'starting',rows.length,'requests',dir)
   const batches=await Promise.all(Array.from({length:Math.min(workers,rows.length)},(_,index)=>new Promise((ok,fail)=>{
-    const worker=new Worker(new URL('./worker.mjs',import.meta.url),{workerData:{entry,options,rows:rows.filter((_,i)=>i%workers===index)}})
+    const worker=new Worker(new URL('./worker.mjs',import.meta.url),{workerData:{entry,options,rows:rows.filter((_,i)=>i%workers===index).map(({id,text})=>({id,text}))}})
     let data
     worker.on('message',result=>{data=result})
     worker.on('error',fail)
@@ -62,6 +63,8 @@ for(const strategy of replay ? ['prolog-worlds'] : ['z3','prolog','prolog-worlds
   })))
   const wallMs=performance.now()-start
   const records=batches.flatMap(b=>b.records)
+  const gold = new Map(rows.map(r => [r.id,r.references]))
+  for (const row of records) row.comparison = compareAlternatives(gold.get(row.id),row.candidates)
   const latency=records.map(r=>r.latencyMs).sort((a,b)=>a-b)
   const summary={wallMs,requestsPerSecond:records.length*1000/wallMs,medianMs:latency[Math.ceil(records.length*.5)-1],p95Ms:latency[Math.ceil(records.length*.95)-1],errors:records.filter(r=>r.error).length,withExactMatch:records.filter(r=>r.comparison.matched).length,workerTiming:batches.map(b=>b.timing)}
   save(strategy+'.json',summary)
