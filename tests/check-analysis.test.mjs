@@ -128,11 +128,11 @@ test('loads explicitly installed analysis extensions without permitting slot ove
   const directory = await mkdtemp(join(tmpdir(), 'nlu-schema-'))
   try {
     const schema = join(directory, 'extension.sop')
-    await writeFile(schema, '@x core.slot of=nlu.clause key=adverb kind=string\n')
+    await writeFile(schema, '@x core.slot of=nlu.clause key=aspect_marker kind=string\n')
     const validateExtension = await createAnalysisValidator({knowledgeDir, schemaPaths: [schema]})
-    const sop = '@c nlu.clause form=imperative predicate="Move" adverb="slowly"'
-    assert.equal(validate('Move slowly', sop).schemaValid, false)
-    assert.equal(validateExtension('Move slowly', sop).valid, true)
+    const sop = '@c nlu.clause form=imperative predicate="Move" aspect_marker="now"'
+    assert.equal(validate('Move now', sop).schemaValid, false)
+    assert.equal(validateExtension('Move now', sop).valid, true)
     await writeFile(schema, '@x core.slot of=nlu.clause key=predicate kind=atom\n')
     await assert.rejects(createAnalysisValidator({knowledgeDir, schemaPaths: [schema]}), /Duplicate analysis slot/)
   } finally {
