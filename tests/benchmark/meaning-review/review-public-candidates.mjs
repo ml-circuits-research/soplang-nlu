@@ -173,9 +173,9 @@ export function distribution(keys, rows, select) {
 }
 
 function main() {
-  const [stage,reviewArg,runArg] = process.argv.slice(2)
+  const [stage,reviewArg,runArg,subset] = process.argv.slice(2)
   if (!['plan','audit','score'].includes(stage) || !reviewArg || (stage === 'score' && !runArg)) {
-    throw Error('Usage: node review-public-candidates.mjs plan|audit|score REVIEW_DIR [RUN_DIR]')
+    throw Error('Usage: node review-public-candidates.mjs plan|audit|score REVIEW_DIR [RUN_DIR [STRATEGIES]]')
   }
   const directory = resolve(reviewArg)
   const path = name => join(directory,name)
@@ -241,8 +241,15 @@ function main() {
       (environment.nativeReferenceSha256 && environment.nativeReferenceSha256 !== nativeReferenceDigest(references))) {
     throw Error('The frozen reference snapshot does not match the run environment.')
   }
-  const rows = matchReviewedReferences(classifyPublicSets(packets,decisions,lock.strategyNames),references)
-  const engines = Object.fromEntries(lock.strategyNames.map(engine => {
+  const strategies = subset === undefined ? lock.strategyNames : subset.split(',')
+  if (strategies.some(engine => !lock.strategyNames.includes(engine)) ||
+      new Set(strategies).size !== strategies.length ||
+      (subset !== undefined && (Object.keys(baseline.predictions).length !== strategies.length ||
+        strategies.some(engine => !Object.hasOwn(baseline.predictions,engine))))) {
+    throw Error('Invalid strategy subset for the prepared benchmark.')
+  }
+  const rows = matchReviewedReferences(classifyPublicSets(packets,decisions,strategies),references)
+  const engines = Object.fromEntries(strategies.map(engine => {
     const observed = rows.filter(row=>row.engine===engine)
     const {workerTiming, ...timing} = readJson(join(run,engine+'.json'))
     return [engine,{

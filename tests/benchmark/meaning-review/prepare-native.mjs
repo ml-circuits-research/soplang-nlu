@@ -6,11 +6,16 @@ import {gunzipSync, gzipSync} from 'node:zlib'
 import {createAnalysisValidator} from '../../../lib/index.mjs'
 import {hasCompleteSource} from '../../../lib/check-analysis.mjs'
 
-const [run, output, installation] = process.argv.slice(2)
+const [run, output, installation, subset] = process.argv.slice(2)
 if (!run || !output || !installation) {
-  throw Error('Usage: node prepare-native.mjs RUN OUTPUT KNOWLEDGE_DIR')
+  throw Error('Usage: node prepare-native.mjs RUN OUTPUT KNOWLEDGE_DIR [STRATEGIES]')
 }
-const engineNames = ['z3', 'prolog-worlds', 'prolog-example-transfer']
+const knownEngines = ['z3', 'prolog-worlds', 'prolog-example-transfer']
+const engineNames = subset === undefined ? knownEngines : subset.split(',')
+if (engineNames.some(engine => !knownEngines.includes(engine)) ||
+    new Set(engineNames).size !== engineNames.length) {
+  throw Error('Invalid native benchmark strategies.')
+}
 const normalized = value => value.replace(/\r\n?/g, '\n').trim()
 const sha = value => createHash('sha256').update(value).digest('hex')
 const environment = JSON.parse(readFileSync(join(run, 'environment.json'), 'utf8'))
