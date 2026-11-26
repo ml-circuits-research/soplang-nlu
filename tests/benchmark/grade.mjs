@@ -12,12 +12,16 @@ const {createVerifier} = await load('z3-formaliser/src/verify/check.mjs')
 const verifier = await createVerifier({knowledgeDir: join(workspace, 'sop-knowledge-worlds')})
 const unpack = name => gunzipSync(readFileSync(join(dir, name))).toString()
 const sample = JSON.parse(unpack('sample.json.gz'))
+const {normalizeText} = await load('prolog-formaliser/src/corpus.mjs')
+const model = JSON.parse(readFileSync(join(workspace, 'prolog-formaliser/.cache/model.json'), 'utf8'))
+const trainingTexts = new Set(model.examples.map(example => normalizeText(example.text)))
 const statusById = new Map(sample.map(row => [row.id, {}]))
 const summary = {}
 for (const engine of ['z3', 'prolog']) {
   const predictions = new Map(unpack(engine + '.jsonl.gz').trim().split('\n')
     .map(line => { const row = JSON.parse(line); return [row.id, row] }))
   const details = []
+  const unseenCounts = {}
   const counts = {L0:0, L1:0, L2:0, L3:0, L4:0, missingReference:0, readerError:0}
   for (const {id, text, references} of sample) {
     const row = predictions.get(id)
@@ -27,11 +31,13 @@ for (const engine of ['z3', 'prolog']) {
     const grade = row.error ? 'readerError' : result.goldValid ? result.legendGrade : 'missingReference'
     const category = grade.startsWith('L') ? grade.slice(0,2) : grade
     counts[category]++
+    const seenByProlog = trainingTexts.has(normalizeText(text))
+    if (!seenByProlog) unseenCounts[category] = (unseenCounts[category] ?? 0) + 1
     statusById.get(id)[engine] = grade
-    details.push({id, grade, reasons:result.predErrorReasons, referenceIssues:result.goldIssueReasons,
+    details.push({id, grade, seenByProlog, reasons:result.predErrorReasons, referenceIssues:result.goldIssueReasons,
       errors:result.predCheck.errors, warnings:result.predCheck.warnings})
   }
-  summary[engine] = counts
+  summary[engine] = {all: counts, outsidePrologExamples: unseenCounts}
   writeFileSync(join(dir, engine + '-grades.jsonl.gz'), gzipSync(details.map(row => JSON.stringify(row)).join('\n')))
 }
 const cross = {both:0,z3Only:0,prologOnly:0,neither:0}
