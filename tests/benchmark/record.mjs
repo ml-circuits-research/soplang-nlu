@@ -10,7 +10,7 @@ export async function createRecordWriter(knowledgeDir) {
       evaluatedSchema: 'nlu', candidates: result.candidates.map(candidate => candidate.sop),
       checks: result.candidates.map(candidate => candidate.check),
       evidence: result.candidates.map(candidate => candidate.semanticEvidence ?? candidate.evidence ?? []),
-      diagnostics: result.analysisDiagnostics,
+      rejected: result.rejected ?? [], diagnostics: result.analysisDiagnostics,
       error: result.error
     })
   }

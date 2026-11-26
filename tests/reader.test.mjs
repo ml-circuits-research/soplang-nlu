@@ -46,3 +46,19 @@ test('dispatches to the native analysis path and never synthesizes a fallback re
     assert.equal(result.legacy, undefined)
   } finally { await reader.close() }
 })
+
+test('retains a rejected native circuit with its actual source failure', async () => {
+  const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR
+  if (!knowledgeDir) return
+  const sop = '@c nlu.clause form=imperative predicate="invented"'
+  const strategy = {name:'fixture',open:async () => ({
+    analyse:async () => ({analyses:[{sop}]}),close:async () => {}
+  })}
+  const reader = await createReader({strategy,knowledgeDir})
+  try {
+    const result = await reader.propose('Move')
+    assert.deepEqual(result.candidates, [])
+    assert.equal(result.rejected[0].sop,sop)
+    assert.equal(result.rejected[0].check.sourceValid,false)
+  } finally { await reader.close() }
+})
