@@ -26,3 +26,5 @@ The Node.js core uses built-in modules. The [Prolog](docs/strategies/prolog.md) 
 The ported formaliser sources include their respective license files under strategies/. The WebMeet evaluation comparator carries its license under tests/benchmark/webmeet/.
 
 The separately trained [Prolog example-transfer strategy](docs/strategies/prolog-example-transfer.md) learns slot patterns from the portion of the committed dataset outside the evaluation split. Its training time, training fingerprint and alternative quality are recorded alongside the two symbolic baselines.
+
+For a standalone dependency-parser formaliser, pass `spacyDirect` or `spacyBeam` to the same reader with a local Python executable and English spaCy model. Both produce native SOP circuits directly. Direct projection returns one graph. Beam projection explores alternative dependencies and returns up to three distinct readings. [Direct strategy and source-grounded example](docs/strategies/spacy-direct.md) · [Beam strategy and paired evaluation](docs/strategies/spacy-beam.md)
