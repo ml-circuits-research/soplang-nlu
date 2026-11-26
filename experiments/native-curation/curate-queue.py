@@ -33,7 +33,10 @@ for group in manifest["groups"]:
     work=directory/"work"/group["number"]
     work.mkdir(parents=True,exist_ok=True)
     with (work/"queue.lock").open("a") as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX)
+        try:
+            fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:
+            continue
         if (work/"summary.json").exists():
             continue
         teacher_input=source
