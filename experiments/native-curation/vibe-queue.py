@@ -98,6 +98,8 @@ def main():
     p.add_argument("--source-file", help="Select one exact dataset-relative CSV path for this queue")
     p.add_argument("--min-percent", type=int, default=90, metavar="N",
                    help="Stop if less than this percentage passed in the last group")
+    p.add_argument("--continue-on-low-coverage", action="store_true",
+                   help="Keep the rework records and proceed after a low-coverage group")
     p.add_argument("--batch-rows", type=int, default=None, metavar="N",
                    help="Request width for new groups; unfinished groups retain their manifest width")
     p.add_argument("--reserved-only", action="store_true", help="Convert reserved rows after scoring the frozen benchmark")
@@ -201,7 +203,10 @@ def main():
             (queue / (key + ".done")).write_text(str(converted) + "\n")
             print(f"{key}: {converted}/{len(results)} pass current checks", flush=True)
             if 100 * converted < a.min_percent * len(results):
-                raise SystemExit(f"{key}: fewer than {a.min_percent}% passed; stopping before the next group")
+                message = f"{key}: fewer than {a.min_percent}% passed"
+                if not a.continue_on_low_coverage:
+                    raise SystemExit(message + "; stopping before the next group")
+                print(message + "; rework recorded, continuing with the next group", flush=True)
 
 
 if __name__ == "__main__":
