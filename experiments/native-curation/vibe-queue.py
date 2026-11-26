@@ -31,6 +31,11 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows):
             continue
         approved.update(json.loads(line)["text"] for line in
                         git(dataset, "show", f"{revision}:{path}").split("\n") if line)
+    for path in native_paths:
+        if not re.match(r"annotations/nlu/v1/conversions/vibe/[^/]+\.jsonl\.gz$", path):
+            continue
+        blob = subprocess.check_output(["git", "-C", dataset, "show", f"{revision}:{path}"])
+        approved.update(json.loads(line)["text"] for line in gzip.decompress(blob).decode().split("\n") if line)
     files = defaultdict(list)
     reserved = 0
     for batch in manifest["groups"]:
@@ -53,6 +58,8 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows):
     for name, rows in sorted(files.items()):
         for start in range(0, len(rows), group_rows):
             path = f"{Path(name).with_suffix('').as_posix().replace('/', '-')}-{start//group_rows:02d}"
+            if group_rows != 500:
+                path = f"group-{group_rows}-" + path
             if reserved_only:
                 path = "reserved-" + path
             chunk = rows[start:start+group_rows]
