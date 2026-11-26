@@ -115,7 +115,7 @@ function align(text, dependencies) {
 
 export function projectDependencies(text, dependencies) {
   const tokens = align(text, dependencies)
-  repairNominalRoles(tokens)
+  const nominalPairs = repairNominalRoles(tokens) ?? []
   repairClauseBoundaries(tokens)
   const children = Map.groupBy(tokens.filter((token) => token.head !== token.index), (token) => token.head)
   const under = (token) => children.get(token.index) ?? []
@@ -256,7 +256,7 @@ export function projectDependencies(text, dependencies) {
     if (used.has(token.index)) return
     const node = make('entity', token)
     entities.set(token.index, node)
-    const key = token.quoted ? 'literal' : (commandName || token.pos === 'PROPN') ? 'name' : token.numeric ? 'literal' : token.pos === 'PRON' ? 'pronoun' : 'head'
+    const key = token.quoted ? 'literal' : (token.nominalName || commandName || token.pos === 'PROPN') ? 'name' : token.numeric ? 'literal' : token.pos === 'PRON' ? 'pronoun' : 'head'
     const titleParts = []
     if (key === 'name' && token.dep === 'appos') {
       // Printed titles may contain numbers and capitalized common nouns.
@@ -272,7 +272,8 @@ export function projectDependencies(text, dependencies) {
     }
     const parts = [token, ...under(token).filter((part) => part.pos === 'PROPN' && ['compound', 'flat', 'name'].includes(part.dep))]
       .sort((a, b) => a.index - b.index)
-    if (!literal(node, key, titleParts) && (key !== 'name' || !literal(node, key, parts))) literal(node, key, [token])
+    const namedSpan = token.nominalName?.map(index => tokens[index]) ?? []
+    if (!literal(node, key, namedSpan) && !literal(node, key, titleParts) && (key !== 'name' || !literal(node, key, parts))) literal(node, key, [token])
     for (const part of under(token)) {
       if (used.has(part.index)) continue
       if (part.dep === 'compound' && nouns.has(part.pos) &&
@@ -548,6 +549,12 @@ export function projectDependencies(text, dependencies) {
   }
   for (const node of groupHeads) coordinate(node.token, node, clauseOf)
 
+  for (const pair of nominalPairs) {
+    const from = clauses.get(pair.from) ?? entity(tokens[pair.from])
+    const to = entity(tokens[pair.to])
+    relation(from, to, pair.kind, (pair.cue ?? []).map(index => tokens[index]))
+  }
+
   for (const from of nodes) {
     if (!['clause', 'entity'].includes(from.type)) continue
     const {token: host} = from
@@ -603,7 +610,7 @@ export function projectDependencies(text, dependencies) {
         const group = coordinate(part, entity(part), entity)
         const inventory = group?.type === 'coordination' &&
           tokens.slice(host.index + 1,part.index).some(t => t.value === ':')
-        relation(from, group, inventory ? 'elaboration' : 'apposition')
+        relation(from, group, part.nominalRelation ?? (inventory ? 'elaboration' : 'apposition'))
       }
       if (part.dep === 'dep' && nouns.has(part.pos) && !used.has(part.index)) {
         // Speech and drawing directives often place a bare nominal topic
