@@ -47,3 +47,9 @@ We read the first 16 static passes in hash order using the salt `guided96-plausi
 The revised guided prompt returned 94/96 static passes in one request, in 97.8 seconds. Of these, 70 retained a library draft. On the same inputs the original source-only output plus connective cleanup passed 82/96. The guided arm gained 14 complete circuits and lost two. Overall, the two 96-row diagram pilots returned 188 static passes, while preserving a separate record of the pairs inspected for meaning.
 
 We checked the first 25 eligible texts in hash order using the salt `guided-next96-plausibility-v1`, a zero byte and the exact source. For example, “a table of two rows and two columns, narrow borders” identifies the values but uses apposition to equate the table with its borders. “let me rethink” and “I'd like the online series renamed to Direct orders” have bare or participial complements encoded as declarative. These findings concern clause form and role assignment after the grounding gate. The process has not established more than 95% plausible outputs for mass conversion.
+
+## One thousand guided diagram rows
+
+DeepSeek returned all 1,000 entries in one request. The model and local check took about 4 min 22 s. Preparing the local drafts took 6 min 9 s, for about 10 min 31 s end to end. The static gate passed 970/1,000, including 931 unmodified drafts and 39 edited readings.
+
+A 16-output hash-selected spot check used the salt `guided-1000-spot1`, a zero byte, and exact source text. In “could you make me a triangle rotated by 45 degrees?”, a retained draft makes “me” the direct object and the triangle predicative. “not Draft, its neighbour on the row” makes the rejected Draft and its requested neighbour appositional. “let the arrow leap over the Verify label” treats the bare complement as declarative. These errors show that a complete returned response and 97% static coverage leave the 95% plausibility target unverified.
