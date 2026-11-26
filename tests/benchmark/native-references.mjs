@@ -7,10 +7,11 @@ export const normalizeCircuit = sop => sop.replace(/\r\n?/gu,'\n').trim()
 // Only the evaluation parent reads this file. Worker messages contain id and text.
 export function readNativeReferences(dataset, revision, texts) {
   const git = (...args) => execFileSync('git',['-C',dataset,...args],{encoding:'utf8',maxBuffer:128*1024*1024})
-  if (!git('ls-tree','--name-only',revision,'--',nativeReferencePath).trim()) return []
+  const paths = git('ls-tree','-r','--name-only',revision,'--',nativeReferencePath,'annotations/nlu/v1/batches')
+    .trim().split('\n').filter(name => name === nativeReferencePath || /^annotations\/nlu\/v1\/batches\/[\w.-]+\.jsonl$/u.test(name))
   const selected = new Set(texts)
   const found = new Map()
-  for (const line of git('show',revision+':'+nativeReferencePath).split('\n').filter(Boolean)) {
+  for (const path of paths) for (const line of git('show',revision+':'+path).split('\n').filter(Boolean)) {
     const {text,readings} = JSON.parse(line)
     if (!selected.has(text)) continue
     if (found.has(text) || !Array.isArray(readings) || !readings.length) throw Error('Malformed native references for '+text)
