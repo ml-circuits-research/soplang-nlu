@@ -1205,6 +1205,7 @@ export function createFormaliser(worlds, {languageFrames=true, swipl} = {}) {
       return {candidates:output,candidateCount:output.length,multipleInterpretations:output.length>1,
         ...(!output.length ? {unread:text} : {})};
     },
+    analyseSyntax:packet=>worker.request({syntaxOnly:packet}),
     close:worker.close
   };
 }

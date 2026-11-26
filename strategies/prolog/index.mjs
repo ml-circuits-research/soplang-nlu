@@ -4,6 +4,9 @@ import { createFormaliser } from './src/formaliser.mjs'
 import { openKnowledge, withKnowledge } from './src/knowledge.mjs'
 import { parse } from './src/schema.mjs'
 import { loadWorlds } from './src/worlds.mjs'
+import { createNativeSyntax } from './src/syntax.mjs'
+
+const syntaxStatus = error => error ? {solver:'swipl',status:'error',error} : {solver:'swipl',status:'ok'}
 
 const field = (wire, key) => {
   const raw = wire.attrs[key]?.[0]
@@ -31,10 +34,27 @@ export const prolog = {
     return withKnowledge(installation, () => {
       const worlds = loadWorlds({paths: worldPaths})
       const formaliser = createFormaliser(worlds, {languageFrames, swipl})
+      const syntax = createNativeSyntax(worlds, formaliser.analyseSyntax)
+      const decorateAnalyses = (text, candidates) => withKnowledge(installation, () => syntax(text, candidates))
       return {
+        decorateAnalyses,
+        async analyse(text) {
+          try {
+            if (typeof text !== 'string') throw new TypeError('Expected a text string')
+            const {analyses} = await decorateAnalyses(text)
+            return {analyses, analysisDiagnostics: syntaxStatus()}
+          } catch (error) {
+            return {analyses: [],
+              analysisDiagnostics: syntaxStatus(error instanceof Error ? error.message : String(error))}
+          }
+        },
         propose: text => withKnowledge(installation, async () => {
+          let analyses = []
+          let syntaxError = null
           try {
             if (typeof text !== 'string') throw new TypeError('Expected text to be a string')
+            try { ({analyses} = await syntax(text)) }
+            catch (error) { syntaxError = error instanceof Error ? error.message : String(error) }
             const result = await formaliser.formalise(text)
             const unresolved = []
             const candidates = result.candidates.map((candidate, index) => {
@@ -46,10 +66,17 @@ export const prolog = {
                 catalog: {issues: catalogIssues(wires, worlds)}} : candidate
             })
             if (!candidates.length && result.unread !== undefined) unresolved.push({text: result.unread})
-            return {...result, candidates, engine: 'prolog', text, unresolved, error: null}
+            let output = {analyses, candidates}
+            if (!syntaxError) {
+              try { output = await syntax(text, candidates) }
+              catch (error) { syntaxError = error instanceof Error ? error.message : String(error) }
+            }
+            return {...result, ...output, engine: 'prolog', text, unresolved, error: null,
+              analysisDiagnostics: syntaxStatus(syntaxError)}
           } catch (error) {
-            return {engine: 'prolog', text: typeof text === 'string' ? text : null, candidates: [], unresolved: [],
-              error: error instanceof Error ? error.message : String(error)}
+            return {engine: 'prolog', text: typeof text === 'string' ? text : null, candidates: [], analyses,
+              unresolved: [], error: error instanceof Error ? error.message : String(error),
+              analysisDiagnostics: syntaxStatus(syntaxError)}
           }
         }),
         close: formaliser.close

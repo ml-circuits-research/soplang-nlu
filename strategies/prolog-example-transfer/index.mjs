@@ -146,7 +146,7 @@ export const prologExampleTransfer = {
         } catch (error) {
           return {...base, engine: name, error: error instanceof Error ? error.message : String(error)}
         }
-        return withKnowledge(installation, () => {
+        return withKnowledge(installation, async () => {
           const {parse, serialize} = installation.api
           const key = wires => JSON.stringify(signatures(wires, true))
           const seen = new Set(base.candidates.map(candidate => key(parse(candidate.sop))))
@@ -167,8 +167,18 @@ export const prologExampleTransfer = {
           }
           if (!transferred.length) return {...base, engine: name}
           const {unread: _unread, ...result} = base
-          const candidates = [...base.candidates, ...transferred]
-          return {...result, engine: name, candidates, candidateCount: candidates.length,
+          let candidates = [...base.candidates, ...transferred]
+          let analyses = base.analyses
+          let analysisDiagnostics = base.analysisDiagnostics
+          try {
+            const decorated = await symbolic.decorateAnalyses(text, transferred)
+            candidates = [...base.candidates, ...decorated.candidates]
+            analyses = [...new Map([...analyses, ...decorated.analyses].map(candidate => [candidate.sop, candidate])).values()]
+          } catch (error) {
+            analysisDiagnostics = {solver:'swipl', status:'error',
+              error:error instanceof Error ? error.message : String(error)}
+          }
+          return {...result, engine: name, candidates, analyses, analysisDiagnostics, candidateCount: candidates.length,
             multipleInterpretations: candidates.length > 1, unresolved: base.candidates.length ? base.unresolved : []}
         })
       },

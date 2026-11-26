@@ -1,3 +1,4 @@
+import {syntaxLexicon} from './syntax-lexicon.mjs';
 import {compileMeasuredMotion} from './measured-motion.mjs';
 import {compileLandmarkPairs,landmarkPairType,landmarkSelectorsMatchCatalog} from './landmark-pairs.mjs';
 import {compileRequestIntents} from './request-intents.mjs';
@@ -638,6 +639,7 @@ function compile(facts) {
     numericSettingKeys:new Set(requestKeys.filter(key=>key.head.split('+').includes('number')).map(key=>key.name)),
     bodyLeads:{neutral:leadForms('neutral'),nominal:leadForms('nominal'),actionOnly:leadForms('action_only')},
     knownWords, requestKeys, negatives, fillerPhrases, discourse,
+    syntaxLexicon:syntaxLexicon(facts,senses),
     nominalSelectorRules,
     targetNameWords,
     nominalNumbers:compileNominalNumbers(facts),

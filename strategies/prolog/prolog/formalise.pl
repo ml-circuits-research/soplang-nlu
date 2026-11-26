@@ -16,6 +16,7 @@
 :- use_module(coordinated_effects).
 :- use_module(roles).
 :- use_module(language_frames).
+:- use_module(syntax).
 :- initialization(main, main).
 
 main :- repeat,
@@ -26,6 +27,9 @@ main :- repeat,
             E, (print_message(error, E), halt(1))),
       nl, flush_output, fail ).
 
+answer(Q, Analysis) :- get_dict(syntaxOnly,Q,Packet), !,
+    catch((syntax_analysis(Packet,Parsed) -> Analysis=Parsed ; Analysis=_{error:"Syntax analysis produced no result"}),
+      Error, (message_to_string(Error,Message), Analysis=_{error:Message})).
 answer(Q, Plans) :- get_dict(landmarkPair,Q,Packet), !, landmark_pair_plans(Packet,Plans).
 answer(Q, Plans) :- get_dict(setExclusion,Q,Packet), !, exclusion_plans(Packet,Plans).
 answer(Q, Proofs) :- get_dict(languageOnly,Q,Packet), !, frame_proofs(Packet,Proofs).
