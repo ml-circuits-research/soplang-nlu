@@ -101,6 +101,46 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       assert.match(temporal.sop, /adverb="now"/)
     })
 
+    await t.test('separates initial, final and standalone gratitude from argument roles', async () => {
+      for (const [text, phrase, separated] of [
+        ['Thanks, move it.', 'Thanks', true],
+        ['Move it, thanks.', 'thanks', true],
+        ['Move it thanks', 'thanks', false],
+        ['Thank  you!', 'Thank  you', false],
+        ['Thx.', 'Thx', false]
+      ]) {
+        const [analysis] = await analyse(text)
+        const gratitude = analysis.sop.split('\n').find((line) => line.includes('speech_act=gratitude'))
+        assert.ok(gratitude, text)
+        assert.ok(gratitude.includes('form=fragment expression=' + JSON.stringify(phrase)), text)
+        assert.equal(gratitude.includes('separator=","'), separated, text)
+        assert.doesNotMatch(gratitude, /predicate=|direct_object=|topic=|filler=/)
+        assert.doesNotMatch(analysis.sop, /nlu.coordination/)
+      }
+      for (const text of ['Thanks for your help', 'Thanks for your help.']) {
+        const [reason] = await analyse(text)
+        assert.match(reason.sop, /determiner="your" head="help"/)
+        assert.match(reason.sop, /kind=reason from=\$c1 to=\$e1 cue="for"/)
+        assert.match(reason.sop, /expression="Thanks" speech_act=gratitude/)
+        assert.equal(reason.sop.includes('terminator="."'), text.endsWith('.'))
+      }
+    })
+
+    await t.test('keeps literal gratitude lexemes as finite predicates or nominal arguments', async () => {
+      for (const [text, expected] of [
+        ['She thanks him.', /form=declarative predicate="thanks".*subject=\$e1 direct_object=\$e2/],
+        ['Give thanks.', /nlu.entity head="thanks"/],
+        ['Send my thanks.', /determiner="my" head="thanks"/],
+        ['Send Mia thanks.', /direct_object=\$e2 indirect_object=\$e1/],
+        ['Print "thanks".', /nlu.entity name="\\"thanks\\""/],
+        ["Print 'thanks'.", /nlu.entity name="'thanks'"/]
+      ]) {
+        const [analysis] = await analyse(text)
+        assert.match(analysis.sop, expected, text)
+        assert.doesNotMatch(analysis.sop, /speech_act=gratitude|form=fragment/, text)
+      }
+    })
+
     await t.test('leaves the independently available legacy benchmark path intact', async () => {
       const result = await reader.propose('Draw a blue circle.')
       assert.ok(result.candidates[0]?.sop.startsWith('@r1 w.request.request'))

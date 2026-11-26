@@ -81,9 +81,16 @@ function emitAnalysis(decoded, kb, objective) {
     const roles = (role) => items.filter((item) => item.role === role && entities.has(item))
     const subject = roles('subject')
     const objects = roles(predicate ? 'object' : 'fragment')
-    const form = question !== undefined || tokens[terminator]?.surface === '?' ? 'interrogative'
+    const form = clause.gratitude ? 'fragment'
+      : question !== undefined || tokens[terminator]?.surface === '?' ? 'interrogative'
       : !predicate ? 'fragment' : subject.length ? 'declarative' : 'imperative'
     const fields = ['form=' + form]
+    if (clause.gratitude) {
+      fields.push(quote('expression', clause.start, clause.expressionEnd))
+      meaning(id, fields, 'speech_act', 'gratitude',
+        [{slot: 'expression', text: surface(clause.start, clause.expressionEnd)}], 'Z3 discourse lexicon')
+      fields.push(...clause.separators.map((separator) => quote('separator', separator)))
+    }
     if (predicate) {
       fields.push(quote('predicate', predicate.index))
       if (clause.action) {
@@ -101,7 +108,7 @@ function emitAnalysis(decoded, kb, objective) {
       fields.push('polarity=' + (clause.inheritedNegation || prefix.some((token) => token.negation)
         ? 'negative' : 'positive'))
     }
-    if (question !== undefined) fields.push(quote('question', question))
+    if (!clause.gratitude && question !== undefined) fields.push(quote('question', question))
     if (clause.complement !== undefined && clauses[clause.complement].predicate) {
       const child = 'c' + (clause.complement + 1)
       fields.push(refField('clausal_complement', child))
@@ -140,7 +147,9 @@ function emitAnalysis(decoded, kb, objective) {
       const to = member ? coordination([entities.get(item), entities.get(member)], [item.end + 1]) : entities.get(item)
       const passive = predicate && /(?:ed|en)$/u.test(tokens[predicate.index].lower) &&
         tokens.slice(clause.start, predicate.index).some((token) => token.pos === 'auxiliary' && token.copula)
-      const kind = passive && tokens[item.prep.start].lower === 'by' && from === id ? 'agent' : item.prep.kind
+      const cue = tokens[item.prep.start].lower
+      const kind = clause.gratitude && cue === 'for' && from === id ? 'reason'
+        : passive && cue === 'by' && from === id ? 'agent' : item.prep.kind
       const relation = 'rel' + ++relationCount
       const fields = []
       meaning(relation, fields, 'kind', atom(kind) ?? 'prepositional',
@@ -153,6 +162,7 @@ function emitAnalysis(decoded, kb, objective) {
   let clauseGroup = []
   let clauseCues = []
   for (const {id, clause} of selectedClauses) {
+    if (clause.gratitude) continue
     clauseGroup.push(id)
     if (clause.coordinator !== undefined) {
       clauseCues.push(clause.coordinator)

@@ -1,6 +1,6 @@
 import { lemmatiseVerb, lemmatiseWord } from './lattice/morph.mjs'
 
-const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
+const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|'(?:[^'\\]|\\.)*'|‘[^’]*’|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
 const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner', 'adjective', 'adverb',
   'auxiliary', 'preposition', 'conjunction', 'numeral', 'ordinal', 'particle', 'interjection', 'quote']
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
@@ -8,6 +8,7 @@ const modifierTags = ['determiner', 'adjective', 'numeral', 'ordinal']
 const linkingVerbs = new Set(['be', 'become', 'feel', 'look', 'remain', 'seem', 'smell', 'sound', 'taste'])
 const temporalAdverbs = new Set(['now', 'today', 'tomorrow', 'yesterday', 'tonight', 'already'])
 const contentVerbs = new Set(['believe', 'know', 'say', 'think', 'see', 'hear', 'hope', 'notice', 'remember'])
+const quotedArgumentVerbs = new Set(['call', 'label', 'name', 'print', 'quote', 'rename', 'say', 'type', 'write'])
 const hardBoundary = new Set(['.', ':', '!', '?', ';'])
 const tokenTag = (index, tag) => `(= p${index} ${allowedTags.indexOf(tag)})`
 const disjunction = (clauses) => clauses.length ? `(or ${clauses.join(' ')})` : 'false'
@@ -38,7 +39,7 @@ function inputTokens(text, kb, lexicon) {
     if (particles.has(lower)) tags.add('particle')
     const numeric = /^\p{N}+$/u.test(surface) || (lower !== 'one' && tags.has('numeral'))
     if (numeric) tags.add('numeral')
-    if (/^(?:"|“).+(?:"|”)$/su.test(surface)) tags.add('quote')
+    if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
     if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size)) tags.add('proper')
     if (kb.domain.shapes.has(lower) || kb.catalog.familyWords.has(lower)) tags.add('noun')
     if (kb.domain.colours.has(lower) || /(?:able|ible|ous|less)$/u.test(lower)) tags.add('adjective')
@@ -94,7 +95,47 @@ function predicateCandidates(tokens, start, end) {
   return candidates
 }
 
-function clauseRanges(tokens) {
+function detachedGratitude(tokens, kb, phrases) {
+  const detached = new Map()
+  const forms = [...phrases].map((phrase) => phrase.split(/\s+/u)).sort((a, b) => b.length - a.length)
+  let sentenceStart = 0
+  for (const [start, token] of tokens.entries()) {
+    if (hardBoundary.has(token.surface)) {
+      sentenceStart = start + 1
+      continue
+    }
+    const form = forms.find((words) => words.every((word, offset) => tokens[start + offset]?.lower === word))
+    if (!form) continue
+    const expressionEnd = start + form.length - 1
+    let end = expressionEnd
+    if (tokens[expressionEnd + 1]?.lower === 'for' && tokens[expressionEnd + 2]) {
+      while (tokens[end + 1] && tokens[end + 1].surface !== ',' &&
+        !hardBoundary.has(tokens[end + 1].surface)) end++
+    }
+    const after = tokens[end + 1]?.surface
+    if (after && !hardBoundary.has(after) && after !== ',') continue
+    const separatorBefore = start > sentenceStart && tokens[start - 1]?.surface === ','
+    const separated = start === sentenceStart || separatorBefore
+    if (!separated) {
+      // A bare tail can still be a noun, a quoted label, or a direct theme
+      // following a recipient. Only close it after a completed argument of a
+      // local, non-transfer command.
+      const host = predicateCandidates(tokens, sentenceStart, start - 1)
+        .sort((left, right) => right.weight - left.weight || left.index - right.index)[0]
+      if (!host || tokens[host.index].lemmas.some((lemma) =>
+        quotedArgumentVerbs.has(lemma) || kb.grammar.benefactiveVerbs.has(lemma)) ||
+        !nominalCandidates(tokens, host.index + 1, start - 1).some((entity) => entity.end === start - 1)) continue
+    }
+    const separators = []
+    if (separatorBefore) separators.push(start - 1)
+    if (after === ',') separators.push(end + 1)
+    const terminator = hardBoundary.has(after) ? end + 1 : undefined
+    detached.set(start, {start, end, expressionEnd, separators, terminator, gratitude: true})
+  }
+  return detached
+}
+
+function clauseRanges(tokens, discourse) {
   const clauses = []
   let start = 0
   const add = (end) => {
@@ -102,11 +143,20 @@ function clauseRanges(tokens) {
   }
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index]
-    if (hardBoundary.has(token.surface)) {
+    const gratitude = discourse.get(index)
+    if (gratitude) {
+      const preceding = gratitude.separators.find((separator) => separator < index)
+      add((preceding ?? index) - 1)
+      clauses.push(gratitude)
+      const last = Math.max(gratitude.end, gratitude.terminator ?? -1, ...gratitude.separators)
+      start = last + 1
+      index = last
+    } else if (hardBoundary.has(token.surface)) {
       add(index - 1)
       if (clauses.at(-1)?.end === index - 1) clauses.at(-1).terminator = index
       start = index + 1
-    } else if (index > start && (token.tags.includes('conjunction') || token.surface === ',')) {
+    } else if (index > start && (token.tags.includes('conjunction') || token.surface === ',') &&
+      !discourse.has(index + 1)) {
       const left = predicateCandidates(tokens, start, index - 1)
       let next = index + 1
       while (tokens[next] && (tokens[next].filler || tokens[next].negation || tokens[next].lower === 'then')) next++
@@ -121,7 +171,7 @@ function clauseRanges(tokens) {
   add(tokens.length - 1)
   const expanded = []
   for (const clause of clauses) {
-    const matrix = predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
+    const matrix = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
       index > clause.start && tokens[index].lemmas.some((lemma) => contentVerbs.has(lemma)))
     const cue = matrix && tokens[matrix.index + 1]?.lower === 'that' ? matrix.index + 1 : undefined
     const start = matrix ? (cue ?? matrix.index) + 1 : clause.end + 1
@@ -177,7 +227,11 @@ function prepositionsOf(tokens, clause, kb) {
 
 export function encodeSyntaxAnalysis(text, kb, lexicon) {
   const tokens = inputTokens(text, kb, lexicon)
-  const clauses = clauseRanges(tokens)
+  const discourse = detachedGratitude(tokens, kb, lexicon.gratitude)
+  const clauses = clauseRanges(tokens, discourse)
+  for (const {start} of discourse.values()) {
+    if (!tokens[start].tags.includes('interjection')) tokens[start].tags.unshift('interjection')
+  }
   const assertions = []
   const query = []
   const block = []
@@ -205,16 +259,21 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
   }
 
   for (const [clauseIndex, clause] of clauses.entries()) {
-    const predicates = predicateCandidates(tokens, clause.start, clause.end)
+    if (clause.gratitude) {
+      clause.expression = select('g', clauseIndex, 0, tokenTag(clause.start, 'interjection'), 1)
+      push(clause.expression)
+    }
+    const predicates = clause.gratitude ? [] : predicateCandidates(tokens, clause.start, clause.end)
     for (const [index, predicate] of predicates.entries()) {
       predicate.variable = select('v', clauseIndex, index, tokenTag(predicate.index, 'verb'), predicate.weight)
     }
     atMostOne(predicates.map(({variable}) => variable))
     clause.predicates = predicates
     clause.entities = []
-    const nominals = nominalCandidates(tokens, clause.start, clause.end)
+    const nominalStart = clause.gratitude ? clause.expressionEnd + 1 : clause.start
+    const nominals = nominalCandidates(tokens, nominalStart, clause.end)
     const prepositions = prepositionsOf(tokens, clause, kb)
-      const addEntity = (entity, role, conditions, weight, extra = {}) => {
+    const addEntity = (entity, role, conditions, weight, extra = {}) => {
       const item = {...entity, role, ...extra}
       item.variable = select('e', clauseIndex, clause.entities.length,
         conjunction([...entity.constraints, ...conditions]), weight)
@@ -228,7 +287,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
       addEntity(entity, role, [disjunction(matches.map(({variable}) => variable)), ...conditions], weight)
     }
 
-    for (const entity of nominals) {
+    for (const entity of clause.gratitude ? [] : nominals) {
       const inverted = (predicate) => tokens[predicate.index].copula && tokens[clause.start].lower === 'where'
       const preceding = predicates.filter((predicate) => predicate.index < entity.start && !inverted(predicate) &&
         !(tokens[predicate.index].linking && entity.start === entity.head &&
@@ -244,16 +303,24 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
 
     // Double-object frames license a recipient before an overt theme.
-    const themes = clause.entities.filter((entity) =>
-      entity.role === 'object' && entity.start < entity.head &&
-      tokens[entity.start].tags.some((tag) => tag === 'determiner' || tag === 'numeral'))
+    const themes = clause.entities.filter((entity) => {
+      if (entity.role !== 'object') return false
+      const head = tokens[entity.head]
+      if (entity.start === entity.head) {
+        return head.tags.includes('noun') && head.lower.endsWith('s') &&
+          head.lemmas.some((lemma) => lemma !== head.lower)
+      }
+      return tokens[entity.start].tags.some((tag) => tag === 'determiner' || tag === 'numeral')
+    })
     for (const entity of nominals) {
-      if (!entity.tags.some((tag) => tag === 'pronoun' || tag === 'proper')) continue
+      const pronoun = kb.grammar.pronouns.get(tokens[entity.head].lower)
+      const heads = entity.tags.filter((tag) => tag === 'proper' ||
+        (tag === 'pronoun' && pronoun?.cases.includes('object')))
+      if (!heads.length) continue
       const matchingThemes = themes.filter((theme) => theme.start === entity.end + 1)
       if (!matchingThemes.length) continue
       const benefactives = predicates.filter((predicate) => predicate.index === entity.start - 1 &&
         tokens[predicate.index].lemmas.some((lemma) => kb.grammar.benefactiveVerbs.has(lemma)))
-      const heads = entity.tags.filter((tag) => tag === 'pronoun' || tag === 'proper')
       variants(entity, 'indirect', benefactives, 13, [
         disjunction(matchingThemes.map(({variable}) => variable)),
         disjunction(heads.map((tag) => tokenTag(entity.head, tag)))
@@ -416,7 +483,7 @@ export function decodeSyntaxAnalysis(encoded, model) {
   const tokens = encoded.tokens.map((token) => ({...token, pos: allowedTags[model.get(`p${token.index}`)] ?? 'unknown'}))
   const clauses = encoded.clauses.map((clause) => {
     const predicate = clause.predicates.find(({variable}) => model.get(variable))
-    return {...clause, predicate, action: predicate?.acts.find(({variable}) => model.get(variable)),
+    return {...clause, gratitude: model.get(clause.expression) === true, predicate, action: predicate?.acts.find(({variable}) => model.get(variable)),
       inheritedNegation: model.get(clause.inheritedNegation) === true, entities: clause.entities.filter(({variable}) => model.get(variable))}
   })
   return {text: encoded.text, tokens, clauses}

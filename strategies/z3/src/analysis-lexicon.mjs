@@ -4,7 +4,9 @@ import { pathToFileURL } from 'node:url'
 import { unquoteSop } from './contracts.mjs'
 import { sopFiles } from './kb/overlays.mjs'
 
-const lexicalTypes = new Set(['k.words.sense', 'w.lang.en.closed', 'w.lang.en.neg', 'w.lang.en.skip'])
+const lexicalTypes = new Set(['k.words.sense', 'w.lang.en.closed', 'w.lang.en.neg', 'w.lang.en.skip',
+  'w.lang.en.cue', 'w.lang.en.fn'])
+const normalize = (raw) => unquoteSop(raw).toLowerCase().replaceAll('’', "'")
 
 export async function loadAnalysisLexicon(kb, worldPaths = []) {
   const {parse} = await import(pathToFileURL(kb.sopworldPath))
@@ -26,11 +28,22 @@ export async function loadAnalysisLexicon(kb, worldPaths = []) {
   const negative = new Set()
   const negativeEndings = new Set()
   const filler = new Set()
+  const gratitudeLeads = new Set()
+  const tailPoliteness = new Set()
   for (const {type, attrs} of wires.values()) {
     const forms = (type === 'k.words.sense' ? attrs.word : attrs.text) ?? []
     const tags = (type === 'k.words.sense' ? attrs.pos : attrs.class) ?? []
-    const normalize = (raw) => unquoteSop(raw).toLowerCase().replaceAll('’', "'")
-    if (type === 'w.lang.en.neg') {
+    if (type === 'w.lang.en.cue') {
+      if (attrs.on?.some((value) => normalize(value) === 'reaction') &&
+          attrs.value?.some((value) => normalize(value) === 'thanks')) {
+        for (const lead of attrs.lead ?? []) gratitudeLeads.add(normalize(lead))
+      }
+    } else if (type === 'w.lang.en.fn') {
+      if (attrs.view?.some((value) => normalize(value) === 'politeness') &&
+          attrs.at?.some((value) => normalize(value) === 'tail')) {
+        for (const form of forms) tailPoliteness.add(normalize(form))
+      }
+    } else if (type === 'w.lang.en.neg') {
       for (const form of forms) negative.add(normalize(form))
       for (const ending of attrs.ending ?? []) negativeEndings.add(normalize(ending))
     } else if (type === 'w.lang.en.skip') {
@@ -45,5 +58,6 @@ export async function loadAnalysisLexicon(kb, worldPaths = []) {
       }
     }
   }
-  return {classes, negative, negativeEndings, filler}
+  const gratitude = new Set([...gratitudeLeads].filter((lead) => tailPoliteness.has(lead)))
+  return {classes, negative, negativeEndings, filler, gratitude}
 }

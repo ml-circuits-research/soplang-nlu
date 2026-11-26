@@ -26,6 +26,8 @@ The lattice also uses built-in English morphology, phrase recognizers and some f
 
 The active reader calls `analyse(text)` on the opened strategy. Z3 chooses lexical classes, clause roles, and competing local attachments in a MaxSMT problem. The returned `nlu` circuits quote their source evidence. Each analysis includes its MaxSMT objective, the solved token tags and ranges, and any unresolved text. `topK` limits the search for near-optimal alternatives.
 
+Detached acknowledgments such as “Move it, thanks” produce a separate gratitude fragment. A quoted “thanks”, a nominal phrase such as “my thanks”, and a finite verb such as “She thanks him” keep their own grammatical roles.
+
 The benchmark calls `propose(text)` on the opened strategy to replay the separate `w.request` formalisation. On this path, `ambiguity: true` requests the two leading objectives, their margin when both exist, and selected circuit differences.
 
 The runtime was ported from `z3-formaliser` under the terms of its [GPL license](LICENSE).
