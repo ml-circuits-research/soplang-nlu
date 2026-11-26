@@ -40,3 +40,12 @@ python3 select-audit.py
 python3 review.py gpt-6.2-sol audit-keys.json
 python3 summarize.py
 ```
+
+### Sequential CPU timing
+
+A separate sequential pass ran each already reviewed model in its own persistent worker with OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1. Both consumed the same 100 source texts in their frozen order. Startup includes import and model loading. Per-text times include JSON transport and boundary validation; the first request is included. This is one pass per model on this machine.
+
+| Model | Startup | Inference, 100 texts | Median per text | p95 per text |
+| --- | ---: | ---: | ---: | ---: |
+| Compact | 393 ms | 221 ms | 2.06 ms | 3.75 ms |
+| Large | 798 ms | 220 ms | 2.00 ms | 3.90 ms |
