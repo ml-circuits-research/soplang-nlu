@@ -21,7 +21,7 @@ def packed(rows):
     return gzip.compress("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows).encode(), mtime=0)
 
 
-def create_plan(inventory, dataset, queue, reserved_only):
+def create_plan(inventory, dataset, queue, reserved_only, group_rows):
     manifest = json.loads((inventory / "manifest.json").read_text())
     revision = git(dataset, "rev-parse", "HEAD").strip()
     native_paths = git(dataset, "ls-tree", "-r", "--name-only", revision, "--", "annotations/nlu/v1").splitlines()
@@ -51,18 +51,18 @@ def create_plan(inventory, dataset, queue, reserved_only):
                 files[row["id"].rsplit("#", 1)[0]].append(candidate)
     groups = []
     for name, rows in sorted(files.items()):
-        for start in range(0, len(rows), 500):
-            path = f"{Path(name).with_suffix('').as_posix().replace('/', '-')}-{start//500:02d}"
+        for start in range(0, len(rows), group_rows):
+            path = f"{Path(name).with_suffix('').as_posix().replace('/', '-')}-{start//group_rows:02d}"
             if reserved_only:
                 path = "reserved-" + path
-            chunk = rows[start:start+500]
+            chunk = rows[start:start+group_rows]
             data = packed(chunk)
             group = {"sourceFile": name, "key": path, "rows": len(chunk),
                      "sha256": hashlib.sha256(data).hexdigest()}
             groups.append(group)
             (queue / (path + ".jsonl.gz")).write_bytes(data)
     return {"sourceRevision": manifest["sourceRevision"], "annotationRevision": revision,
-            "excludedReserved": reserved, "reservedOnly": reserved_only, "groups": groups}
+            "excludedReserved": reserved, "reservedOnly": reserved_only, "groupRows": group_rows, "groups": groups}
 
 
 def git(repo, *args):
@@ -77,10 +77,18 @@ def main():
     p.add_argument("--plan-only", action="store_true")
     p.add_argument("--jobs", type=int, default=1, choices=[1],
                    help="Concurrent Vibe requests within one CSV group")
-    p.add_argument("--batch-rows", type=int, default=None, choices=range(1, 101), metavar="N",
+    p.add_argument("--group-rows", type=int, default=500, metavar="N",
+                   help="Maximum rows from one CSV per new publication group")
+    p.add_argument("--min-percent", type=int, default=97, metavar="N",
+                   help="Stop if less than this percentage passed in the last group")
+    p.add_argument("--batch-rows", type=int, default=None, metavar="N",
                    help="Request width for new groups; unfinished groups retain their manifest width")
     p.add_argument("--reserved-only", action="store_true", help="Convert reserved rows after scoring the frozen benchmark")
     a = p.parse_args()
+    if not 1 <= a.group_rows <= 5000 or not 1 <= a.min_percent <= 100:
+        p.error("Expected a group size from 1 to 5000 and a minimum percentage from 1 to 100")
+    if a.batch_rows is not None and not 1 <= a.batch_rows <= 5000:
+        p.error("Expected a request width from 1 to 5000")
     inventory, dataset, queue = (path.resolve() for path in (a.inventory, a.dataset, a.queue))
     root = Path(__file__).resolve().parents[2]
     if a.reserved_only:
@@ -92,7 +100,7 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         manifest = queue / "plan.json"
         if not manifest.exists():
-            plan = create_plan(inventory, dataset, queue, a.reserved_only)
+            plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows)
             tmp = manifest.with_suffix(".tmp")
             tmp.write_text(json.dumps(plan, indent=2) + "\n")
             tmp.replace(manifest)
@@ -114,6 +122,7 @@ def main():
             work = queue / "work" / key
             work.mkdir(parents=True, exist_ok=True)
             group_env = env.copy()
+            group_env["SOP_NLU_VIBE_GROUP_ROWS"] = str(max(500, group["rows"]))
             prior = queue / "previous" / key
             if prior.is_dir():
                 group_env["SOP_NLU_VIBE_PRIOR"] = str(prior)
@@ -165,8 +174,8 @@ def main():
                 raise RuntimeError("Could not verify staged conversion")
             (queue / (key + ".done")).write_text(str(converted) + "\n")
             print(f"{key}: {converted}/{len(results)} pass current checks", flush=True)
-            if 10 * converted < 9 * len(results):
-                raise SystemExit(f"{key}: fewer than 90% passed; stopping before the next group")
+            if 100 * converted < a.min_percent * len(results):
+                raise SystemExit(f"{key}: fewer than {a.min_percent}% passed; stopping before the next group")
 
 
 if __name__ == "__main__":

@@ -15,10 +15,12 @@ const models={codex:['gpt-6-sol','gpt-6.1-terra'],vibe:['deepseek-v4-1-flash-101
 if(!Object.hasOwn(models,backend))throw Error('Unsupported curation backend: '+backend)
 const model=process.env.SOP_NLU_CURATION_MODEL??models[backend][0]
 if(!models[backend].includes(model))throw Error('Unsupported curation model: '+model)
-const logicalSize=500
+const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):500
+if(!Number.isSafeInteger(logicalSize)||logicalSize<500||logicalSize>5000||
+   (backend==='vibe'&&offset!==0))throw Error('Vibe expects an offset of zero and group size of 500 to 5000')
 const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):10
-const microBytes=backend==='vibe'?60000:28000
-if(!Number.isSafeInteger(microRows)||microRows<1||microRows>100)throw Error('Expected 1 to 100 rows per model request')
+const microBytes=backend==='vibe'?Math.max(60000, microRows*2000):28000
+if(!Number.isSafeInteger(microRows)||microRows<1||microRows>5000)throw Error('Expected 1 to 5000 rows per model request')
 const jobs=Number(process.env.SOP_NLU_CURATION_JOBS??8)
 if(!Number.isSafeInteger(jobs)||jobs<1||jobs>64)throw Error('SOP_NLU_CURATION_JOBS must be an integer from 1 to 64')
 const codex=process.env.SOP_NLU_CURATION_CODEX??'codex'
@@ -146,8 +148,9 @@ async function request(dir,label,rows){
   const raw=base+'.'+process.pid+'.response.json'
   const began=performance.now()
   const useVibe=backend==='vibe'
+  const limit=useVibe?Math.max(150,Math.ceil(rows.length*1.8)+45):165
   const args=useVibe?['--trust','--auto-approve','--enabled-tools','__no_tools__',
-    '--model',model,'--max-turns','1','--time-limit','150','--output','text','--prompt-file',base+'.prompt.txt']:
+    '--model',model,'--max-turns','1','--time-limit',String(limit),'--output','text','--prompt-file',base+'.prompt.txt']:
     [...callArgs,'-o',raw,'-']
   const child=spawn(useVibe?vibe:codex,args,{cwd:emptyDir,stdio:['pipe','pipe','pipe']})
   let diagnostics='', output=''
@@ -155,7 +158,7 @@ async function request(dir,label,rows){
   child.stderr.setEncoding('utf8').on('data',chunk=>diagnostics+=chunk)
   child.stdin.on('error',()=>{})
   child.stdin.end(useVibe?undefined:prompt)
-  const timer=setTimeout(()=>child.kill('SIGKILL'),180000)
+  const timer=setTimeout(()=>child.kill('SIGKILL'),(limit+15)*1000)
   const status=await new Promise(resolve=>{
     child.once('error',error=>resolve(error.message))
     child.once('close',code=>resolve(code))
