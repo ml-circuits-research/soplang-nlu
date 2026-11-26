@@ -1,0 +1,11 @@
+# Bind a vocabulary provider to acts already admitted by the native target kind.
+@pro.reader.target_inventory core.type of=pro.reader.target_inventory closed=true
+@pro.reader.target_inventory.family core.slot of=pro.reader.target_inventory key=family kind=atom required=true
+@pro.reader.target_inventory.act core.slot of=pro.reader.target_inventory key=act kind=atom many=true required=true
+@pro.reader.target_inventory.mode core.slot of=pro.reader.target_inventory key=mode enum=new enum=existing required=true
+@pro.reader.target_inventory.provider core.slot of=pro.reader.target_inventory key=provider kind=atom required=true
+@pro.reader.target_inventory.identity core.slot of=pro.reader.target_inventory key=identity kind=atom required=true
+@pro.reader.target_inventory.requires core.slot of=pro.reader.target_inventory key=requires kind=atom
+@pro.reader.target_inventory.argument_role core.slot of=pro.reader.target_inventory key=argument_role kind=atom
+
+@reader.objects.existing_argument pro.reader.target_inventory family=drawn act=remove act=pick mode=existing provider=k.objects.object identity=name argument_role=thing

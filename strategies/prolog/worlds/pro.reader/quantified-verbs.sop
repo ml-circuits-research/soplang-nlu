@@ -1,0 +1,21 @@
+# An amount marker distinguishes a change from a final value.
+@pro.reader.quantified_marker core.type of=pro.reader.quantified_marker closed=true
+@pro.reader.quantified_marker.operator core.slot of=pro.reader.quantified_marker key=operator enum=eq enum=delta required=true
+@pro.reader.quantified_marker.text core.slot of=pro.reader.quantified_marker key=text kind=string many=true required=true
+@reader.quantified.by pro.reader.quantified_marker operator=delta text=by
+@reader.quantified.to pro.reader.quantified_marker operator=eq text=to
+
+# A universal pronoun still denotes the previously supplied group.
+@pro.reader.quantified_reference core.type of=pro.reader.quantified_reference closed=true
+@pro.reader.quantified_reference.prefix core.slot of=pro.reader.quantified_reference key=prefix kind=string required=true
+@pro.reader.quantified_reference.quantifier core.slot of=pro.reader.quantified_reference key=quantifier kind=string required=true
+@reader.quantified.all_of pro.reader.quantified_reference prefix="all of" quantifier=all
+
+# The verb uses the signed axis of the backing property.
+@pro.reader.quantified_verb core.type of=pro.reader.quantified_verb closed=true
+@pro.reader.quantified_verb.family core.slot of=pro.reader.quantified_verb key=family kind=atom required=true
+@pro.reader.quantified_verb.key core.slot of=pro.reader.quantified_verb key=key kind=atom required=true
+@pro.reader.quantified_verb.step core.slot of=pro.reader.quantified_verb key=step enum=signed enum=more enum=less required=true
+@pro.reader.quantified_verb.text core.slot of=pro.reader.quantified_verb key=text kind=string many=true required=true
+@reader.drawing.quantified_skew pro.reader.quantified_verb family=drawn key=drawn.skew step=signed text=slant text=skew
+@reader.quantity.drawn.skew pro.reader.property_quantity family=drawn key=drawn.skew quantity=angle

@@ -1,0 +1,15 @@
+# Closed native frames whose result applies without a written target.
+@pro.reader.closed_request core.type of=pro.reader.closed_request closed=true
+@pro.reader.closed_request.frame core.slot of=pro.reader.closed_request key=frame kind=atom required=true
+@pro.reader.closed_request.act core.slot of=pro.reader.closed_request key=act kind=atom required=true
+@pro.reader.closed_request.courtesy core.slot of=pro.reader.closed_request key=courtesy kind=boolean
+@pro.reader.closed_request.word core.slot of=pro.reader.closed_request key=word kind=string many=true
+@pro.reader.closed_request.lead core.slot of=pro.reader.closed_request key=lead kind=atom
+@pro.reader.closed_request.exclusive core.slot of=pro.reader.closed_request key=exclusive kind=boolean
+
+@reader.selection.empty_state pro.reader.closed_request frame=acts.more.pick.none.state act=deselect courtesy=true
+@reader.selection.clear pro.reader.closed_request frame=acts.more.pick.none.clear act=deselect word="2:clear" word="2:remove" word="2:drop"
+@reader.selection.deselect pro.reader.closed_request frame=acts.more.pick.none act=deselect word="2:deselect" word="2:unselect" word="2:unmark" word="2:unhighlight" word="2:untick" word="3:everything" word="3:all" word="3:the selection" word="3:the highlight" word="3:the highlights"
+
+@reader.revision.undo pro.reader.closed_request frame=acts.undo act=undo lead=lead.polite exclusive=true word="1:undo" word="1:undo last" word="1:undo the last thing" word="1:undo the last change" word="1:undo the last step" word="1:ctrl z" word="1:control z" word="1:wait undo" word="1:oops undo"
+@reader.revision.redo pro.reader.closed_request frame=acts.redo act=redo lead=lead.polite exclusive=true word="1:redo" word="1:redo the last one" word="1:undo the undo"

@@ -1,0 +1,15 @@
+# A bounded phrase names a related participant on a referent-bearing native slot.
+@pro.reader.dependent_operand core.type of=pro.reader.dependent_operand closed=true
+@pro.reader.dependent_operand.family core.slot of=pro.reader.dependent_operand key=family kind=atom required=true
+@pro.reader.dependent_operand.act core.slot of=pro.reader.dependent_operand key=act kind=atom required=true
+@pro.reader.dependent_operand.attribute core.slot of=pro.reader.dependent_operand key=attribute kind=atom required=true
+@pro.reader.dependent_operand.range core.slot of=pro.reader.dependent_operand key=range kind=atom required=true
+@pro.reader.dependent_operand.phase core.slot of=pro.reader.dependent_operand key=phase enum=selector enum=result required=true
+@pro.reader.dependent_operand.marker core.slot of=pro.reader.dependent_operand key=marker kind=string required=true many=true
+@pro.reader.dependent_operand.item_type core.slot of=pro.reader.dependent_operand key=item_type kind=atom
+@pro.reader.dependent_operand.item_field core.slot of=pro.reader.dependent_operand key=item_field kind=atom
+@pro.reader.dependent_operand.peer_field core.slot of=pro.reader.dependent_operand key=peer_field kind=atom
+
+@reader.drawing.part.identified_owner pro.reader.dependent_operand family=part act=change attribute=part.owner range=w.drawing.object phase=selector marker=on marker=of item_type=k.objects.part item_field=name peer_field=of
+@reader.diagram.link.destination_selector pro.reader.dependent_operand family=link act=change attribute=link.to range=w.diagram.node phase=selector marker=into
+@reader.calendar.meeting.calendar_destination pro.reader.dependent_operand family=meeting act=place attribute=meeting.calendar range=w.meetings.calendar phase=result marker=onto

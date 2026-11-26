@@ -1,0 +1,19 @@
+# The native keep reaction licenses these complete, boundary-delimited adjuncts.
+@pro.reader.retention core.type of=pro.reader.retention closed=true
+@pro.reader.retention.cue core.slot of=pro.reader.retention key=cue kind=atom required=true
+@pro.reader.retention.lead core.slot of=pro.reader.retention key=lead kind=string kind=atom many=true
+@pro.reader.retention.adjunct core.slot of=pro.reader.retention key=adjunct kind=string many=true
+@pro.reader.retention.tail core.slot of=pro.reader.retention key=tail kind=string kind=atom many=true
+@pro.reader.retention.subject_predicate core.slot of=pro.reader.retention key=subject_predicate kind=string many=true
+@pro.reader.retention.reinforcement core.slot of=pro.reader.retention key=reinforcement kind=string many=true
+@pro.reader.retention.ambient_family core.slot of=pro.reader.retention key=ambient_family kind=atom many=true
+@pro.reader.retention.pause core.slot of=pro.reader.retention key=pause kind=string many=true
+@pro.reader.retention.value core.slot of=pro.reader.retention key=value kind=atom required=true
+@pro.reader.retention.remainder core.slot of=pro.reader.retention key=remainder kind=string many=true
+@pro.reader.retention.scope_lead core.slot of=pro.reader.retention key=scope_lead kind=string many=true
+@pro.reader.retention.scope_attribute core.slot of=pro.reader.retention key=scope_attribute kind=atom
+
+@reader.retention.place pro.reader.retention cue=reaction.keep lead=keep lead=leave adjunct=keeping adjunct=leaving tail="where it is" tail="where they are" value=place remainder="everything else" remainder="the rest" remainder="the rest of the scene" remainder="all other objects"
+@reader.retention.all pro.reader.retention cue=reaction.keep lead=keep lead=leave adjunct=keeping adjunct=leaving tail="as it is" tail="as they are" tail="exactly as it is" tail="exactly as they are" tail=unchanged value=all remainder="everything else" remainder="the rest" remainder="the rest of the scene" remainder="all other objects"
+@reader.retention.lifecycle pro.reader.retention cue=reaction.keep lead=keep adjunct=keeping value=all scope_lead="for the next time" scope_lead="until the next time" scope_attribute=preference.scope
+@reader.retention.remainder_position pro.reader.retention cue=reaction.keep subject_predicate=stay subject_predicate=stays subject_predicate=remain subject_predicate=remains tail=put tail="where they are" tail="exactly where they are" tail="where it is" tail="exactly where it is" value=place remainder="everything else" remainder="the rest" remainder="the rest of the scene" remainder="all other objects" remainder="the other objects" reinforcement="no other change to the scene" reinforcement="no other changes to the scene" ambient_family=page pause="hold off"

@@ -1,0 +1,10 @@
+@pro.reader.nominal_selector core.type of=pro.reader.nominal_selector closed=true
+@pro.reader.nominal_selector.family core.slot of=pro.reader.nominal_selector key=family kind=atom required=true
+@pro.reader.nominal_selector.key core.slot of=pro.reader.nominal_selector key=key kind=atom required=true
+@pro.reader.nominal_selector.position core.slot of=pro.reader.nominal_selector key=position enum=before enum=after required=true
+@pro.reader.nominal_selector.marker core.slot of=pro.reader.nominal_selector key=marker kind=string many=true
+@pro.reader.nominal_selector.value_type core.slot of=pro.reader.nominal_selector key=value_type kind=atom required=true
+@pro.reader.nominal_selector.head_type core.slot of=pro.reader.nominal_selector key=head_type kind=atom many=true required=true
+
+@reader.drawing.selector.coloured pro.reader.nominal_selector family=drawn key=drawn.colour position=before value_type=k.colours.basic head_type=k.people.kind head_type=k.people.role head_type=k.objects.object
+@reader.drawing.selector.in-colour pro.reader.nominal_selector family=drawn key=drawn.colour position=after marker=in value_type=k.colours.basic head_type=k.people.kind head_type=k.people.role

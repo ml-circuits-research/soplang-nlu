@@ -1,0 +1,67 @@
+# Analytical layouts combine an explicitly written owner with typed data roles.
+@pro.reader.analytical_frame core.type of=pro.reader.analytical_frame closed=true
+@pro.reader.analytical_frame.family core.slot of=pro.reader.analytical_frame key=family kind=atom required=true
+@pro.reader.analytical_frame.layout core.slot of=pro.reader.analytical_frame key=layout enum=leading_owner enum=trailing_owner enum=leading_group enum=trailing_operation enum=ordered_fields required=true
+@pro.reader.analytical_frame.prefix core.slot of=pro.reader.analytical_frame key=prefix kind=string many=true required=true
+@pro.reader.analytical_frame.owner core.slot of=pro.reader.analytical_frame key=owner kind=string many=true required=true
+@pro.reader.analytical_frame.owner_key core.slot of=pro.reader.analytical_frame key=owner_key kind=atom required=true
+@pro.reader.analytical_frame.owner_value core.slot of=pro.reader.analytical_frame key=owner_value kind=atom required=true
+@pro.reader.analytical_frame.owner_marker core.slot of=pro.reader.analytical_frame key=owner_marker kind=string
+@pro.reader.analytical_frame.measure core.slot of=pro.reader.analytical_frame key=measure kind=atom
+@pro.reader.analytical_frame.grouping core.slot of=pro.reader.analytical_frame key=grouping kind=atom
+@pro.reader.analytical_frame.group_marker core.slot of=pro.reader.analytical_frame key=group_marker kind=string many=true
+@pro.reader.analytical_frame.operation core.slot of=pro.reader.analytical_frame key=operation kind=atom
+@pro.reader.analytical_frame.operation_lead core.slot of=pro.reader.analytical_frame key=operation_lead kind=string many=true
+@pro.reader.analytical_frame.operation_marker core.slot of=pro.reader.analytical_frame key=operation_marker kind=string many=true
+
+@pro.reader.analytical_frame.pattern core.slot of=pro.reader.analytical_frame key=pattern kind=string many=true
+@pro.reader.analytical_frame.scope_literal_slot core.slot of=pro.reader.analytical_frame key=scope_literal_slot kind=atom
+@pro.reader.analytical_frame.scope_literal core.slot of=pro.reader.analytical_frame key=scope_literal kind=string many=true
+@pro.reader.analytical_frame.tail core.slot of=pro.reader.analytical_frame key=tail kind=string many=true
+@pro.reader.analytical_frame.open_boundary core.slot of=pro.reader.analytical_frame key=open_boundary kind=string many=true
+
+# Binning and threshold words must not be absorbed by open field names.
+@pro.reader.analytical_boundary core.type of=pro.reader.analytical_boundary closed=true
+@pro.reader.analytical_boundary.family core.slot of=pro.reader.analytical_boundary key=family kind=atom required=true
+@pro.reader.analytical_boundary.text core.slot of=pro.reader.analytical_boundary key=text kind=string many=true
+@pro.reader.analytical_boundary.numeric_modifier core.slot of=pro.reader.analytical_boundary key=numeric_modifier kind=string many=true
+@reader.chart.analytic.operand_boundary pro.reader.analytical_boundary family=chart text="grouped by" text="split by" text="broken down by" text="higher than" text="lower than" text="greater than" text="less than" text="more than" text="at least" text="at most" numeric_modifier=wide
+
+@reader.chart.analytic.column.final pro.reader.analytical_frame family=chart layout=trailing_owner prefix="I'd like" prefix="I would like" owner="a column chart" owner="a bar chart" owner_key=chart.type owner_value=bar owner_marker=as measure=chart.measure grouping=chart.dimension group_marker=by group_marker=", by" group_marker="grouped by"
+@reader.chart.analytic.line.final pro.reader.analytical_frame family=chart layout=trailing_owner prefix=show prefix="show me" prefix="we want" prefix=plot prefix="give me" owner="a line chart" owner="a line graph" owner_key=chart.type owner_value=line owner_marker=as measure=chart.measure grouping=chart.dimension group_marker=by group_marker=versus operation=chart.aggregate operation_marker=of
+@reader.chart.analytic.line.across pro.reader.analytical_frame family=chart layout=leading_owner prefix=make prefix="show me" prefix="give me" prefix=draw prefix=plot owner="a line graph" owner="a line chart" owner_key=chart.type owner_value=line owner_marker=of measure=chart.measure grouping=chart.period group_marker=across group_marker=by operation=chart.aggregate operation_lead=the operation_marker=of
+@reader.chart.analytic.bar.period pro.reader.analytical_frame family=chart layout=leading_group prefix="we need" prefix=make prefix="show me" prefix="give me" prefix=draw owner="a bar chart" owner="a column chart" owner_key=chart.type owner_value=bar owner_marker=of measure=chart.measure grouping=chart.period operation=chart.aggregate operation_marker=of
+@reader.chart.analytic.line.totals pro.reader.analytical_frame family=chart layout=trailing_operation prefix=make prefix="show me" prefix="give me" prefix=draw owner="a line graph" owner="a line chart" owner_key=chart.type owner_value=line owner_marker=of measure=chart.measure grouping=chart.period group_marker=by operation=chart.aggregate operation_marker=as
+
+@reader.chart.analytic.average core.word text=average text=averaged text=mean means=avg of=chart.aggregate
+@reader.chart.analytic.total core.word text=total text=totals text=summed means=sum of=chart.aggregate
+@reader.chart.analytic.month core.word text="the months" text="month by month" text=month-by-month means=month of=chart.period
+
+# A particular authored owner form can imply an additional native property.
+@pro.reader.analytical_owner_property core.type of=pro.reader.analytical_owner_property closed=true
+@pro.reader.analytical_owner_property.family core.slot of=pro.reader.analytical_owner_property key=family kind=atom required=true
+@pro.reader.analytical_owner_property.owner_key core.slot of=pro.reader.analytical_owner_property key=owner_key kind=atom required=true
+@pro.reader.analytical_owner_property.owner_value core.slot of=pro.reader.analytical_owner_property key=owner_value kind=atom required=true
+@pro.reader.analytical_owner_property.key core.slot of=pro.reader.analytical_owner_property key=key kind=atom required=true
+@pro.reader.analytical_owner_property.value core.slot of=pro.reader.analytical_owner_property key=value kind=atom required=true
+@pro.reader.analytical_owner_property.text core.slot of=pro.reader.analytical_owner_property key=text kind=string many=true required=true
+@reader.chart.analytic.column.vertical pro.reader.analytical_owner_property family=chart owner_key=chart.type owner_value=bar text="a column chart" key=chart.orientation value=vertical
+
+
+# A written connector can explicitly identify the immediately following argument.
+@pro.reader.argument_label core.type of=pro.reader.argument_label closed=true
+@pro.reader.argument_label.key core.slot of=pro.reader.argument_label key=key kind=atom required=true
+@pro.reader.argument_label.text core.slot of=pro.reader.argument_label key=text kind=string many=true required=true
+
+# Periodic summaries may name their display before or after the data operand.
+@reader.chart.period_summary.line pro.reader.analytical_frame family=chart layout=ordered_fields owner_key=chart.type owner_value=line owner="a line chart" owner="a line graph" prefix=build prefix=show prefix=plot prefix=render prefix=draw prefix=make prefix="show me" prefix="give me" prefix="I need to see" pattern="{chart.period} {chart.aggregate} of {chart.measure} as {$owner}" pattern="{$owner} of {chart.period} {chart.aggregate} of {chart.measure}" open_boundary=or open_boundary=and open_boundary=except open_boundary=excluding open_boundary=without
+@reader.chart.period_summary.bar pro.reader.analytical_frame family=chart layout=ordered_fields owner_key=chart.type owner_value=bar owner="a bar chart" owner="a column chart" prefix=build prefix=show prefix=plot prefix=render prefix=draw prefix=make prefix="show me" prefix="give me" prefix="I need to see" pattern="{chart.period} {chart.aggregate} of {chart.measure} as {$owner}" pattern="{$owner} of {chart.period} {chart.aggregate} of {chart.measure}" open_boundary=or open_boundary=and open_boundary=except open_boundary=excluding open_boundary=without
+@reader.chart.period_adjective.day core.word of=chart.period means=day text=daily text=day-by-day
+@reader.chart.period_adjective.week core.word of=chart.period means=week text=weekly text=week-by-week
+@reader.chart.period_adjective.month core.word of=chart.period means=month text=monthly
+@reader.chart.period_adjective.quarter core.word of=chart.period means=quarter text=quarterly text=quarter-by-quarter
+@reader.chart.period_adjective.year core.word of=chart.period means=year text=annual text=yearly text=year-by-year
+
+# Alternate ordering of data arguments on a displayed chart.
+@reader.chart.dimension.contrast pro.reader.analytical_frame family=chart layout=ordered_fields owner_key=chart.type owner_value=bar owner="a bar chart" owner="a column chart" prefix="we want" prefix="we need" prefix="I want" prefix="show me" prefix="give me" prefix=plot pattern="the {chart.aggregate} {chart.measure} versus {chart.dimension} as {$owner}" pattern="{chart.aggregate} {chart.measure} versus {chart.dimension} as {$owner}" pattern="{$owner} of {chart.dimension} across and {chart.aggregate} {chart.measure} up" pattern="{$owner} of {chart.dimension} across and {chart.measure} up" open_boundary=or open_boundary="for the" open_boundary=except
+@reader.chart.period.per_group pro.reader.analytical_frame family=chart layout=ordered_fields owner_key=chart.type owner_value=line owner="a line chart" owner="a line graph" prefix="give me" prefix="show me" prefix=make prefix=build prefix=plot pattern="{$owner} of {chart.aggregate} for each {chart.period} of {chart.measure}" pattern="{$owner} of {chart.aggregate} of {chart.measure} for each {chart.period}" open_boundary=or open_boundary=and open_boundary=except

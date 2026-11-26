@@ -1,0 +1,15 @@
+# Closed surface constructions for asking about members of a written collection.
+@pro.reader.collection_question core.type of=pro.reader.collection_question closed=true
+@pro.reader.collection_question.text core.slot of=pro.reader.collection_question key=text kind=string many=true required=true
+@pro.reader.collection_question.question core.slot of=pro.reader.collection_question key=question enum=exists enum=list enum=describe required=true
+@pro.reader.collection_question.layout core.slot of=pro.reader.collection_question key=layout enum=nominal enum=scoped_nominal enum=container_first enum=population required=true
+@pro.reader.collection_question.marker core.slot of=pro.reader.collection_question key=marker kind=string many=true
+@pro.reader.collection_question.existential_det core.slot of=pro.reader.collection_question key=existential_det kind=string many=true
+@pro.reader.collection_question.anchor_tail core.slot of=pro.reader.collection_question key=anchor_tail kind=string many=true
+@pro.reader.collection_question.require_question_mark core.slot of=pro.reader.collection_question key=require_question_mark kind=boolean
+@reader.collection.exists.nominal pro.reader.collection_question question=exists existential_det=any existential_det=some layout=nominal text="is there" text="are there" marker=in marker=on
+@reader.collection.exists.scoped pro.reader.collection_question question=exists existential_det=any existential_det=some layout=scoped_nominal text=got marker=in marker=on require_question_mark=true
+@reader.collection.exists.container pro.reader.collection_question question=exists existential_det=any existential_det=some layout=container_first text=does marker=have marker=contain marker=include
+@reader.collection.list.population pro.reader.collection_question question=list layout=population text="what is" text="what's" text="what do you see" text="what do u see" text="what can you see" text="what can u see" text="list the items" text="list the objects" marker=in marker=on anchor_tail="right now"
+@reader.collection.list.nominal pro.reader.collection_question question=list layout=scoped_nominal text=list text="can you list" marker=in marker=on
+@reader.collection.describe.population pro.reader.collection_question question=describe layout=population text="describe what is" text="describe what's" text="explain what is" text="explain what's" marker=in marker=on anchor_tail="right now"

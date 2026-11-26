@@ -1,0 +1,60 @@
+# Surface patterns belong to the language. Property senses and admissible
+# values are checked separately in the existing owner's family.
+@pro.reader.owned_effect core.type of=pro.reader.owned_effect closed=true
+@pro.reader.owned_effect.operation core.slot of=pro.reader.owned_effect key=operation enum=set enum=show enum=hide required=true
+@pro.reader.owned_effect.pattern core.slot of=pro.reader.owned_effect key=pattern kind=string many=true required=true
+@pro.reader.owned_effect.property_command core.slot of=pro.reader.owned_effect key=property_command kind=boolean
+@pro.reader.owned_effect.cue core.slot of=pro.reader.owned_effect key=cue kind=string many=true
+@pro.reader.owned_effect.open_text core.slot of=pro.reader.owned_effect key=open_text kind=boolean
+@pro.reader.owned_effect.inherit_owner core.slot of=pro.reader.owned_effect key=inherit_owner kind=boolean
+@pro.reader.owned_effect.want core.slot of=pro.reader.owned_effect key=want enum=no
+@reader.effect.object_and_value pro.reader.owned_effect operation=set pattern="set the {property} on {owner} to {value}" pattern="make the {property} on {owner} {value}" pattern="the {property} on {owner} should be {value}" pattern="the {property} on {owner} should be a bit {value}" pattern="the {property} on {owner} should be one step {value}" pattern="do the {property} {value} on {owner}" pattern="turn the {property} on {owner} {value}" pattern="use {value} {property} on {owner}"
+@reader.effect.position pro.reader.owned_effect operation=set pattern="put the {property} on the {value} of {owner}" pattern="move the {property} to the {value} of {owner}" pattern="put the {property} on the {value}" pattern="{property} on the {value}"
+@reader.effect.position_unstated_owner pro.reader.owned_effect operation=set pattern="move the {property} to the {value}" pattern="move the {property} on the {value}" pattern="{property} at the {value}"
+@reader.effect.explicit_assignment pro.reader.owned_effect operation=set pattern="set the {property} of {owner} to {value}"
+@reader.effect.property_continuation pro.reader.owned_effect operation=set inherit_owner=true pattern="{property} to {value}"
+@reader.effect.change pro.reader.owned_effect operation=set pattern="set the {property} to {value}" pattern="set the {property} {value}" pattern="make the {property} {value}" pattern="{property} {value}" pattern="{property} {value} instead of {prior}" pattern="the {property} {value} instead of {prior}"
+@reader.effect.excluded_choice pro.reader.owned_effect operation=set want=no pattern="set the {value} not {property}" pattern="make the {value} not {property}"
+@reader.effect.requested_value pro.reader.owned_effect operation=set pattern="try the {property} {value}" pattern="turn the {property} {value}" pattern="the {property} should be {value}"
+@reader.effect.desired_owner_value pro.reader.owned_effect operation=set pattern="the {property} on {owner} want to be {value}" pattern="the {property} on {owner} wants to be {value}"
+@reader.effect.named_value pro.reader.owned_effect operation=set pattern="use a {value} {property} on {owner}" pattern="how about a {value} {property} on {owner}"
+@reader.effect.open_text pro.reader.owned_effect operation=set open_text=true pattern="add a {property} {value} to {owner}" pattern="give {owner} the {property} {value}"
+@reader.effect.property_command pro.reader.owned_effect operation=set property_command=true pattern="{property} {owner} {value}"
+@reader.effect.visible pro.reader.owned_effect operation=show pattern="put a {property} on {owner}" pattern="add a {property} to {owner}" pattern="show the {property} on {owner}" pattern="turn on {property} for {owner}" pattern="show {property}"
+@reader.effect.hidden pro.reader.owned_effect operation=hide pattern="hide the {property}" pattern="hide the {property} on {owner}" pattern="remove the {property} from {owner}"
+
+@pro.reader.effect_sense core.type of=pro.reader.effect_sense closed=true
+@pro.reader.effect_sense.family core.slot of=pro.reader.effect_sense key=family kind=atom required=true
+@pro.reader.effect_sense.key core.slot of=pro.reader.effect_sense key=key kind=atom required=true
+@pro.reader.effect_sense.text core.slot of=pro.reader.effect_sense key=text kind=string many=true
+@pro.reader.effect_sense.scale core.slot of=pro.reader.effect_sense key=scale kind=atom
+@pro.reader.effect_sense.property_command core.slot of=pro.reader.effect_sense key=property_command kind=boolean
+@pro.reader.effect_sense.alias core.slot of=pro.reader.effect_sense key=alias kind=string many=true
+@pro.reader.effect_sense.result_qualifier core.slot of=pro.reader.effect_sense key=result_qualifier kind=string many=true
+@pro.reader.effect_sense.finite_choice core.slot of=pro.reader.effect_sense key=finite_choice kind=boolean
+@pro.reader.effect_sense.ellipsis core.slot of=pro.reader.effect_sense key=ellipsis enum=bare enum=labelled
+@reader.effect.chart.title pro.reader.effect_sense family=chart key=chart.title text=title text=label property_command=true
+@reader.effect.chart.inversion pro.reader.effect_sense family=chart key=chart.invert finite_choice=true text=invert text=inverted alias="x axis=x" alias="the x axis=x" alias="y axis=y" alias="the y axis=y" alias="z axis=z" alias="the z axis=z"
+@reader.effect.chart.axis_scale pro.reader.effect_sense family=chart key=chart.axisScale text=scale text="axis scale" alias="logarithmic=log"
+@reader.effect.chart.colour_bar_scale pro.reader.effect_sense family=chart key=chart.colourBarScale text="colour bar scale" alias="logarithmic=log"
+@reader.effect.chart.axis_side pro.reader.effect_sense family=chart key=chart.axisSide text="y axis"
+@reader.effect.chart.font pro.reader.effect_sense family=chart key=chart.fontSize text=font text="font size" scale=size
+@reader.effect.chart.marker_size pro.reader.effect_sense family=chart key=chart.markerSize text=markers text="marker size" scale=size
+@reader.effect.chart.grid_style pro.reader.effect_sense family=chart key=chart.gridStyle text="grid line style" text="grid lines" alias="dashes=dashed" alias="dots=dotted"
+@reader.effect.chart.grid_axis pro.reader.effect_sense family=chart key=chart.gridAxis text="grid lines" alias="both directions=both"
+@reader.effect.chart.grid_visibility pro.reader.effect_sense family=chart key=chart.grid text=grid text="grid lines"
+@reader.effect.chart.bar_width pro.reader.effect_sense family=chart key=chart.barWidth text=bars text="bar width" scale=width
+@reader.effect.chart.bar_orientation pro.reader.effect_sense family=chart key=chart.horizontal text=bars alias="horizontal=on" alias="vertical=off"
+@reader.effect.chart.error_caps pro.reader.effect_sense family=chart key=chart.errorCap text="cap size" text="error bar cap size" scale=size
+@reader.effect.chart.colour_bar_width pro.reader.effect_sense family=chart key=chart.colourBarWidth scale=thickness
+@reader.effect.chart.pie_radius pro.reader.effect_sense family=chart key=chart.pieRadius scale=size
+@reader.effect.chart.value_labels pro.reader.effect_sense family=chart key=chart.show_values text="value labels"
+
+@pro.reader.effect_owner core.type of=pro.reader.effect_owner closed=true
+@pro.reader.effect_owner.family core.slot of=pro.reader.effect_owner key=family kind=atom required=true
+@pro.reader.effect_owner.text core.slot of=pro.reader.effect_owner key=text kind=string many=true required=true
+@reader.effect.chart.owner pro.reader.effect_owner family=chart text=chart text=plot text=graph text=histogram text=pie text=scatter text=contour text=heatmap
+@reader.effect.chart.colour_bar_position pro.reader.effect_sense family=chart key=chart.colourBarPosition text="colour bar position" text="colour bar"
+
+# These modifiers can precede a named colour but are retained as unresolved.
+@reader.effect.drawn.colour_qualifiers pro.reader.effect_sense family=drawn key=drawn.colour result_qualifier=same result_qualifier=vivid

@@ -1,0 +1,12 @@
+# A directed orientation has an instance landmark. Its words are a lookup
+# operand. Page state determines the actual facing direction.
+@pro.reader.orientation core.type of=pro.reader.orientation closed=true
+@pro.reader.orientation.family core.slot of=pro.reader.orientation key=family kind=atom required=true
+@pro.reader.orientation.act core.slot of=pro.reader.orientation key=act kind=atom required=true
+@pro.reader.orientation.attribute core.slot of=pro.reader.orientation key=attribute kind=atom required=true
+@pro.reader.orientation.source_attribute core.slot of=pro.reader.orientation key=source_attribute kind=atom required=true
+@pro.reader.orientation.landmark_type core.slot of=pro.reader.orientation key=landmark_type kind=atom required=true
+@pro.reader.orientation.text core.slot of=pro.reader.orientation key=text kind=string required=true many=true
+
+@reader.drawing.orientation pro.reader.orientation family=drawn act=change attribute=drawn.facingTarget source_attribute=drawn.facing landmark_type=k.objects.object text=face text=faces text=facing text="to face" core.source="k.words.face.verb.3"
+@reader.drawing.orientation.heading pro.reader.nominal_pattern family=drawn key=drawn.facing pattern="facing {value}" heading=true

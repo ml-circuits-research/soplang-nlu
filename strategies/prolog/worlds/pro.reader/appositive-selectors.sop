@@ -1,0 +1,12 @@
+# A nominal appositive can identify its antecedent through a typed property.
+@pro.reader.appositive_selector core.type of=pro.reader.appositive_selector closed=true
+@pro.reader.appositive_selector.family core.slot of=pro.reader.appositive_selector key=family kind=atom required=true
+@pro.reader.appositive_selector.attribute core.slot of=pro.reader.appositive_selector key=attribute kind=atom required=true
+@pro.reader.appositive_selector.text core.slot of=pro.reader.appositive_selector key=text kind=string many=true required=true
+@pro.reader.appositive_selector.item_type core.slot of=pro.reader.appositive_selector key=item_type kind=atom required=true
+@pro.reader.appositive_selector.item_field core.slot of=pro.reader.appositive_selector key=item_field kind=atom
+@pro.reader.appositive_selector.item_value core.slot of=pro.reader.appositive_selector key=item_value kind=atom many=true
+
+@pro.reader.appositive_selector.subject_type core.slot of=pro.reader.appositive_selector key=subject_type kind=atom many=true
+
+@reader.drawing.attire_appositive pro.reader.appositive_selector family=drawn attribute=drawn.wear text=in subject_type=k.people.kind subject_type=k.people.role item_type=k.scenes.thing item_field=on item_value=head item_value=person core.source="w.request key drawn.wear and k.scenes.thing worn on head or person"

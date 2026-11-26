@@ -1,0 +1,16 @@
+# Closed, language-level region forms assembled from canonical values and native layout names.
+@pro.reader.region_form core.type of=pro.reader.region_form closed=true
+@pro.reader.region_form.prefix core.slot of=pro.reader.region_form key=prefix kind=string many=true required=true
+@pro.reader.region_form.head core.slot of=pro.reader.region_form key=head kind=string many=true
+@pro.reader.region_form.value core.slot of=pro.reader.region_form key=value kind=atom many=true
+@pro.reader.region_form.alias core.slot of=pro.reader.region_form key=alias kind=string many=true
+@pro.reader.region_form.layout core.slot of=pro.reader.region_form key=layout kind=atom
+
+@reader.region.corners pro.reader.region_form layout=corners value=top_left value=top_right value=bottom_left value=bottom_right prefix="in the" prefix="into the" prefix="at the" prefix="toward the" prefix="over in the" head=corner head="hand corner" head="-hand corner"
+@reader.region.left_borders pro.reader.region_form value=left prefix="on the" prefix="at the" prefix="in the" prefix="toward the" prefix="over on the" prefix="in the far" head=edge head=part head=side head="hand side" head="-hand side"
+@reader.region.right_borders pro.reader.region_form value=right prefix="on the" prefix="at the" prefix="in the" prefix="toward the" prefix="over on the" prefix="in the far" head=edge head=part head=side head="hand side" head="-hand side"
+@reader.region.middle pro.reader.region_form value=middle prefix="in the" prefix="right in the" prefix="into the" prefix="over in the"
+@reader.region.center pro.reader.region_form value=center alias=centre prefix="in the" prefix="right in the" prefix="into the" prefix="at the"
+@reader.region.far_sides pro.reader.region_form value=left value=right prefix="on the far" prefix="at the far" prefix="in the far" prefix="toward the far"
+@reader.region.vertical_parts pro.reader.region_form value=top value=bottom prefix="in the" prefix="at the" prefix="toward the" head=part head=edge head=section
+@reader.region.upper_short pro.reader.region_form value=top prefix=up

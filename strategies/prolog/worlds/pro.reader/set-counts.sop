@@ -1,0 +1,14 @@
+# A nominal count request is interrogative even when it begins with a directive.
+@pro.reader.set_count core.type of=pro.reader.set_count closed=true
+@pro.reader.set_count.text core.slot of=pro.reader.set_count key=text kind=string many=true required=true
+@pro.reader.set_count.scope_lead core.slot of=pro.reader.set_count key=scope_lead kind=string many=true
+@pro.reader.set_count.closer core.slot of=pro.reader.set_count key=closer kind=string many=true
+@pro.reader.set_count.neutral_tail core.slot of=pro.reader.set_count key=neutral_tail kind=string many=true
+@pro.reader.set_count.scope_tail core.slot of=pro.reader.set_count key=scope_tail kind=string many=true
+@pro.reader.set_count.membership core.slot of=pro.reader.set_count key=membership kind=string many=true
+@pro.reader.set_count.generic_noun core.slot of=pro.reader.set_count key=generic_noun kind=string many=true
+@reader.count.nominal pro.reader.set_count text="give us a headcount of" text="give me a headcount of" text="give us a count of" text="give me a count of" text="what is the headcount of" scope_lead=on scope_lead=in scope_lead=from closer="would you" closer="please"
+@reader.count.written_collection pro.reader.set_count text="how many" text="tell me how many" text="can you tell me how many" text="i want to know how many" text="i wanna know how many" text="number of" text="the number of" text="count of" text="total number of" neutral_tail="are there" neutral_tail="there are" scope_tail="do i have" scope_tail="have i got" scope_tail="have i drawn" scope_tail="u got" scope_tail="you got" scope_lead=in scope_lead=on scope_lead="are in" scope_lead="are on" membership=in membership=on membership="are in" membership="are on" generic_noun=things generic_noun=objects generic_noun=items closer="please" closer="would you"
+
+# A calendar count can name humans as the people being counted.
+@reader.count.calendar.humans pro.reader.target family=person mode=existing act=ask text=humans

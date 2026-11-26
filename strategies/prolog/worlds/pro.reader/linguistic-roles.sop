@@ -1,0 +1,130 @@
+# Correspondences between a syntactic argument and literal evidence in w.request.
+@reader.thing.name pro.reader.evidence_role role=thing type=w.request.target slot=name
+@reader.thing.sort_words pro.reader.evidence_role role=thing type=w.request.target slot=sort_words
+@reader.value.result pro.reader.evidence_role role=value type=w.request.constraint slot=value phase=result
+
+# Role assignments for the supported example worlds.
+@reader.drawing.spatial pro.reader.spatial family=drawn relation_key=drawn.relation anchor_key=drawn.anchor region_key=drawn.at arrangement_key=drawn.arrangement named_act=place
+@reader.diagram.spatial pro.reader.spatial family=node relation_key=node.position anchor_key=node.anchor region_key=node.at named_act=place
+@reader.drawing.object.code pro.reader.instance_code family=drawn prefix=o core.source="w.drawing/schema.sop: object.code"
+@reader.diagram.node.code pro.reader.instance_code family=node prefix=n core.source="w.diagram/schema.sop: node.code"
+@reader.diagram.edge.code pro.reader.instance_code family=link prefix=e core.source="w.diagram/schema.sop: edge.code"
+@reader.diagram.link.code pro.reader.instance_code family=link prefix=l core.source="w.request/shards/keys.sop: diagram.link.ids"
+@reader.document.block.code pro.reader.instance_code family=block prefix=b core.source="w.request/shards/keys.sop: document.block.ids"
+@reader.drawing.preservation pro.reader.preservation family=drawn attribute=drawn.keep concept=retain
+@reader.diagram.preservation pro.reader.preservation family=node attribute=node.keep concept=retain
+@reader.document.section.payload pro.reader.literal family=section attribute=section.content role=payload text=saying
+@reader.document.text.payload pro.reader.literal family=text attribute=text.content role=payload text=saying
+@reader.document.text.name pro.reader.literal family=text attribute=text.title role=name text=titled
+@reader.drawing.drawn.name pro.reader.literal family=drawn attribute=drawn.name role=name
+@reader.drawing.drawn.text pro.reader.literal family=drawn attribute=drawn.text role=quoted text=word
+@reader.drawing.group.name pro.reader.literal family=group attribute=group.name role=name
+@reader.diagram.chart.label pro.reader.literal family=chart attribute=chart.label role=name text=labeled text=labelled
+@reader.diagram.chart.title pro.reader.literal family=chart attribute=chart.title role=name text=titled
+@reader.diagram.node.label pro.reader.literal family=node attribute=node.label role=name text=labeled text=labelled text=marked
+@reader.diagram.page.title pro.reader.literal family=page attribute=page.title role=name text=titled
+@reader.calendar.calendar.name pro.reader.literal family=calendar attribute=calendar.name role=name
+@reader.calendar.meeting.title pro.reader.literal family=meeting attribute=meeting.title role=name text=titled
+@reader.calendar.person.name pro.reader.literal family=person attribute=person.name role=name
+@reader.calendar.room.name pro.reader.literal family=room attribute=room.name role=name
+
+# Named arguments of a new connection. Either endpoint may be a quoted span.
+@reader.diagram.link.endpoints pro.reader.arguments family=link act=connect mode=new first_key=link.from second_key=link.to prefix=from separator=to
+# A chart noun anchors the measure before the grouping connector and the dimension after it.
+@reader.diagram.chart.measure_dimension pro.reader.arguments family=chart act=make mode=new anchor=nominal first_key=chart.measure second_key=chart.dimension prefix="chart of" prefix="chart showing" separator=by separator=per separator="grouped by" separator="for each" separator="split by"
+
+# Ordered page coordinates.
+@reader.drawing.drawn.coordinates pro.reader.tuple family=drawn first_key=drawn.x second_key=drawn.y act=place act=make act=copy text=at text=to text="at coordinates" first_label=x second_label=y text="to position" text="at position"
+@reader.drawing.part.coordinates pro.reader.tuple family=part first_key=part.x second_key=part.y act=place act=make act=copy text=at text=to text="at coordinates" first_label=x second_label=y text="to position" text="at position"
+@reader.diagram.node.coordinates pro.reader.tuple family=node first_key=node.x second_key=node.y act=place act=make act=copy text=at text=to text="at coordinates" first_label=x second_label=y text="to position" text="at position"
+@reader.diagram.chart.coordinates pro.reader.tuple family=chart first_key=chart.x second_key=chart.y act=place act=make act=copy text=at text=to text="at coordinates" first_label=x second_label=y text="to position" text="at position"
+@reader.diagram.group.coordinates pro.reader.tuple family=group first_key=group.x second_key=group.y act=place act=make act=copy text=at text=to text="at coordinates" first_label=x second_label=y text="to position" text="at position"
+
+# Measured adjectives attach to compatible numeric properties in any loaded family.
+@reader.measure.width w.lang.en.cue name=reader.measure.width on=attribute attribute=width trail=wide takes=number priority=2
+@reader.measure.height w.lang.en.cue name=reader.measure.height on=attribute attribute=height trail=tall trail=high takes=number priority=2
+@reader.measure.width.pixel w.lang.en.cue name=reader.measure.width.pixel on=attribute attribute=width trail="pixel wide" trail="pixels wide" takes=number unit=pixel priority=2
+@reader.measure.height.pixel w.lang.en.cue name=reader.measure.height.pixel on=attribute attribute=height trail="pixel tall" trail="pixels tall" trail="pixel high" trail="pixels high" takes=number unit=pixel priority=2
+
+# w.lang.en interrogatives project their semantic class into w.request.
+@reader.question.thing pro.reader.question_kind asks=thing question=what
+@reader.question.member pro.reader.question_kind asks=thing-of-a-set question=which
+@reader.question.person pro.reader.question_kind asks=person question=who
+@reader.question.owner pro.reader.question_kind asks=owner question=who
+@reader.question.place pro.reader.question_kind asks=place question=where
+@reader.question.time pro.reader.question_kind asks=time question=when
+@reader.question.reason pro.reader.question_kind asks=reason question=why
+@reader.question.manner pro.reader.question_kind asks=manner-or-degree question=how
+@reader.question.count pro.reader.question_kind asks=count question=count
+@reader.question.amount pro.reader.question_kind asks=amount question=how_much
+@reader.scope.count pro.reader.scope_cue kind=question text=count question=count
+@reader.scope.universal pro.reader.scope_cue kind=universals text="every one of the" text="all of the" text="all the" text="each of the" text=every text=each text=all
+@reader.scope.auxiliary pro.reader.scope_cue kind=auxiliary text=had text=may text=might
+@reader.scope.modal pro.reader.scope_cue kind=modals text=shall
+@reader.scope.shall pro.reader.scope_cue kind=auxiliary text=shall
+@reader.scope.copula pro.reader.scope_cue kind=copulas text=am
+@reader.scope.subject pro.reader.scope_cue kind=subjects text=u
+@reader.scope.addressee pro.reader.scope_cue kind=addressees text=u
+@reader.scope.negative pro.reader.scope_cue kind=negatives text=except text=avoid
+@reader.scope.condition.positive pro.reader.scope_cue kind=condition polarity=positive text="provided that" text="as long as" text="only when"
+@reader.scope.condition.negative pro.reader.scope_cue kind=condition polarity=negative text=unless
+@reader.scope.courtesy pro.reader.scope_cue kind=courtesy text="if it is not too much trouble" text="if it's not too much trouble"
+@reader.scope.courtesy.optional pro.reader.scope_cue kind=courtesy text="if possible" text="if feasible" text="if you can" text="if you could"
+@reader.scope.courtesy.request pro.reader.scope_cue kind=courtesyLeads text="i wonder if you can" text="i wonder if you could" text="i was wondering if you can" text="i was wondering if you could"
+@reader.scope.alternative.exclusion pro.reader.scope_cue kind=negatives text="instead of" text="rather than"
+
+@reader.discussion.thanks w.lang.en.skip class=politeness text="I appreciate it" text="that would help"
+
+@reader.scope.proposals pro.reader.scope_cue kind=proposals text="how about" text="what about" text="what if"
+@reader.scope.rejections pro.reader.scope_cue kind=rejections text=no text="not that" text="not this" text="not that one" text="not this one"
+@reader.scope.removals pro.reader.scope_cue kind=removals text="no more"
+@reader.scope.predicate.negation pro.reader.scope_cue kind=predicateNegators text=not
+
+@reader.scope.counted_set pro.reader.scope_cue kind=countedUniversals text=all text="all the" text="all of the"
+
+# The catalog describes these keys as codes of the objects the request selects.
+@reader.drawing.drawn.identity pro.reader.identity family=drawn attribute=drawn.ids
+@reader.drawing.part.identity pro.reader.identity family=part attribute=part.ids
+@reader.diagram.chart.identity pro.reader.identity family=chart attribute=chart.ids
+@reader.diagram.group.identity pro.reader.identity family=group attribute=group.ids
+@reader.diagram.link.identity pro.reader.identity family=link attribute=link.ids
+@reader.diagram.node.identity pro.reader.identity family=node attribute=node.ids
+@reader.document.block.identity pro.reader.identity family=block attribute=block.ids
+@reader.document.section.identity pro.reader.identity family=section attribute=section.ids
+
+@reader.diagram.chart.grid.visibility pro.reader.fixed_property family=chart attribute=chart.grid on_value=show off_value=hide
+@reader.diagram.chart.values.visibility pro.reader.fixed_property family=chart attribute=chart.show_values on_value=show off_value=hide
+@reader.diagram.chart.kind pro.reader.nominal_class family=chart attribute=chart.type noun="chart" noun="plot" noun="graph"
+
+@reader.drawing.extent pro.reader.nominal_scale family=drawn attribute=drawn.size scale=size on=size
+@reader.diagram.termini pro.reader.compound_reference family=link first_key=link.from second_key=link.to delimiter="-"
+@reader.region.left_side w.lang.en.cue name=place.left_side on=place relation=at value=left takes=none lead="on the left-hand side" lead="on the left hand side"
+@reader.region.right_side w.lang.en.cue name=place.right_side on=place relation=at value=right takes=none lead="on the right-hand side" lead="on the right hand side"
+@reader.diagram.chart.grouped_totals pro.reader.argument_sequence family=chart act=make mode=new prefix="chart of" prefix="chart of the" part=chart.aggregate part=by part=chart.dimension part=for part=chart.measure
+@reader.diagram.chart.grouped_measure pro.reader.argument_sequence family=chart act=make mode=new prefix="chart of" prefix="chart of the" part=chart.aggregate part=chart.measure part=by part=chart.dimension
+@reader.diagram.chart.grouped_measure_of pro.reader.argument_sequence family=chart act=make mode=new prefix="chart of" prefix="chart of the" part=chart.aggregate part=of part=chart.measure part=by part=chart.dimension
+@reader.diagram.chart.sum_alias core.word text=totals means=sum of=chart.aggregate
+@reader.diagram.chart.avg_alias core.word text=average means=avg of=chart.aggregate
+@reader.diagram.chart.total_alias core.word text=total means=sum of=chart.aggregate
+
+# Grammatical separators for edits to a property of a described owner.
+@reader.change.property_on pro.reader.owner_property act=change owner=on value=to
+@reader.change.property_of pro.reader.owner_property act=change owner=of value=to
+@reader.diagram.chart.y_axis_title core.word text="y axis title" means=chart.yLabel
+@reader.diagram.chart.x_axis_title core.word text="x axis title" means=chart.xLabel
+
+# Requests naming the affected object before the desired result.
+@reader.english.affected pro.reader.affected_lead text="I need" text="I want" text="I would like" text="I'd like" text="I'll have" text="I will have"
+@reader.calendar.meeting_source pro.reader.affected_source act=remove family=meeting marker=from keyword=calendar attribute=meeting.calendar
+@reader.calendar.schedule_source pro.reader.affected_source act=remove family=meeting marker=from keyword=schedule attribute=meeting.calendar
+
+@reader.diagram.group.members pro.reader.member_action family=group act=group mode=new key=group.ids phase=result member_family=node member_family=link separator=and separator=with suffix=together
+
+# Two independently licensed properties of one explicit existing object.
+@reader.effects.suggestion pro.reader.coordinated_effects part="how about" part=effect part=join part=effect part=on part=owner
+@reader.effects.verb pro.reader.coordinated_effects part=verbal_effect part=join part=effect part=owner
+@reader.effects.make pro.reader.coordinated_effects part=make part=owner part=effect part=join part=effect
+@reader.effects.turn pro.reader.coordinated_effects part=turn part=owner part=effect part=join part=effect
+@reader.english.immediate_vicinity pro.reader.spatial_surface base="next to" relation=next_to text="right next to" text="directly next to" text="immediately next to"
+@reader.english.relative_left pro.reader.spatial_surface base="left of" relation=left_of text="on the left of" text="to the left of"
+@reader.english.relative_right pro.reader.spatial_surface base="right of" relation=right_of text="on the right of" text="to the right of"

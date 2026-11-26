@@ -1,0 +1,9 @@
+# A first-person wish with a cessation marker can propose removing a known object kind.
+@pro.reader.removal_wish core.type of=pro.reader.removal_wish closed=true
+@pro.reader.removal_wish.frame core.slot of=pro.reader.removal_wish key=frame kind=atom required=true
+@pro.reader.removal_wish.family core.slot of=pro.reader.removal_wish key=family kind=atom required=true
+@pro.reader.removal_wish.provider core.slot of=pro.reader.removal_wish key=provider kind=atom required=true
+@pro.reader.removal_wish.head core.slot of=pro.reader.removal_wish key=head kind=string many=true required=true
+@pro.reader.removal_wish.cessation core.slot of=pro.reader.removal_wish key=cessation kind=string many=true required=true
+
+@reader.removal.no_longer_wanted pro.reader.removal_wish frame=acts.more.remove.no family=drawn provider=k.objects.object head="i do not want" head="i dont want" head="i do not need" head="i dont need" cessation=anymore cessation="any more"

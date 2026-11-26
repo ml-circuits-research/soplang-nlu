@@ -1,0 +1,33 @@
+# Requests for a computed answer with an open, written operand.
+@pro.reader.result_request core.type of=pro.reader.result_request closed=true
+@pro.reader.result_request.text core.slot of=pro.reader.result_request key=text kind=string many=true required=true
+@pro.reader.result_request.question core.slot of=pro.reader.result_request key=question kind=atom required=true
+@pro.reader.result_request.qualifier core.slot of=pro.reader.result_request key=qualifier kind=string
+@reader.result.calculate pro.reader.result_request text=calculate text=compute text="work out" question=what
+@reader.result.calculate.total pro.reader.result_request text=calculate text=compute text="work out" question=total qualifier=total
+
+# A cue selects the kind of adjunct and the evidence includes the full cue.
+@pro.reader.request_intent_frame core.type of=pro.reader.request_intent_frame closed=true
+@pro.reader.request_intent_frame.text core.slot of=pro.reader.request_intent_frame key=text kind=string many=true required=true
+@pro.reader.request_intent_frame.role core.slot of=pro.reader.request_intent_frame key=role enum=purpose enum=destination required=true
+@pro.reader.request_intent_frame.form core.slot of=pro.reader.request_intent_frame key=form enum=nominal enum=verbal required=true
+@pro.reader.request_intent_frame.owner core.slot of=pro.reader.request_intent_frame key=owner enum=request enum=answer required=true
+@pro.reader.request_intent_frame.want core.slot of=pro.reader.request_intent_frame key=want enum=yes enum=no required=true
+@pro.reader.request_intent_frame.resolution core.slot of=pro.reader.request_intent_frame key=resolution enum=resolved enum=unresolved default=resolved
+@reader.intent.purpose.infinitive pro.reader.request_intent_frame text=to text="in order to" role=purpose form=verbal owner=request want=yes
+@reader.intent.purpose.nominal pro.reader.request_intent_frame text=for role=purpose form=nominal owner=request want=yes
+@reader.intent.purpose.excluded pro.reader.request_intent_frame text="not for" role=purpose form=nominal owner=request want=no
+@reader.intent.purpose.excluded.verb pro.reader.request_intent_frame text="not to" role=purpose form=verbal owner=request want=no
+@reader.intent.destination.answer pro.reader.request_intent_frame text="and put that answer on" text="and put the answer in" text="and put that result on" text="and put the result in" role=destination form=nominal owner=answer want=yes
+@reader.intent.destination.answer.not pro.reader.request_intent_frame text="and do not put that answer on" text="and do not put the result in" role=destination form=nominal owner=answer want=no
+# Keep these written boundaries until the shared result-destination grammar is available.
+@reader.intent.boundary.answer.destination pro.reader.request_intent_frame text="to go on" text="to go in" role=destination form=nominal owner=answer want=yes resolution=unresolved
+
+# A written destination can be bound while a locally unbound operand stays unread.
+@pro.reader.unresolved_destination core.type of=pro.reader.unresolved_destination closed=true
+@pro.reader.unresolved_destination.act core.slot of=pro.reader.unresolved_destination key=act kind=atom required=true
+@pro.reader.unresolved_destination.lead core.slot of=pro.reader.unresolved_destination key=lead kind=string required=true
+@pro.reader.unresolved_destination.head core.slot of=pro.reader.unresolved_destination key=head kind=string many=true required=true
+@pro.reader.unresolved_destination.marker core.slot of=pro.reader.unresolved_destination key=marker kind=string many=true required=true
+
+@reader.intent.destination.repeated_setting pro.reader.unresolved_destination act=copy lead="the same" head=treatment head=change head=setting head=settings head=formatting marker=to marker=on marker=in marker=onto marker="over to" marker="across to"

@@ -1,0 +1,16 @@
+# A finite subordinate clause can complete a separately typed operand.
+@pro.reader.postposed_clause core.type of=pro.reader.postposed_clause closed=true
+@pro.reader.postposed_clause.kind core.slot of=pro.reader.postposed_clause key=kind enum=causal enum=report required=true
+@pro.reader.postposed_clause.family core.slot of=pro.reader.postposed_clause key=family kind=atom required=true
+@pro.reader.postposed_clause.attribute core.slot of=pro.reader.postposed_clause key=attribute kind=atom required=true
+@pro.reader.postposed_clause.reason_key core.slot of=pro.reader.postposed_clause key=reason_key kind=atom
+@pro.reader.postposed_clause.value_type core.slot of=pro.reader.postposed_clause key=value_type kind=atom
+@pro.reader.postposed_clause.text core.slot of=pro.reader.postposed_clause key=text kind=string required=true many=true
+
+# "because" introduces the event motivating an expression; the native
+# inventory accounts for different authored inflections of that expression.
+@reader.expression.cause pro.reader.postposed_clause kind=causal family=drawn attribute=drawn.expression reason_key=drawn.cause value_type=k.faces.expression text=because core.source="w.face.face.cause and k.faces.expression.name"
+
+# Comparison to words the speaker reported. Keep the reference unread
+# because this grammar has neither the prior words nor a resolved referent.
+@reader.scene.report pro.reader.postposed_clause kind=report family=page attribute=page.scene text=as text="exactly as" core.source="w.dialogue.assumption.said"

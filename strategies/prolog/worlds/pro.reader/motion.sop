@@ -1,0 +1,10 @@
+# Map an anchorless displacement to catalog keys for an existing object.
+@pro.reader.motion core.type of=pro.reader.motion closed=true
+@pro.reader.motion.family core.slot of=pro.reader.motion key=family kind=atom required=true
+@pro.reader.motion.act core.slot of=pro.reader.motion key=act kind=atom required=true
+@pro.reader.motion.direction_key core.slot of=pro.reader.motion key=direction_key kind=atom required=true
+@pro.reader.motion.degree_key core.slot of=pro.reader.motion key=degree_key kind=atom
+@pro.reader.motion.offset_key core.slot of=pro.reader.motion key=offset_key kind=atom
+@pro.reader.motion.target_type core.slot of=pro.reader.motion key=target_type kind=atom
+
+@reader.drawing.motion pro.reader.motion family=drawn act=change direction_key=drawn.direction degree_key=drawn.distanceGrade offset_key=drawn.offset target_type=k.objects.object

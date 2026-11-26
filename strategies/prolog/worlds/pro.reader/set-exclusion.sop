@@ -1,0 +1,11 @@
+# Their named complement narrows the existing set rather than opening another effect.
+@pro.reader.set_exclusion core.type of=pro.reader.set_exclusion closed=true
+@pro.reader.set_exclusion.text core.slot of=pro.reader.set_exclusion key=text kind=string many=true required=true
+@pro.reader.set_exclusion.act core.slot of=pro.reader.set_exclusion key=act kind=atom many=true required=true
+@pro.reader.set_exclusion.anaphor core.slot of=pro.reader.set_exclusion key=anaphor kind=string many=true
+@pro.reader.set_exclusion.order core.slot of=pro.reader.set_exclusion key=order enum=before enum=after default=after
+@reader.set_exclusion.front pro.reader.set_exclusion order=before text="except for" act=remove act=change act=place act=pick act=copy anaphor=one anaphor=ones anaphor=those
+@reader.set_exclusion.en pro.reader.set_exclusion text=except act=remove act=change act=place act=pick act=copy anaphor=one anaphor=ones anaphor=those
+@reader.set_exclusion.keep pro.reader.set_exclusion text="but keep" act=remove anaphor=one anaphor=ones anaphor=those
+
+@reader.scope.universal.emphatic pro.reader.scope_cue kind=universals text="every single"

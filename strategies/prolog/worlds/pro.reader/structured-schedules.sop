@@ -1,0 +1,17 @@
+# Written date, clock, time-zone and quantity fields stay distinct from an instant.
+@reader.calendar.meeting.identifier.format pro.reader.argument_format family=meeting key=meeting.id format=identifier
+@reader.calendar.meeting.date.format pro.reader.argument_format family=meeting key=meeting.day format=date
+@reader.calendar.meeting.clock.format pro.reader.argument_format family=meeting key=meeting.time format=clock
+@reader.calendar.meeting.end.format pro.reader.argument_format family=meeting key=meeting.end format=clock
+@reader.calendar.meeting.zone.format pro.reader.argument_format family=meeting key=meeting.timezone format=zone
+@reader.calendar.meeting.length.format pro.reader.argument_format family=meeting key=meeting.length format=measurement
+@reader.quantity.meeting.length pro.reader.property_quantity family=meeting key=meeting.length quantity=time
+@reader.time.zone.utc core.word of=k.time.zone.name text=UTC means=UTC
+
+# The combination of ID and a fully written schedule licenses a meeting reading.
+@reader.calendar.schedule.with_identifier pro.reader.argument_sequence family=meeting act=make mode=new inferred_owner=true prefix=add prefix=create prefix=schedule part=meeting.title part="with ID" part=meeting.id part="," part=meeting.day part=meeting.time part=meeting.timezone part=meeting.length structured_part=meeting.id structured_part=meeting.day structured_part=meeting.time structured_part=meeting.timezone structured_part=meeting.length
+@reader.calendar.schedule.identifier_label pro.reader.argument_label key=meeting.id text="with ID"
+
+# An existing event is identified before the written edit predicate.
+@reader.calendar.schedule.edit_range pro.reader.argument_sequence family=meeting act=change mode=existing prefix="I want" prefix="I'd like" owner=event owner=meeting predicate_surface=edited predicate_surface=updated part=$owner part=$identity part=$predicate part=":" part=meeting.title part="," part=meeting.day part="," part=meeting.time part=to part=meeting.end part=meeting.timezone part="," part=notes part=meeting.agenda structured_part=meeting.day structured_part=meeting.time structured_part=meeting.end structured_part=meeting.timezone
+@reader.calendar.schedule.agenda_label pro.reader.argument_label key=meeting.agenda text=notes

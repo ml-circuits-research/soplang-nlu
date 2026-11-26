@@ -1,0 +1,245 @@
+# Optional bindings between an application's declared kinds and w.request targets.
+@pro.reader core.module name=pro.reader version=1 exports=target exports=spatial exports=instance_code exports=evidence_role exports=preservation exports=literal exports=tuple exports=arguments exports=scope_cue exports=question_kind
+@pro.reader.target core.type of=pro.reader.target closed=true
+@pro.reader.target.of core.slot of=pro.reader.target key=of kind=atom
+@pro.reader.target.family core.slot of=pro.reader.target key=family kind=atom required=true
+@pro.reader.target.sort core.slot of=pro.reader.target key=sort kind=atom kind=string
+@pro.reader.target.mode core.slot of=pro.reader.target key=mode enum=new enum=existing enum=bound
+@pro.reader.target.text core.slot of=pro.reader.target key=text kind=atom kind=string many=true
+@pro.reader.target.act core.slot of=pro.reader.target key=act kind=atom kind=string many=true
+
+# Slot names for a family's spatial relation and its grounded nominal anchor.
+@pro.reader.spatial core.type of=pro.reader.spatial closed=true
+@pro.reader.spatial.family core.slot of=pro.reader.spatial key=family kind=atom required=true
+@pro.reader.spatial.relation_key core.slot of=pro.reader.spatial key=relation_key kind=atom required=true
+@pro.reader.spatial.anchor_key core.slot of=pro.reader.spatial key=anchor_key kind=atom required=true
+@pro.reader.spatial.region_key core.slot of=pro.reader.spatial key=region_key kind=atom
+@pro.reader.spatial.arrangement_key core.slot of=pro.reader.spatial key=arrangement_key kind=atom
+@pro.reader.spatial.named_act core.slot of=pro.reader.spatial key=named_act kind=atom many=true
+
+# A documented prefix on the family's decimal instance codes.
+@pro.reader.instance_code core.type of=pro.reader.instance_code closed=true
+@pro.reader.instance_code.family core.slot of=pro.reader.instance_code key=family kind=atom required=true
+@pro.reader.instance_code.prefix core.slot of=pro.reader.instance_code key=prefix kind=atom required=true
+
+@pro.reader.evidence_role core.type of=pro.reader.evidence_role closed=true
+@pro.reader.evidence_role.role core.slot of=pro.reader.evidence_role key=role kind=atom required=true
+@pro.reader.evidence_role.type core.slot of=pro.reader.evidence_role key=type kind=atom required=true
+@pro.reader.evidence_role.slot core.slot of=pro.reader.evidence_role key=slot kind=atom required=true
+@pro.reader.evidence_role.phase core.slot of=pro.reader.evidence_role key=phase enum=selector enum=result
+
+
+# A family's declared class key for preserving current state.
+@pro.reader.preservation core.type of=pro.reader.preservation closed=true
+@pro.reader.preservation.family core.slot of=pro.reader.preservation key=family kind=atom required=true
+@pro.reader.preservation.attribute core.slot of=pro.reader.preservation key=attribute kind=atom required=true
+
+# An optional concept shares a learned preservation construction across declared keys.
+@pro.reader.preservation.concept core.slot of=pro.reader.preservation key=concept kind=atom
+
+# An open span key that fills a literal role in the family's request.
+@pro.reader.literal core.type of=pro.reader.literal closed=true
+@pro.reader.literal.family core.slot of=pro.reader.literal key=family kind=atom required=true
+@pro.reader.literal.attribute core.slot of=pro.reader.literal key=attribute kind=atom required=true
+@pro.reader.literal.role core.slot of=pro.reader.literal key=role enum=payload enum=name enum=quoted required=true
+@pro.reader.literal.text core.slot of=pro.reader.literal key=text kind=string many=true
+
+# Two ordered, open number keys read together after a declared cue.
+@pro.reader.tuple core.type of=pro.reader.tuple closed=true
+@pro.reader.tuple.family core.slot of=pro.reader.tuple key=family kind=atom required=true
+@pro.reader.tuple.first_key core.slot of=pro.reader.tuple key=first_key kind=atom required=true
+@pro.reader.tuple.second_key core.slot of=pro.reader.tuple key=second_key kind=atom required=true
+@pro.reader.tuple.first_label core.slot of=pro.reader.tuple key=first_label kind=atom
+@pro.reader.tuple.second_label core.slot of=pro.reader.tuple key=second_label kind=atom
+@pro.reader.tuple.act core.slot of=pro.reader.tuple key=act kind=atom many=true required=true
+@pro.reader.tuple.text core.slot of=pro.reader.tuple key=text kind=string many=true required=true
+
+# Two named arguments with a declared separating phrase.
+@pro.reader.arguments core.type of=pro.reader.arguments closed=true
+@pro.reader.arguments.family core.slot of=pro.reader.arguments key=family kind=atom required=true
+@pro.reader.arguments.act core.slot of=pro.reader.arguments key=act kind=atom required=true
+@pro.reader.arguments.mode core.slot of=pro.reader.arguments key=mode enum=new enum=existing required=true
+@pro.reader.arguments.first_key core.slot of=pro.reader.arguments key=first_key kind=atom required=true
+@pro.reader.arguments.second_key core.slot of=pro.reader.arguments key=second_key kind=atom required=true
+@pro.reader.arguments.first_phase core.slot of=pro.reader.arguments key=first_phase enum=selector enum=result
+@pro.reader.arguments.second_phase core.slot of=pro.reader.arguments key=second_phase enum=selector enum=result
+@pro.reader.arguments.anchor core.slot of=pro.reader.arguments key=anchor enum=predicate enum=nominal
+@pro.reader.arguments.prefix core.slot of=pro.reader.arguments key=prefix kind=atom kind=string many=true
+@pro.reader.arguments.separator core.slot of=pro.reader.arguments key=separator kind=atom kind=string many=true required=true
+
+# Bridge the native interrogative semantics to a w.request question type.
+@pro.reader.question_kind core.type of=pro.reader.question_kind closed=true
+@pro.reader.question_kind.asks core.slot of=pro.reader.question_kind key=asks kind=atom required=true
+@pro.reader.question_kind.question core.slot of=pro.reader.question_kind key=question kind=atom required=true
+
+# English lexical cues that supplement the native interrogative grammar.
+@pro.reader.scope_cue core.type of=pro.reader.scope_cue closed=true
+@pro.reader.scope_cue.kind core.slot of=pro.reader.scope_cue key=kind enum=condition enum=question enum=auxiliary enum=modals enum=copulas enum=subjects enum=addressees enum=courtesy enum=courtesyLeads enum=universals enum=countedUniversals enum=negatives enum=proposals enum=rejections enum=removals enum=predicateNegators required=true
+@pro.reader.scope_cue.text core.slot of=pro.reader.scope_cue key=text kind=string many=true required=true
+@pro.reader.scope_cue.polarity core.slot of=pro.reader.scope_cue key=polarity enum=positive enum=negative
+@pro.reader.scope_cue.question core.slot of=pro.reader.scope_cue key=question kind=atom
+
+# Catalog property that identifies the existing target selected by a noun phrase.
+@pro.reader.identity core.type of=pro.reader.identity closed=true
+@pro.reader.identity.family core.slot of=pro.reader.identity key=family kind=atom required=true
+@pro.reader.identity.attribute core.slot of=pro.reader.identity key=attribute kind=atom required=true
+
+# Translate a native on/off construction to a closed property in the request catalog.
+@pro.reader.fixed_property core.type of=pro.reader.fixed_property closed=true
+@pro.reader.fixed_property.family core.slot of=pro.reader.fixed_property key=family kind=atom required=true
+@pro.reader.fixed_property.attribute core.slot of=pro.reader.fixed_property key=attribute kind=atom required=true
+@pro.reader.fixed_property.slot core.slot of=pro.reader.fixed_property key=slot kind=atom
+@pro.reader.fixed_property.on_value core.slot of=pro.reader.fixed_property key=on_value kind=atom
+@pro.reader.fixed_property.off_value core.slot of=pro.reader.fixed_property key=off_value kind=atom
+
+# A written class value directly modifying this noun selects a catalog subtype.
+@pro.reader.nominal_class core.type of=pro.reader.nominal_class closed=true
+@pro.reader.nominal_class.family core.slot of=pro.reader.nominal_class key=family kind=atom required=true
+@pro.reader.nominal_class.attribute core.slot of=pro.reader.nominal_class key=attribute kind=atom required=true
+@pro.reader.nominal_class.noun core.slot of=pro.reader.nominal_class key=noun kind=string many=true required=true
+
+@pro.reader.nominal_scale core.type of=pro.reader.nominal_scale closed=true
+@pro.reader.nominal_scale.family core.slot of=pro.reader.nominal_scale key=family kind=atom required=true
+@pro.reader.nominal_scale.attribute core.slot of=pro.reader.nominal_scale key=attribute kind=atom required=true
+@pro.reader.nominal_scale.scale core.slot of=pro.reader.nominal_scale key=scale kind=atom required=true
+@pro.reader.nominal_scale.on core.slot of=pro.reader.nominal_scale key=on kind=atom required=true
+
+@pro.reader.compound_reference core.type of=pro.reader.compound_reference closed=true
+@pro.reader.compound_reference.family core.slot of=pro.reader.compound_reference key=family kind=atom required=true
+@pro.reader.compound_reference.first_key core.slot of=pro.reader.compound_reference key=first_key kind=atom required=true
+@pro.reader.compound_reference.second_key core.slot of=pro.reader.compound_reference key=second_key kind=atom required=true
+@pro.reader.compound_reference.delimiter core.slot of=pro.reader.compound_reference key=delimiter kind=string required=true
+
+# Following the nominal prefix, each part is a catalog key or a literal separator.
+@pro.reader.argument_sequence core.type of=pro.reader.argument_sequence closed=true
+@pro.reader.argument_sequence.family core.slot of=pro.reader.argument_sequence key=family kind=atom required=true
+@pro.reader.argument_sequence.act core.slot of=pro.reader.argument_sequence key=act kind=atom required=true
+@pro.reader.argument_sequence.mode core.slot of=pro.reader.argument_sequence key=mode enum=new enum=existing required=true
+@pro.reader.argument_sequence.prefix core.slot of=pro.reader.argument_sequence key=prefix kind=string many=true
+@pro.reader.argument_sequence.part core.slot of=pro.reader.argument_sequence key=part kind=atom kind=string many=true required=true
+@pro.reader.argument_sequence.lexical_part core.slot of=pro.reader.argument_sequence key=lexical_part kind=atom many=true
+@pro.reader.argument_sequence.structured_part core.slot of=pro.reader.argument_sequence key=structured_part kind=atom many=true
+@pro.reader.argument_sequence.contextual_owner core.slot of=pro.reader.argument_sequence key=contextual_owner kind=boolean
+@pro.reader.argument_sequence.ordered_numeric_pair core.slot of=pro.reader.argument_sequence key=ordered_numeric_pair kind=boolean
+@pro.reader.argument_sequence.transition_key core.slot of=pro.reader.argument_sequence key=transition_key kind=atom
+@pro.reader.argument_sequence.literal_reference core.slot of=pro.reader.argument_sequence key=literal_reference kind=boolean
+@pro.reader.argument_sequence.request_mode core.slot of=pro.reader.argument_sequence key=request_mode kind=atom
+@pro.reader.argument_sequence.mode_marker core.slot of=pro.reader.argument_sequence key=mode_marker kind=string
+@pro.reader.argument_sequence.inferred_owner core.slot of=pro.reader.argument_sequence key=inferred_owner kind=boolean
+
+@pro.reader.argument_format core.type of=pro.reader.argument_format closed=true
+@pro.reader.argument_format.family core.slot of=pro.reader.argument_format key=family kind=atom required=true
+@pro.reader.argument_format.key core.slot of=pro.reader.argument_format key=key kind=atom required=true
+@pro.reader.argument_format.format core.slot of=pro.reader.argument_format key=format enum=identifier enum=date enum=clock enum=zone enum=measurement enum=nominal_description enum=scalar_number enum=positive_count required=true
+
+@pro.reader.count_operand_conflict core.type of=pro.reader.count_operand_conflict closed=true
+@pro.reader.count_operand_conflict.family core.slot of=pro.reader.count_operand_conflict key=family kind=atom required=true
+@pro.reader.count_operand_conflict.key core.slot of=pro.reader.count_operand_conflict key=key kind=atom required=true
+@pro.reader.count_operand_conflict.before core.slot of=pro.reader.count_operand_conflict key=before kind=string many=true
+@pro.reader.count_operand_conflict.after core.slot of=pro.reader.count_operand_conflict key=after kind=string many=true
+@pro.reader.count_operand_conflict.note core.slot of=pro.reader.count_operand_conflict key=note kind=string required=true
+
+@pro.reader.argument_sequence.owner core.slot of=pro.reader.argument_sequence key=owner kind=string many=true
+@pro.reader.argument_sequence.owner_key core.slot of=pro.reader.argument_sequence key=owner_key kind=atom
+@pro.reader.argument_sequence.owner_value core.slot of=pro.reader.argument_sequence key=owner_value kind=atom kind=string
+@pro.reader.argument_sequence.owner_sort core.slot of=pro.reader.argument_sequence key=owner_sort kind=atom kind=string
+@pro.reader.argument_sequence.owner_kind_type core.slot of=pro.reader.argument_sequence key=owner_kind_type kind=atom
+@pro.reader.argument_sequence.scope_attribute core.slot of=pro.reader.argument_sequence key=scope_attribute kind=atom
+@pro.reader.argument_sequence.scope_literal_slot core.slot of=pro.reader.argument_sequence key=scope_literal_slot kind=atom
+@pro.reader.argument_sequence.scope_literal core.slot of=pro.reader.argument_sequence key=scope_literal kind=string many=true
+@pro.reader.argument_sequence.tail core.slot of=pro.reader.argument_sequence key=tail kind=string many=true
+
+@pro.reader.owner_inventory core.type of=pro.reader.owner_inventory closed=true
+@pro.reader.owner_inventory.family core.slot of=pro.reader.owner_inventory key=family kind=atom required=true
+@pro.reader.owner_inventory.act core.slot of=pro.reader.owner_inventory key=act kind=atom required=true
+@pro.reader.owner_inventory.provider core.slot of=pro.reader.owner_inventory key=provider kind=atom required=true
+
+@pro.reader.owner_property core.type of=pro.reader.owner_property closed=true
+@pro.reader.owner_property.act core.slot of=pro.reader.owner_property key=act kind=atom required=true
+@pro.reader.owner_property.owner core.slot of=pro.reader.owner_property key=owner kind=string required=true
+@pro.reader.owner_property.value core.slot of=pro.reader.owner_property key=value kind=string required=true
+
+@pro.reader.affected_lead core.type of=pro.reader.affected_lead closed=true
+@pro.reader.affected_lead.text core.slot of=pro.reader.affected_lead key=text kind=string many=true required=true
+@pro.reader.affected_source core.type of=pro.reader.affected_source closed=true
+@pro.reader.affected_source.act core.slot of=pro.reader.affected_source key=act kind=atom required=true
+@pro.reader.affected_source.family core.slot of=pro.reader.affected_source key=family kind=atom required=true
+@pro.reader.affected_source.marker core.slot of=pro.reader.affected_source key=marker kind=string required=true
+@pro.reader.affected_source.keyword core.slot of=pro.reader.affected_source key=keyword kind=string required=true
+@pro.reader.affected_source.attribute core.slot of=pro.reader.affected_source key=attribute kind=atom required=true
+
+@pro.reader.member_action core.type of=pro.reader.member_action closed=true
+@pro.reader.member_action.family core.slot of=pro.reader.member_action key=family kind=atom required=true
+@pro.reader.member_action.member_family core.slot of=pro.reader.member_action key=member_family kind=atom many=true
+@pro.reader.member_action.act core.slot of=pro.reader.member_action key=act kind=atom required=true
+@pro.reader.member_action.mode core.slot of=pro.reader.member_action key=mode enum=new enum=existing required=true
+@pro.reader.member_action.key core.slot of=pro.reader.member_action key=key kind=atom required=true
+@pro.reader.member_action.phase core.slot of=pro.reader.member_action key=phase enum=result enum=selector required=true
+@pro.reader.member_action.separator core.slot of=pro.reader.member_action key=separator kind=string many=true required=true
+@pro.reader.member_action.suffix core.slot of=pro.reader.member_action key=suffix kind=string many=true
+@pro.reader.member_action.noun core.slot of=pro.reader.member_action key=noun kind=string many=true
+@pro.reader.member_action.numeric_id core.slot of=pro.reader.member_action key=numeric_id kind=boolean
+@pro.reader.member_action.effect_key core.slot of=pro.reader.member_action key=effect_key kind=atom
+
+@pro.reader.coordinated_effects core.type of=pro.reader.coordinated_effects closed=true
+@pro.reader.coordinated_effects.part core.slot of=pro.reader.coordinated_effects key=part kind=string kind=atom many=true required=true
+
+@pro.reader.creation_role core.type of=pro.reader.creation_role closed=true
+@pro.reader.creation_role.family core.slot of=pro.reader.creation_role key=family kind=atom required=true
+@pro.reader.creation_role.attribute core.slot of=pro.reader.creation_role key=attribute kind=atom required=true
+@pro.reader.creation_role.sort_key core.slot of=pro.reader.creation_role key=sort_key kind=atom many=true
+@pro.reader.creation_role.sort core.slot of=pro.reader.creation_role key=sort kind=string many=true
+@pro.reader.creation_role.text core.slot of=pro.reader.creation_role key=text kind=string many=true
+@pro.reader.creation_role.preposed core.slot of=pro.reader.creation_role key=preposed kind=boolean
+@pro.reader.creation_role.value_type core.slot of=pro.reader.creation_role key=value_type kind=atom
+
+@pro.reader.spatial_surface core.type of=pro.reader.spatial_surface closed=true
+@pro.reader.spatial_surface.base core.slot of=pro.reader.spatial_surface key=base kind=string required=true
+@pro.reader.spatial_surface.text core.slot of=pro.reader.spatial_surface key=text kind=string required=true many=true
+@pro.reader.spatial_surface.relation core.slot of=pro.reader.spatial_surface key=relation kind=atom required=true
+
+@pro.reader.transformation core.type of=pro.reader.transformation closed=true
+@pro.reader.transformation.family core.slot of=pro.reader.transformation key=family kind=atom required=true
+@pro.reader.transformation.act core.slot of=pro.reader.transformation key=act kind=atom required=true
+@pro.reader.transformation.attribute core.slot of=pro.reader.transformation key=attribute kind=atom required=true
+@pro.reader.transformation.owner_type core.slot of=pro.reader.transformation key=owner_type kind=atom
+@pro.reader.transformation.value_type core.slot of=pro.reader.transformation key=value_type kind=atom
+@pro.reader.transformation.owner core.slot of=pro.reader.transformation key=owner kind=string many=true
+@pro.reader.transformation.extent core.slot of=pro.reader.transformation key=extent kind=string many=true
+@pro.reader.transformation.value_head core.slot of=pro.reader.transformation key=value_head kind=string many=true
+@pro.reader.transformation.predicate core.slot of=pro.reader.transformation key=predicate kind=string many=true required=true
+@pro.reader.transformation.marker core.slot of=pro.reader.transformation key=marker kind=string many=true required=true
+
+@pro.reader.owner_sort core.type of=pro.reader.owner_sort closed=true
+@pro.reader.owner_sort.family core.slot of=pro.reader.owner_sort key=family kind=atom required=true
+@pro.reader.owner_sort.act core.slot of=pro.reader.owner_sort key=act kind=atom required=true
+@pro.reader.owner_sort.slot core.slot of=pro.reader.owner_sort key=slot kind=atom required=true
+
+@pro.reader.property_quantity core.type of=pro.reader.property_quantity closed=true
+@pro.reader.property_quantity.family core.slot of=pro.reader.property_quantity key=family kind=atom required=true
+@pro.reader.property_quantity.key core.slot of=pro.reader.property_quantity key=key kind=atom required=true
+@pro.reader.property_quantity.quantity core.slot of=pro.reader.property_quantity key=quantity kind=atom required=true
+
+# A reciprocal pronoun completes a declared binary predicate in this language.
+@pro.reader.reciprocal_marker core.type of=pro.reader.reciprocal_marker closed=true
+@pro.reader.reciprocal_marker.text core.slot of=pro.reader.reciprocal_marker key=text kind=string many=true required=true
+
+# How a sentence opening licenses reuse of an otherwise identical body.
+@pro.reader.body_lead core.type of=pro.reader.body_lead closed=true
+@pro.reader.body_lead.role core.slot of=pro.reader.body_lead key=role enum=neutral enum=action_only enum=action_opening enum=nominal required=true
+@pro.reader.body_lead.text core.slot of=pro.reader.body_lead key=text kind=string many=true required=true
+
+# Written finite values can be limited to a native subject inventory.
+@pro.reader.nominal_pattern core.type of=pro.reader.nominal_pattern closed=true
+@pro.reader.nominal_pattern.family core.slot of=pro.reader.nominal_pattern key=family kind=atom required=true
+@pro.reader.nominal_pattern.key core.slot of=pro.reader.nominal_pattern key=key kind=atom required=true
+@pro.reader.nominal_pattern.pattern core.slot of=pro.reader.nominal_pattern key=pattern kind=string required=true many=true
+@pro.reader.nominal_value core.type of=pro.reader.nominal_value closed=true
+@pro.reader.nominal_value.family core.slot of=pro.reader.nominal_value key=family kind=atom required=true
+@pro.reader.nominal_value.key core.slot of=pro.reader.nominal_value key=key kind=atom required=true
+@pro.reader.nominal_value.value core.slot of=pro.reader.nominal_value key=value kind=atom required=true
+@pro.reader.nominal_value.text core.slot of=pro.reader.nominal_value key=text kind=string many=true required=true
+@pro.reader.nominal_pattern.subject_type core.slot of=pro.reader.nominal_pattern key=subject_type kind=atom many=true
+@pro.reader.nominal_pattern.heading core.slot of=pro.reader.nominal_pattern key=heading kind=boolean
+@pro.reader.nominal_value.subject_type core.slot of=pro.reader.nominal_value key=subject_type kind=atom many=true
+@pro.reader.nominal_value.strict_subject core.slot of=pro.reader.nominal_value key=strict_subject kind=boolean

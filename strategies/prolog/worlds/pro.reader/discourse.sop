@@ -1,0 +1,18 @@
+# Pragmatic sentences that can follow an independently delimited request.
+@pro.reader.trailing_discourse core.type of=pro.reader.trailing_discourse closed=true
+@pro.reader.trailing_discourse.text core.slot of=pro.reader.trailing_discourse key=text kind=string required=true many=true
+
+@reader.trailing.acknowledgement pro.reader.trailing_discourse text="I appreciate it" text="that would help" text="that would be helpful" text="much appreciated"
+@reader.trailing.thanks pro.reader.trailing_discourse text=thanks text="thank you" text="thanks in advance" text="many thanks"
+
+# Detached turn openings and closings. Only the declared, punctuated span is discourse.
+@pro.reader.discourse_edge core.type of=pro.reader.discourse_edge closed=true
+@pro.reader.discourse_edge.position core.slot of=pro.reader.discourse_edge key=position enum=before enum=after required=true
+@pro.reader.discourse_edge.text core.slot of=pro.reader.discourse_edge key=text kind=string many=true required=true
+@reader.discourse.turn_open pro.reader.discourse_edge position=before text="by the way" text="before I forget" text="one more thing" text="while you're at it" text="while you are at it" text="same session, next ask" text="excuse me" text=sorry text="sorry to interrupt" text="sorry to nag"
+@reader.discourse.turn_close pro.reader.discourse_edge position=after text="if you please" text="if you would be so kind" text="please and thank you" text="much appreciated"
+
+# Additive transitions at an independent sentence boundary.
+@pro.reader.sentence_addition core.type of=pro.reader.sentence_addition closed=true
+@pro.reader.sentence_addition.text core.slot of=pro.reader.sentence_addition key=text kind=string many=true required=true
+@reader.discourse.sentence_addition pro.reader.sentence_addition text=plus text="and also"
