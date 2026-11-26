@@ -103,3 +103,7 @@ All members of a coordination must have the same wire type. A clause's direct ob
 ```
 
 The two clauses do not repeat `then` as their connective. Use the same rule for `and`, `or` and `but` when coordination represents them. Do not add an implied auxiliary, repeated noun, pronoun or predicate as a source quote. For ellipsis, connect the explicit portion as a fragment or reuse an existing grounded reference only when that one mention supplies the shared role.
+
+An identifier after a singular object noun selects one item rather than counting items. In "box two", retain `head="box" compound="two"` or use a name if the complete written expression is a name. A number before a plural noun can instead be its `quantity`. When several identified items receive different properties, keep one linked value for each item.
+
+For naming and labelling, ground both the thing being named and the exact label with a relation or a predicative entity. A word such as "next", "open" or "retry" can be the written label when it follows "label" or "labelled". Preserve it as a name in that role. With "Draft to Review, label retry", the initial endpoints narrowly identify the existing connection. Preserve that qualification and point the label action to the connection, even though the noun "arrow" is absent. A fragment that supplies a target must connect to the action using that target.
