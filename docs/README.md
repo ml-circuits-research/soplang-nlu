@@ -62,3 +62,9 @@ try {
 ```
 
 For Prolog import prolog from strategies/prolog/index.mjs and supply its engineDirectory. Its adapter accepts modelPath, worldsOnly, languageFrames and evidence. Its underlying loader currently uses the installed knowledge snapshot and SOP_WORLDS overlays. Supply analyseSyntax from createSyntaxReader when syntax evidence is required.
+
+## Replaying the legacy engines
+
+Run `WORKERS=8 SAMPLE_PERCENT=1 node tests/benchmark/run.mjs` with the installed engines, dataset and knowledge checkout under SOP_WORKSPACE (defaults to sibling repositories). The runner reads committed dataset blobs, orders record IDs by a seeded SHA-256 digest and takes the requested fraction. A record with several alternative references counts once. The historical directory holds the exact sample, engine settings, timings and compressed predictions. Engines run consecutively with the same concurrency. Wall time includes worker startup, generation, result collection and shutdown. Per-request latency measures the reader call inside a worker. The timing sample is drawn across the dataset and may include Prolog training examples.
+
+Run `node tests/benchmark/grade.mjs eval-results/RUN` to apply the same static verifier and WebMeet comparator to both engines after timing. The evaluator considers whole circuits across every candidate and reference in deterministic order. Automatic grades and semantic error tags can be audited from the saved rows. Prolog currently emits its native candidate set and Z3 uses up to eight candidates. This measures the installed configurations and their native output costs.
