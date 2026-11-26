@@ -4,18 +4,34 @@ import {prolog} from '../prolog/index.mjs'
 import {prologWorker} from '../prolog/src/prolog-worker.mjs'
 
 const program = new URL('./prolog/worker.pl',import.meta.url)
+const evidenceSlots = {
+  clause:{polarity:'negation',speech_act:'expression'},
+  relation:{kind:'cue'},
+  coordination:{kind:'cue'}
+}
 
 // The projection owns wire types and source intervals. Serialization only reads the source.
 function serialize(text,tokens,wires) {
+  const source=([,,start,end])=>text.slice(tokens[start].start,tokens[end-1].end)
+  const semanticEvidence=[]
   const lines=wires.map(([id,type,fields])=>{
-    const attributes=fields.map(([slot,kind,value,end])=>{
+    for (const [key,kind] of fields) {
+      if (kind!=='atom') continue
+      const slot=evidenceSlots[type]?.[key]
+      if (!slot) continue
+      for (const field of fields.filter(([name,mode])=>name===slot && mode==='quote')) {
+        semanticEvidence.push({wire:id,key,sourceSlot:slot,source:source(field)})
+      }
+    }
+    const attributes=fields.map(field=>{
+      const [slot,kind,value]=field
       if (kind==='atom') return slot+'='+value
       if (kind==='ref') return slot+'=$'+value
-      return slot+'='+JSON.stringify(text.slice(tokens[value].start,tokens[end-1].end))
+      return slot+'='+JSON.stringify(source(field))
     })
     return '@'+id+' nlu.'+type+' '+attributes.join(' ')
   })
-  return {sop:lines.join('\n'),semanticEvidence:[],origin:'dependency-prolog'}
+  return {sop:lines.join('\n'),semanticEvidence,origin:'dependency-prolog'}
 }
 
 function rank(text,validate,neural,symbolic) {
