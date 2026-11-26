@@ -14,6 +14,7 @@ const decimalValue = /^[+-]?[0-9]*\.[0-9]+$/u;
 const clockValue = /^[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?$/u;
 const dateValue = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
 const discourse = new Set(['filler','politeness','interjection']);
+const analyzableDiscourse = new Set(['i appreciate it','that would help']);
 const coordinationKind = kind => kind==='coordination' ? 'conjunctive' : kind==='addition' ? 'additive' : kind;
 
 function nativeInput(text, worlds) {
@@ -74,7 +75,7 @@ function nativeInput(text, worlds) {
       comparative:Boolean(facts.comparative), participle:Boolean(facts.participle),
       clauseTaker:Boolean(facts.clauseTaker),
       negation:Boolean(facts.negation || worlds.scopeGrammar.predicateNegators.has(surface)),
-      skip:Boolean(facts.cues?.some(cue=>discourse.has(cue))),
+      skip:!analyzableDiscourse.has(surface) && Boolean(facts.cues?.some(cue=>discourse.has(cue))),
       word:lexicalWord.test(surface)
     };
     cache.set(surface,result);
@@ -255,12 +256,13 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     }
     const object=group(objects,clause.coordinations);
     if (clause.join.length) {
-      const [start,end,kind]=clause.join;
-      if (kind==='condition') {
+      const [start,end,kind,position]=clause.join;
+      if (position) {
         const relation='r'+nextRelation++;
+        const [matrix,dependent]=position==='fronted' ? [id,previous] : [previous,id];
         semanticEvidence.push({wire:relation,key:'kind',sourceSlot:'cue',source:span([start,end])});
-        lines.push('@'+relation+' nlu.relation kind=condition'+
-          ref('from',id)+ref('to',previous)+raw('cue',[start,end]));
+        lines.push('@'+relation+' nlu.relation'+atom('kind',kind)+
+          ref('from',matrix)+ref('to',dependent)+raw('cue',[start,end]));
       } else {
         const coordination='g'+nextCoordination++;
         semanticEvidence.push({wire:coordination,key:'kind',sourceSlot:'cue',source:span([start,end])});

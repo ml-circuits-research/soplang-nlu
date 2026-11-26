@@ -30,6 +30,7 @@ export function syntaxLexicon(facts,senses,verbFrames,posUsage) {
   words('w.lang.en.aux','auxiliary',()=>['auxiliary']);
   add("let's",'auxiliary','hortative');
   add('let’s','auxiliary','hortative');
+  add('go ahead and','cues','politeness');
   words('w.lang.en.copula','copula',()=>['copula']);
   words('w.lang.en.wh','question',wire=>values(wire,'asks'));
   for (const wire of facts('w.lang.en.neg')) for (const surface of values(wire,'text')) {

@@ -27,9 +27,14 @@ clause_attachment_choice(Clause,Score,Cue,Owner) :-
     ; append(_, [Prior,Relation|_], Clause.relations),
       Prior.end=:=Cue, last(Prior.entities,Anchor), Owner=Anchor.from, Score is Cue+1 ).
 
-nominal_attachments(_,[],_,[]).
-nominal_attachments(Q,[Relation|Tail],Owners,[Attached|AttachedTail]) :-
-    ( Relation.cue=[Cue,After], After=:=Cue+1, unquoted_word(Q,Cue,"of"), last(Owners,Head) ->
+nominal_attachments(Q,Relations,Objects,Attached) :-
+    nominal_attachments(Q,Relations,Objects,Objects,Attached).
+
+nominal_attachments(_,[],_,_,[]).
+nominal_attachments(Q,[Relation|Tail],Objects,Owners,[Attached|AttachedTail]) :-
+    ( Relation.kinds=["orientation"], last(Objects,Object) ->
+        Attached=Relation.put(owner,Object.from)
+    ; Relation.cue=[Cue,After], After=:=Cue+1, unquoted_word(Q,Cue,"of"), last(Owners,Head) ->
         Attached=Relation.put(owner,Head.from)
     ; Relation.cue=[Cue,After], After=:=Cue+1, unquoted_word(Q,Cue,"by"),
       last(Owners,Direction), Direction.head=[Side,_], unquoted_word(Q,Side,SideWord),
@@ -37,7 +42,7 @@ nominal_attachments(Q,[Relation|Tail],Owners,[Attached|AttachedTail]) :-
       Relation.entities=[Measure], measurement(Q,Measure) ->
         Attached=Relation.put(_{kinds:["measure"],markers:[],attachment:"clause"})
     ; Attached=Relation ),
-    nominal_attachments(Q,Tail,Relation.entities,AttachedTail).
+    nominal_attachments(Q,Tail,Objects,Relation.entities,AttachedTail).
 
 measurement(Q,Phrase) :-
     Phrase.head=[At,_], unquoted_word(Q,At,Unit),
@@ -79,11 +84,18 @@ boundary(Q,At,Cut,End,Cut,[],Cut,[]) :-
     effective_end(Q,Cut,End,[],BodyEnd,_),
     main_predicate(Q,At,Cut,_,OperandStart,Acts), OperandStart<Cut,
     complete_before_gratitude(Q,OperandStart,Cut,Acts).
-boundary(Q,At,Cut,End,Cut,[Cut,Next],Next,[At,CueEnd,"condition"]) :-
+boundary(Q,At,Cut,End,Cut,[Cut,Next],Next,[At,CueEnd,Role,"fronted"]) :-
     word_at(Q,Cut,","), Next is Cut+1,
-    form_at(Q,At,F), memberchk("condition",F.joiner), CueEnd=F.end,
+    subordinate_marker(Q,At,CueEnd,Role),
     has_predicate(Q,CueEnd,Cut), begins_predicate(Q,Next,End).
+boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Role,"postposed"]) :-
+    subordinate_marker(Q,Cut,After,Role),
+    memberchk(Role,["reason","temporal","purpose"]),
+    has_predicate(Q,At,Cut),
+    main_predicate(Q,After,End,Predicate,_,_), Predicate>After,
+    subject_before(Q,After,Predicate).
 boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Kind]) :-
+    first_content(Q,At,End,First), Cut>=First,
     joiner(Q,Cut,End,After,Kind),
     ( Kind=="sequence" ; has_predicate(Q,At,Cut) ),
     begins_predicate(Q,After,End).
@@ -92,6 +104,13 @@ boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Kind]) :-
     joiner(Q,Marker,End,After,Kind),
     ( Kind=="sequence" ; has_predicate(Q,At,Cut) ),
     begins_predicate(Q,After,End).
+
+subordinate_marker(Q,At,After,Kind) :-
+    unquoted_word(Q,At,Word), Next is At+1,
+    ( Word=="if" -> After=Next, Kind="condition"
+    ; memberchk(Word,["while","when","once"]) -> After=Next, Kind="temporal"
+    ; Word=="because" -> After=Next, Kind="reason"
+    ; Word=="so", unquoted_word(Q,Next,"that"), After is Next+1, Kind="purpose" ).
 
 % A recipient alone leaves room for a nominal thanks as the direct object.
 complete_before_gratitude(Q,At,End,Acts) :-
@@ -152,19 +171,22 @@ terminator_run(Q,At,End,After) :-
     ; After=At ).
 
 joiner(Q,At,End,After,Kind) :-
-    form_at(Q,At,F), F.end<End, member(Kind,F.joiner),
-    memberchk(Kind,["coordination","sequence","contrast","addition","disjunctive"]),
-    ( Kind=="coordination", has_form(Q,F.end,joiner,"sequence"),
-      form_at(Q,F.end,Next), memberchk("sequence",Next.joiner) ->
-        After=Next.end
-    ; After=F.end ).
+    form_at(Q,At,F), F.end<End, member(LexicalKind,F.joiner),
+    memberchk(LexicalKind,["coordination","sequence","contrast","addition","disjunctive"]),
+    ( LexicalKind=="coordination", form_at(Q,F.end,Next), Next.end<End,
+      memberchk("sequence",Next.joiner) ->
+        After=Next.end, Kind="sequence"
+    ; After=F.end,
+      ( unquoted_word(Q,At,Marker), memberchk(Marker,["but","yet"]) -> Kind="contrast"
+      ; Kind=LexicalKind ) ).
 
 begins_predicate(Q,At,End) :-
     first_content(Q,At,End,First),
     after_leading_auxiliary(Q,First,End,Start),
     ( form_at(Q,Start,Verb), Verb.end=<End, Verb.acts\=[]
     ; has_form(Q,Start,pos,"verb"), Next is Start+1, Next<End,
-      ( token_pos(Q,Next,"determiner") ; token_pos(Q,Next,"pronoun") )
+      ( token_pos(Q,Next,"determiner") ; token_pos(Q,Next,"pronoun")
+      ; nominal_slice(Q,Next,End,_,_) )
     ; has_form(Q,Start,pos,"pronoun"), Next is Start+1, Next<End,
       form_at(Q,Next,Verb), Verb.end=<End, Verb.acts\=[] ), !.
 
@@ -265,18 +287,18 @@ analyse_clause(_,gratitude(At,ExpressionEnd,End,Term,Separators,Relations),Claus
       adverb:[],particle:[],embedded:[]}.
 analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
     effective_end(Q,At,End0,Term0,End,Term),
-    first_content(Q,At,End,First),
+    clause_opening(Q,At,End,CoreStart,Opening,Separators),
+    first_content(Q,CoreStart,End,First),
     ( main_predicate(Q,First,End,P,A,PlainActs) ->
         wh_marker(Q,First,P,Question),
-        prefix_items(Q,At,P,Aux,BeforeNegation),
+        prefix_items(Q,CoreStart,P,Aux,BeforeNegation),
         post_negations(Q,A,End,NegEnd,AfterNegation),
         append(BeforeNegation,AfterNegation,Negation),
         wh_front(Q,First,P,SubjectStart,WhPhrase,WhRange),
         subject_arguments(Q,SubjectStart,P,Subjects0,SubjectRelations,SubjectJoins0),
         ( Subjects0=[Subject0|_] -> true ; Subject0=none ),
-        clause_adverbs(Q,At,P,PrefixAdverbs),
-        edge_adverbs(Q,NegEnd,End,AfterAdverbs,BeforeAdverbs,BodyAdverbs),
-        append(PrefixAdverbs,BodyAdverbs,Adverbs),
+        clause_adverbs(Q,CoreStart,P,PrefixAdverbs),
+        edge_adverbs(Q,P,NegEnd,End,AfterAdverbs,BeforeAdverbs,BodyAdverbs),
         particle(Q,P,AfterAdverbs,BeforeAdverbs,PlainActs,OperandStart,OperandEnd,Particle,OperandActs),
         evidenced_acts(Q,P,OperandActs,Acts),
         form_at(Q,P,PredicateForm), PredicateForm.end=:=A,
@@ -308,6 +330,8 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
         ; Relations=Relations0 ),
         ( Subject0==none -> none_as_list(Subject,Subjects), SubjectCoordinations=[]
         ; Subjects=Subjects0, SubjectCoordinations=SubjectJoins0 ),
+        modifier_adverbs(Q,OperandStart,Relations,AdjunctAdverbs),
+        append([PrefixAdverbs,BodyAdverbs,AdjunctAdverbs],Adverbs),
         clause_type(Subject,Question,Term,Q,First,Aux,Kind)
     ; P=End, A=End, Acts=[], Aux=[], Negation=[], Complement=[], Degree=[], Predicative=[], Adverbs=[], Particle=[], Indirect=[],
       Embedded=[], VisibleEnd=End, VisibleTerm=Term,
@@ -318,11 +342,28 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
           Subjects=Topics, SubjectCoordinations=TopicCoordinations
       ; Subjects=[], SubjectCoordinations=[] ),
       Objects=[], Relations=[], Coordinations=[] ),
-    Clause=_{from:At,to:VisibleEnd,predicate:[P,A],acts:Acts,form:Kind,question:Question,
+    append(Opening,Relations,AllRelations),
+    Clause=_{from:At,to:VisibleEnd,predicate:[P,A],acts:Acts,form:Kind,question:Question,separators:Separators,
       auxiliary:Aux,negation:Negation,terminator:VisibleTerm,subjects:Subjects,subjectCoordinations:SubjectCoordinations,
       objects:Objects,indirect:Indirect,
-      relations:Relations,coordinations:Coordinations,complement:Complement,degree:Degree,predicative:Predicative,join:Cue,
+      relations:AllRelations,coordinations:Coordinations,complement:Complement,degree:Degree,predicative:Predicative,join:Cue,
       adverb:Adverbs,particle:Particle,embedded:Embedded}.
+
+% A marked fronted adjunct must consist of consecutive, fully grounded PPs.
+clause_opening(Q,At,End,Core,Relations,[[Cut,Core]]) :-
+    first_content(Q,At,End,Start), Start<End,
+    preposition(Q,Start,End,_,_),
+    Last is End-2, between(Start,Last,Cut), Cut>Start,
+    unquoted_word(Q,Cut,","),
+    Core is Cut+1, begins_predicate(Q,Core,End),
+    prepositions(Q,Start,Cut,Relations), Relations\=[],
+    consecutive_relations(Relations,Start,Cut),
+    !.
+clause_opening(_,At,_,At,[],[]).
+
+consecutive_relations([],End,End).
+consecutive_relations([Relation|Tail],At,End) :-
+    Relation.cue=[At,_], consecutive_relations(Tail,Relation.end,End).
 
 % The send alias licenses a recipient frame for give. It does not establish dispatch.
 evidenced_acts(Q,At,Acts,Evidenced) :-
@@ -342,7 +383,9 @@ frame_complement(Q,Frames,At,End,Start,[At,Start],"nonfinite",[]) :-
 frame_complement(Q,Frames,At,End,Start,[],"nonfinite",[Object]) :-
     memberchk("object_bare_infinitive",Frames),
     Last is End-1, between(At,Last,Start), Start>At,
-    base_verb_at(Q,Start), noun_phrase(Q,At,Start,Object), !.
+    base_verb_at(Q,Start), noun_phrase(Q,At,Start,Object),
+    \+ ( token_pos(Q,At,"determiner"), nominal_slice(Q,At,End,_,NominalEnd), NominalEnd>Start ),
+    !.
 frame_complement(Q,Frames,At,End,Start,[At,Start],"finite",[]) :-
     memberchk("finite_clause",Frames),
     At<End, unquoted_word(Q,At,"that"), Start is At+1,
@@ -377,9 +420,9 @@ clause_adverbs(Q,At,End,Adverbs) :-
         \+ token_flag(Q,Start,question), \+ token_flag(Q,Start,negation), After is Start+1 ),
       Adverbs).
 
-edge_adverbs(Q,At,End,First,Last,Adverbs) :-
+edge_adverbs(Q,Predicate,At,End,First,Last,Adverbs) :-
     leading_adverbs(Q,At,End,First,Leading),
-    trailing_adverbs(Q,First,End,Last,Trailing),
+    trailing_adverbs(Q,Predicate,First,End,Last,Trailing),
     append(Leading,Trailing,Adverbs).
 
 leading_adverbs(Q,At,End,First,[[At,Next]|Rest]) :-
@@ -387,10 +430,28 @@ leading_adverbs(Q,At,End,First,[[At,Next]|Rest]) :-
     Next is At+1, leading_adverbs(Q,Next,End,First,Rest).
 leading_adverbs(_,At,_,At,[]).
 
-trailing_adverbs(Q,At,End,Last,Adverbs) :-
-    Before is End-1, Before>=At, token_flag(Q,Before,adverb), !,
-    trailing_adverbs(Q,At,Before,Last,Rest), append(Rest,[[Before,End]],Adverbs).
-trailing_adverbs(_,_,End,End,[]).
+trailing_adverbs(Q,Predicate,At,End,Last,Adverbs) :-
+    Before is End-1, Before>=At,
+    tail_adverb(Q,Predicate,At,Before), !,
+    trailing_adverbs(Q,Predicate,At,Before,Last,Rest), append(Rest,[[Before,End]],Adverbs).
+trailing_adverbs(_,_,_,End,End,[]).
+
+tail_adverb(Q,Predicate,At,Before) :-
+    Prior is Before-1,
+    \+ ( Prior>=At, ( token_pos(Q,Prior,"determiner") ; has_form(Q,Prior,preposition,_) ) ),
+    \+ ( unquoted_word(Q,Before,"alone"), unquoted_word(Q,Predicate,Verb), memberchk(Verb,["leave","keep"]) ),
+    ( token_flag(Q,Before,adverb)
+    ; Before>At, unquoted_word(Q,Before,Direction), memberchk(Direction,["left","right","up","down"]),
+      unquoted_word(Q,Predicate,Movement), memberchk(Movement,["move","shift","slide","turn","swing","push","pull"]),
+      noun_phrase(Q,At,Before,_) ).
+
+modifier_adverbs(Q,At,Relations,Adverbs) :-
+    findall([Start,Cue],(
+      member(Relation,Relations), Relation.cue=[Cue,_],
+      Start is Cue-1, Start>=At,
+      pp_degree_word(Q,Start),
+      \+ ( member(Other,Relations), member(Operand,Other.entities), Operand.from=<Start, Start<Operand.to )
+    ),Adverbs).
 
 particle(Q,P,At,End,_,OperandStart,OperandEnd,[Start,After],Acts) :-
     member([P,Start,After,Acts],Q.particles), Start>=At, After=<End,
@@ -454,6 +515,9 @@ subject_arguments(Q,At,End,Subjects,Relations,Coordinations) :-
     ; subject_phrase(Q,Start,End,Subject,Relations),
       none_as_list(Subject,Subjects), Coordinations=[] ).
 
+subject_start(Q,At,End,Start) :-
+    At<End, subordinate_marker(Q,At,After,_), After<End, !,
+    subject_start(Q,After,End,Start).
 subject_start(Q,At,End,Start) :-
     At<End, form_at(Q,At,F), F.end=<End,
     ( F.auxiliary==true ; F.negation==true ; F.question==true ; F.skip==true ;
@@ -537,10 +601,17 @@ complement(Q,At,End,_,_,Start,[Start,Than]) :-
     Than is Start+1, Than<End, has_form(Q,Than,preposition,"than"), !.
 complement(Q,At,End,Frames,Acts,Last,[Last,End]) :-
     Last is End-1, Last>=At,
-    token_pos(Q,Last,"adjective"),
+    predicative_adjective(Q,Last,Frames),
+    Prior is Last-1,
+    \+ ( Prior>=At, ( token_pos(Q,Prior,"determiner") ; has_form(Q,Prior,preposition,_) ) ),
     ( Last=:=At ; memberchk("change",Acts) ; has_color(Q,Last)
     ; memberchk("object_predicative",Frames), nominal_slice(Q,At,Last,_,Last) ), !.
 complement(_,_,End,_,_,End,[]).
+
+predicative_adjective(Q,At,_) :- token_pos(Q,At,"adjective"), !.
+predicative_adjective(Q,At,Frames) :-
+    memberchk("object_predicative",Frames),
+    ( token_flag(Q,At,participle) ; unquoted_word(Q,At,"alone") ).
 
 has_color(Q,At) :- form_at(Q,At,F), F.end=:=At+1, F.colors\=[].
 
@@ -578,9 +649,17 @@ nominal_slice(Q,At,End,Noun,Stop) :-
 nominal_slice(Q,At,End,Noun,Stop) :-
     Last is End-1,
     between(At,Last,Stop), Stop>At,
-    ( preposition(Q,Stop,End,_,_) ; joiner(Q,Stop,End,_,_) ; word_at(Q,Stop,",") ),
+    nominal_boundary(Q,Stop,End),
     noun_phrase(Q,At,Stop,Noun), !.
 nominal_slice(Q,At,End,Noun,End) :- noun_phrase(Q,At,End,Noun).
+
+nominal_boundary(Q,At,End) :-
+    ( preposition(Q,At,End,_,_) ; joiner(Q,At,End,_,_) ; word_at(Q,At,",")
+    ; pp_degree_word(Q,At), Next is At+1, preposition(Q,Next,End,_,_)
+    ; orientation_modifier(Q,At,End,_) ).
+
+pp_degree_word(Q,At) :-
+    unquoted_word(Q,At,Word), memberchk(Word,["slightly","directly","straight","exactly","roughly","approximately"]).
 
 nominal_annotations(Q,Head,At,End,Stop,[Annotation|Tail]) :-
     ( unquoted_word(Q,At,Marker), nominal_annotation_marker(Marker,Kind),
@@ -644,7 +723,10 @@ phrase_end(Q,At,End,Stop) :-
 
 prepositions(_,At,End,[]) :- At>=End, !.
 prepositions(Q,At,End,Relations) :-
-    ( preposition(Q,At,End,After,Form),
+    ( orientation_modifier(Q,At,End,Orientation) ->
+        Relations=[Orientation|Tail], prepositions(Q,Orientation.end,End,Tail)
+    ; preposition(Q,At,End,After,Form),
+      \+ orientation_modifier(Q,After,End,_),
       slice_nominals(Q,After,End,Phrases,Stop,Coordinations), Stop>After, Phrases\=[] ->
         ( member(Kind,Form.preposition), memberchk(Kind,["with","near","in","on"]) ->
             Attachment="ambiguous"
@@ -655,10 +737,38 @@ prepositions(Q,At,End,Relations) :-
         prepositions(Q,Stop,End,Rest)
     ; Next is At+1, prepositions(Q,Next,End,Relations) ).
 
+orientation_modifier(Q,At,End,Relation) :-
+    unquoted_word(Q,At,"facing"),
+    Value is At+1, Value<End, unquoted_word(Q,Value,Direction),
+    memberchk(Direction,["left","right","up","down","north","south","east","west","forward","backward"]),
+    Stop is Value+1,
+    Head=_{from:Value,to:Stop,head:[Value,Stop],determiner:[],modifiers:[],pronoun:[],name:[],kinds:[],colors:[]},
+    Relation=_{cue:[At,Value],kinds:["orientation"],markers:[],entities:[Head],coordinations:[],
+      attachment:"clause",end:Stop}.
+
 preposition_roles(Q,At,After,[Phrase],_,[Kind],[]) :-
     After=:=At+1, unquoted_word(Q,At,Cue), temporal_role(Cue,Kind),
-    Phrase.head=[Value,_], token_flag(Q,Value,temporalValue), !.
+    Phrase.head=[Value,_], calendrical_head(Q,Value), !.
+preposition_roles(Q,At,After,[Phrase],_,["duration"],[]) :-
+    After=:=At+1, unquoted_word(Q,At,"for"), duration_phrase(Q,Phrase), !.
+preposition_roles(Q,At,After,[Phrase],_,["by"],[]) :-
+    After=:=At+1, unquoted_word(Q,At,"by"), Phrase.head=[Value,_],
+    unquoted_word(Q,Value,Dimension),
+    memberchk(Dimension,["theme","category","type","department","year","month","region","size","color","colour"]),
+    !.
 preposition_roles(_,_,_,_,Form,Form.preposition,Form.markers).
+
+calendrical_head(Q,At) :- token_flag(Q,At,temporalValue), !.
+calendrical_head(Q,At) :-
+    unquoted_word(Q,At,Date),
+    memberchk(Date,["monday","tuesday","wednesday","thursday","friday","saturday","sunday","today","tomorrow","yesterday"]).
+
+duration_phrase(Q,Phrase) :-
+    Phrase.head=[At,_], unquoted_word(Q,At,Unit),
+    memberchk(Unit,["second","seconds","minute","minutes","hour","hours","day","days","week","weeks",
+      "month","months","year","years"]),
+    ( Phrase.determiner=[Number,_] ; member([Number,_],Phrase.modifiers) ),
+    token_pos(Q,Number,"numeral"), !.
 
 temporal_role("at","time").
 temporal_role("on","time").
@@ -686,12 +796,18 @@ noun_phrase(Q,At,End,_{from:At,to:End,head:[At,End],determiner:[],modifiers:[],p
     At<End, form_at(Q,At,F), F.end=:=End, memberchk("pronoun",F.pos),
     \+ memberchk("possessive",F.pronoun), !.
 noun_phrase(Q,At,End,_{from:At,to:End,head:[Head,End],determiner:Det,modifiers:Mods,pronoun:[],name:Name,kinds:Kinds,colors:Colors}) :-
-    At<End, noun_determiner(Q,At,End,Det,First), First<End,
+    At<End, \+ bare_article(Q,At,End),
+    noun_determiner(Q,At,End,Det,First), First<End,
     ( ( letter_name(Q,First,End) ; Det=[], First>0, name_span(Q,First,End) ) ->
         Head=First, Mods=[], Colors=[], Kinds=[], Name=[First,End]
     ; nominal_structure(Q,First,End,Det,Head,Kinds,Mods,Colors) -> Name=[]
     ; name_span(Q,First,End) -> Head=First, Mods=[], Colors=[], Kinds=[], Name=[First,End]
     ), !.
+
+bare_article(Q,At,End) :-
+    End=:=At+1,
+    nth0(At,Q.tokens,[Raw,false]), Raw\=="A", string_lower(Raw,Article),
+    memberchk(Article,["a","an","the"]).
 
 nominal_structure(Q,First,End,Det,Head,Kinds,Mods,Colors) :-
     noun_head(Q,First,End,Head,Kinds),

@@ -294,3 +294,44 @@ test('Prolog grounds nominal results and degrees without folding them into the o
     await reader.close()
   }
 })
+
+test('Prolog grounds fronted adjuncts, subordination and ordered coordination', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['For 30 minutes on Friday at 15:30, book the standup.', [
+        /kind=duration from=\$c1 to=\$e2 cue="For"/u, /kind=time from=\$c1 to=\$e3 cue="on"/u,
+        /kind=time from=\$c1 to=\$e4 cue="at"/u, /separator="," predicate="book"/u
+      ]],
+      ['Make a bar chart of the concerts by theme.', [
+        /head="bar chart"/u, /kind=by from=\$c1 to=\$e3 cue="by"/u, /predicate="Make" direct_object=\$e1/u
+      ]],
+      ['Give me a boy on the left facing right.', [
+        /kind=on from=\$c1 to=\$e3 cue="on"/u, /kind=orientation from=\$e1 to=\$e4 cue="facing"/u
+      ]],
+      ['Go ahead and draw the graph.', [
+        /predicate="draw" direct_object=\$e1 .*filler="Go ahead and"/u
+      ]],
+      ['That would help.', [/predicate="help" subject=\$e1 auxiliary="would"/u]],
+      ['Turn it slightly to the left.', [
+        /head="left" determiner="the"/u, /predicate="Turn" direct_object=\$e1 .*adverb="slightly"/u
+      ]],
+      ['While she waits, draw a circle.', [/kind=temporal from=\$c2 to=\$c1 cue="While"/u]],
+      ['Draw a circle because she asked.', [/kind=reason from=\$c1 to=\$c2 cue="because"/u]],
+      ['Move it so that she can see it.', [/kind=purpose from=\$c1 to=\$c2 cue="so that"/u]],
+      ['Turn it right and then undo it.', [
+        /adverb="right"/u, /kind=sequence member=\$c1 member=\$c2 cue="and then"/u
+      ]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})
