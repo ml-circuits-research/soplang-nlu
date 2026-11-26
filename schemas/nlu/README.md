@@ -39,3 +39,8 @@ For `Find the very small bird facing left`, the participle has its own dependent
 ```
 
 A nonfinite clause may carry a written infinitive marker in `marker`. Finite dependent clauses can use the same slot for their written subordinator when it is not already allocated to a relation cue. A predicative complement's degree belongs on the clause, as in `degree="slightly" result_complement="smaller"`.
+
+Use `literal` on an entity for verbatim content, for example the quotation in
+`Insert the words "open the window".` The quoted imperative is text to
+insert. Its lexical content supplies evidence for the literal entity without
+introducing an instruction to open a window.
