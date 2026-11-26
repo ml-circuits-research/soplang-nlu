@@ -191,7 +191,9 @@ async function request(dir,label,rows){
   child.stderr.setEncoding('utf8').on('data',chunk=>diagnostics+=chunk)
   child.stdin.on('error',()=>{})
   child.stdin.end(useVibe?undefined:prompt)
-  const timer=setTimeout(()=>child.kill('SIGKILL'),(limit+15)*1000)
+  let timedOut=false
+  const timeoutSeconds=limit+15
+  const timer=setTimeout(()=>{timedOut=child.kill('SIGKILL')},timeoutSeconds*1000)
   const status=await new Promise(resolve=>{
     child.once('error',error=>resolve(error.message))
     child.once('close',code=>resolve(code))
@@ -210,11 +212,12 @@ async function request(dir,label,rows){
       new Set(results.map(row=>row.index)).size!==results.length)throw Error('Invalid response index set')
     if(singlePass&&(status!==0||parsed.partial||results.length!==rows.length)){
       if(!results.length)throw Error('No usable response rows')
-      issue='Incomplete model response: '+results.length+' of '+rows.length+' entries (exit '+status+').'
+      const termination=timedOut?`timeout after ${timeoutSeconds} seconds`:`exit ${status}`
+      issue=`Incomplete model response: ${results.length} of ${rows.length} entries (${termination}).`
     }
   }catch(error){
     if(useVibe&&status!==0)throw Error('Vibe failed ('+status+'): '+error.message)
-    issue=error.message
+    issue=timedOut?`${backend} request timed out after ${timeoutSeconds} seconds: ${error.message}`:error.message
     results=[]
   }
   const response={results,issue,status,args,wallMs:performance.now()-began}
