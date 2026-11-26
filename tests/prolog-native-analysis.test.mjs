@@ -131,7 +131,7 @@ test('Prolog keeps clock and decimal evidence indivisible', {skip}, async () => 
         /expression="Thanks" speech_act=gratitude/u
       ]],
       ['1.2', [/form=fragment unresolved="1\.2"/u]],
-      ['Set width to -1.2. Thanks!', [/unresolved="to -1\.2"/u, /expression="Thanks" speech_act=gratitude/u]],
+      ['Set width to -1.2. Thanks!', [/head="-1\.2"/u, /cue="to"/u, /expression="Thanks" speech_act=gratitude/u]],
       ['Draw 1.2 circles.', [/head="circles" quantity="1\.2"/u]]
     ]
     for (const [text, expected] of cases) {
@@ -225,6 +225,37 @@ test('Prolog keeps explicitly introduced labels and literals attached to their n
       ['Select the word "deadline" in the Background paragraph.', [
         /head="word"/u, /literal="\\"deadline\\""/u, /kind=content from=\$e1 to=\$e2/u
       ]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})
+
+test('Prolog grounds wh slots, inversion without punctuation and passive auxiliaries', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Which chart did you update?', [/head="chart"/u, /pronoun="you"/u,
+        /form=interrogative predicate="update" subject=\$e1 direct_object=\$e2 auxiliary="did" question="Which"/u]],
+      ['Which events are on Work 7 on 2026-12-07?.', [
+        /head="events"/u, /form=interrogative predicate="are" subject=\$e1 question="Which"/u
+      ]],
+      ['What colour are the hearts?', [
+        /form=interrogative predicate="are" subject=\$e1 result_complement="colour" question="What"/u
+      ]],
+      ['Should the report be moved to 2026-11-18?', [
+        /form=interrogative predicate="moved" subject=\$e1 auxiliary="Should" auxiliary="be"/u, /kind=time/u
+      ]],
+      ['Would you move the cat', [/form=interrogative predicate="move" subject=\$e1/u]],
+      ["Let's finish the chart.", [/form=imperative predicate="finish" direct_object=\$e1 auxiliary="Let's"/u]]
     ]
     for (const [text, expected] of cases) {
       const result=await reader.propose(text)
