@@ -28,10 +28,10 @@ Of the 74 transformer graphs judged usable in the [raw graph audit](../2026-11-2
 
 | Strategy | Model | Mapping p50 / p95 | Model plus mapping p50 / p95 |
 | --- | --- | ---: | ---: |
-| Neuro-Prolog | Compact | 18.76 / 54.03 ms | 21.26 / 57.18 ms |
-| Neuro-Prolog | Transformer | 20.52 / 54.81 ms | 69.15 / 142.41 ms |
-| Neuro-Z3 | Compact | 6.34 / 91.47 ms | 8.72 / 95.24 ms |
-| Neuro-Z3 | Transformer | 7.68 / 93.93 ms | 56.71 / 189.05 ms |
+| Neuro-Prolog | Compact | 6.34 / 91.47 ms | 8.72 / 95.24 ms |
+| Neuro-Prolog | Transformer | 7.68 / 93.93 ms | 56.71 / 189.05 ms |
+| Neuro-Z3 | Compact | 18.76 / 54.03 ms | 21.26 / 57.18 ms |
+| Neuro-Z3 | Transformer | 20.52 / 54.81 ms | 69.15 / 142.41 ms |
 
 Both matrix runs processed all inputs with zero reader errors. Model startup took 0.391 s compact and 2.529 s transformer. Serial model-only p50 was 2.32 ms and 48.56 ms respectively. Model-plus-mapping percentiles are measured on per-input combined times. The two solvers share the parser invocation during a matrix run.
 
