@@ -45,4 +45,4 @@ result = {'historicalPopulation': len(ids), 'slice': len(cut),
     'semantic': {'slice': overlap(cut, accepted_n, accepted_s),
                  'neuroOutcomes': dict(collections.Counter(nr[k]['outcome'] for k in cut)),
                  'standaloneOutcomes': dict(collections.Counter(sr[k]['outcome'] for k in cut))}}
-print(json.dumps(result, indent=2))
+print(json.dumps(result, indent=2, sort_keys=True))
