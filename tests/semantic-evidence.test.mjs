@@ -1,6 +1,6 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {alignCircuit} from '../lib/semantic-evidence.mjs'
+import {alignCircuit} from './benchmark/legacy-evidence.mjs'
 
 test('restricts a repeated quote to its request and refuses embedded word matches', () => {
   const wires = [

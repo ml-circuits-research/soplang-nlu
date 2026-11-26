@@ -1,3 +1,4 @@
+import {createRecordWriter} from './record.mjs'
 import {parentPort, workerData} from 'node:worker_threads'
 import {createReader} from '../../lib/reader.mjs'
 import {measureStrategy} from '../../lib/measure-strategy.mjs'
@@ -13,6 +14,7 @@ let modelLoadMs
 
 const run = await measureStrategy(async () => {
   const strategy = (await import(strategyEntry))[exportedName]
+  const recordResult = await createRecordWriter(options.knowledgeDir)
   const reader = await createReader({
     ...options,
     strategy: {
@@ -30,16 +32,7 @@ const run = await measureStrategy(async () => {
     async propose(text) {
       try {
         const result = await reader.propose(text)
-        return {
-          candidates: result.candidates.map(candidate => candidate.sop),
-          candidateEvidence: result.candidates.map(({sourceEvidence, sourceEvidenceError, source, support, transfer}) => ({
-            sourceEvidence, sourceEvidenceError, source, support, transfer
-          })),
-          syntax: result.syntax,
-          unresolved: result.unresolved,
-          status: result.status,
-          error: result.error
-        }
+        return recordResult(text,result)
       } catch (error) {
         return {candidates: [], candidateEvidence: [], unresolved: [],
           error: error instanceof Error ? error.message : String(error)}

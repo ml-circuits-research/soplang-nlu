@@ -1,3 +1,4 @@
+import {createRecordWriter} from './record.mjs'
 import {createReader} from '../../lib/reader.mjs'
 
 const strategies = {
@@ -5,7 +6,7 @@ const strategies = {
   'prolog-worlds': ['../../strategies/prolog/index.mjs', 'prolog'],
   'prolog-example-transfer': ['../../strategies/prolog-example-transfer/index.mjs', 'prologExampleTransfer']
 }
-let reader
+let reader, recordResult
 
 const send = message => new Promise((resolve, reject) => {
   process.send(message, error => error ? reject(error) : resolve())
@@ -17,6 +18,7 @@ process.on('message', async message => {
     const [entry, exportName] = strategies[message.name]
     const strategy = (await import(entry))[exportName]
     let modelLoadMs
+    recordResult = await createRecordWriter(message.options.knowledgeDir)
     reader = await createReader({
       ...message.options,
       strategy: {
@@ -38,16 +40,7 @@ process.on('message', async message => {
     let record
     try {
       const result = await reader.propose(text)
-      record = {
-        candidates: result.candidates.map(candidate => candidate.sop),
-        candidateEvidence: result.candidates.map(({sourceEvidence, sourceEvidenceError, source, support, transfer}) => ({
-          sourceEvidence, sourceEvidenceError, source, support, transfer
-        })),
-        syntax: result.syntax,
-        unresolved: result.unresolved,
-        status: result.status,
-        error: result.error
-      }
+      record = recordResult(text,result)
     } catch (error) {
       record = {candidates: [], candidateEvidence: [], unresolved: [],
         error: error instanceof Error ? error.message : String(error)}
