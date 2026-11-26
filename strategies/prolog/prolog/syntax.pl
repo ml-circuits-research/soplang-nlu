@@ -31,12 +31,13 @@ boundary(Q,At,Cut,End,Cut,[Cut,Next],Next,[At,CueEnd,"condition"]) :-
     has_predicate(Q,CueEnd,Cut), begins_predicate(Q,Next,End).
 boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Kind]) :-
     joiner(Q,Cut,End,After,Kind),
-    has_predicate(Q,At,Cut),
+    ( Kind=="sequence" ; has_predicate(Q,At,Cut) ),
     begins_predicate(Q,After,End).
 boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Kind]) :-
     word_at(Q,Cut,","), Marker is Cut+1,
     joiner(Q,Marker,End,After,Kind),
-    has_predicate(Q,At,Cut), begins_predicate(Q,After,End).
+    ( Kind=="sequence" ; has_predicate(Q,At,Cut) ),
+    begins_predicate(Q,After,End).
 
 decimal_boundary(Q,".",At) :-
     Prior is At-1, After is At+1,
@@ -51,12 +52,19 @@ joiner(Q,At,End,After,Kind) :-
     ; After=F.end ).
 
 begins_predicate(Q,At,End) :-
-    first_content(Q,At,End,Start),
+    first_content(Q,At,End,First),
+    after_leading_auxiliary(Q,First,End,Start),
     ( form_at(Q,Start,Verb), Verb.end=<End, Verb.acts\=[]
     ; has_form(Q,Start,pos,"verb"), Next is Start+1, Next<End,
       ( token_pos(Q,Next,"determiner") ; token_pos(Q,Next,"pronoun") )
     ; has_form(Q,Start,pos,"pronoun"), Next is Start+1, Next<End,
       form_at(Q,Next,Verb), Verb.end=<End, Verb.acts\=[] ), !.
+
+after_leading_auxiliary(Q,At,End,First) :-
+    At<End, form_at(Q,At,F), F.end<End,
+    (F.auxiliary==true ; F.negation==true), !,
+    after_leading_auxiliary(Q,F.end,End,First).
+after_leading_auxiliary(_,At,_,At).
 
 first_content(Q,At,End,First) :-
     ( At<End, word_at(Q,At,W), memberchk(W,[",","—","–"]) ->
@@ -163,13 +171,14 @@ embedded_clause(Q,At,End,Term,Clause) :-
     At<End,
     main_predicate(Q,At,End,Predicate,_,_),
     Predicate>At,
-    subject_phrase(Q,At,Predicate,Subject,_), Subject\==none,
+    subject_phrase(Q,At,Predicate,Subject,[]), Subject\==none,
     analyse_clause(Q,segment(At,End,Term,[]),Clause).
 
 clause_adverbs(Q,At,End,Adverbs) :-
     Last is End-1,
     findall([Start,After],
-      ( between(At,Last,Start), token_flag(Q,Start,adverb), \+ token_flag(Q,Start,question), After is Start+1 ),
+      ( between(At,Last,Start), token_flag(Q,Start,adverb),
+        \+ token_flag(Q,Start,question), \+ token_flag(Q,Start,negation), After is Start+1 ),
       Adverbs).
 
 edge_adverbs(Q,At,End,First,Last,Adverbs) :-

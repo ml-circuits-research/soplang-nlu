@@ -253,9 +253,10 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     const fields=raw('predicate',clause.predicate)+ref(role,subject)+
       ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+raw('result_complement',clause.complement)+
       clause.auxiliary.map(range=>raw('auxiliary',range)).join('')+
-      clause.negation.map(range=>raw('negation',range)).join('')+
-      clause.adverb.map(range=>raw('adverb',range)).join('')+raw('particle',clause.particle)+
+      clause.negation.map(range=>raw('negation',range)).join('')+raw('particle',clause.particle)+
       raw('question',clause.question)+raw('terminator',clause.terminator)+
+      clause.adverb.filter(([start,end])=>Array.from({length:end-start},(_,offset)=>start+offset)
+        .every(at=>!covered.has(at))).map(range=>raw('adverb',range)).join('')+
       atom('polarity',clause.negation.length?'negative':undefined)+
       atom('result_color',resultColors.length===1 ? resultColors[0] : undefined);
     let gaps='';
