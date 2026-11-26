@@ -7,3 +7,9 @@ Replaying the deployed two-reading policy on those exact outputs yielded 82% wit
 The model trained on the GB10. Its CPU study used the shared two-core scheduling limit and ran alongside the reserved benchmark. The recorded 97 ms median is specific to that concurrent load.
 
 A later selection rule protects a complete, connected second circuit when the additional graph contains a component detached from every clause. In a development replay on these same 100 texts, the rule improved the paired result from 82 to 83 accepted messages. The earlier ownership model on the 250 historical diagnostic texts improved from 203 to 204. This rule was developed and tested using those diagnostics. The in-progress reserved evaluation still runs its original pinned library revision.
+
+## Live comparison on 250 historical diagnostic texts
+
+The same two-reading policy yielded **210 of 250 (84.0%)** paired successes with the 11,148-text model. The earlier 7,040-text policy achieved 203 of 250 (81.2%) on these texts. The unchanged selector scored 195 of 250 (78.0%). With the enlarged model, 52.0% of paired lists were all acceptable, 32.0% were mixed, and 16.0% had no acceptable reading. The standalone model reached 61.6%.
+
+The archived comparison uses the live circuits and settled blind votes. The graph-connectivity rule was replayed separately with the same exact-circuit judgments. The 250-text diagnostic is distinct from the reserved 1% and is used for development.
