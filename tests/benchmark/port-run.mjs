@@ -210,3 +210,13 @@ for (const name of selected) {
     process.exitCode = 1
   }
 }
+
+const readyToGrade = Object.keys(strategies).every(name => {
+  const summaryPath = join(dir,name+'.json')
+  if (!existsSync(summaryPath) || !existsSync(join(dir,name+'.jsonl.gz'))) return false
+  const summary = JSON.parse(readFileSync(summaryPath,'utf8'))
+  return summary.requests === rows.length && summary.failures.length === 0
+})
+if (readyToGrade) {
+  execFileSync(process.execPath,[fileURLToPath(new URL('./grade.mjs',import.meta.url)),dir],{stdio:'inherit'})
+}
