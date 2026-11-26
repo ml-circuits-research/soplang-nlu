@@ -46,3 +46,23 @@ bash "$exp/review-adapted.sh" "$artifacts" "$nlu" "$projector"
 ```
 
 The [result archive](../../eval-results/2026-11-26-spacy-compact-adaptation-pilot/README.md) records the exact checkpoint checksums, training corpus provenance, blind votes and paired outcomes.
+
+## Frozen transformer follow-up
+
+The [paired transformer-head archive](../../eval-results/2026-11-26-spacy-transformer-head-adaptation-pilot/README.md) uses the original corrected-graph artifact and the same 510/90 split. Copy only `training/corrected-graphs.json.gz` from the compact pilot into a new artifact directory, then run:
+
+```sh
+"$transformer_python" "$exp/train-transformer-heads.py" "$artifacts" "$transformer"
+```
+
+This trains the tagger and parser through their original listeners, using cached forward activations and a no-op gradient callback at the encoder boundary. Epoch zero stays in the validation selection. The published checkpoint copies the pretrained encoder files byte for byte. Cached predictions and the reloaded standard pipeline must agree on all 90 validation inputs.
+
+Reuse the downstream commands above with both model invocations using the transformer-compatible Python, the pretrained transformer path for baseline, and the new checkpoint for adapted. For baseline evidence, use the `transformer` model directory of the historical refresh with `verify-baseline.py` and `diagnostic-sample.mjs`. To match the follow-up's exact vote reuse, put the three absolute archive paths below in `$artifacts/exact-prior-directories.txt`, one path per line. Historical direct decisions are included by the review script after these archives.
+
+```text
+$nlu/eval-results/2026-11-26-spacy-compact-adaptation-pilot/adapted/review
+$nlu/eval-results/2026-11-26-neuro-prolog-historical-diagnostic-250/review
+$nlu/eval-results/2026-11-26-spacy-beam-refresh-diagnostic-250/review
+```
+
+After scoring, `compare-unions.py` takes the follow-up artifact directory and the `eval-results` directory and verifies all compared source IDs and texts before measuring accepted-circuit availability.

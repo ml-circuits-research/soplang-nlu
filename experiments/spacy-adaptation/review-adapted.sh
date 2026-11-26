@@ -6,7 +6,11 @@ projector=$3
 review="$work/adapted/review"
 results="$nlu/eval-results"
 historical="$results/2026-11-26-spacy-direct-historical-refresh-one-percent"
-prior=("$historical/compact/review" "$historical/transformer/review")
+prior=()
+if [[ -s "$work/exact-prior-directories.txt" ]]; then
+  mapfile -t prior < "$work/exact-prior-directories.txt"
+fi
+prior+=("$historical/compact/review" "$historical/transformer/review")
 reuse() {
   HISTORICAL_TRF_PRECEDENCE=1 python3 "$results/2026-11-26-spacy-direct-historical-one-percent/reuse.py" "$1" "$review" "${prior[@]}"
 }
