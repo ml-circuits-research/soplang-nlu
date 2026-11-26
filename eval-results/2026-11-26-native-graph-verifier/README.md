@@ -1,0 +1,5 @@
+# Ranking whole graph plausibility on CPU
+
+The first MiniLM verifier received 17,930 training pairs and 2,037 development pairs before merging identical verifier inputs and discarding contradictory descriptions. The actual fit used 17,369 distinct training inputs, 1,978 distinct development inputs, and 8,130 and 943 distinct texts respectively.
+
+On 250 historical diagnostic texts, 84.4% had at least one accepted reading among the eligible, structurally distinct proposals from the frozen providers and expanded span-head DistilBERT. The original two-circuit selector achieved 78.0% ANY. Combining the selector and span model with the fixed policy yielded 79.2%. Ranking the pool by the verifier yielded 78.4%. Preserving the selector's first eligible reading and using the verifier for the remaining slot yielded **79.6%**. Its results were 20.4% NONE, 22.8% SOME and 56.8% ALL. Median additional CPU ranking time was 73.9 ms per source across this pool. These are development results with settled blind votes. The saved proposal descriptions, scores and distinct evidence file permit order-independent replay.

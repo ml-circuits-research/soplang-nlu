@@ -1,0 +1,3 @@
+# Whole-graph sequence decoding pilot
+
+On the fixed 100-source diagnostic, FLAN-T5-small fine-tuned on 8,160 native texts had **30% ANY**. It returned a schema-valid circuit for 45%, with complete source coverage on 39%. Fifty-two outputs failed the public gate and three returned no graph. It supplied one accepted interpretation on a text missed by the selector. CPU median was 805 ms and p95 was 1,801 ms. The sequence and span models share the same public validator. The best expanded direct DistilBERT reading reached 53% on this diagnostic in roughly 21 ms median. We retained the sequence experiment and its evidence for reproduction.
