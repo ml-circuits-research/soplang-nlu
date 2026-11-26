@@ -1,4 +1,4 @@
-"""Convert unannotated WebMeet texts with Vibe and publish static-only conversion shards."""
+"""Convert unannotated WebMeet texts and publish static-only conversion shards."""
 import argparse
 from collections import defaultdict
 import fcntl
@@ -10,6 +10,12 @@ from pathlib import Path
 import re
 import subprocess
 import time
+
+
+BACKENDS = {
+    "vibe": ("vibe", "deepseek-v4-1-flash-1017", "VIBE", 24),
+    "sol": ("codex", "gpt-6.2-sol", "SOL", 100),
+}
 
 
 def lines(path):
@@ -32,7 +38,7 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows):
         approved.update(json.loads(line)["text"] for line in
                         git(dataset, "show", f"{revision}:{path}").split("\n") if line)
     for path in native_paths:
-        if not re.match(r"annotations/nlu/v1/conversions/vibe/[^/]+\.jsonl\.gz$", path):
+        if not re.match(r"annotations/nlu/v1/conversions/(vibe|sol)/[^/]+\.jsonl\.gz$", path):
             continue
         blob = subprocess.check_output(["git", "-C", dataset, "show", f"{revision}:{path}"])
         approved.update(json.loads(line)["text"] for line in gzip.decompress(blob).decode().split("\n") if line)
@@ -82,8 +88,9 @@ def main():
         p.add_argument(name, type=Path)
     p.add_argument("--limit", type=int, default=0, help="Run at most this many unfinished groups; 0 means all")
     p.add_argument("--plan-only", action="store_true")
+    p.add_argument("--backend", choices=BACKENDS, default="vibe")
     p.add_argument("--jobs", type=int, default=1, choices=[1],
-                   help="Concurrent Vibe requests within one CSV group")
+                   help="Concurrent model requests within one CSV group")
     p.add_argument("--group-rows", type=int, default=500, metavar="N",
                    help="Maximum rows from one CSV per new publication group")
     p.add_argument("--min-percent", type=int, default=90, metavar="N",
@@ -98,6 +105,7 @@ def main():
         p.error("Expected a request width from 1 to 10000")
     inventory, dataset, queue = (path.resolve() for path in (a.inventory, a.dataset, a.queue))
     root = Path(__file__).resolve().parents[2]
+    backend, model, prefix, default_width = BACKENDS[a.backend]
     if a.reserved_only:
         benchmark = root / "eval-results/2026-11-26-prospective-ownership-one-percent/source-review"
         if not (benchmark / "candidate-review-summary.json").is_file():
@@ -108,17 +116,20 @@ def main():
         manifest = queue / "plan.json"
         if not manifest.exists():
             plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows)
+            plan["backend"] = a.backend
             tmp = manifest.with_suffix(".tmp")
             tmp.write_text(json.dumps(plan, indent=2) + "\n")
             tmp.replace(manifest)
         plan = json.loads(manifest.read_text())
         if bool(plan.get("reservedOnly")) != a.reserved_only:
             p.error("Use a separate queue for reserved sources")
+        if plan.get("backend", "vibe") != a.backend:
+            p.error("Use a separate queue for each backend")
         print(json.dumps({"groups": len(plan["groups"]), "rows": sum(g["rows"] for g in plan["groups"])}), flush=True)
         if a.plan_only:
             return
-        env = dict(os.environ, SOP_NLU_CURATION_BACKEND="vibe", SOP_NLU_CURATION_JOBS=str(a.jobs),
-                   SOP_NLU_CURATION_MODEL="deepseek-v4-1-flash-1017")
+        env = dict(os.environ, SOP_NLU_CURATION_BACKEND=backend, SOP_NLU_CURATION_JOBS=str(a.jobs),
+                   SOP_NLU_CURATION_MODEL=model)
         for i, group in enumerate(g for g in plan["groups"] if not (queue / (g["key"] + ".done")).exists()):
             if a.limit and i >= a.limit:
                 break
@@ -129,15 +140,16 @@ def main():
             work = queue / "work" / key
             work.mkdir(parents=True, exist_ok=True)
             group_env = env.copy()
-            group_env["SOP_NLU_VIBE_GROUP_ROWS"] = str(max(500, group["rows"]))
+            group_env[f"SOP_NLU_{prefix}_GROUP_ROWS"] = str(max(500, group["rows"]))
             prior = queue / "previous" / key
-            if prior.is_dir():
+            if a.backend == "vibe" and prior.is_dir():
                 group_env["SOP_NLU_VIBE_PRIOR"] = str(prior)
             group_manifest = work / "manifest.json"
             if group_manifest.exists():
-                group_env["SOP_NLU_VIBE_BATCH_ROWS"] = str(json.loads(group_manifest.read_text())["microRows"])
-            elif a.batch_rows is not None:
-                group_env["SOP_NLU_VIBE_BATCH_ROWS"] = str(a.batch_rows)
+                width = json.loads(group_manifest.read_text())["microRows"]
+            else:
+                width = a.batch_rows or env.get(f"SOP_NLU_{prefix}_BATCH_ROWS", default_width)
+            group_env[f"SOP_NLU_{prefix}_BATCH_ROWS"] = str(width)
             with (work / "run.log").open("a") as log:
                 if not (work / "summary.json").exists():
                     command = ["node", root / "experiments/native-teacher/curate.mjs", source, work,
@@ -148,7 +160,7 @@ def main():
                             break
                         if attempt == 1:
                             result.check_returncode()
-                        print(f"{key}: Vibe process failed; retrying from the last checkpoint", flush=True)
+                        print(f"{key}: {model} process failed; retrying from the last checkpoint", flush=True)
                         time.sleep(30 * (attempt + 1))
             results = lines(work / "logical-00000/records.jsonl.gz")
             expected = [(r["id"], r["text"]) for r in lines(source)]
@@ -158,10 +170,10 @@ def main():
             converted = sum(r["status"] == "curated" for r in results)
             if not converted:
                 raise ValueError(f"No eligible readings in {key}; inspect backend output before continuing")
-            output = Path("annotations/nlu/v1/conversions/vibe") / (key + ".jsonl.gz")
+            output = Path("annotations/nlu/v1/conversions") / a.backend / (key + ".jsonl.gz")
             payload = packed({"id": r["id"], "text": r["text"], "status": "static-pass" if r["readings"] else "rework",
                               "readings": [c["sop"] for c in r["readings"]], "problems": r.get("problems", []),
-                              "sourceRevision": plan["sourceRevision"], "model": env["SOP_NLU_CURATION_MODEL"],
+                              "sourceRevision": plan["sourceRevision"], "model": model,
                               "schemaSha256": meta["schemaSha256"], "checkerSha256": meta["checkerSha256"]}
                              for r in results)
             destination = dataset / output
@@ -176,7 +188,7 @@ def main():
             changed = subprocess.run(["git", "-C", dataset, "diff", "--cached", "--quiet", "--", output]).returncode
             if changed == 1:
                 subprocess.run(["git", "-C", dataset, "commit", "--only", "-m",
-                                f"Convert WebMeet native drafts for {key} via DeepSeek Flash", "--", output], check=True)
+                                f"Convert WebMeet native drafts for {key} via {model}", "--", output], check=True)
             elif changed:
                 raise RuntimeError("Could not verify staged conversion")
             (queue / (key + ".done")).write_text(str(converted) + "\n")

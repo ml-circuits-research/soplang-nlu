@@ -24,7 +24,7 @@ const wideSol=backend==='codex'&&process.env.SOP_NLU_SOL_BATCH_ROWS!==undefined
 const singlePass=backend==='vibe'||wideSol
 const requestedSolWidth=Number(process.env.SOP_NLU_SOL_BATCH_ROWS??10)
 const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):
-  wideSol?Math.max(500,requestedSolWidth):500
+  wideSol?Number(process.env.SOP_NLU_SOL_GROUP_ROWS??Math.max(500,requestedSolWidth)):500
 if(!Number.isSafeInteger(logicalSize)||logicalSize<500||logicalSize>10000||
    (singlePass&&offset!==0))throw Error('Single-pass runs require offset zero and a group size of 500 to 10000')
 const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):requestedSolWidth
