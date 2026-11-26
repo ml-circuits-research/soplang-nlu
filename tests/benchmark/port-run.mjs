@@ -18,7 +18,7 @@ if (extraArgs.length || sourceArg === '--help') {
   console.log('Usage: node tests/benchmark/port-run.mjs [prior-run-directory|-] [new-output-directory]')
   console.log('Defaults to a fresh 1% sample at dataset HEAD and eight workers per strategy.')
   console.log('Environment: SOP_WORKSPACE, KNOWLEDGE_DIR, DATASET_REVISION, WORKERS, PROGRESS_EVERY, SAMPLE_PERCENT, SAMPLE_SEED, Z3_MODULE, SWIPL')
-  console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer,neuro-z3,neuro-prolog.')
+  console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer,spacy-direct,neuro-z3,neuro-prolog.')
   console.log('Use APPEND=1 with an existing output directory and select only new strategies.')
   console.log('WORKER_TIMEOUT_MS sets the wall limit per startup, request or shutdown (default 300000).')
   process.exit(extraArgs.length ? 1 : 0)
@@ -240,13 +240,14 @@ const strategies = {
 }
 if (evaluatedSchema === 'nlu') {
   const neural = {python:process.env.SOP_NLU_SYNTAX_PYTHON, model:process.env.SOP_NLU_SYNTAX_MODEL}
+  strategies['spacy-direct'] = {knowledgeDir, ...neural}
   strategies['neuro-prolog'] = {knowledgeDir, swipl:process.env.SWIPL, ...neural}
   strategies['neuro-z3'] = {knowledgeDir, z3Module:strategies.z3.z3Module, ...neural}
 }
 const nativeReferenceRevision = evaluatedSchema === 'nlu'
   ? datasetRevision(dataset, process.env.NATIVE_REFERENCE_REVISION ?? sampleMetadata.revision) : undefined
 const nativeReferences = nativeReferenceRevision ? readNativeReferences(dataset, nativeReferenceRevision, rows.map(row=>row.text)) : []
-const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => !name.startsWith('neuro-') || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
+const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => (!name.startsWith('neuro-') && name !== 'spacy-direct') || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
   .split(',').map(name => name.trim() === 'prolog' ? 'prolog-worlds' : name.trim())
 if (new Set(selected).size !== selected.length || selected.some(name => !Object.hasOwn(strategies, name))) {
   throw Error('STRATEGIES must list unique strategy names.')
