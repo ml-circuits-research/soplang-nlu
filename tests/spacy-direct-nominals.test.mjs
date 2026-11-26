@@ -59,3 +59,16 @@ test('a fronted prepositional object remains connected to its stranded prepositi
   assert.match(sop,/pronoun="What"/)
   assert.match(sop,/kind=on from=\$n1 to=\$n\d+ cue="on"/)
 })
+
+test('coordinated prepositions keep their landmarks and the scope of negation', () => {
+  const sop = circuit('Move it near Ben but not behind Jo.',[
+    ['Move','VERB','VB','ROOT',0], ['it','PRON','PRP','dobj',0],
+    ['near','ADP','IN','prep',0], ['Ben','PROPN','NNP','pobj',2],
+    ['but','CCONJ','CC','cc',2], ['not','PART','RB','neg',6],
+    ['behind','ADP','IN','conj',2], ['Jo','PROPN','NNP','pobj',6], ['.','PUNCT','.','punct',0]
+  ])
+  const near = sop.match(/@(n\d+) nlu.relation kind=near/)?.[1]
+  const behind = sop.match(/@(n\d+) nlu.relation kind=behind .*negation="not"/)?.[1]
+  assert.ok(near && behind,sop)
+  assert.ok(sop.includes('kind=contrast member=$'+near+' member=$'+behind+' cue="but"'),sop)
+})

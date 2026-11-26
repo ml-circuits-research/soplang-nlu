@@ -60,3 +60,5 @@ An entity may carry a quoted `adverb` modifying its nominal head, as in
 first conjunct unspecified.
 
 A quantified prepositional relation can point through `measure` to an entity with its written unit and quantity. For example, “two inches from the edge” supplies a distance measure on the `from` relation.
+
+A coordination may group two or more relations of the same syntactic construction. Each relation retains its own endpoints and can carry a written negation. In “near Ben but not behind Jo”, only the second relation has a negation. The member types of a coordination used in a role must be permitted by that role's schema.
