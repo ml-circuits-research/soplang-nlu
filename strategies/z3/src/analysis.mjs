@@ -76,6 +76,7 @@ function emitAnalysis(decoded, kb, objective) {
   }
 
   const selectedClauses = []
+  const adjunctChildren = new Set(clauses.map((clause) => clause.adjunct))
   let entityIndex = 0
   for (const [index, clause] of clauses.entries()) {
     const id = 'c' + (index + 1)
@@ -142,6 +143,12 @@ function emitAnalysis(decoded, kb, objective) {
           quote('cue', clause.relativeCue)]))
       }
     }
+    if (clause.adjunct !== undefined) {
+      const {kind, start, end} = clause.adjunctCue
+      lines.push(wire('rel' + ++relationCount, 'relation', ['kind=' + kind,
+        refField('from', id), refField('to', 'c' + (clause.adjunct + 1)), quote('cue', start, end)]))
+      if (clause.adjunctSeparator !== undefined) fields.push(quote('separator', clause.adjunctSeparator))
+    }
     if (terminator !== undefined) fields.push(quote('terminator', terminator))
     const roleReference = (role, group) => {
       if (!group.length) return
@@ -166,7 +173,7 @@ function emitAnalysis(decoded, kb, objective) {
       fields.push(quote('particle', particle.start, particle.end))
     }
 
-    selectedClauses.push({id, fields, clause})
+    selectedClauses.push({id, fields, clause, adjunctChild: adjunctChildren.has(index)})
 
     for (const item of roles('prepositional')) {
       const from = entities.get(item.host) ?? id
@@ -191,8 +198,8 @@ function emitAnalysis(decoded, kb, objective) {
 
   let clauseGroup = []
   let clauseCues = []
-  for (const {id, clause} of selectedClauses) {
-    if (clause.gratitude) continue
+  for (const {id, clause, adjunctChild} of selectedClauses) {
+    if (clause.gratitude || adjunctChild) continue
     clauseGroup.push(id)
     if (clause.coordinator !== undefined) {
       clauseCues.push(...clause.coordinators)

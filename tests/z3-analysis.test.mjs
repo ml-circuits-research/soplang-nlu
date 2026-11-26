@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
-import { createAnalysisValidator } from '../lib/check-analysis.mjs'
+import { createAnalysisValidator, hasCompleteSource } from '../lib/check-analysis.mjs'
 import { z3 } from '../strategies/z3/index.mjs'
 
 const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR ??
@@ -86,6 +86,29 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       const [declaration] = await analyse('I like Zürich.')
       assert.match(declaration.sop, /name="Zürich"/)
       assert.match(declaration.sop, /form=declarative predicate="like"/)
+    })
+
+    await t.test('separates finite adjuncts from argument complements and nominal PPs', async () => {
+      const [condition] = await analyse('If the lamp fades, close the window.')
+      assert.equal(hasCompleteSource(validate('If the lamp fades, close the window.', condition.sop)), true)
+      assert.match(condition.sop, /kind=condition from=\$c2 to=\$c1 cue="If"/)
+      assert.match(condition.sop, /@c1 nlu.clause form=declarative predicate="fades".*subject=\$e1/)
+      assert.match(condition.sop, /@c2 nlu.clause form=imperative predicate="close".*separator=","/)
+      const [purpose] = await analyse('Keep the gate open so that the dog can run.')
+      assert.match(purpose.sop, /kind=purpose from=\$c1 to=\$c2 cue="so that"/)
+      assert.match(purpose.sop, /direct_object=\$e1 result_complement="open"/)
+      assert.match(purpose.sop, /predicate="run" auxiliary="can".*subject=\$e2/)
+      assert.deepEqual(purpose.unresolved, [])
+      const [question] = await analyse('Can you leave before the train arrives?')
+      assert.match(question.sop, /kind=time from=\$c1 to=\$c2 cue="before"/)
+      assert.match(question.sop, /@c1 nlu.clause form=interrogative predicate="leave".*terminator="\?"/)
+      assert.match(question.sop, /@c2 nlu.clause form=declarative predicate="arrives"/)
+      const [content] = await analyse('She asked if the train stops.')
+      assert.match(content.sop, /kind=complement from=\$c1 to=\$c2 cue="if"/)
+      assert.match(content.sop, /predicate="asked".*clausal_complement=\$c2/)
+      const [landmark] = await analyse('Move the box before the window.')
+      assert.match(landmark.sop, /kind=before.*to=\$e2 cue="before"/)
+      assert.doesNotMatch(landmark.sop, /@c2 nlu.clause/)
     })
 
     await t.test('grounds licensed particles and embedded clause heads', async () => {
