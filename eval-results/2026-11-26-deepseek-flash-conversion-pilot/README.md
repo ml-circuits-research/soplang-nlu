@@ -62,6 +62,8 @@ On the exact same 1,000 sources and local drafts, GPT-6.2-Sol returned a well-fo
 
 With 256 inputs and an exact per-request result-array cardinality, the Sol CLI reached the 521-second process deadline without writing a response. The static gate recorded all 256 rows as rework. This establishes a timeout under the tested settings. Response accounting verifies every index independently of the CLI's exit code.
 
+A separate source-only Sol request selected 25 inputs from each of calendar, diagram, document and drawing in the existing 256-row mixed pilot. It required exactly 100 indexed results and reached the 240-second deadline with an empty response. The exact-input timing and output accounting are in `sol-mixed-source-100/`. The result gives no estimate of Sol's output plausibility on those domains.
+
 ### Paired plausibility spot check
 
 From the 100 shared source indices, we inspected the 24 smallest SHA-256 digests of `paired-sol-deepseek-v1`, a NUL byte and the exact source. A row passed when at least one returned graph expressed a plausible grounded reading, with no major role, clause, grouping or attachment error. The reviewer knew the model identities. Sol passed 24/24 and DeepSeek passed 15/24. This spot check measures the returned Sol prefix on one diagram file. It cannot establish either model's corpus-wide plausibility or adjudicate the unreturned Sol indices.
