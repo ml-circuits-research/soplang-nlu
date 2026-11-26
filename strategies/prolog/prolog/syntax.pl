@@ -15,6 +15,14 @@ has_form(Q,At,Field,Value) :-
     form_at(Q,At,F), get_dict(Field,F,Bank), memberchk(Value,Bank).
 
 segments(_,At,End,_,[]) :- At>=End, !.
+segments(Q,At,End,Cue,[gratitude(At,Stop,BodyEnd,Term,Separators,Relations)|Tail]) :-
+    gratitude_phrase(Q,At,Stop),
+    gratitude_body(Q,Stop,End,BodyEnd,Relations),
+    gratitude_edge(Q,BodyEnd,End,Term,After,Outgoing),
+    ( Cue=[Start,At,"gratitude_boundary"] -> Separators=[[Start,At]|Outgoing]
+    ; Cue=[], Separators=Outgoing ),
+    !,
+    segments(Q,After,End,[],Tail).
 segments(Q,At,End,Cue,Segments) :-
     FirstEnd is End-1,
     ( once((between(At,FirstEnd,Cut), Cut>At, boundary(Q,At,Cut,End,Stop,Term,Next,Join))) ->
@@ -25,6 +33,15 @@ boundary(Q,_,Cut,End,Stop,[Cut,After],After,[]) :-
     nth0(Cut,Q.tokens,[Raw,false]), memberchk(Raw,[".","!","?",";"]),
     Next is Cut+1, Next<End,
     \+ decimal_boundary(Q,Raw,Cut), Stop=Cut, After=Next.
+boundary(Q,_,Cut,End,Cut,[],Next,[Cut,Next,"gratitude_boundary"]) :-
+    separator_at(Q,Cut), Next is Cut+1,
+    gratitude_phrase(Q,Next,Stop), gratitude_body(Q,Stop,End,BodyEnd,_),
+    gratitude_edge(Q,BodyEnd,End,_,_,_).
+boundary(Q,At,Cut,End,Cut,[],Cut,[]) :-
+    gratitude_phrase(Q,Cut,Stop), gratitude_body(Q,Stop,End,BodyEnd,_),
+    effective_end(Q,Cut,End,[],BodyEnd,_),
+    main_predicate(Q,At,Cut,_,OperandStart,Acts), OperandStart<Cut,
+    complete_before_gratitude(Q,OperandStart,Cut,Acts).
 boundary(Q,At,Cut,End,Cut,[Cut,Next],Next,[At,CueEnd,"condition"]) :-
     word_at(Q,Cut,","), Next is Cut+1,
     form_at(Q,At,F), memberchk("condition",F.joiner), CueEnd=F.end,
@@ -38,6 +55,55 @@ boundary(Q,At,Cut,End,Cut,[],After,[Cut,After,Kind]) :-
     joiner(Q,Marker,End,After,Kind),
     ( Kind=="sequence" ; has_predicate(Q,At,Cut) ),
     begins_predicate(Q,After,End).
+
+% A recipient alone leaves room for a nominal thanks as the direct object.
+complete_before_gratitude(Q,At,End,Acts) :-
+    ( once((member(Act,Acts), memberchk(Act,Q.recipientActs))) ->
+        operands(Q,At,End,Acts,[_],[_|_],[],_)
+    ; slice_nominals(Q,At,End,[_|_],End,_) ).
+
+gratitude_phrase(Q,At,Stop) :-
+    unquoted_word(Q,At,First), Next is At+1,
+    ( memberchk(First,["thanks","thx"]) -> Stop=Next
+    ; First=="thank",
+      ( unquoted_word(Q,Next,"you") -> Stop is Next+1
+      ; unquoted_word(Q,Next,Hyphen), memberchk(Hyphen,["-","‐","‑"]),
+        You is Next+1, unquoted_word(Q,You,"you"), Stop is You+1 ) ).
+
+gratitude_body(Q,At,End,Stop,Relations) :-
+    gratitude_complements(Q,At,End,Stop,Relations), !.
+gratitude_body(_,At,_,At,[]).
+
+gratitude_complements(Q,At,End,Stop,Relations) :-
+    unquoted_word(Q,At,Cue), gratitude_role(Cue,Kind),
+    Start is At+1, Start<End, Last is End-1,
+    ( once((between(Start,Last,Edge), gratitude_complement_edge(Q,Edge))) -> Limit=Edge
+    ; Limit=End ),
+    slice_nominals(Q,Start,Limit,Entities,Limit,Coordinations), Entities\=[],
+    Relations=[_{cue:[At,Start],kinds:[Kind],markers:[],entities:Entities,
+      coordinations:Coordinations,attachment:"clause",end:Limit}|Rest],
+    ( gratitude_complements(Q,Limit,End,Stop,Rest) -> true
+    ; Stop=Limit, Rest=[] ).
+
+gratitude_complement_edge(Q,At) :-
+    unquoted_word(Q,At,Raw),
+    ( memberchk(Raw,[".","!","?",";"]) ; separator_at(Q,At) ; gratitude_role(Raw,_) ).
+
+gratitude_role("for","reason").
+gratitude_role("to","recipient").
+
+unquoted_word(Q,At,Lower) :-
+    nth0(At,Q.tokens,[Raw,false]), string_lower(Raw,Lower).
+
+separator_at(Q,At) :-
+    unquoted_word(Q,At,Raw), memberchk(Raw,[",","—","–",":"]).
+
+gratitude_edge(_,End,End,[],End,[]).
+gratitude_edge(Q,Stop,End,Term,After,Separators) :-
+    Stop<End, unquoted_word(Q,Stop,Raw), Next is Stop+1,
+    ( memberchk(Raw,[".","!","?",";"]) -> Term=[Stop,Next], After=Next, Separators=[]
+    ; separator_at(Q,Stop) -> Term=[], After=Next, Separators=[[Stop,Next]]
+    ; begins_predicate(Q,Stop,End) -> Term=[], After=Stop, Separators=[] ).
 
 decimal_boundary(Q,".",At) :-
     Prior is At-1, After is At+1,
@@ -84,6 +150,11 @@ main_predicate(Q,At,End,Start,After,Acts) :-
       Options),
     keysort(Options,Ascending), last(Ascending,_-[Start,After,Acts]).
 
+% A finite form with an overt subject and object is distinct from a discourse formula.
+lexical_predicate(Q,F,At,First,End,24) :-
+    At>First, F.end=:=At+1, F.end<End,
+    unquoted_word(Q,At,Word), memberchk(Word,["thank","thanks","thanked"]),
+    subject_before(Q,First,At), noun_phrase(Q,F.end,End,_), !.
 lexical_predicate(Q,F,At,First,End,Base) :-
     F.skip==false, F.negation==false,
     ( F.acts\=[] -> Evidence=30
@@ -123,6 +194,12 @@ initial_auxiliary(Q,At,End) :-
     between(At,End,Start), form_at(Q,Start,F), F.end=<End,
     ( F.auxiliary==true ; F.negation==true ; F.question==true ), !.
 
+analyse_clause(_,gratitude(At,ExpressionEnd,End,Term,Separators,Relations),Clause) :-
+    Clause=_{from:At,to:End,predicate:[End,End],acts:[],form:"fragment",
+      expression:[At,ExpressionEnd],speechAct:"gratitude",separators:Separators,
+      question:[],auxiliary:[],negation:[],terminator:Term,subjects:[],subjectCoordinations:[],
+      objects:[],indirect:[],relations:Relations,coordinations:[],complement:[],join:[],
+      adverb:[],particle:[],embedded:[]}.
 analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
     effective_end(Q,At,End0,Term0,End,Term),
     first_content(Q,At,End,First),
@@ -135,13 +212,14 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
         clause_adverbs(Q,At,P,PrefixAdverbs),
         edge_adverbs(Q,NegEnd,End,AfterAdverbs,BeforeAdverbs,BodyAdverbs),
         append(PrefixAdverbs,BodyAdverbs,Adverbs),
-        particle(Q,P,AfterAdverbs,BeforeAdverbs,PlainActs,OperandStart,OperandEnd,Particle,Acts),
+        particle(Q,P,AfterAdverbs,BeforeAdverbs,PlainActs,OperandStart,OperandEnd,Particle,OperandActs),
+        evidenced_acts(Q,P,OperandActs,Acts),
         ( Subject0\==none, token_flag(Q,P,clauseTaker), embedded_clause(Q,OperandStart,OperandEnd,Term,Child) ->
             Embedded=[Child], VisibleEnd=OperandStart, VisibleTerm=[], Complement=[], Indirect=[],
             Objects0=[], Relations0=SubjectRelations, Coordinations=[]
         ; Embedded=[], VisibleEnd=End, VisibleTerm=Term,
           complement(Q,OperandStart,OperandEnd,Acts,BodyEnd,Complement),
-          operands(Q,OperandStart,BodyEnd,Acts,Indirect,Objects0,BodyRelations,Coordinations),
+          operands(Q,OperandStart,BodyEnd,OperandActs,Indirect,Objects0,BodyRelations,Coordinations),
           complement_relations(Q,Complement,OperandEnd,ComplementRelations),
           append([SubjectRelations,BodyRelations,ComplementRelations],Relations0) ),
         ( Subject0==none, token_flag(Q,P,copula), Objects0=[Inverted|Others],
@@ -166,6 +244,12 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
       objects:Objects,indirect:Indirect,
       relations:Relations,coordinations:Coordinations,complement:Complement,join:Cue,
       adverb:Adverbs,particle:Particle,embedded:Embedded}.
+
+% The send alias licenses a recipient frame for give. It does not establish dispatch.
+evidenced_acts(Q,At,Acts,Evidenced) :-
+    unquoted_word(Q,At,Word), memberchk(Word,["give","gives","gave","given","giving"]), !,
+    exclude(=("send"),Acts,Evidenced).
+evidenced_acts(_,_,Acts,Acts).
 
 embedded_clause(Q,At,End,Term,Clause) :-
     At<End,

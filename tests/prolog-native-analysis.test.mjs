@@ -64,3 +64,50 @@ test('Prolog dual proposals retain their legacy circuits and supply native analy
     await engine.close()
   }
 })
+
+test('Prolog segments detached gratitude and preserves nominal or quoted mentions', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Give me an alligator, thanks', [
+        /form=imperative predicate="Give" direct_object=\$e1 indirect_object=\$e2/u,
+        /form=fragment expression="thanks" speech_act=gratitude separator=","/u
+      ], [/act=send/u, /filler=","/u]],
+      ['THX, move it.', [
+        /@c1 nlu.clause form=fragment expression="THX" speech_act=gratitude separator=","/u,
+        /@c2 nlu.clause form=imperative predicate="move"/u
+      ], [/filler=","/u]],
+      ['Thank-you!', [/form=fragment expression="Thank-you" speech_act=gratitude terminator="!"/u], [/nlu.entity/u]],
+      ['Move it — thank you.', [/form=fragment expression="thank you" speech_act=gratitude separator="—" terminator="\."/u], []],
+      ['Move it thanks', [/form=imperative predicate="Move"/u, /expression="thanks" speech_act=gratitude/u],
+        [/separator=/u]],
+      ['Thanks for your help', [
+        /head="help" determiner="your"/u, /kind=reason from=\$c1 to=\$e1 cue="for"/u,
+        /expression="Thanks" speech_act=gratitude/u
+      ], [/unresolved=/u]],
+      ['Thanks to you for the help.', [
+        /kind=recipient from=\$c1 to=\$e1 cue="to"/u, /kind=reason from=\$c1 to=\$e2 cue="for"/u
+      ], [/unresolved=/u]],
+      ['She thanks him', [
+        /pronoun="She"/u, /pronoun="him"/u, /form=declarative predicate="thanks" subject=\$e1 direct_object=\$e2/u
+      ], [/speech_act=gratitude/u]],
+      ['Give thanks.', [/head="thanks"/u, /predicate="Give" direct_object=/u], [/speech_act=gratitude/u, /act=send/u]],
+      ['Give them thanks.', [/predicate="Give"/u], [/speech_act=gratitude/u]],
+      ['Send my thanks.', [/head="thanks" determiner="my"/u, /predicate="Send"/u], [/speech_act=gratitude/u]],
+      ['Write "thanks".', [/name="thanks"/u, /predicate="Write"/u], [/speech_act=gratitude/u]],
+      ['"thanks"', [/name="thanks"/u], [/speech_act=gratitude/u]],
+      ['Give me a box.', [/predicate="Give" direct_object=\$e1 indirect_object=\$e2/u], [/act=send/u]]
+    ]
+    for (const [text, expected, excluded] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.ok(candidate.check.coverage.allAccountedFor, text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+      for (const expression of excluded) assert.doesNotMatch(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})

@@ -250,7 +250,12 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
       wire:id,key:'polarity',sourceSlot:'negation',source:span(range)});
     if (resultColors.length===1) semanticEvidence.push({wire:id,key:'result_color',
       sourceSlot:'result_complement',source:span(clause.complement)});
-    const fields=raw('predicate',clause.predicate)+ref(role,subject)+
+    if (clause.speechAct) semanticEvidence.push({wire:id,key:'speech_act',
+      sourceSlot:'expression',source:span(clause.expression)});
+    const discourseFields=(clause.expression ? raw('expression',clause.expression) : '')+
+      atom('speech_act',clause.speechAct)+
+      (clause.separators ?? []).map(range=>raw('separator',range)).join('');
+    const fields=discourseFields+raw('predicate',clause.predicate)+ref(role,subject)+
       ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+raw('result_complement',clause.complement)+
       clause.auxiliary.map(range=>raw('auxiliary',range)).join('')+
       clause.negation.map(range=>raw('negation',range)).join('')+raw('particle',clause.particle)+
