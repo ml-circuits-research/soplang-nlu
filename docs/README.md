@@ -37,34 +37,14 @@ Pass parsed facts from the configured worlds to createSyntaxReader in lib/syntax
 
 ## Comparing execution time
 
-Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. It opens one reader, awaits each proposal and closes the reader. Persist timing with each run, including startup, proposal time, shutdown, total wall time, throughput and median and 95th-percentile latency. Save per-input latency in sample order. Record hardware, runtime versions, model and world configuration, worker count and proposal budget. Record evaluator and reviewer time separately. Compare case-level outcomes in both directions to identify which strategy handles an attachment, ambiguity or unsupported phrase better.
+Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. It opens one reader, awaits each proposal and closes the reader. Persist timing with each run, including startup, proposal time, shutdown, total wall time, throughput and median and 95th-percentile latency. Save per-input latency in sample order. Record hardware, runtime versions, solver and world configuration, worker count and proposal budget. Record evaluator and reviewer time separately. Compare case-level outcomes in both directions to identify which strategy handles an attachment, ambiguity or unsupported phrase better.
 
-## Opening a strategy during migration
+## Opening a strategy
 
-The first adapters load an existing engine from an explicit installation directory. Both expose the shared lifecycle while retaining the engine's native candidates, confidence, rankings and diagnostics where available.
+The [library entry point](../README.md) accepts a strategy and a knowledge installation. Both strategy implementations live in this repository. Configure additional SOP files or directories with worldPaths. Each strategy interprets the world declarations it supports. The reader loads lexical evidence from the configured worlds once at startup and returns the shared syntax analysis alongside each result. Each emitted candidate has its own sourceEvidence array with the wire ID, key, surface form and exact matching ranges. Repeated phrases retain all compatible ranges inside the owning request. World-derived semantic values may have a different spelling from their source.
 
-```js
-import {createReader} from '../lib/reader.mjs'
-import {z3} from '../strategies/z3/index.mjs'
+## Running the paired benchmark
 
-const reader = await createReader({
-  strategy: z3,
-  engineDirectory: process.env.Z3_FORMALISER,
-  knowledgeDir: process.env.SOP_KNOWLEDGE,
-  topK: 8
-})
-try {
-  const result = await reader.propose('Move it to the left')
-  console.log(result.candidates)
-} finally {
-  await reader.close()
-}
-```
-
-For Prolog import prolog from strategies/prolog/index.mjs and supply its engineDirectory. The adapter always opens the worlds-only reader. Its only engine options are languageFrames and evidence. Passing a model or a model path raises a configuration error before opening the engine. Its underlying loader currently uses the installed knowledge snapshot and SOP_WORLDS overlays. Supply analyseSyntax from createSyntaxReader when syntax evidence is required.
-
-## Replaying the legacy engines
-
-Run `WORKERS=8 SAMPLE_PERCENT=1 node tests/benchmark/run.mjs` with the installed engines, dataset and knowledge checkout under SOP_WORKSPACE (defaults to sibling repositories). The runner reads committed dataset blobs, orders record IDs by a seeded SHA-256 digest and takes the requested fraction. A record with several alternative references counts once. The historical directory holds the exact sample, engine settings, timings and compressed predictions. Engines run consecutively with the same concurrency. Wall time includes worker startup, generation, result collection and shutdown. Per-request latency measures the reader call inside a worker. The benchmark requires worldsOnly for Prolog. Prediction workers receive only IDs and text. Reference circuits are compared in the evaluator.
+Run `WORKERS=8 SAMPLE_PERCENT=1 node tests/benchmark/port-run.mjs` with SOP_WORKSPACE pointing to the parent of the dataset and knowledge checkouts. Set SWIPL to the installed SWI-Prolog executable. The runner reads committed dataset blobs, orders record IDs by a seeded SHA-256 digest and takes the requested fraction. A record with several alternative references counts once. To replay an existing sample, pass its run directory as the first argument and a new destination as the second. The historical directory holds the exact sample, engine settings, timings and compressed predictions. Engines run consecutively with the same concurrency. Wall time includes worker startup, generation, result collection and shutdown. Per-request latency measures the reader call inside a worker. Prediction workers receive only IDs and text. Reference circuits are compared in the evaluator.
 
 Run `node tests/benchmark/grade.mjs eval-results/RUN` to apply the same static verifier and WebMeet comparator to both engines after timing. The evaluator considers whole circuits across every candidate and reference in deterministic order. Automatic grades and semantic error tags can be audited from the saved rows. Prolog currently emits its native candidate set and Z3 uses up to eight candidates. This measures the installed configurations and their native output costs.
