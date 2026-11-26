@@ -223,3 +223,14 @@ test('represents nonfinite modification and degree on a qualified lookup', () =>
   )
   assert.equal(hasCompleteSource(validate('Find the very small bird facing left', sop)), true)
 })
+
+test('grounds contracted subjects and auxiliaries in their original spelling', () => {
+  for (const [pronoun, auxiliary] of [['I', '’ll'], ['They', "'ve"], ['you', '’re']]) {
+    const text = pronoun + auxiliary + ' moved.'
+    const sop = lines(
+      '@s nlu.clause form=declarative subject=$p auxiliary="' + auxiliary + '" predicate="moved" terminator="."',
+      '@p nlu.entity pronoun="' + pronoun + '"'
+    )
+    assert.equal(hasCompleteSource(validate(text, sop)), true)
+  }
+})

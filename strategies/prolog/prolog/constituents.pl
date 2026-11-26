@@ -58,6 +58,11 @@ entry(I,_,_,false,F,det,I,span(I,J),0) :-
 entry(I,_,_,false,F,discourse,I,span(I,J),1) :-
     J=F.end,J>I+1,F.skip==true,\+ (between(I,J,K),lex(K,_,W),memberchk(W,["is","are","would","should","will","you","i"])).
 
+atomic_entry(_,_,subject_aux,I,_,clitic(I,K,L),0) :-
+    split_clitic(I,Base,_,K,L),memberchk(Base,["i","you","he","she","it","we","they","that","there","who","what"]).
+atomic_entry(_,_,poss,I,_,clitic(I,K,L),0) :-
+    split_clitic(I,Base,"s",K,L), \+memberchk(Base,["he","she","it","that","what","who","there","let"]).
+atomic_entry(W,_,wh,I,J,span(I,J),0) :- memberchk(W,["what","which","how","when","where","why","who","whose","whom"]).
 atomic_entry(W,_,det,I,J,span(I,J),0) :- memberchk(W,["a","an","the","this","that","these","those","my","our","his","her","its","their","your","each","every","another","some","any","no","both","all"]).
 atomic_entry(W,_,pron,I,J,n(entity,I,[q(pronoun,I,J)]),0) :- memberchk(W,["i","you","he","she","it","we","they","me","him","her","us","them","this","that","those","these","nothing","everything","something","one","there"]).
 atomic_entry(W,F,noun,I,J,n(entity,I,[q(head,I,J)]),1) :- memberchk("noun",F.pos), content(W).
@@ -184,6 +189,27 @@ combine(bare_particle,np,H,_,X,Y,_,_,_,vp,H,T,-1) :- put(X,arg(direct_object,Y),
 combine(clause,join,H,_,X,_,_,K,J,postjoin,H,endjoin(X,K,J),0).
 combine(postjoin,clause,H,_,endjoin(X,I,K),Y,_,_,_,clause,H,T,0) :- coord(I,K,H,X,Y,T).
 
+combine(subject_aux,vp,_,H,clitic(I,K,L),X,_,_,_,clause,H,T,-4) :-
+    put(X,a(form,declarative),N),put(N,piece(auxiliary,I,K,L),V),
+    put(V,arg(subject,n(entity,I,[piece(pronoun,I,0,K)])),T).
+combine(poss,np,_,H,clitic(I,K,L),X,_,_,_,np,H,T,-4) :-
+    X=n(entity,_,_), \+has(X,possessor),put(X,piece(possessive_marker,I,K,L),N),
+    put(N,arg(possessor,n(entity,I,[piece(head,I,0,K)])),T).
+combine(wh,vp,_,H,span(I,K),X,_,_,_,clause,H,T,-1) :-
+    put(X,a(form,interrogative),N),put(N,q(question,I,K),T).
+combine(wh,clause,_,H,span(I,K),X,_,_,_,clause,H,T,-1) :-
+    X=n(clause,H,A),select(a(form,_),A,R),put(n(clause,H,R),a(form,interrogative),N),put(N,q(question,I,K),T).
+combine(wh,adj,_,H,span(I,K),span(K,J),_,_,_,whadj,H,whadj(I,K,J),0).
+combine(whadj,clause,_,H,whadj(I,K,M),n(clause,H,A),_,_,_,clause,H,T,-2) :-
+    select(a(form,_),A,R), T=n(clause,H,[a(form,interrogative),q(question,I,K),q(result_complement,K,M)|R]).
+combine(np,adj,H,_,X,span(I,K),_,_,_,clause,H,n(clause,H,[a(form,fragment),arg(topic,X),q(result_complement,I,K)]),5).
+combine(np,adjp,H,_,X,ap(span(I,K),span(L,M)),_,_,_,clause,H,n(clause,H,[a(form,fragment),arg(topic,X),q(degree,I,K),q(result_complement,L,M)]),4).
+combine(verb,pp,H,_,X,pp(I,K,Y),_,_,_,vp,H,T,0) :- prep_link(X,I,K,Y,T).
+split_clitic(I,Base,Suffix,K,L) :-
+    lex(I,_,W), (sub_string(W,K,1,After,"'");sub_string(W,K,1,After,"’")),
+    K>0, After>0, Start is K+1,sub_string(W,0,K,_,Base),sub_string(W,Start,After,0,Suffix),
+    memberchk(Suffix,["s","m","d","ll","re","ve"]),L is After+1.
+
 has(n(_,_,Args),Key) :- member(A,Args),arg(1,A,Key).
 with_mark(n(clause,H,A),F,n(clause,H,[F|A])) :- F=..[_,Key|_], \+ (Key==terminator,has(n(clause,H,A),terminator)).
 with_mark(n(coordination,H,[arg(member,B)|R]),F,n(coordination,H,[arg(member,C)|R])) :- with_mark(B,F,C).
@@ -208,6 +234,7 @@ emit(pair(X,Y),Id,N,E,W,Z) :- !,emit(X,Id,N,M,W,V),emit(Y,_,M,E,V,Z).
 emit(n(Type,_,Props),Id,N,E,[wire(Id,Type,Attrs)|W],Z) :-
     Id is N+1, emit_fields(Props,Id,Attrs,Id,E,W,Z).
 emit_fields([],_,[],N,N,W,W).
+emit_fields([piece(Key,I,K,L)|R],Id,[[Key,piece,I,K,L]|A],N,E,W,Z) :- emit_fields(R,Id,A,N,E,W,Z).
 emit_fields([q(Key,I,J)|R],Id,[[Key,quote,I,J]|A],N,E,W,Z) :- emit_fields(R,Id,A,N,E,W,Z).
 emit_fields([a(Key,V)|R],Id,[[Key,atom,V]|A],N,E,W,Z) :- emit_fields(R,Id,A,N,E,W,Z).
 emit_fields([arg(Key,T)|R],Id,[[Key,ref,Child]|A],N,E,W,Z) :-
