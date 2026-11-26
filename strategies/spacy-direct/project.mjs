@@ -9,7 +9,8 @@ const roles = new Map([
 ])
 const subordinators = new Map([
   ['if', 'condition'], ['because', 'reason'], ['although', 'concession'], ['unless', 'condition'],
-  ['before', 'before'], ['after', 'after'], ['while', 'while'], ['when', 'when'], ['since', 'since'], ['once', 'once'], ['so', 'purpose']
+  ['before', 'before'], ['after', 'after'], ['until', 'until'], ['till', 'until'], ['while', 'while'],
+  ['when', 'when'], ['where', 'where'], ['since', 'since'], ['once', 'once'], ['so', 'purpose']
 ])
 const modifiers = new Map([
   ['det', 'determiner'], ['nummod', 'quantity'], ['compound', 'compound'], ['amod', 'modifier'],
@@ -25,6 +26,14 @@ const compoundPrepositions = new Map([
   ['on the left of', 'left_of'], ['on the right of', 'right_of'],
   ['to the left of', 'left_of'], ['to the right of', 'right_of']
 ])
+const subordinatePhrases = new Map([
+  ['as long as', 'condition'], ['as soon as', 'when'], ['even if', 'condition'],
+  ['even though', 'concession'], ['in case', 'condition'], ['so that', 'purpose']
+])
+const questionModifiers = new Set(['many', 'much', 'few', 'long', 'far', 'old', 'early', 'late', 'often',
+  'high', 'low', 'big', 'large', 'small', 'tall', 'short', 'wide', 'deep', 'close', 'fast', 'quickly'])
+const polarQuestionVerbs = new Set(['ask', 'check', 'confirm', 'decide', 'determine', 'discover', 'know', 'see', 'wonder'])
+const recipientComplementVerbs = new Set(['ask', 'inform', 'notify', 'remind', 'show', 'teach', 'tell'])
 const clauseMarkers = new Set(['if', 'whether', 'that'])
 const reportingVerbs = new Set(['call', 'contain', 'label', 'name', 'print', 'quote', 'read', 'rename', 'say', 'type', 'write'])
 const greeting = new Set(['hey', 'hello', 'hi', 'please'])
@@ -282,6 +291,51 @@ export function projectDependencies(text, dependencies) {
   const joiningAdverbs = new Set(sequenced.values())
   const primary = [...clauses.values()].filter(({token}) => token.dep === 'ROOT' || courtesy.has(token.index))
   const clauseOf = (token) => clauses.get(token.index)
+  function questionPhrase(head, parts, {proposal = false} = {}) {
+    const candidates = [...parts]
+    for (const part of parts) {
+      if (nouns.has(part.pos) || ['ADJ', 'ADV'].includes(part.pos)) {
+        candidates.push(...under(part))
+        for (const modifier of under(part)) {
+          if (questionModifiers.has(modifier.lower)) candidates.push(...under(modifier))
+        }
+      }
+    }
+    const word = candidates.filter((part) => questions.has(part.lower)).sort((a, b) => a.index - b.index)[0]
+    if (!word) return []
+    const next = tokens[word.index + 1]
+    if (proposal) {
+      return ['how', 'what'].includes(word.lower) && next?.lower === 'about' && candidates.includes(next) &&
+        next.index < head.index ? [word, next] : []
+    }
+    if (word.lower === 'how' && next && questionModifiers.has(next.lower) && candidates.includes(next) &&
+        (word.head === next.index || next.head === word.index || next.head === head.index)) return [word, next]
+    return [word]
+  }
+
+  function subordinateCue(parts) {
+    const lead = parts.find((part) => part.dep === 'mark' && subordinators.has(part.lower)) ??
+      parts.find((part) => part.dep === 'advmod' && ['where', 'when'].includes(part.lower))
+    // Multiword candidates must stay within the dependent clause's cue tokens.
+    const cueTokens = new Set(parts.filter((part) => ['mark', 'advmod', 'fixed', 'mwe'].includes(part.dep)))
+    for (const part of cueTokens) {
+      for (const child of under(part)) {
+        if (['mark', 'advmod', 'fixed', 'mwe'].includes(child.dep)) cueTokens.add(child)
+      }
+    }
+    for (const part of [...cueTokens].sort((a, b) => a.index - b.index)) {
+      for (const [phrase, kind] of subordinatePhrases) {
+        const words = phrase.split(' ')
+        if (part.lower !== words[0]) continue
+        const span = tokens.slice(part.index, part.index + words.length)
+        if (span.length === words.length && span.every((token, i) => cueTokens.has(token) && token.lower === words[i])) {
+          return {kind, span}
+        }
+      }
+    }
+    return lead ? {kind: subordinators.get(lead.lower), span: [lead]} : {kind: 'adverbial_clause', span: []}
+  }
+
   const attachments = new Map()
   for (const node of [...clauses.values()].sort((a, b) => a.token.index - b.token.index)) {
     const token = node.token
@@ -298,23 +352,29 @@ export function projectDependencies(text, dependencies) {
     }
     const final = boundaries.get(token.index) ?? parts.findLast((part) => part.dep === 'punct' && ending.has(part.value) && !courtesyTerminators.has(part.index) && !boundaryMarks.has(part))
     const marker = parts.find((part) => ['mark', 'aux'].includes(part.dep) && part.lower === 'to')
-    const relativizer = token.dep === 'relcl' ? parts.find((part) => questions.has(part.lower) || part.lower === 'that') : undefined
-    const question = (['ROOT', 'parataxis'].includes(token.dep) || final?.value === '?') ? parts.find((part) => questions.has(part.lower)) ??
-      parts.flatMap(under).find((part) => questions.has(part.lower) && part.index < token.index && part.dep === 'det') : undefined
+    const relative = token.dep === 'relcl'
+    const relativizer = relative && (parts.find((part) => questions.has(part.lower) || part.lower === 'that') ??
+      parts.flatMap(under).find((part) => part.lower === 'whose' && ['poss', 'det'].includes(part.dep)))
+    const interrogativeContext = ['ROOT', 'parataxis', 'ccomp', 'xcomp', 'pcomp'].includes(token.dep) || final?.value === '?'
+    const polar = token.dep === 'ccomp' && polarQuestionVerbs.has(tokens[token.head]?.lemma) &&
+      parts.find((part) => part.dep === 'mark' && ['if', 'whether'].includes(part.lower))
+    const question = !verbs.has(token.pos) ? questionPhrase(token, parts, {proposal: true})
+      : relative || !interrogativeContext ? [] : polar ? [polar] : questionPhrase(token, parts)
     const grammaticalSubject = parts.find((part) => subject.has(part.dep))
     const inversion = grammaticalSubject && [token, ...parts.filter((part) => part.dep === 'aux')]
       .some((part) => part.pos === 'AUX' && part.index < grammaticalSubject.index)
     const independent = boundaries.has(token.index) && token.head > boundaries.get(token.index).index
-    const form = !verbs.has(token.pos) ? 'fragment' : relativizer ? 'declarative'
+    const form = !verbs.has(token.pos) ? 'fragment' : relative ? 'declarative'
       : marker || !independent && !grammaticalSubject &&
         ['acl', 'advcl', 'xcomp', 'pcomp'].includes(token.dep) && ['VB', 'VBG', 'VBN'].includes(token.tag) ? 'nonfinite'
-      : final?.value === '?' || question || inversion ? 'interrogative'
+      : final?.value === '?' || question.length || inversion ? 'interrogative'
       : grammaticalSubject || !['VB', 'VBP'].includes(token.tag) ? 'declarative' : 'imperative'
     node.fields.push('form=' + form)
     if (final) {
       const interior = ['—',':'].includes(final.value) && final.index + 1 < tokens.length && !boundaryMarks.has(final)
       literal(node, interior ? 'separator' : 'terminator', [final], interior)
     }
+    literal(node, 'question', question)
     if (form === 'fragment') {
       const topic = coordinate(token, entity(token), entity)
       if (topic) node.fields.push(ref('topic', topic))
@@ -327,12 +387,18 @@ export function projectDependencies(text, dependencies) {
       node.fields.push('polarity=' + (parts.some((part) => part.dep === 'neg' || part.negated) ? 'negative' : 'positive'))
     }
     if (marker) literal(node, 'marker', [marker])
-    if (question) literal(node, 'question', [question])
+    else if (token.dep === 'ccomp') {
+      const complementizer = parts.find((part) => part.dep === 'mark' && clauseMarkers.has(part.lower))
+      if (complementizer) literal(node, 'marker', [complementizer])
+    }
     if (relativizer) attachments.set(token.index, relativizer)
     for (const part of parts) {
-      if (joiningAdverbs.has(part) || part === marker || part === question || part === relativizer || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
+      if (joiningAdverbs.has(part) || part === marker || question.includes(part) || part === relativizer || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
       const reportedQuote = part.quoted && ['ccomp', 'xcomp', 'dep'].includes(part.dep) && reportingVerbs.has(token.lemma)
-      const slot = reportedQuote ? 'direct_object' : subject.has(part.dep) ? 'subject' : roles.get(part.dep)
+      const recipient = ['dobj', 'obj'].includes(part.dep) && recipientComplementVerbs.has(token.lemma) &&
+        parts.some((item) => ['ccomp', 'xcomp'].includes(item.dep) && clauses.has(item.index))
+      const slot = reportedQuote ? 'direct_object' : subject.has(part.dep) ? 'subject'
+        : recipient ? 'indirect_object' : roles.get(part.dep)
       if (slot && form !== 'fragment' && !node.slots.has(slot)) {
         const target = coordinate(part, entity(part), entity)
         if (target) {
@@ -396,12 +462,10 @@ export function projectDependencies(text, dependencies) {
       if (child && !separated && ['xcomp', 'ccomp'].includes(part.dep) && !node.slots.has('clausal_complement')) {
         node.fields.push(ref('clausal_complement', coordinate(part, child, clauseOf)))
         node.slots.add('clausal_complement')
-        const cue = under(part).find((item) => item.dep === 'mark' && clauseMarkers.has(item.lower))
-        if (cue) literal(child, 'marker', [cue])
       }
       if (child && !separated && part.dep === 'advcl') {
-        const cue = under(part).find((item) => item.dep === 'mark' && subordinators.has(item.lower))
-        relation(node, child, subordinators.get(cue?.lower) ?? 'adverbial_clause', cue ? [cue] : [])
+        const {kind, span} = subordinateCue(under(part))
+        relation(node, coordinate(part, child, clauseOf), kind, span)
       }
     }
   }
@@ -439,10 +503,16 @@ export function projectDependencies(text, dependencies) {
       }
       if (from.type === 'entity' && ['acl', 'relcl'].includes(part.dep)) {
         const cue = attachments.get(part.index)
-        relation(from, clauseOf(part), cue ? subject.has(cue.dep) ? 'subject_relative' : 'object_relative'
-          : 'nominal_clause', cue ? [cue] : [])
+        const kind = cue?.lower === 'where' ? 'locative_relative' : cue?.lower === 'when' ? 'temporal_relative'
+          : cue?.lower === 'whose' ? 'possessive_relative'
+          : cue ? subject.has(cue.dep) ? 'subject_relative' : 'object_relative' : 'nominal_clause'
+        relation(from, coordinate(part, clauseOf(part), clauseOf), kind, cue ? [cue] : [])
       }
       if (from.type === 'entity' && part.dep === 'nmod' && nouns.has(part.pos)) relation(from,entity(part),'nominal_modifier')
+      if (from.type === 'entity' && part.dep === 'advcl') {
+        const {kind, span} = subordinateCue(under(part))
+        relation(from, coordinate(part, clauseOf(part), clauseOf), kind, span)
+      }
       if (part.dep === 'appos') relation(from, entity(part), 'apposition')
       if (part.dep === 'npadvmod' && !courtesy.has(part.index) && nouns.has(part.pos) && !used.has(part.index)) {
         relation(from, entity(part), 'nominal_adjunct')
