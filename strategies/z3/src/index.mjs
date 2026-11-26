@@ -2,6 +2,8 @@
 //   const f = await createFormaliser({ knowledgeDir });
 //   const res = await f.formalise('make the house blue', { tab: 'drawing', topK: 2, confidence: true });
 
+import { analyseWithZ3 } from './analysis.mjs';
+import { loadAnalysisLexicon } from './analysis-lexicon.mjs';
 import { loadKnowledge } from './kb/load-worlds.mjs';
 import { buildLattice } from './lattice/candidates.mjs';
 import { independentChange, sharedResultReadings } from './lattice/shared-result.mjs';
@@ -642,5 +644,12 @@ export async function createFormaliser({
     return formalise(text, { catalog: kb.catalog, topK, timeout, verify, confidence, dumpSmt });
   }
 
-  return { formalise, formaliseCurrentText, kb, runner, verifier, close };
+  let lexiconPromise;
+  async function analyseCurrentText(text, { timeout, topK } = {}) {
+    lexiconPromise ??= loadAnalysisLexicon(kb, worldPaths);
+    const lexicon = await lexiconPromise;
+    return analyseWithZ3(text, { kb, lexicon, runner, timeout, topK });
+  }
+
+  return { formalise, formaliseCurrentText, analyseCurrentText, kb, runner, verifier, close };
 }

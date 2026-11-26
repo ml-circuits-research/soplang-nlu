@@ -4,7 +4,7 @@ import { unquoteSop } from './contracts.mjs';
 export function readerError(text, error, { status = 'error', line } = {}) {
   return {
     engine: 'z3', text: typeof text === 'string' ? text : null,
-    candidates: [], unresolved: [], error: error instanceof Error ? error.message : String(error),
+    candidates: [], analyses: [], unresolved: [], error: error instanceof Error ? error.message : String(error),
     ok: false, status, line,
   };
 }
@@ -35,23 +35,35 @@ export async function createReader({ knowledgeDir, worldPaths, z3Module, timeout
       const { ok, elapsedMs, stats, ambiguity } = result;
       const status = result.status === 'sat' && unresolved.some(({ candidate }) => candidate === 0)
         ? 'partial' : result.status;
-      return { engine: 'z3', text, candidates, unresolved, error, ok, status, elapsedMs, stats, ambiguity };
+      return { engine: 'z3', text, candidates, unresolved, error, ok, status, elapsedMs, stats, ambiguity, analyses: [] };
     } catch (error) {
       return readerError(text, error);
     }
   }
 
-  // A Z3 context has a mutable assertion stack. Serialize proposals and wait
-  // for accepted work before closing the context and its WASM workers.
+  async function analyse(text) {
+    if (typeof text !== 'string' || !text.trim()) {
+      return readerError(text, 'Expected a nonempty text string.', { status: 'invalid-input' });
+    }
+    try {
+      return await formaliser.analyseCurrentText(text, { timeout, topK });
+    } catch (error) {
+      return { analyses: [], analysisDiagnostics: { solver: 'z3', status: 'error', error: error.message } };
+    }
+  }
+
+  // Both entry points own the same mutable assertion stack, so serialize them.
   let pending = Promise.resolve();
   let closing;
+  function enqueue(text, operation) {
+    if (closing) return Promise.resolve(readerError(text, 'Reader is closed.'));
+    const result = pending.then(() => operation(text));
+    pending = result.then(() => {}, () => {});
+    return result;
+  }
   return {
-    async propose(text) {
-      if (closing) return readerError(text, 'Reader is closed.');
-      const result = pending.then(() => read(text));
-      pending = result.then(() => {});
-      return result;
-    },
+    analyse: (text) => enqueue(text, analyse),
+    propose: (text) => enqueue(text, read),
     async close() {
       closing ??= pending.then(() => formaliser.close());
       await closing;

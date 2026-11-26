@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-function* sopFiles(path) {
+export function* sopFiles(path) {
   if (statSync(path).isFile()) {
     if (!path.endsWith('.sop')) throw new TypeError(`Expected a SOP file at ${path}`);
     yield path;
