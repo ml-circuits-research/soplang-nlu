@@ -9,8 +9,10 @@ import {distilBert} from '../../strategies/distilbert/index.mjs'
 
 const [study,baselinePath,out,knowledgeDir,python,modelPath,variant]=process.argv.slice(2)
 if (!modelPath) throw Error('Usage: study.mjs STUDY BASELINE OUTPUT KNOWLEDGE PYTHON MODEL')
-if (variant && variant!=='selector-repair') throw Error('Unknown study variant.')
-const strategy=variant ? (await import('./repair/strategy.mjs')).selectorRepair : distilBert
+let strategy=distilBert
+if (variant==='selector-repair') strategy=(await import('./repair/strategy.mjs')).selectorRepair
+else if (variant==='sequence-graph') strategy=(await import('../sequence-graph/index.mjs')).sequenceGraph
+else if (variant) throw Error('Unknown study variant.')
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex')
 const studyBytes=await readFile(study)
 const baselineBytes=await readFile(baselinePath)
