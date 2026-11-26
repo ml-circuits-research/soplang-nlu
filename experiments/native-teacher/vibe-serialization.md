@@ -28,3 +28,30 @@ Inside each SOP string, a wire declaration starts with @. Every reference inside
 ```
 
 For embedded clauses, connect the bare or infinitival verb as a nonfinite clause and use clausal_complement where appropriate. For meaningful coordinated actions or a sequence, use one clause per action and a coordination wire with repeated member=$id keys. For dates, times, labels and durations, preserve the exact values in literal or name fields, and attach them to their correct clause or entity. Keep auxiliaries, negation, courtesy and punctuation in their own keys when applicable. A detached greeting or gratitude gets its own clause. Omit optional semantic atoms when the syntax is enough. Never add a guessed participant or normalize the original spelling.
+
+### Preserve every role in imperfect text
+
+Do a quick internal pass over each sentence before emitting it. Check the speaker's words, auxiliaries, subjects, verbs, complement markers, objects, written values, and detached expressions against the graph. In particular, a separate `to` before a bare verb is the nonfinite clause's `marker="to"`. A clause can point to the already declared participant that supplies its subject. Quote that participant only at its one entity wire.
+
+"I need you to open it." becomes these wires.
+
+```sop
+@c1 nlu.clause form=declarative subject=$speaker predicate="need" direct_object=$recipient clausal_complement=$c2
+@speaker nlu.entity pronoun="I"
+@recipient nlu.entity pronoun="you"
+@c2 nlu.clause form=nonfinite marker="to" predicate="open" subject=$recipient direct_object=$target terminator="."
+@target nlu.entity pronoun="it"
+```
+
+Utterances sometimes interrupt one construction and start another. Represent the incomplete construction with `completion=interrupted`. Keep the next complete clause separate. Preserve the exact words of the interrupted preface without inventing a missing verb or forcing a false dependency.
+
+"Could you — which meetings are on Work 5?" becomes these wires.
+
+```sop
+@c1 nlu.clause form=interrogative completion=interrupted auxiliary="Could" subject=$recipient separator="—"
+@recipient nlu.entity pronoun="you"
+@c2 nlu.clause form=interrogative predicate="are" subject=$requested terminator="?"
+@requested nlu.entity determiner="which" head="meetings"
+@name nlu.entity name="Work 5"
+@r nlu.relation kind=on from=$c2 to=$name cue="on"
+```
