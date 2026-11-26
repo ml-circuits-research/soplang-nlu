@@ -1,10 +1,9 @@
-import {execFileSync} from 'node:child_process'
+import {execFileSync, fork} from 'node:child_process'
 import {createHash} from 'node:crypto'
 import {existsSync, mkdirSync, mkdtempSync, rmSync, readFileSync, rmdirSync, writeFileSync} from 'node:fs'
 import {arch, cpus, platform, tmpdir} from 'node:os'
 import {dirname, isAbsolute, join, relative, resolve, sep} from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
 import {gunzipSync, gzipSync} from 'node:zlib'
 import {compareAlternatives} from '../../lib/compare-alternatives.mjs'
 import {datasetRevision, readCommittedRows, splitTrainingRows} from './train-split.mjs'
@@ -20,13 +19,18 @@ if (extraArgs.length || sourceArg === '--help') {
   console.log('Environment: SOP_WORKSPACE, KNOWLEDGE_DIR, WORKERS, PROGRESS_EVERY, SAMPLE_PERCENT, SAMPLE_SEED, Z3_MODULE, SWIPL')
   console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer.')
   console.log('Use APPEND=1 with an existing output directory and select only new strategies.')
+  console.log('WORKER_TIMEOUT_MS sets the wall limit per startup, request or shutdown (default 300000).')
   process.exit(extraArgs.length ? 1 : 0)
 }
 
 const workers = Number(process.env.WORKERS ?? 8)
 const progressEvery = Number(process.env.PROGRESS_EVERY ?? 25)
+const workerTimeoutMs = Number(process.env.WORKER_TIMEOUT_MS ?? 300000)
 if (![workers, progressEvery].every(value => Number.isSafeInteger(value) && value > 0)) {
   throw Error('WORKERS and PROGRESS_EVERY must be positive integers.')
+}
+if (!Number.isSafeInteger(workerTimeoutMs) || workerTimeoutMs < 1 || workerTimeoutMs > 2147483647) {
+  throw Error('WORKER_TIMEOUT_MS must be an integer between 1 and 2147483647.')
 }
 
 const hash = value => createHash('sha256').update(value).digest('hex')
@@ -71,25 +75,136 @@ function priorSample(directory) {
 }
 
 const strategyLabel = name => name === 'prolog-worlds' ? 'prolog' : name
+const workerEntry = fileURLToPath(new URL('./port-child.mjs', import.meta.url))
+const useProcessGroup = platform() !== 'win32'
+const errorRecord = (row, error, latencyMs = null) => ({
+  id: row.id, latencyMs, error, candidates: [], candidateEvidence: [], unresolved: []
+})
 
-function runWorker(name, options, rows, index) {
-  return new Promise((resolveResult, reject) => {
-    const label = `${strategyLabel(name)} worker ${index + 1}`
-    console.log(`${label} opening for ${rows.length} requests`)
-    const worker = new Worker(new URL('./port-worker.mjs', import.meta.url), {
-      workerData: {name, options, rows, progressEvery}
-    })
-    let result
+function runAttempt(name, options, rows, records, label) {
+  return new Promise(resolveAttempt => {
+    const start = performance.now()
+    const worker = fork(workerEntry, [], {detached: useProcessGroup, stdio: 'inherit'})
+    const timing = {requests: 0, proposalMs: 0}
+    let stage = 'startup'
+    let stageStart = start
+    let ready = false
+    let closed = false
+    let failure
+    let timer
+
+    function killWorker() {
+      if (!worker.pid) return
+      try {
+        if (useProcessGroup) process.kill(-worker.pid, 'SIGKILL')
+        else worker.kill('SIGKILL')
+      } catch (error) {
+        if (error.code !== 'ESRCH') throw error
+      }
+    }
+
+    function fail(reason) {
+      if (failure) return
+      failure = `${label} ${stage}: ${reason}`
+      clearTimeout(timer)
+      killWorker()
+    }
+
+    function send(nextStage, message) {
+      clearTimeout(timer)
+      stage = nextStage
+      stageStart = performance.now()
+      timer = setTimeout(() => fail(`exceeded ${workerTimeoutMs} ms wall timeout`), workerTimeoutMs)
+      worker.send(message, error => {
+        if (error) fail(error.message)
+      })
+    }
+
+    function advance(previousError) {
+      if (previousError || records.length === rows.length) {
+        send('shutdown', {type: 'close'})
+      } else {
+        const row = rows[records.length]
+        send('request ' + row.id, {type: 'propose', row})
+      }
+    }
+
     worker.on('message', message => {
-      if (message.records) result = message
-      else console.log(`${label} ${message.completed}/${message.total}`)
+      if (failure) return
+      if (message.type === 'ready') {
+        ready = true
+        timing.startupMs = message.startupMs
+        timing.modelLoadMs = message.modelLoadMs
+        console.log(`${label} ${records.length}/${rows.length} ready`)
+        advance(false)
+      } else if (message.type === 'result') {
+        const {record} = message
+        records.push(record)
+        timing.requests++
+        timing.proposalMs += record.latencyMs
+        if (record.error || records.length % progressEvery === 0 || records.length === rows.length) {
+          console.log(`${label} ${records.length}/${rows.length}${record.error ? ' ' + record.id + ': ' + record.error : ''}`)
+        }
+        advance(record.error)
+      } else if (message.type === 'closed') {
+        closed = true
+        timing.shutdownMs = message.shutdownMs
+      }
     })
-    worker.on('error', error => reject(Error(label + ': ' + error.message, {cause: error})))
-    worker.on('exit', code => {
-      if (code === 0 && result) resolveResult({...result, worker: index + 1})
-      else reject(Error(`${label} exited with code ${code} without a complete result`))
+    worker.on('error', error => fail(error.message))
+    worker.on('close', (code, signal) => {
+      clearTimeout(timer)
+      if (!failure && (!closed || code !== 0)) {
+        failure = `${label} ${stage}: exited with ${signal ?? 'code ' + code}`
+        killWorker()
+      }
+      const elapsed = performance.now() - stageStart
+      if (failure && stage.startsWith('request ')) {
+        records.push(errorRecord(rows[records.length], failure, elapsed))
+        timing.requests++
+        timing.proposalMs += elapsed
+      }
+      if (!ready) timing.startupMs = elapsed
+      if (stage === 'shutdown' && !closed) timing.shutdownMs = elapsed
+      resolveAttempt({...timing, ready, failure, totalMs: performance.now() - start})
     })
+    send('startup', {type: 'open', name, options})
   })
+}
+
+const percentile = (sorted, fraction) => sorted[Math.ceil(sorted.length * fraction) - 1] ?? null
+
+async function runWorker(name, options, rows, index) {
+  const start = performance.now()
+  const records = []
+  const attempts = []
+  const failures = []
+  const worker = index + 1
+  const label = `${strategyLabel(name)} worker ${worker}`
+  while (records.length < rows.length) {
+    console.log(`${label} opening for ${rows.length - records.length} requests (attempt ${attempts.length + 1})`)
+    const attempt = await runAttempt(name, options, rows, records, label)
+    attempts.push(attempt)
+    if (attempt.failure) {
+      failures.push(attempt.failure)
+      console.error(attempt.failure)
+    }
+    if (!attempt.ready) {
+      for (const row of rows.slice(records.length)) records.push(errorRecord(row, attempt.failure))
+      break
+    }
+  }
+  const total = key => attempts.reduce((sum, attempt) => sum + (attempt[key] ?? 0), 0)
+  const latencies = records.map(record => record.latencyMs).filter(Number.isFinite).sort((a, b) => a - b)
+  const proposalMs = total('proposalMs')
+  return {records, failures, timing: {
+    worker, workers: 1, requests: total('requests'), startupMs: total('startupMs'),
+    proposalMs, shutdownMs: total('shutdownMs'), totalMs: performance.now() - start,
+    requestsPerSecond: proposalMs > 0 ? 1000 * total('requests') / proposalMs : null,
+    medianMs: percentile(latencies, 0.5), p95Ms: percentile(latencies, 0.95),
+    modelLoadMs: attempts.some(attempt => attempt.modelLoadMs !== undefined) ? total('modelLoadMs') : undefined,
+    attempts
+  }}
 }
 
 const append = process.env.APPEND === '1'
@@ -151,7 +266,7 @@ for (const name of selected) {
 const activeWorkers = Math.min(workers, rows.length)
 const environment = {
   ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
-  workers, activeWorkers, node: process.version, cpu: cpus()[0]?.model, platform: platform(), arch: arch(),
+  workers, activeWorkers, workerTimeoutMs, node: process.version, cpu: cpus()[0]?.model, platform: platform(), arch: arch(),
   libraryRevision: execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   knowledgeRevision: (() => {
     try { return execFileSync('git',['-C',knowledgeDir,'rev-parse','HEAD'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim() }
@@ -187,7 +302,7 @@ for (const name of selected) {
   const start = performance.now()
   const batches = await Promise.allSettled(partitions.map((batch, index) => runWorker(name, options, batch, index)))
   const wallMs = performance.now() - start
-  const failures = batches.flatMap(batch => batch.status === 'rejected' ? [batch.reason.message] : [])
+  const failures = batches.flatMap(batch => batch.status === 'rejected' ? [batch.reason.message] : batch.value.failures)
   const completed = batches.flatMap(batch => batch.status === 'fulfilled' ? [batch.value] : [])
   const predictions = new Map(completed.flatMap(batch => batch.records).map(record => [record.id, record]))
   const records = rows.flatMap(({id, references}) => {
@@ -195,15 +310,15 @@ for (const name of selected) {
     if (!record) return []
     return [{...record, comparison: compareAlternatives(references, record.candidates)}]
   })
-  const latencies = records.map(record => record.latencyMs).sort((a, b) => a - b)
+  const latencies = records.map(record => record.latencyMs).filter(Number.isFinite).sort((a, b) => a - b)
   const summary = {
-    wallMs, requests: records.length, expectedRequests: rows.length,
-    requestsPerSecond: records.length * 1000 / wallMs,
-    medianMs: latencies[Math.ceil(latencies.length * 0.5) - 1] ?? null,
-    p95Ms: latencies[Math.ceil(latencies.length * 0.95) - 1] ?? null,
+    wallMs, requests: records.length, expectedRequests: rows.length, attemptedRequests: latencies.length,
+    requestsPerSecond: latencies.length * 1000 / wallMs,
+    medianMs: percentile(latencies, 0.5),
+    p95Ms: percentile(latencies, 0.95),
     errors: records.filter(record => record.error).length,
     withExactMatch: records.filter(record => record.comparison.matched).length,
-    workerTiming: completed.map(batch => ({worker: batch.worker, ...batch.timing})),
+    workerTiming: completed.map(batch => batch.timing),
     failures
   }
   save(name + '.json', summary)
@@ -219,7 +334,7 @@ const readyToGrade = Object.keys(strategies).every(name => {
   const summaryPath = join(dir,name+'.json')
   if (!existsSync(summaryPath) || !existsSync(join(dir,name+'.jsonl.gz'))) return false
   const summary = JSON.parse(readFileSync(summaryPath,'utf8'))
-  return summary.requests === rows.length && summary.failures.length === 0
+  return summary.requests === rows.length && (summary.attemptedRequests ?? summary.requests) > 0
 })
 if (readyToGrade) {
   execFileSync(process.execPath,[fileURLToPath(new URL('./grade.mjs',import.meta.url)),dir],{stdio:'inherit'})
