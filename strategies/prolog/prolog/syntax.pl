@@ -192,6 +192,13 @@ main_predicate(Q,At,End,Start,After,Acts) :-
       Options),
     keysort(Options,Ascending), last(Ascending,_-[Start,After,Acts]).
 
+% The overt subject and predicative operand license copula before lexical ambiguity.
+lexical_predicate(Q,F,At,First,End,49) :-
+    F.copula==true, At>First, F.end<End,
+    subject_before(Q,First,At),
+    ( token_pos(Q,F.end,"adjective") ; preposition(Q,F.end,End,_,_) ),
+    !.
+
 % A finite form with an overt subject and object is distinct from a discourse formula.
 lexical_predicate(Q,F,At,First,End,24) :-
     At>First, F.end=:=At+1, F.end<End,
@@ -439,7 +446,7 @@ subject_phrase(Q,At0,End,Phrase,Relations) :-
 subject_phrase(_,_,_,none,[]).
 
 subject_nominal(Q,At,End,Phrase,Relations) :-
-    phrase_end(Q,At,End,Stop), noun_phrase(Q,At,Stop,Phrase),
+    nominal_slice(Q,At,End,Phrase,Stop),
     prepositions(Q,Stop,End,Prepositions),
     ( Stop=:=End -> true
     ; Prepositions=[First|_], First.cue=[Stop,_],
@@ -462,6 +469,8 @@ clause_type(_,_,_,_,"declarative").
 question_term(Q,[At,End]) :-
     Last is End-1, between(At,Last,Mark), word_at(Q,Mark,"?"), !.
 
+complement(Q,At,End,_,End,[]) :-
+    nominal_slice(Q,At,End,Phrase,End), get_dict(annotations,Phrase,_), !.
 complement(Q,At,End,_,Start,[Start,Than]) :-
     Last is End-1, between(At,Last,Start), token_flag(Q,Start,comparative),
     Than is Start+1, Than<End, has_form(Q,Than,preposition,"than"), !.
@@ -500,10 +509,70 @@ nominal_joiner(Q,At,End,After,Kind) :-
 
 nominal_slice(Q,At,End,Noun,Stop) :-
     Last is End-1,
+    between(At,Last,Cut), Cut>At,
+    noun_phrase(Q,At,Cut,Head),
+    nominal_annotations(Q,Head,Cut,End,Stop,Annotations), !,
+    Noun=Head.put(_{to:Stop,annotations:Annotations}).
+nominal_slice(Q,At,End,Noun,Stop) :-
+    Last is End-1,
     between(At,Last,Stop), Stop>At,
     ( preposition(Q,Stop,End,_,_) ; joiner(Q,Stop,End,_,_) ; word_at(Q,Stop,",") ),
     noun_phrase(Q,At,Stop,Noun), !.
 nominal_slice(Q,At,End,Noun,End) :- noun_phrase(Q,At,End,Noun).
+
+nominal_annotations(Q,Head,At,End,Stop,[Annotation|Tail]) :-
+    ( unquoted_word(Q,At,Marker), nominal_annotation_marker(Marker,Kind),
+      Start is At+1, Start<End,
+      annotation_target(Q,Kind,Start,End,After,Target),
+      Annotation=_{cue:[At,Start],kind:Kind,target:Target}
+    ; textual_head(Q,Head), quoted_literal(Q,At,End,After),
+      Annotation=_{cue:[],kind:"content",target:_{literal:[At,After]}} ),
+    ( nominal_annotations(Q,Head,After,End,Stop,Tail) -> true
+    ; Stop=After, Tail=[] ).
+
+nominal_annotation_marker("called","label").
+nominal_annotation_marker("named","label").
+nominal_annotation_marker("titled","label").
+nominal_annotation_marker("labelled","label").
+nominal_annotation_marker("labeled","label").
+nominal_annotation_marker("containing","content").
+nominal_annotation_marker("saying","content").
+nominal_annotation_marker("reading","content").
+
+textual_head(Q,Head) :-
+    Head.head=[At,Stop], Stop=:=At+1, unquoted_word(Q,At,Word),
+    memberchk(Word,["word","words","text","phrase","label","string","title"]).
+
+annotation_target(Q,Kind,At,End,After,Target) :-
+    quoted_literal(Q,At,End,After), !,
+    ( Kind=="content" -> Target=_{literal:[At,After]}
+    ; Target=_{name:[At,After]} ).
+annotation_target(Q,"label",At,End,After,_{name:[At,After]}) :-
+    Last is End-1,
+    ( once((between(At,Last,Edge), Edge>At, annotation_boundary(Q,Edge,End))) -> After=Edge
+    ; After=End ),
+    After=<At+8, NameLast is After-1,
+    forall(between(At,NameLast,Token), label_word(Q,Token)).
+
+annotation_boundary(Q,At,End) :-
+    ( preposition(Q,At,End,_,_) ; nominal_joiner(Q,At,End,_,_) ;
+      separator_at(Q,At) ; unquoted_word(Q,At,Marker), nominal_annotation_marker(Marker,_) ).
+
+label_word(Q,At) :-
+    unquoted_word(Q,At,_), form_at(Q,At,F), F.end=:=At+1, F.word==true,
+    F.auxiliary==false, F.negation==false, F.question==false,
+    \+ memberchk("pronoun",F.pos).
+
+quoted_literal(Q,At,End,After) :-
+    At<End, nth0(At,Q.tokens,[Open,true]),
+    quote_pair(Open,Close), Start is At+2, Last is End-1,
+    between(Start,Last,Finish), nth0(Finish,Q.tokens,[Close,true]), !,
+    After is Finish+1.
+
+quote_pair("\"","\"").
+quote_pair("“","”").
+quote_pair("'","'").
+quote_pair("‘","’").
 
 phrase_end(Q,At,End,Stop) :-
     Last is End-1,

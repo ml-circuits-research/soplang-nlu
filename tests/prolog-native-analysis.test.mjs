@@ -209,3 +209,32 @@ test('Prolog uses lexical valency to compose finite and nonfinite clauses', {ski
     await reader.close()
   }
 })
+
+test('Prolog keeps explicitly introduced labels and literals attached to their nouns', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Make a diamond labelled Home.', [/head="diamond"/u, /name="Home"/u,
+        /kind=label from=\$e1 to=\$e2 cue="labelled"/u]],
+      ['The chart called Sales is red.', [/kind=label from=\$e1 to=\$e2 cue="called"/u,
+        /predicate="is" subject=\$e1 result_complement="red"/u]],
+      ['Create a document titled Exam guidance containing "The delivery arrived this morning."',
+        [/name="Exam guidance"/u, /kind=label from=\$e1 to=\$e2 cue="titled"/u,
+          /literal="\\"The delivery arrived this morning\.\\""/u,
+          /kind=content from=\$e1 to=\$e3 cue="containing"/u]],
+      ['Select the word "deadline" in the Background paragraph.', [
+        /head="word"/u, /literal="\\"deadline\\""/u, /kind=content from=\$e1 to=\$e2/u
+      ]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})

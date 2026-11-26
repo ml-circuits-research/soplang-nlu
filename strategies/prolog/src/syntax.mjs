@@ -1,3 +1,4 @@
+import {serializeConstituents} from './constituents.mjs';
 import {lexicalTokens} from './syntax-lexicon.mjs';
 import {quotedSpans} from './literal-roles.mjs';
 import {parse} from './schema.mjs';
@@ -174,6 +175,16 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     lines.push('@'+id+' nlu.entity'+identity+nominalModifier(phrase.determiner,'determiner')+
       phrase.modifiers.map(range=>nominalModifier(range,modifierRole(range))).join('')+
       atom('kind',kinds.length===1 && !groundedName?kinds[0]:undefined)+atom('color',color.length===1?color[0]:undefined));
+    for (const annotation of phrase.annotations ?? []) {
+      const target='e'+nextEntity++;
+      const field=annotation.target.literal ? 'literal' : 'name';
+      lines.push('@'+target+' nlu.entity'+raw(field,annotation.target[field]));
+      const relation='r'+nextRelation++;
+      lines.push('@'+relation+' nlu.relation'+atom('kind',annotation.kind)+ref('from',id)+
+        ref('to',target)+raw('cue',annotation.cue));
+      semanticEvidence.push({wire:relation,key:'kind',sourceSlot:annotation.cue.length?'cue':field,
+        source:span(annotation.cue.length?annotation.cue:annotation.target[field])});
+    }
     return id;
   }
   function group(ids, joins) {
@@ -326,6 +337,11 @@ export function createNativeSyntax(worlds, analyse) {
     const alternatives=analysis.attachments
       .map(attachment=>circuit(text,source,forms,analysis,undefined,attachment));
     const proposals=new Map([base,...alternatives,...enriched].map(proposal=>[proposal.sop,proposal]));
-    return {analyses:[...proposals.values()],candidates:decorated};
+    const ranked=[...proposals.values()];
+    if (analysis.constituents?.length && ranked.every(item=>item.sop.includes(' unresolved='))) {
+      const complete=serializeConstituents(text,source,analysis.constituents);
+      if (!proposals.has(complete.sop)) ranked.unshift(complete);
+    }
+    return {analyses:ranked.slice(0,3),candidates:decorated};
   };
 }
