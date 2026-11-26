@@ -1,0 +1,363 @@
+{
+  "args": [
+    "-a",
+    "never",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--color",
+    "never",
+    "-m",
+    "gpt-6-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "--output-schema",
+    "/tmp/sop-native-teacher-v1/output-schema.json",
+    "-o",
+    "/tmp/sop-native-teacher-v1/batches/initial-5.output.json",
+    "-"
+  ],
+  "code": 0,
+  "wallMs": 30326.252181,
+  "attempts": [
+    {
+      "index": 40,
+      "sop": "@layout nlu.entity head=\"layout\" determiner=\"the\"\n@tidy nlu.clause form=imperative predicate=\"tidy\" direct_object=$layout\n@little nlu.entity head=\"little\" determiner=\"a\"\n@degree nlu.relation kind=degree from=$tidy to=$little",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 5,
+          "understood": 5,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 41,
+      "sop": "@tree nlu.entity head=\"tree\" compound=\"Family\"\n@ruth nlu.entity name=\"Grandma Ruth\"\n@link nlu.clause form=interrogative auxiliary=\"Could\" subject=$you predicate=\"link\" direct_object=$tree question=\"Could\"\n@you nlu.entity pronoun=\"you\"\n@target nlu.relation kind=goal from=$link to=$ruth cue=\"to\"\n@i nlu.entity pronoun=\"I\"\n@it nlu.entity pronoun=\"it\"\n@appreciate nlu.clause form=declarative subject=$i predicate=\"appreciate\" direct_object=$it",
+      "check": {
+        "valid": false,
+        "schemaValid": true,
+        "sourceValid": false,
+        "coverage": {
+          "words": 13,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 13,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 13,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "Could",
+            "claimed": 2,
+            "occurrences": 1,
+            "slots": [
+              {
+                "wire": "link",
+                "key": "auxiliary"
+              },
+              {
+                "wire": "link",
+                "key": "question"
+              }
+            ]
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 42,
+      "sop": "@you nlu.entity pronoun=\"you\"\n@bend nlu.entity head=\"bend\" determiner=\"one\"\n@arrow nlu.entity head=\"arrow\" determiner=\"the\" modifier=\"e2\"\n@add nlu.clause form=interrogative auxiliary=\"could\" subject=$you predicate=\"add\" direct_object=$bend question=\"could\"\n@to nlu.relation kind=goal from=$add to=$arrow cue=\"to\"",
+      "check": {
+        "valid": false,
+        "schemaValid": true,
+        "sourceValid": false,
+        "coverage": {
+          "words": 9,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 9,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 9,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "could",
+            "claimed": 2,
+            "occurrences": 1,
+            "slots": [
+              {
+                "wire": "add",
+                "key": "auxiliary"
+              },
+              {
+                "wire": "add",
+                "key": "question"
+              }
+            ]
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 43,
+      "sop": "@us nlu.entity pronoun=\"us\"\n@heading nlu.entity head=\"heading\" determiner=\"a\"\n@intro nlu.entity literal=\"Intro\"\n@add nlu.clause form=imperative predicate=\"Let\" direct_object=$us clausal_complement=$add_heading\n@add_heading nlu.clause form=nonfinite predicate=\"add\" direct_object=$heading\n@called nlu.relation kind=name from=$heading to=$intro cue=\"called\"\n@paragraph nlu.entity head=\"paragraph\" determiner=\"a\"\n@quote nlu.entity literal=\"Please confirm these updated details.\"\n@make nlu.clause form=imperative predicate=\"make\" direct_object=$paragraph connective=\"then\"\n@saying nlu.relation kind=content from=$paragraph to=$quote cue=\"saying\"\n@that nlu.entity pronoun=\"That\"\n@help nlu.clause form=declarative subject=$that auxiliary=\"would\" predicate=\"help\"\n@sequence nlu.coordination kind=sequence member=$add member=$make member=$help cue=\";\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 26,
+          "understood": 22,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 4,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "a",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 4,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 44,
+      "sop": "@amn nlu.entity head=\"amn\" modifier=\"green-hat\" determiner=\"the\"\n@right nlu.entity head=\"right\" modifier=\"far\" determiner=\"the\"\n@slides nlu.clause form=declarative subject=$amn predicate=\"slides\"\n@goal nlu.relation kind=goal from=$slides to=$right cue=\"to\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 10,
+          "understood": 10,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": [
+            {
+              "text": "the",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 45,
+      "sop": "@red nlu.entity head=\"block\" modifier=\"red\" determiner=\"the\"\n@blue nlu.entity head=\"block\" modifier=\"blue\" determiner=\"the\"\n@one_right nlu.entity head=\"place\" quantity=\"one\"\n@one_left nlu.entity head=\"place\" quantity=\"one\"\n@move_red nlu.clause form=imperative predicate=\"move\" direct_object=$red\n@move_blue nlu.clause form=imperative predicate=\"move\" direct_object=$blue\n@right nlu.relation kind=direction from=$move_red to=$one_right cue=\"right\"\n@left nlu.relation kind=direction from=$move_blue to=$one_left cue=\"left\"\n@pair nlu.entity head=\"pair\" determiner=\"the\"\n@swap nlu.entity head=\"swap\" determiner=\"the\"\n@undo nlu.clause form=imperative predicate=\"undo\" direct_object=$swap connective=\"then\"\n@for nlu.relation kind=affected from=$swap to=$pair cue=\"for\"\n@gap nlu.entity head=\"gap\" determiner=\"the\"\n@them nlu.entity pronoun=\"them\"\n@between nlu.relation kind=between from=$gap to=$them cue=\"between\"\n@it nlu.entity pronoun=\"it\"\n@is nlu.clause form=declarative subject=$it predicate=\"is\"\n@as nlu.relation kind=manner from=$gap to=$is cue=\"as\"\n@leave nlu.clause form=imperative predicate=\"leave\" direct_object=$gap clausal_complement=$is connective=\"then\"\n@sequence nlu.coordination kind=sequence member=$move_red member=$move_blue member=$undo member=$leave cue=\"and\" cue=\"then\" cue=\"then\"",
+      "check": {
+        "valid": false,
+        "schemaValid": true,
+        "sourceValid": false,
+        "coverage": {
+          "words": 32,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 32,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "block",
+              "claimed": 2,
+              "occurrences": 2
+            },
+            {
+              "text": "the",
+              "claimed": 5,
+              "occurrences": 5
+            },
+            {
+              "text": "place",
+              "claimed": 2,
+              "occurrences": 2
+            },
+            {
+              "text": "one",
+              "claimed": 2,
+              "occurrences": 2
+            },
+            {
+              "text": "then",
+              "claimed": 4,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 32,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "move",
+            "claimed": 2,
+            "occurrences": 1,
+            "slots": [
+              {
+                "wire": "move_red",
+                "key": "predicate"
+              },
+              {
+                "wire": "move_blue",
+                "key": "predicate"
+              }
+            ]
+          },
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "then",
+            "claimed": 4,
+            "occurrences": 2,
+            "slots": [
+              {
+                "wire": "undo",
+                "key": "connective"
+              },
+              {
+                "wire": "leave",
+                "key": "connective"
+              },
+              {
+                "wire": "sequence",
+                "key": "cue"
+              },
+              {
+                "wire": "sequence",
+                "key": "cue"
+              }
+            ]
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 46,
+      "sop": "@i nlu.entity pronoun=\"I\"\n@bench nlu.entity head=\"bench\" modifier=\"old\" determiner=\"the\"\n@tree nlu.entity head=\"tree\" determiner=\"the\"\n@bit nlu.entity head=\"bit\" determiner=\"a\"\n@want nlu.clause form=declarative subject=$i predicate=\"want\" direct_object=$bench\n@closer nlu.relation kind=proximity from=$bench to=$tree cue=\"closer to\" measure=$bit\n@path nlu.entity head=\"path\" determiner=\"the\"\n@leave nlu.clause form=imperative predicate=\"leave\" direct_object=$path result_complement=\"clear\"\n@combined nlu.coordination kind=sequence member=$want member=$leave cue=\"and\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 18,
+          "understood": 16,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 2,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "the",
+              "claimed": 3,
+              "occurrences": 3
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 2,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 47,
+      "sop": "@you nlu.entity pronoun=\"you\"\n@chart nlu.entity head=\"chart\" determiner=\"a\" compound=\"line\"\n@data nlu.entity head=\"data\" modifier=\"sample\"\n@fill nlu.clause form=interrogative auxiliary=\"can\" subject=$you predicate=\"fill\" direct_object=$chart question=\"can\" terminator=\"!\"\n@with nlu.relation kind=instrument from=$fill to=$data cue=\"with\"",
+      "check": {
+        "valid": false,
+        "schemaValid": true,
+        "sourceValid": false,
+        "coverage": {
+          "words": 10,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 10,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 10,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "can",
+            "claimed": 2,
+            "occurrences": 1,
+            "slots": [
+              {
+                "wire": "fill",
+                "key": "auxiliary"
+              },
+              {
+                "wire": "fill",
+                "key": "question"
+              }
+            ]
+          }
+        ]
+      },
+      "eligible": false
+    }
+  ]
+}

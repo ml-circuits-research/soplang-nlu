@@ -1,0 +1,257 @@
+{
+  "args": [
+    "-a",
+    "never",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--color",
+    "never",
+    "-m",
+    "gpt-6-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "--output-schema",
+    "/tmp/sop-native-teacher-v1/output-schema.json",
+    "-o",
+    "/tmp/sop-native-teacher-v1/batches/initial-6.output.json",
+    "-"
+  ],
+  "code": 0,
+  "wallMs": 22157.295642,
+  "attempts": [
+    {
+      "index": 48,
+      "sop": "@c1 nlu.clause form=declarative filler=\"hmm\" subject=$e1 auxiliary=\"does\" negation=\"not\" predicate=\"fit\" separator=\",\"; @e1 nlu.entity determiner=\"the\" head=\"label\"; @c2 nlu.clause form=imperative predicate=\"make\" direct_object=$e2 result_complement=\"wide\"; @e2 nlu.entity determiner=\"the\" modifier=\"highlighted\" head=\"one\"; @e3 nlu.entity quantity=\"160\"; @r1 nlu.relation kind=measure from=$c2 to=$e3",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 13,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 13,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 13,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 106: text after the closing quote of a string"
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 49,
+      "sop": "@c1 nlu.clause form=fragment expression=\"mask\" separator=\",\" speech_act=request filler=\"please\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 3,
+          "understood": 2,
+          "filler": 1,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 50,
+      "sop": "@c1 nlu.clause form=imperative filler=\"Hey\" separator=\",\" predicate=\"make\" direct_object=$e1 result_color=blue terminator=\".\"; @e1 nlu.entity name=\"Lift\"; @c2 nlu.clause form=declarative subject=$e2 auxiliary=\"would\" predicate=\"help\" terminator=\".\"; @e2 nlu.entity pronoun=\"That\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 10,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 10,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 10,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 112: text after the closing quote of a string"
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 51,
+      "sop": "@c1 nlu.clause form=fragment expression=\"just an airport for now\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 5,
+          "understood": 5,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 52,
+      "sop": "@c1 nlu.clause form=imperative predicate=\"give\" indirect_object=$e1 direct_object=$e2 separator=\";\"; @e1 nlu.entity pronoun=\"me\"; @e2 nlu.entity determiner=\"a\" compound=\"line\" head=\"chart\"; @e3 nlu.entity determiner=\"the\" modifier=\"avg\" head=\"sales\"; @r1 nlu.relation kind=content from=$e2 to=$e3 cue=\"of\"; @e4 nlu.entity determiner=\"each\" head=\"month\"; @r2 nlu.relation kind=distribution from=$e3 to=$e4 cue=\"for\"; @c2 nlu.clause form=imperative connective=\"and\" predicate=\"move\" direct_object=$e5; @e5 nlu.entity determiner=\"the\" head=\"legend\"; @e6 nlu.entity determiner=\"the\" head=\"right\"; @r3 nlu.relation kind=destination from=$c2 to=$e6 cue=\"to\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 20,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 20,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 20,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 87: text after the closing quote of a string"
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 53,
+      "sop": "@c1 nlu.clause form=imperative predicate=\"add\" direct_object=$e1; @e1 nlu.entity determiner=\"an\" head=\"arrow\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 3,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 3,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 3,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 48: invalid identifier in the reference $e1;"
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 54,
+      "sop": "@c1 nlu.clause form=imperative predicate=\"set\" particle=\"out\" direct_object=$e1; @e1 nlu.entity determiner=\"the\" head=\"scene\"; @e2 nlu.entity determiner=\"a\" modifier=\"centred\" compound=\"poster\" head=\"frame\"; @r1 nlu.relation kind=configuration from=$c1 to=$e2 cue=\"as\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 9,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 9,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 9,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 63: invalid identifier in the reference $e1;"
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 55,
+      "sop": "@c1 nlu.clause form=imperative predicate=\"Let\" direct_object=$e1 clausal_complement=$c2 terminator=\".\"; @e1 nlu.entity pronoun=\"us\"; @c2 nlu.clause form=nonfinite predicate=\"make\" direct_object=$e2 result_color=red; @e2 nlu.entity name=\"Avatar 1\"; @c3 nlu.clause form=declarative subject=$e3 auxiliary=\"would\" predicate=\"help\" terminator=\".\"; @e3 nlu.entity pronoun=\"That\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": true,
+        "coverage": {
+          "words": 11,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 11,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 11,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "analysis-parse-error",
+            "reason": "line 1, column 89: text after the closing quote of a string"
+          }
+        ]
+      },
+      "eligible": false
+    }
+  ]
+}

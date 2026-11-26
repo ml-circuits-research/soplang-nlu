@@ -1,0 +1,277 @@
+{
+  "args": [
+    "-a",
+    "never",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--color",
+    "never",
+    "-m",
+    "gpt-6-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "--output-schema",
+    "/tmp/sop-native-teacher-v1/output-schema.json",
+    "-o",
+    "/tmp/sop-native-teacher-v1/batches/initial-4.output.json",
+    "-"
+  ],
+  "code": 0,
+  "wallMs": 27890.718224,
+  "attempts": [
+    {
+      "index": 32,
+      "sop": "@c1 nlu.clause form=declarative subject=$e1 predicate=\"like\" clausal_complement=$c2\n@e1 nlu.entity pronoun=\"I\"\n@c2 nlu.clause form=nonfinite subject=$e2 predicate=\"put\" direct_object=$e3 clausal_complement=$c3\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity modifier=\"Monthly\" head=\"sales\"\n@c3 nlu.clause form=nonfinite predicate=\"put\" direct_object=$e4\n@e4 nlu.entity determiner=\"the\" head=\"legend\"\n@r1 nlu.relation kind=order from=$e3 to=$e5\n@e5 nlu.entity literal=\"largest to smallest\"\n@r2 nlu.relation kind=location from=$e4 to=$e6 cue=\"on\"\n@e6 nlu.entity determiner=\"the\" head=\"right\"\n@co1 nlu.coordination kind=and member=$c2 member=$c3 cue=\"and\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 20,
+          "understood": 16,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 4,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "put",
+              "claimed": 2,
+              "occurrences": 2
+            },
+            {
+              "text": "the",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 4,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 33,
+      "sop": "@c1 nlu.clause form=interrogative auxiliary=\"can\" subject=$e1 predicate=\"add\" direct_object=$e2\n@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity determiner=\"a\" head=\"hill\" name=\"Roundup 260\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 8,
+          "understood": 7,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 1,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 1,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 34,
+      "sop": "@c1 nlu.clause form=fragment expression=\"no\" separator=\",\" speech_act=correction\n@c2 nlu.clause form=fragment negation=\"not\" predicative_entity=$e1 separator=\",\"\n@e1 nlu.entity pronoun=\"that\"\n@c3 nlu.clause form=declarative subject=$e2 predicate=\"list\" direct_object=$e3\n@e2 nlu.entity determiner=\"the\" head=\"classes\"\n@e3 nlu.entity quantity=\"three\" head=\"attributes\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 10,
+          "understood": 10,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": [
+            {
+              "text": ",",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 35,
+      "sop": "@c1 nlu.clause form=fragment expression=\"Hey\" separator=\",\"\n@c2 nlu.clause form=imperative predicate=\"make\" direct_object=$e1 result_color=red terminator=\".\"\n@e1 nlu.entity name=\"Paid\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 6,
+          "understood": 5,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 1,
+          "allAccountedFor": false,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 1,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 36,
+      "sop": "@c1 nlu.clause form=declarative subject=$e1 predicate=\"think\" clausal_complement=$c2\n@e1 nlu.entity pronoun=\"i\"\n@c2 nlu.clause form=declarative subject=$e2 auxiliary=\"should\" predicate=\"plant\" direct_object=$e3\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity determiner=\"the\" quantity=\"two\" modifier=\"middle\" head=\"blocks\"\n@e4 nlu.entity determiner=\"the\" head=\"rest\"\n@e5 nlu.entity determiner=\"the\" head=\"layout\"\n@r1 nlu.relation kind=goal from=$c2 to=$e6 cue=\"to\"\n@e6 nlu.entity color=green\n@r2 nlu.relation kind=part_of from=$e4 to=$e5 cue=\"of\"\n@c3 nlu.clause form=imperative connective=\"then\" predicate=\"keep\" direct_object=$e4 adverb=\"exactly\" clausal_complement=$c4\n@c4 nlu.clause form=declarative subject=$e7 predicate=\"is\" marker=\"as\"\n@e7 nlu.entity pronoun=\"it\"\n@co1 nlu.coordination kind=sequence member=$c2 member=$c3 cue=\"then\"",
+      "check": {
+        "valid": false,
+        "schemaValid": false,
+        "sourceValid": false,
+        "coverage": {
+          "words": 23,
+          "understood": 0,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 23,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "the",
+              "claimed": 3,
+              "occurrences": 3
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 23,
+          "incidentalPunctuation": []
+        },
+        "findings": [
+          {
+            "code": "missing-entity-evidence",
+            "wire": "e6"
+          },
+          {
+            "code": "insufficient-source-occurrences",
+            "text": "then",
+            "claimed": 2,
+            "occurrences": 1,
+            "slots": [
+              {
+                "wire": "c3",
+                "key": "connective"
+              },
+              {
+                "wire": "co1",
+                "key": "cue"
+              }
+            ]
+          }
+        ]
+      },
+      "eligible": false
+    },
+    {
+      "index": 37,
+      "sop": "@c1 nlu.clause form=interrogative auxiliary=\"Could\" subject=$e1 predicate=\"move\" direct_object=$e2 terminator=\".\"\n@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity name=\"Bin collection update\"\n@e3 nlu.entity name=\"Skip hire tips\"\n@r1 nlu.relation kind=sequence from=$e2 to=$e3 cue=\"after\"\n@c2 nlu.clause form=fragment expression=\"Thanks\" speech_act=thanks terminator=\"!\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 13,
+          "understood": 13,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 38,
+      "sop": "@c1 nlu.clause form=imperative marker=\"Please\" separator=\",\" predicate=\"create\" direct_object=$e1 terminator=\".\"\n@e1 nlu.entity determiner=\"a\" head=\"document\"\n@e2 nlu.entity name=\"Lost pets\"\n@r1 nlu.relation kind=title from=$e1 to=$e2 cue=\"titled\"\n@e3 nlu.entity literal=\"The delivery arrived this morning.\"\n@r2 nlu.relation kind=content from=$e1 to=$e3 cue=\"containing\"\n@c2 nlu.clause form=fragment expression=\"Thanks\" speech_act=thanks terminator=\"!\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 20,
+          "understood": 18,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 2,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": ".",
+              "claimed": 1,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 2,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 39,
+      "sop": "@c1 nlu.clause form=fragment expression=\"right\" separator=\",\"\n@e1 nlu.entity determiner=\"a\" compound=\"bar\" head=\"chart\"\n@e2 nlu.entity determiner=\"the\" head=\"transactions\"\n@e3 nlu.entity head=\"card\"\n@r1 nlu.relation kind=depiction from=$e1 to=$e2 cue=\"showing\"\n@r2 nlu.relation kind=grouping from=$e2 to=$e3 cue=\"split by\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 11,
+          "understood": 11,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    }
+  ]
+}

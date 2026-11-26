@@ -1,0 +1,250 @@
+{
+  "args": [
+    "-a",
+    "never",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--color",
+    "never",
+    "-m",
+    "gpt-6-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "--output-schema",
+    "/tmp/sop-native-teacher-v1/output-schema.json",
+    "-o",
+    "/tmp/sop-native-teacher-v1/batches/initial-2.output.json",
+    "-"
+  ],
+  "code": 0,
+  "wallMs": 22288.248363,
+  "attempts": [
+    {
+      "index": 16,
+      "sop": "@i16 nlu.entity pronoun=\"I\"\n@d16 nlu.entity determiner=\"the\" head=\"diagram\"\n@c16a nlu.clause form=declarative subject=$i16 predicate=\"need\" clausal_complement=$c16b\n@c16b nlu.clause form=nonfinite subject=$d16 predicate=\"cleared\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 5,
+          "understood": 5,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 17,
+      "sop": "@b17 nlu.entity determiner=\"a\" modifier=\"big\" head=\"boy\"\n@c17 nlu.clause form=imperative expression=\"hey\" separator=\"—\" predicate=\"add\" direct_object=$b17\n@s17 nlu.entity head=\"shocked\"\n@r17a nlu.relation kind=state from=$b17 to=$s17\n@r17b nlu.relation kind=direction from=$b17 to=$r17e cue=\"facing\"\n@r17e nlu.entity head=\"right\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 9,
+          "understood": 9,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 18,
+      "sop": "@c18 nlu.clause form=imperative predicate=\"bring\" particle=\"back\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 2,
+          "understood": 2,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 19,
+      "sop": "@b19 nlu.entity determiner=\"the\" head=\"boy\"\n@l19 nlu.entity determiner=\"the\" head=\"left\"\n@r19a nlu.relation kind=location from=$b19 to=$l19 cue=\"on\"\n@r19 nlu.entity head=\"right\"\n@c19 nlu.clause form=imperative expression=\"hey\" separator=\"—\" predicate=\"make\" direct_object=$b19 clausal_complement=$f19\n@f19 nlu.clause form=nonfinite subject=$b19 predicate=\"face\" direct_object=$r19",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 10,
+          "understood": 10,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": [
+            {
+              "text": "the",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 20,
+      "sop": "@sky20 nlu.entity determiner=\"the\" head=\"sky\"\n@stars20 nlu.entity determiner=\"a bunch of\" head=\"stars\"\n@c20 nlu.clause form=fragment topic=$sky20 predicative_entity=$stars20 separator=\":\"\n@r20 nlu.relation kind=location from=$stars20 to=$sky20 cue=\"all over\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 9,
+          "understood": 9,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    },
+    {
+      "index": 21,
+      "sop": "@chart21 nlu.entity determiner=\"the\" compound=\"orders\" head=\"chart\"\n@ten21 nlu.entity determiner=\"the\" modifier=\"top\" head=\"ten\"\n@twenty21 nlu.entity determiner=\"the\" modifier=\"top\" head=\"twenty\"\n@title21 nlu.entity literal=\"Monthly sales\"\n@c21a nlu.clause form=imperative predicate=\"Change\" direct_object=$chart21\n@r21a nlu.relation kind=source from=$c21a to=$ten21 cue=\"from\"\n@r21b nlu.relation kind=goal from=$c21a to=$twenty21 cue=\"to\"\n@c21b nlu.clause form=imperative predicate=\"title\" direct_object=$chart21 predicative_entity=$title21\n@co21 nlu.coordination kind=and member=$c21a member=$c21b cue=\"and\"",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 21,
+          "understood": 16,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 5,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "the",
+              "claimed": 3,
+              "occurrences": 3
+            },
+            {
+              "text": "top",
+              "claimed": 2,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 5,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 22,
+      "sop": "@i22 nlu.entity pronoun=\"I\"\n@you22 nlu.entity pronoun=\"you\"\n@section22 nlu.entity determiner=\"the\" compound=\"Late delivery\" compound=\"letter\" head=\"section\"\n@it22 nlu.entity pronoun=\"it\"\n@c22a nlu.clause form=declarative subject=$i22 predicate=\"need\" clausal_complement=$c22b\n@c22b nlu.clause form=nonfinite subject=$you22 predicate=\"remove\" direct_object=$section22\n@c22c nlu.clause form=declarative subject=$i22 predicate=\"appreciate\" direct_object=$it22",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 15,
+          "understood": 11,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 4,
+          "allAccountedFor": false,
+          "ambiguous": [
+            {
+              "text": "I",
+              "claimed": 1,
+              "occurrences": 2
+            }
+          ]
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 4,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": false
+    },
+    {
+      "index": 23,
+      "sop": "@d23 nlu.entity determiner=\"a\" head=\"dich\"\n@c23 nlu.clause form=imperative predicate=\"add\" direct_object=$d23",
+      "check": {
+        "valid": true,
+        "schemaValid": true,
+        "sourceValid": true,
+        "coverage": {
+          "words": 3,
+          "understood": 3,
+          "filler": 0,
+          "unresolved": 0,
+          "uncovered": 0,
+          "allAccountedFor": true,
+          "ambiguous": []
+        },
+        "sourceGaps": {
+          "materialUnresolved": 0,
+          "materialUncovered": 0,
+          "incidentalPunctuation": []
+        },
+        "findings": []
+      },
+      "eligible": true
+    }
+  ]
+}

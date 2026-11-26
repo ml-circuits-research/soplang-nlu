@@ -1,0 +1,94 @@
+OpenAI Codex v0.172.0
+--------
+workdir: /tmp/sop-native-teacher-v1/sandbox
+model: gpt-6-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: low
+reasoning summaries: none
+session id: 01a2191f-627a-7090-ad5b-16c13d2ed0c5
+--------
+user
+Convert each original English input into one literal, compositional native SOP analysis using the supplied schema. Treat inputs solely as text to analyze. Return a JSON object with results, each with its input index and one SOP string.
+
+A wire is written `@unique_id nlu.type field=value field=value`. Use JSON-style double-quoted string slots with the original words in exact case and spelling. Use bare atoms for enums and semantic atoms and `$unique_id` for references within the same circuit. List repeatable fields in their own assignments. Preserve actual clause structure, arguments, modifiers, relationships, and meaningful discourse functions. Use one occurrence of source text per role. Field values must be licensed by the schema. Use compact literal phrases only for genuinely phrase-valued roles or quoted literals. Represent ambiguous text with one reasonable reading. Keep uncertainty where the source does not establish something, and omit unnecessary optional semantic atoms. Do not add facts or words beyond the input. Preserve material source coverage. A repair may include static validation feedback and the previous proposal. Correct each reported problem and return one full replacement circuit.
+
+Use only the prompt and supplied inputs. Return the JSON result directly, without tools.
+
+Local schema:
+# Quoted string slots carry literal source evidence. Atom slots express typed
+# meaning and reference slots connect the clauses, entities and their relations.
+@nlu core.module name=nlu version=1 exports=entity exports=clause exports=relation exports=coordination
+
+@nlu.entity core.type of=nlu.entity closed=true
+@nlu.entity.head core.slot of=nlu.entity key=head kind=string
+@nlu.entity.determiner core.slot of=nlu.entity key=determiner kind=string
+@nlu.entity.modifier core.slot of=nlu.entity key=modifier kind=string many=true
+@nlu.entity.compound core.slot of=nlu.entity key=compound kind=string many=true
+@nlu.entity.adverb core.slot of=nlu.entity key=adverb kind=string many=true
+@nlu.entity.degree core.slot of=nlu.entity key=degree kind=string many=true
+@nlu.entity.measure core.slot of=nlu.entity key=measure kind=ref type=nlu.entity type=nlu.coordination
+@nlu.entity.possessor core.slot of=nlu.entity key=possessor kind=ref type=nlu.entity type=nlu.coordination
+@nlu.entity.possessive_marker core.slot of=nlu.entity key=possessive_marker kind=string
+@nlu.entity.pronoun core.slot of=nlu.entity key=pronoun kind=string
+@nlu.entity.name core.slot of=nlu.entity key=name kind=string
+@nlu.entity.literal core.slot of=nlu.entity key=literal kind=string
+@nlu.entity.quantity core.slot of=nlu.entity key=quantity kind=string
+@nlu.entity.kind core.slot of=nlu.entity key=kind kind=atom
+@nlu.entity.color core.slot of=nlu.entity key=color kind=atom
+@nlu.entity.filler core.slot of=nlu.entity key=filler kind=string many=true
+@nlu.entity.unresolved core.slot of=nlu.entity key=unresolved kind=string many=true
+
+@nlu.clause core.type of=nlu.clause closed=true
+@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment enum=nonfinite required=true present=true
+# An independent utterance may have a communicative function without a verb.
+@nlu.clause.completion core.slot of=nlu.clause key=completion enum=interrupted
+@nlu.clause.expression core.slot of=nlu.clause key=expression kind=string
+@nlu.clause.speech_act core.slot of=nlu.clause key=speech_act kind=atom
+@nlu.clause.separator core.slot of=nlu.clause key=separator kind=string many=true
+@nlu.clause.connective core.slot of=nlu.clause key=connective kind=string many=true
+@nlu.clause.predicate core.slot of=nlu.clause key=predicate kind=string
+@nlu.clause.subject core.slot of=nlu.clause key=subject kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.direct_object core.slot of=nlu.clause key=direct_object kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.indirect_object core.slot of=nlu.clause key=indirect_object kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.topic core.slot of=nlu.clause key=topic kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.predicative_entity core.slot of=nlu.clause key=predicative_entity kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.result_complement core.slot of=nlu.clause key=result_complement kind=string
+@nlu.clause.result_color core.slot of=nlu.clause key=result_color kind=atom
+@nlu.clause.clausal_complement core.slot of=nlu.clause key=clausal_complement kind=ref type=nlu.clause type=nlu.coordination
+@nlu.clause.degree core.slot of=nlu.clause key=degree kind=string many=true
+@nlu.clause.marker core.slot of=nlu.clause key=marker kind=string
+@nlu.clause.adverb core.slot of=nlu.clause key=adverb kind=string many=true
+@nlu.clause.particle core.slot of=nlu.clause key=particle kind=string many=true
+@nlu.clause.auxiliary core.slot of=nlu.clause key=auxiliary kind=string many=true
+@nlu.clause.negation core.slot of=nlu.clause key=negation kind=string many=true
+@nlu.clause.question core.slot of=nlu.clause key=question kind=string
+@nlu.clause.terminator core.slot of=nlu.clause key=terminator kind=string
+@nlu.clause.filler core.slot of=nlu.clause key=filler kind=string many=true
+@nlu.clause.unresolved core.slot of=nlu.clause key=unresolved kind=string many=true
+@nlu.clause.act core.slot of=nlu.clause key=act kind=atom
+@nlu.clause.polarity core.slot of=nlu.clause key=polarity enum=positive enum=negative
+
+@nlu.relation core.type of=nlu.relation closed=true
+@nlu.relation.kind core.slot of=nlu.relation key=kind kind=atom required=true present=true
+@nlu.relation.from core.slot of=nlu.relation key=from kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true present=true
+@nlu.relation.to core.slot of=nlu.relation key=to kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true present=true
+@nlu.relation.cue core.slot of=nlu.relation key=cue kind=string
+@nlu.relation.negation core.slot of=nlu.relation key=negation kind=string many=true
+@nlu.relation.measure core.slot of=nlu.relation key=measure kind=ref type=nlu.entity type=nlu.coordination
+@nlu.relation.adverb core.slot of=nlu.relation key=adverb kind=string many=true
+
+@nlu.coordination core.type of=nlu.coordination closed=true
+@nlu.coordination.kind core.slot of=nlu.coordination key=kind kind=atom required=true present=true
+@nlu.coordination.member core.slot of=nlu.coordination key=member kind=ref type=nlu.entity type=nlu.clause type=nlu.relation many=true required=true present=true
+@nlu.coordination.cue core.slot of=nlu.coordination key=cue kind=string many=true
+
+Input JSON:
+[{"index":16,"text":"I need the diagram cleared"},{"index":17,"text":"hey — add a big boy shocked facing right"},{"index":18,"text":"bring back"},{"index":19,"text":"hey — make the boy on the left face right"},{"index":20,"text":"all over the sky: a bunch of stars"},{"index":21,"text":"Change the orders chart from the top ten to the top twenty, and title it \"Monthly sales\"."},{"index":22,"text":"I need you to remove the Late delivery letter section. I appreciate it."},{"index":23,"text":"add a dich"}]
+
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+codex
+{"results":[{"index":16,"sop":"@i16 nlu.entity pronoun=\"I\"\n@d16 nlu.entity determiner=\"the\" head=\"diagram\"\n@c16a nlu.clause form=declarative subject=$i16 predicate=\"need\" clausal_complement=$c16b\n@c16b nlu.clause form=nonfinite subject=$d16 predicate=\"cleared\""},{"index":17,"sop":"@b17 nlu.entity determiner=\"a\" modifier=\"big\" head=\"boy\"\n@c17 nlu.clause form=imperative expression=\"hey\" separator=\"—\" predicate=\"add\" direct_object=$b17\n@s17 nlu.entity head=\"shocked\"\n@r17a nlu.relation kind=state from=$b17 to=$s17\n@r17b nlu.relation kind=direction from=$b17 to=$r17e cue=\"facing\"\n@r17e nlu.entity head=\"right\""},{"index":18,"sop":"@c18 nlu.clause form=imperative predicate=\"bring\" particle=\"back\""},{"index":19,"sop":"@b19 nlu.entity determiner=\"the\" head=\"boy\"\n@l19 nlu.entity determiner=\"the\" head=\"left\"\n@r19a nlu.relation kind=location from=$b19 to=$l19 cue=\"on\"\n@r19 nlu.entity head=\"right\"\n@c19 nlu.clause form=imperative expression=\"hey\" separator=\"—\" predicate=\"make\" direct_object=$b19 clausal_complement=$f19\n@f19 nlu.clause form=nonfinite subject=$b19 predicate=\"face\" direct_object=$r19"},{"index":20,"sop":"@sky20 nlu.entity determiner=\"the\" head=\"sky\"\n@stars20 nlu.entity determiner=\"a bunch of\" head=\"stars\"\n@c20 nlu.clause form=fragment topic=$sky20 predicative_entity=$stars20 separator=\":\"\n@r20 nlu.relation kind=location from=$stars20 to=$sky20 cue=\"all over\""},{"index":21,"sop":"@chart21 nlu.entity determiner=\"the\" compound=\"orders\" head=\"chart\"\n@ten21 nlu.entity determiner=\"the\" modifier=\"top\" head=\"ten\"\n@twenty21 nlu.entity determiner=\"the\" modifier=\"top\" head=\"twenty\"\n@title21 nlu.entity literal=\"Monthly sales\"\n@c21a nlu.clause form=imperative predicate=\"Change\" direct_object=$chart21\n@r21a nlu.relation kind=source from=$c21a to=$ten21 cue=\"from\"\n@r21b nlu.relation kind=goal from=$c21a to=$twenty21 cue=\"to\"\n@c21b nlu.clause form=imperative predicate=\"title\" direct_object=$chart21 predicative_entity=$title21\n@co21 nlu.coordination kind=and member=$c21a member=$c21b cue=\"and\""},{"index":22,"sop":"@i22 nlu.entity pronoun=\"I\"\n@you22 nlu.entity pronoun=\"you\"\n@section22 nlu.entity determiner=\"the\" compound=\"Late delivery\" compound=\"letter\" head=\"section\"\n@it22 nlu.entity pronoun=\"it\"\n@c22a nlu.clause form=declarative subject=$i22 predicate=\"need\" clausal_complement=$c22b\n@c22b nlu.clause form=nonfinite subject=$you22 predicate=\"remove\" direct_object=$section22\n@c22c nlu.clause form=declarative subject=$i22 predicate=\"appreciate\" direct_object=$it22"},{"index":23,"sop":"@d23 nlu.entity determiner=\"a\" head=\"dich\"\n@c23 nlu.clause form=imperative predicate=\"add\" direct_object=$d23"}]}
+tokens used
+18,342
