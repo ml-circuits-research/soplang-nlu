@@ -29,3 +29,9 @@ The first twelve hash-selected static passes included one material role error. I
 DeepSeek returned all 384 results in 230 seconds without draft circuits. The first static pass accepted 357/384 (93.0%). Drawing had 95/96 passes and calendar and document had 96/96 each. Diagram inputs accounted for 26 of the 27 failures. The leading causes were numeric or demonstrative entities without a grounded head, name, pronoun or literal, followed by double claims of connectors and missing source tokens.
 
 A local replay promoted written numeric amounts and ordinals to literal anchors when a graph had no entity anchor, and standalone demonstratives to pronoun anchors. It recovered seven circuits, bringing static coverage to 364/384 (94.8%) without another model call. We added corresponding worked examples and instructions to the prompt. This pilot falls below the conversion threshold even before plausibility review. A 500-row single-file request now exercises the problematic diagram domain.
+
+## Source-only diagram file, 500 rows in one call
+
+DeepSeek returned all 500 results in 326 seconds. The original static conversion passed 381/500. Among failure findings, 31 cases claimed the same written `and` in a clause connective and a coordination cue. Other failures included duplicated pronouns and noun heads, missing source words, or invalid quotations.
+
+A local replay keeps an exact duplicated conjunction on its already linked coordination when the source has one fewer occurrence and a single member claims the redundant copy. This brought static coverage to 411/500 (82.2%) without a new model request. The remaining gap is too large for whole-file conversion at the requested threshold. We are testing guided conversion using the library's generated circuits on the first 96 of the same 500 inputs. This is a paired development comparison.
