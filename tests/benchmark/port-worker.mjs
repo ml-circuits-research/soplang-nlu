@@ -3,11 +3,27 @@ import {createReader} from '../../lib/reader.mjs'
 import {measureStrategy} from '../../lib/measure-strategy.mjs'
 
 const {name, options, rows, progressEvery} = workerData
-const strategyEntry = name === 'z3' ? '../../strategies/z3/index.mjs' : '../../strategies/prolog/index.mjs'
+const strategies = {
+  z3: ['../../strategies/z3/index.mjs', 'z3'],
+  'prolog-worlds': ['../../strategies/prolog/index.mjs', 'prolog'],
+  'prolog-example-transfer': ['../../strategies/prolog-example-transfer/index.mjs', 'prologExampleTransfer']
+}
+const [strategyEntry, exportedName] = strategies[name]
+let modelLoadMs
 
 const run = await measureStrategy(async () => {
-  const {z3, prolog} = await import(strategyEntry)
-  const reader = await createReader({strategy: z3 ?? prolog, ...options})
+  const strategy = (await import(strategyEntry))[exportedName]
+  const reader = await createReader({
+    ...options,
+    strategy: {
+      name: strategy.name,
+      async open(configuration) {
+        const engine = await strategy.open(configuration)
+        modelLoadMs = engine.modelLoadMs
+        return engine
+      }
+    }
+  })
   parentPort.postMessage({completed: 0, total: rows.length})
   let completed = 0
   return {
@@ -16,8 +32,8 @@ const run = await measureStrategy(async () => {
         const result = await reader.propose(text)
         return {
           candidates: result.candidates.map(candidate => candidate.sop),
-          candidateEvidence: result.candidates.map(({sourceEvidence, sourceEvidenceError}) => ({
-            sourceEvidence, sourceEvidenceError
+          candidateEvidence: result.candidates.map(({sourceEvidence, sourceEvidenceError, source, support, transfer}) => ({
+            sourceEvidence, sourceEvidenceError, source, support, transfer
           })),
           syntax: result.syntax,
           unresolved: result.unresolved,
@@ -39,7 +55,7 @@ const run = await measureStrategy(async () => {
 }, rows.map(row => row.text))
 
 parentPort.postMessage({
-  timing: run.timing,
+  timing: {...run.timing, modelLoadMs},
   records: run.results.map((result, index) => ({
     id: rows[index].id,
     latencyMs: run.latencies[index],
