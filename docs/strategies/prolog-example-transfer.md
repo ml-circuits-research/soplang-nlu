@@ -4,7 +4,7 @@ This separately named strategy learns reusable formalisation patterns from label
 
 ## Training boundary
 
-Freeze a test sample from a committed WebMeet revision first. Read the training corpus from that same revision. Exclude every row with a held-out text key, across all files and columns. The key uses Unicode NFKC, lowercase, trimmed ends and collapsed whitespace. Keep the original text for formalisation and use every populated SOP column as an independent training reference. The benchmark verifies that the intersection of the final training keys and evaluation keys is empty. Similar sentences can still occur on both sides of this text-level split.
+Freeze a test sample from a committed WebMeet revision first. Read the training corpus from that same revision. Exclude every row with a held-out text key, across all files and columns. The key is the original text. Case, whitespace and Unicode code points remain significant. Keep the original text for formalisation and use every populated SOP column as an independent training reference. The benchmark verifies that the intersection of the final original training texts and evaluation texts is empty. Similar sentences can still occur on both sides of this text-level split.
 
 Train a new artifact for the split. Preserve the dataset revision, training and evaluation fingerprints, excluded row count, training time and induction statistics in the run history. A new holdout requires a corresponding training split. Evaluation workers receive the trained artifact and the input text. The evaluator compares the resulting whole circuits against each reference, independently of ordering.
 

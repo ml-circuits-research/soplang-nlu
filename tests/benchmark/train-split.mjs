@@ -1,11 +1,7 @@
 import {execFileSync} from 'node:child_process'
 import {createHash} from 'node:crypto'
 
-export const splitVersion = 'nfkc-lowercase-whitespace-v1'
-
-export function normalizeSplitText(text) {
-  return text.normalize('NFKC').toLowerCase().trim().replace(/\s+/gu, ' ')
-}
+export const splitVersion = 'exact-original-text-v1'
 
 function git(dataset, ...args) {
   return execFileSync('git', ['-C', dataset, ...args], {
@@ -32,7 +28,7 @@ export async function* readCommittedRows(dataset, revision) {
 
 export async function splitTrainingRows(committedRows, evaluationRows) {
   const expectedById = new Map(evaluationRows.map(row => [row.id, row]))
-  const evaluationTexts = new Set(evaluationRows.map(row => normalizeSplitText(row.text)))
+  const evaluationTexts = new Set(evaluationRows.map(row => row.text))
   const training = []
   const trainingTexts = new Set()
   const trainingHash = createHash('sha256')
@@ -50,7 +46,7 @@ export async function splitTrainingRows(committedRows, evaluationRows) {
       }
       expectedById.delete(row.id)
     }
-    const key = normalizeSplitText(row.text)
+    const key = row.text
     const serialized = JSON.stringify(row) + '\n'
     if (evaluationTexts.has(key)) {
       excludedRows++
@@ -66,13 +62,13 @@ export async function splitTrainingRows(committedRows, evaluationRows) {
   if (expectedById.size) throw Error('Missing committed evaluation row: ' + expectedById.keys().next().value)
   if (!training.length) throw Error('No dataset rows remain after excluding the evaluation texts.')
   const overlap = [...evaluationTexts].filter(key => trainingTexts.has(key)).length
-  if (overlap) throw Error('Training/evaluation text overlap: ' + overlap)
+  if (overlap) throw Error('Exact training/evaluation text overlap: ' + overlap)
   return {
     training,
     metadata: {
       splitVersion, population, evaluationRows: evaluationRows.length, evaluationTexts: evaluationTexts.size,
       excludedRows, excludedCircuits, trainingRows: training.length, trainingTexts: trainingTexts.size,
-      trainingCircuits, normalizedTextOverlap: overlap,
+      trainingCircuits, exactTextOverlap: overlap,
       evaluationSha256: createHash('sha256').update(JSON.stringify(evaluationRows)).digest('hex'),
       trainingSha256: trainingHash.digest('hex'), excludedSha256: excludedHash.digest('hex')
     }
