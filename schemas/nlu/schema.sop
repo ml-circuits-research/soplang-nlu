@@ -1,0 +1,42 @@
+# Quoted string slots carry literal source evidence. Atom slots express typed
+# meaning and reference slots connect the clauses, entities and their relations.
+@nlu core.module name=nlu version=1 exports=entity exports=clause exports=relation exports=coordination
+
+@nlu.entity core.type of=nlu.entity closed=true
+@nlu.entity.head core.slot of=nlu.entity key=head kind=string
+@nlu.entity.determiner core.slot of=nlu.entity key=determiner kind=string
+@nlu.entity.modifier core.slot of=nlu.entity key=modifier kind=string many=true
+@nlu.entity.pronoun core.slot of=nlu.entity key=pronoun kind=string
+@nlu.entity.name core.slot of=nlu.entity key=name kind=string
+@nlu.entity.quantity core.slot of=nlu.entity key=quantity kind=string
+@nlu.entity.kind core.slot of=nlu.entity key=kind kind=atom
+@nlu.entity.color core.slot of=nlu.entity key=color kind=atom
+@nlu.entity.filler core.slot of=nlu.entity key=filler kind=string many=true
+@nlu.entity.unresolved core.slot of=nlu.entity key=unresolved kind=string many=true
+
+@nlu.clause core.type of=nlu.clause closed=true
+@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment required=true
+@nlu.clause.predicate core.slot of=nlu.clause key=predicate kind=string
+@nlu.clause.subject core.slot of=nlu.clause key=subject kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.direct_object core.slot of=nlu.clause key=direct_object kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.indirect_object core.slot of=nlu.clause key=indirect_object kind=ref type=nlu.entity type=nlu.coordination
+@nlu.clause.result_complement core.slot of=nlu.clause key=result_complement kind=string
+@nlu.clause.auxiliary core.slot of=nlu.clause key=auxiliary kind=string many=true
+@nlu.clause.negation core.slot of=nlu.clause key=negation kind=string many=true
+@nlu.clause.question core.slot of=nlu.clause key=question kind=string
+@nlu.clause.terminator core.slot of=nlu.clause key=terminator kind=string
+@nlu.clause.filler core.slot of=nlu.clause key=filler kind=string many=true
+@nlu.clause.unresolved core.slot of=nlu.clause key=unresolved kind=string many=true
+@nlu.clause.act core.slot of=nlu.clause key=act kind=atom
+@nlu.clause.polarity core.slot of=nlu.clause key=polarity enum=positive enum=negative
+
+@nlu.relation core.type of=nlu.relation closed=true
+@nlu.relation.kind core.slot of=nlu.relation key=kind kind=atom required=true
+@nlu.relation.from core.slot of=nlu.relation key=from kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true
+@nlu.relation.to core.slot of=nlu.relation key=to kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true
+@nlu.relation.cue core.slot of=nlu.relation key=cue kind=string
+
+@nlu.coordination core.type of=nlu.coordination closed=true
+@nlu.coordination.kind core.slot of=nlu.coordination key=kind kind=atom required=true
+@nlu.coordination.member core.slot of=nlu.coordination key=member kind=ref type=nlu.entity type=nlu.clause many=true required=true
+@nlu.coordination.cue core.slot of=nlu.coordination key=cue kind=string many=true
