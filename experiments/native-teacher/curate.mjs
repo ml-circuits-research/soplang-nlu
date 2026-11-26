@@ -10,12 +10,19 @@ const offset=Number(startArg), batchCount=Number(batchCountArg)
 if(!knowledgeArg||!Number.isSafeInteger(offset)||offset<0||offset%500||!Number.isSafeInteger(batchCount)||batchCount<1)
   throw Error('Usage: curate.mjs INPUT.jsonl[.gz] OUTPUT KNOWLEDGE_DIR [START_ROW_MULTIPLE_OF_500] [LOGICAL_BATCH_COUNT]')
 const input=resolve(inputArg), output=resolve(outputArg), knowledgeDir=resolve(knowledgeArg)
-const model=process.env.SOP_NLU_CURATION_MODEL??'gpt-6-sol'
-if(!['gpt-6-sol','gpt-6.1-terra'].includes(model))throw Error('Unsupported curation model: '+model)
-const logicalSize=500, microRows=10, microBytes=28000
+const backend=process.env.SOP_NLU_CURATION_BACKEND??'codex'
+const models={codex:['gpt-6-sol','gpt-6.1-terra'],vibe:['deepseek-v4-1-flash-1017']}
+if(!Object.hasOwn(models,backend))throw Error('Unsupported curation backend: '+backend)
+const model=process.env.SOP_NLU_CURATION_MODEL??models[backend][0]
+if(!models[backend].includes(model))throw Error('Unsupported curation model: '+model)
+const logicalSize=500
+const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):10
+const microBytes=backend==='vibe'?60000:28000
+if(!Number.isSafeInteger(microRows)||microRows<1||microRows>100)throw Error('Expected 1 to 100 rows per model request')
 const jobs=Number(process.env.SOP_NLU_CURATION_JOBS??8)
 if(!Number.isSafeInteger(jobs)||jobs<1||jobs>64)throw Error('SOP_NLU_CURATION_JOBS must be an integer from 1 to 64')
 const codex=process.env.SOP_NLU_CURATION_CODEX??'codex'
+const vibe=process.env.SOP_NLU_CURATION_VIBE??'vibe'
 const bytes=await readFile(input)
 const splitLines=(input.endsWith('.gz')?gunzipSync(bytes):bytes).toString().split(/\r?\n/).filter(line=>line.trim())
 const selected=splitLines.slice(offset,offset+logicalSize*batchCount).map(JSON.parse)
@@ -42,10 +49,13 @@ const properties={index:{type:'integer'},readings:{type:'array',items:{type:'obj
 const replySchema={type:'object',additionalProperties:false,required:['results'],properties:{
   results:{type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(properties),properties}}
 }}
-const header=instructions+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
+const jsonContract=backend==='vibe'?
+  '\nReturn {"results":[{"index":0,"readings":[{"draftIndex":0,"sop":null}],"ambiguity":null,"reason":null}]}. '+
+  'Use each input index exactly once. Include all four fields per result.\n':''
+const header=instructions+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),codex}
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe}:{codex})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
 async function ensure(path,text){
   await mkdir(dirname(path),{recursive:true})
@@ -122,25 +132,34 @@ async function request(dir,label,rows){
   }
   const raw=base+'.'+process.pid+'.response.json'
   const began=performance.now()
-  const args=[...callArgs,'-o',raw,'-']
-  const child=spawn(codex,args,{cwd:emptyDir,stdio:['pipe','pipe','pipe']})
-  let diagnostics=''
-  child.stdout.on('data',()=>{})
+  const useVibe=backend==='vibe'
+  const args=useVibe?['--trust','--auto-approve','--enabled-tools','__no_tools__',
+    '--model',model,'--max-turns','1','--time-limit','150','--output','text','--prompt-file',base+'.prompt.txt']:
+    [...callArgs,'-o',raw,'-']
+  const child=spawn(useVibe?vibe:codex,args,{cwd:emptyDir,stdio:['pipe','pipe','pipe']})
+  let diagnostics='', output=''
+  child.stdout.setEncoding('utf8').on('data',chunk=>{if(useVibe)output+=chunk})
   child.stderr.setEncoding('utf8').on('data',chunk=>diagnostics+=chunk)
   child.stdin.on('error',()=>{})
-  child.stdin.end(prompt)
+  child.stdin.end(useVibe?undefined:prompt)
   const timer=setTimeout(()=>child.kill('SIGKILL'),180000)
   const status=await new Promise(resolve=>{
     child.once('error',error=>resolve(error.message))
     child.once('close',code=>resolve(code))
   }).finally(()=>clearTimeout(timer))
+  if(useVibe&&status!==0){
+    await save(base+'.log',diagnostics)
+    throw Error('Vibe failed ('+status+'); rerun the same batch to retry this request.')
+  }
+  if(useVibe)await save(raw,output)
   const body=await get(raw)
   await save(base+'.log',diagnostics)
   if(body!==undefined)await rename(raw,base+'.response.json')
   let issue, results=[]
   try{
-    if(status!==0)throw Error('Codex process failed: '+status)
-    results=JSON.parse(body).results
+    if(status!==0)throw Error(backend+' process failed: '+status)
+    const content=useVibe?body.trim().replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/iu,'$1'):body
+    results=JSON.parse(content).results
     if(!Array.isArray(results)||results.some(row=>!rows.some(source=>source.index===row.index))||
       new Set(results.map(row=>row.index)).size!==results.length)throw Error('Invalid response index set')
   }catch(error){issue=error.message;results=[]}
