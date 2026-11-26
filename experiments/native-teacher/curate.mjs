@@ -6,6 +6,7 @@ import {gunzipSync,gzipSync} from 'node:zlib'
 import {createAnalysisValidator,hasCompleteSource,sourceTokenMatches} from '../../lib/check-analysis.mjs'
 import {removeSurplusPunctuation,restoreLiteralDelimiters,restoreOptionalPunctuation} from './duplicate-punctuation.mjs'
 
+import {removeRedundantConnective} from './duplicate-connective.mjs'
 import {groundEntityAnchor} from './ground-entity-anchor.mjs'
 
 const [inputArg,outputArg,knowledgeArg,startArg='0',batchCountArg='1']=process.argv.slice(2)
@@ -46,6 +47,7 @@ const instructions=await readLocal('./curation-prompt.md')
 const schema=await readLocal('../../schemas/nlu/schema.sop')
 const punctuationCode=backend==='vibe'?await readLocal('./duplicate-punctuation.mjs'):''
 const anchorCode=backend==='vibe'?await readLocal('./ground-entity-anchor.mjs'):''
+const connectiveCode=backend==='vibe'?await readLocal('./duplicate-connective.mjs'):''
 const checker=await readLocal('../../lib/check-analysis.mjs')
 const code=await readLocal('./curate.mjs')
 const knowledge=await readFile(join(knowledgeDir,'tools/sopworld/sopworld.mjs'))
@@ -63,7 +65,7 @@ const jsonContract=backend==='vibe'?
 const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode)}:{codex})}
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),connectiveSha256:sha(connectiveCode)}:{codex})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
 async function ensure(path,text){
   await mkdir(dirname(path),{recursive:true})
@@ -128,7 +130,8 @@ function attempt(row,result,issue){
       sop=row.drafts[draftIndex]?.sop??null
     }else if(choice?.draftIndex===null&&typeof choice.sop==='string')sop=choice.sop.trim()
     if(sop&&backend==='vibe'){
-      const cleaned=groundEntityAnchor(removeSurplusPunctuation(row.text,restoreLiteralDelimiters(row.text,sop)))
+      const punctuated=removeSurplusPunctuation(row.text,restoreLiteralDelimiters(row.text,sop))
+      const cleaned=groundEntityAnchor(removeRedundantConnective(row.text,punctuated))
       if(cleaned!==sop){sop=cleaned;draftIndex=null}
     }
     let check=sop?validate(row.text,sop,{alignSource:true}):null

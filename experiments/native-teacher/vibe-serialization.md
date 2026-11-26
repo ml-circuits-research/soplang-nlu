@@ -91,3 +91,15 @@ An entity needs one grounded anchor of its own. Use `head` for a noun, `name` fo
 ```
 
 All members of a coordination must have the same wire type. A clause's direct object, indirect object, subject, topic and predicative entity point to entities or entity coordinations. A coordinated clause complement uses clausal_complement. Quote a single occurrence of "then" as either the sequence cue or the clause connective. Quote a single occurrence of "not" once, even when it both contrasts and negates a qualifier. Include nonfinite markers and every determiner written in the source.
+
+"Open Notes, then save it" has two clauses and one written sequence cue.
+
+```sop
+@open nlu.clause form=imperative predicate="Open" direct_object=$notes separator=","
+@notes nlu.entity name="Notes"
+@save nlu.clause form=imperative predicate="save" direct_object=$it
+@it nlu.entity pronoun="it"
+@steps nlu.coordination kind=sequence member=$open member=$save cue="then"
+```
+
+The two clauses do not repeat `then` as their connective. Use the same rule for `and`, `or` and `but` when coordination represents them. Do not add an implied auxiliary, repeated noun, pronoun or predicate as a source quote. For ellipsis, connect the explicit portion as a fragment or reuse an existing grounded reference only when that one mention supplies the shared role.
