@@ -91,3 +91,23 @@ test('a capitalized workflow label used as a landmark retains its source spellin
   assert.match(sop,/name="Verify"/)
   assert.doesNotMatch(sop,/predicate="Verify"/)
 })
+
+test('an explicit sequence links independently grounded predicates and their objects', async () => {
+  const text = 'Close it, then open two more files.'
+  const tags = [
+    ['VERB','VB','ROOT',0], ['PRON','PRP','dobj',0], ['PUNCT',',','punct',0],
+    ['ADV','RB','advmod',0], ['VERB','VB','dep',0], ['NUM','CD','nummod',7],
+    ['ADJ','JJR','amod',5], ['NOUN','NNS','dobj',4], ['PUNCT','.','punct',4]
+  ]
+  const tokens = [...text.matchAll(/\w+|[^\w\s]/gu)].map(([word],i) => {
+    const start = text.indexOf(word)
+    const [pos,tag,dep,head] = tags[i]
+    return {i,text:word,lemma:word.toLowerCase(),pos,tag,dep,head,start,end:start+word.length}
+  })
+  const {sop} = projectDependencies(text,tokens)
+  const validate = await createAnalysisValidator({knowledgeDir})
+  assert.ok(hasCompleteSource(validate(text,sop)),sop)
+  assert.match(sop,/kind=sequence member=\$n1 member=\$n2 cue="," cue="then"/)
+  assert.match(sop,/predicate="open".*direct_object=/)
+  assert.match(sop,/head="files" quantity="two more"/)
+})

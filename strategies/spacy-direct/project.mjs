@@ -87,6 +87,21 @@ export function projectDependencies(text, dependencies) {
   const tokens = align(text, dependencies)
   const children = Map.groupBy(tokens.filter((token) => token.head !== token.index), (token) => token.head)
   const under = (token) => children.get(token.index) ?? []
+  // Generic dependency arcs often connect consecutive imperatives in
+  // unedited input. Require an overt boundary and a governed argument.
+  const sequenced = new Map()
+  for (const token of tokens) {
+    if (token.dep !== 'dep' || !verbs.has(token.pos) || token.index <= token.head ||
+        !verbs.has(tokens[token.head]?.pos)) continue
+    const cue = tokens[token.index - 1]
+    const ordered = ['then', 'next', 'finally', 'subsequently'].includes(cue?.lower)
+    const mark = ordered ? tokens[token.index - 2] : cue
+    if (mark?.value !== ',' || mark.index <= token.head) continue
+    if (!under(token).some(part => roles.has(part.dep) || subject.has(part.dep) ||
+        ['ccomp', 'xcomp'].includes(part.dep))) continue
+    token.dep = 'conj'
+    if (ordered) sequenced.set(token.index, cue)
+  }
   const compoundCues = new Map()
   const internalCues = new Set()
   for (const first of tokens) {
@@ -220,6 +235,11 @@ export function projectDependencies(text, dependencies) {
           item.dep === 'conj' && item.pos === part.pos && item.index === part.index + 2)
         const conjunction = conjunct && tokens[part.index + 1]
         const chain = conjunction?.dep === 'cc' ? [part, conjunction, conjunct] : [part]
+        if (slot === 'quantity') {
+          const comparative = under(part).find(child => child.dep === 'amod' && child.tag === 'JJR' &&
+            child.index === part.index + 1)
+          if (comparative) chain.push(comparative)
+        }
         literal(node, slot, chain, slot === 'modifier' || slot === 'compound')
         for (const child of under(part).filter((item) => item.dep === 'advmod' && item.pos === 'ADV')) {
           literal(node, 'degree', [child], true)
@@ -242,9 +262,10 @@ export function projectDependencies(text, dependencies) {
     const ids = new Set(peers.map(({index}) => index))
     const cues = tokens.slice(peers[0].index + 1, peers.at(-1).index)
       .filter((part) => ids.has(part.head) && (part.dep === 'cc' || part.value === ','))
-    const kind = cues.some((part) => part.lower === 'or') ? 'alternative' : 'additive'
+    const sequenceCues = peers.map(part => sequenced.get(part.index)).filter(Boolean)
+    const kind = cues.some((part) => part.lower === 'or') ? 'alternative' : sequenceCues.length ? 'sequence' : 'additive'
     const result = make('coordination', token, ['kind=' + kind, ...peers.map((part) => ref('member', lookup(part)))])
-    for (const cue of cues) literal(result, 'cue', [cue], true)
+    for (const cue of [...cues, ...sequenceCues].sort((a,b) => a.index-b.index)) literal(result, 'cue', [cue], true)
     groups.set(base, result)
     return result
   }
@@ -258,6 +279,7 @@ export function projectDependencies(text, dependencies) {
       else for (const part of [comma,join]) literal(sequence,'cue',[part],true)
     }
   }
+  const joiningAdverbs = new Set(sequenced.values())
   const primary = [...clauses.values()].filter(({token}) => token.dep === 'ROOT' || courtesy.has(token.index))
   const clauseOf = (token) => clauses.get(token.index)
   const attachments = new Map()
@@ -308,7 +330,7 @@ export function projectDependencies(text, dependencies) {
     if (question) literal(node, 'question', [question])
     if (relativizer) attachments.set(token.index, relativizer)
     for (const part of parts) {
-      if (part === marker || part === question || part === relativizer || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
+      if (joiningAdverbs.has(part) || part === marker || part === question || part === relativizer || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
       const reportedQuote = part.quoted && ['ccomp', 'xcomp', 'dep'].includes(part.dep) && reportingVerbs.has(token.lemma)
       const slot = reportedQuote ? 'direct_object' : subject.has(part.dep) ? 'subject' : roles.get(part.dep)
       if (slot && form !== 'fragment' && !node.slots.has(slot)) {
