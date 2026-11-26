@@ -37,6 +37,7 @@ function nativeInput(text, worlds) {
     const positions = [...(facts.pos ?? [])];
     if (targets.length) positions.push('noun');
     if (numerals.test(surface)) positions.push('numeral');
+    if (/^\d{4}-\d{2}-\d{2}$/u.test(surface)) positions.push('noun', 'numeral');
     if (worlds.nominalNumbers.has(surface)) positions.push('numeral');
     if (!surface.includes(' ') && !positions.includes('noun')) {
       const inflected=worlds.nominalInflection(surface,worlds.lookup).filter(([role])=>role==='target');

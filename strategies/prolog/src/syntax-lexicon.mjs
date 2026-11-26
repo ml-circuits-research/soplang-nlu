@@ -1,5 +1,5 @@
 // Keep clock values and decimals whole in the spans passed to the SWI grammar.
-const wordPattern = /[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu;
+const wordPattern = /[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\p{L}\p{M}\p{N}_])|[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu;
 export const lexicalTokens = text => [...text.matchAll(wordPattern)];
 const key = text => lexicalTokens(text).map(([token])=>token.toLowerCase()).join(' ');
 const clausalClasses = new Set(['verb.cognition','verb.communication','verb.perception']);

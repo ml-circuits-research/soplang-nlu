@@ -1,6 +1,6 @@
 import { lemmatiseVerb, lemmatiseWord } from './lattice/morph.mjs'
 
-const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|'(?:[^'\\]|\\.)*'|‘[^’]*’|(?<clock>[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?)(?![\p{L}\p{M}\p{N}_])|(?<decimal>[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+))(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
+const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|'(?:[^'\\]|\\.)*'|‘[^’]*’|(?<date>[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\p{L}\p{M}\p{N}_]))|(?<clock>[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?)(?![\p{L}\p{M}\p{N}_])|(?<decimal>[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+))(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
 const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner', 'adjective', 'adverb',
   'auxiliary', 'preposition', 'conjunction', 'numeral', 'ordinal', 'particle', 'interjection', 'quote']
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
@@ -43,7 +43,7 @@ function inputTokens(text, kb, lexicon) {
     if (kb.grammar.joiners.has(lower)) tags.add('conjunction')
     if (kb.grammar.ordinals.has(lower)) tags.add('ordinal')
     if (particles.has(lower)) tags.add('particle')
-    const literal = match.groups.clock ? 'clock' : match.groups.decimal ? 'decimal' : undefined
+    const literal = match.groups.date ? 'date' : match.groups.clock ? 'clock' : match.groups.decimal ? 'decimal' : undefined
     const numeric = literal || /^\p{N}+$/u.test(surface) || (lower !== 'one' && tags.has('numeral'))
     if (numeric) tags.add('numeral')
     if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
@@ -239,7 +239,9 @@ function numericLandmark(tokens, prep, clause, predicates, kb) {
   const cue = tokens[prep.start].lower
   let relation
   let hosts = predicates
-  if (number.literal === 'clock') {
+  if (number.literal === 'date') {
+    relation = cue === 'on' ? 'date' : ['from', 'to', 'until', 'before', 'after'].includes(cue) ? cue : undefined
+  } else if (number.literal === 'clock') {
     relation = clockPrepositions.get(cue)
   } else {
     const frame = numericFrames.get(cue)
