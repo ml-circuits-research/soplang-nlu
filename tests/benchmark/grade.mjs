@@ -1,4 +1,4 @@
-// A common evaluator for previously saved predictions. Grading is timed
+// Mechanical screening for previously saved predictions. Final NLU grades require source-text review. Grading is timed
 // separately so generation timings remain comparable across strategies.
 import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 import {resolve, join} from 'node:path'
@@ -88,4 +88,4 @@ for (let i = 0; i < failures.length; i += 1000) {
 }
 summary.reviewCases = failures.length
 writeFileSync(join(dir,'grades.json'),JSON.stringify(summary,null,2)+'\n')
-console.log(summary)
+console.log('Mechanical WebMeet v1.2 screening. Source-text adjudication is required for final NLU v1 grades.',summary)

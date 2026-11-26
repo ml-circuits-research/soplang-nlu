@@ -699,11 +699,13 @@ export function compareCircuits({ text, goldSop, predSop, verifier, knownVocab =
   // otherwise first applicable primary error grade in exact LEGEND.md order: L0, L1a, L1b, L1c, L1d, L2 (L2a/L2b/L2c).
   const normSopText = (s) => String(s ?? '').replace(/\r\n/g, '\n').trim();
   const textIdentical = predValid && normSopText(goldSop) === normSopText(predSop);
+  // An explicit predicate or identified participant is already partial meaning.
   const allContentUnread =
     predReqs.length > 0 &&
     predSummary.unreads.length > 0 &&
     predReqs.every((r) => r.constraints.length === 0 && r.intents.length === 0 && r.lookups.length === 0 &&
-      !r.target?.sort && !r.target?.name && !(r.target?.ids?.length));
+      !r.predicate && !r.asked && !r.target?.family && !r.target?.description &&
+      !r.target?.count && !r.target?.sort && !r.target?.name && !(r.target?.ids?.length));
 
   let legendGrade;
   if (textIdentical && !goldAnnotationFlawed) {

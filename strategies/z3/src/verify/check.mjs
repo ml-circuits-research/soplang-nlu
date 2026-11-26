@@ -394,6 +394,7 @@ export async function createVerifier({ knowledgeDir, requestKeys } = {}) {
     if (typeof sopText !== 'string') {
       return {
         ok: false,
+        schemaValid: false,
         errors: [{ type: '(parse)', key: '', why: 'sopText is not a string' }],
         warnings: [],
         wires: null,
@@ -409,6 +410,7 @@ export async function createVerifier({ knowledgeDir, requestKeys } = {}) {
       rawErrors.push({ type: '(parse)', key: '', why: String(e.message ?? e).replace(/".*"/, '"…"') });
       return {
         ok: false,
+        schemaValid: false,
         errors: rawErrors,
         warnings: [],
         wires: null,
@@ -456,6 +458,7 @@ export async function createVerifier({ knowledgeDir, requestKeys } = {}) {
 
     return {
       ok: errors.length === 0,
+      schemaValid: wires.length > 0 && !res.violations?.length && wires.every(w => base.schema(w.type)),
       errors,
       warnings,
       wires,
