@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import {fileURLToPath} from 'node:url'
 import {test} from 'node:test'
 import {createReader} from '../lib/index.mjs'
-import {hasCompleteSource} from '../lib/check-analysis.mjs'
+import {createAnalysisValidator, hasCompleteSource} from '../lib/check-analysis.mjs'
+import {projectDependencies} from '../strategies/spacy-direct/project.mjs'
 import {spacyDirect} from '../strategies/spacy-direct/index.mjs'
 
 const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR ??
@@ -46,4 +47,26 @@ test('spacy-direct projects one reading through the public adapter', {
   } finally {
     await reader.close()
   }
+})
+
+test('spacy-direct grounds result clauses and recursively visits prepositional landmarks', async () => {
+  const text = 'Make the caps right above the bars bigger.'
+  // A dependency analysis with an overt subject of the adjectival clause
+  // and an adverb attached inside the preposition phrase.
+  const grammar = [
+    ['VERB', 'VB', 'ROOT', 0], ['DET', 'DT', 'det', 2], ['NOUN', 'NNS', 'nsubj', 7],
+    ['ADV', 'RB', 'advmod', 4], ['ADP', 'IN', 'prep', 2], ['DET', 'DT', 'det', 6],
+    ['NOUN', 'NNS', 'pobj', 4], ['ADJ', 'JJR', 'ccomp', 0], ['PUNCT', '.', 'punct', 0]
+  ]
+  const dependencies = [...text.matchAll(/[A-Za-z]+|[.]/gu)].map((match, i) => {
+    const [word] = match
+    const [pos, tag, dep, head] = grammar[i]
+    return {i, text: word, start: match.index, end: match.index + word.length, pos, tag, dep, head, lemma: word.toLowerCase()}
+  })
+  const {sop} = projectDependencies(text, dependencies)
+  const validate = await createAnalysisValidator({knowledgeDir})
+  assert.ok(hasCompleteSource(validate(text, sop)), sop)
+  assert.match(sop, /predicate="Make".*direct_object=\$n2 result_complement="bigger"/)
+  assert.match(sop, /@n2 nlu.entity head="caps"/)
+  assert.match(sop, /kind=above from=\$n2 to=\$n3 cue="above" adverb="right"/)
 })

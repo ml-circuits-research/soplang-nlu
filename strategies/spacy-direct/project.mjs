@@ -9,7 +9,7 @@ const roles = new Map([
 ])
 const subordinators = new Map([
   ['if', 'condition'], ['because', 'reason'], ['although', 'concession'], ['unless', 'condition'],
-  ['before', 'before'], ['after', 'after'], ['while', 'while'], ['when', 'when'], ['so', 'purpose']
+  ['before', 'before'], ['after', 'after'], ['while', 'while'], ['when', 'when'], ['since', 'since'], ['once', 'once'], ['so', 'purpose']
 ])
 const modifiers = new Map([
   ['det', 'determiner'], ['nummod', 'quantity'], ['compound', 'compound'], ['amod', 'modifier'],
@@ -26,9 +26,11 @@ const compoundPrepositions = new Map([
   ['to the left of', 'left_of'], ['to the right of', 'right_of']
 ])
 const clauseMarkers = new Set(['if', 'whether', 'that'])
-const reportingVerbs = new Set(['call', 'label', 'name', 'print', 'quote', 'read', 'rename', 'say', 'type', 'write'])
+const reportingVerbs = new Set(['call', 'contain', 'label', 'name', 'print', 'quote', 'read', 'rename', 'say', 'type', 'write'])
 const greeting = new Set(['hey', 'hello', 'hi', 'please'])
 const gratitude = new Set(['thanks', 'thx'])
+const relationalModifiers = new Set(['back', 'directly', 'immediately', 'just', 'only', 'over', 'right', 'smack'])
+const resultHeads = new Set(['adjust', 'change', 'color', 'colour', 'keep', 'leave', 'make', 'paint', 'set', 'want'])
 const possessiveDeterminers = new Set(['my', 'your', 'its', 'his', 'her', 'our', 'their'])
 const timezone = /^(?:UTC|GMT|[ECMP][SD]T|CET|CEST)$/u
 const quote = (key, value) => key + '=' + JSON.stringify(value)
@@ -104,6 +106,7 @@ export function projectDependencies(text, dependencies) {
   const entities = new Map()
   const clauses = new Map()
   const groups = new Map()
+  const deferredModifiers = new Set()
   const courtesy = new Map()
   function make(type, token, fields = []) {
     const node = {id: 'n' + (nodes.length + 1), type, token, fields, slots: new Set()}
@@ -117,10 +120,12 @@ export function projectDependencies(text, dependencies) {
     if (!repeat) node.slots.add(key)
     return true
   }
-  function relation(from, to, kind, cue = []) {
-    if (!from || !to || from === to) return
+  function relation(from, to, kind, cue = [], adverbs = []) {
+    if (!from || !to || from === to || cue.some(({index}) => used.has(index))) return
     const node = make('relation', cue[0] ?? to.token, ['kind=' + kind, ref('from', from), ref('to', to)])
     literal(node, 'cue', cue)
+    for (const adverb of adverbs) literal(node, 'adverb', [adverb], true)
+    return node
   }
 
   for (const token of tokens) {
@@ -136,6 +141,15 @@ export function projectDependencies(text, dependencies) {
     if (marked) courtesy.set(token.index, phrase)
   }
 
+  const boundaries = new Map()
+  for (const mark of tokens.filter((token) => [';', '—', ':'].includes(token.value))) {
+    const left = tokens.slice(0, mark.index).findLast((token) =>
+      ending.has(token.value) || verbs.has(token.pos) && ['ROOT', 'advcl', 'conj', 'parataxis'].includes(token.dep))
+    const right = tokens.slice(mark.index + 1).find((token) =>
+      ending.has(token.value) || verbs.has(token.pos) && ['ROOT', 'advcl', 'conj', 'parataxis'].includes(token.dep))
+    if (left && right && !ending.has(left.value) && !ending.has(right.value)) boundaries.set(left.index, mark)
+  }
+  const boundaryMarks = new Set(boundaries.values())
   const courtesyTerminators = new Set([...courtesy.values()].map((phrase) => phrase.at(-1).index + 1))
   for (const token of tokens) {
     if (token.dep === 'ROOT' || courtesy.has(token.index) ||
@@ -174,7 +188,14 @@ export function projectDependencies(text, dependencies) {
         }
       } else if (modifiers.has(part.dep) && !questions.has(part.lower)) {
         const slot = modifiers.get(part.dep)
-        literal(node, slot, [part], slot === 'modifier' || slot === 'compound')
+        const conjunct = slot === 'modifier' && under(part).find((item) =>
+          item.dep === 'conj' && item.pos === part.pos && item.index === part.index + 2)
+        const conjunction = conjunct && tokens[part.index + 1]
+        const chain = conjunction?.dep === 'cc' ? [part, conjunction, conjunct] : [part]
+        literal(node, slot, chain, slot === 'modifier' || slot === 'compound')
+        for (const child of under(part).filter((item) => item.dep === 'advmod' && item.pos === 'ADV')) {
+          literal(node, 'degree', [child], true)
+        }
       }
     }
     return node
@@ -216,16 +237,18 @@ export function projectDependencies(text, dependencies) {
       if (after && ending.has(after.value)) literal(node, 'terminator', [after])
       continue
     }
-    const final = parts.findLast((part) => part.dep === 'punct' && ending.has(part.value) && !courtesyTerminators.has(part.index))
+    const final = boundaries.get(token.index) ?? parts.findLast((part) => part.dep === 'punct' && ending.has(part.value) && !courtesyTerminators.has(part.index) && !boundaryMarks.has(part))
     const marker = parts.find((part) => ['mark', 'aux'].includes(part.dep) && part.lower === 'to')
     const relativizer = token.dep === 'relcl' ? parts.find((part) => questions.has(part.lower) || part.lower === 'that') : undefined
-    const question = ['ROOT', 'parataxis'].includes(token.dep) ? parts.find((part) => questions.has(part.lower)) ??
+    const question = (['ROOT', 'parataxis'].includes(token.dep) || final?.value === '?') ? parts.find((part) => questions.has(part.lower)) ??
       parts.flatMap(under).find((part) => questions.has(part.lower) && part.index < token.index && part.dep === 'det') : undefined
     const grammaticalSubject = parts.find((part) => subject.has(part.dep))
     const inversion = grammaticalSubject && [token, ...parts.filter((part) => part.dep === 'aux')]
       .some((part) => part.pos === 'AUX' && part.index < grammaticalSubject.index)
+    const independent = boundaries.has(token.index) && token.head > boundaries.get(token.index).index
     const form = !verbs.has(token.pos) ? 'fragment' : relativizer ? 'declarative'
-      : marker || !grammaticalSubject && ['acl', 'advcl', 'xcomp', 'pcomp'].includes(token.dep) && ['VB', 'VBG', 'VBN'].includes(token.tag) ? 'nonfinite'
+      : marker || !independent && !grammaticalSubject &&
+        ['acl', 'advcl', 'xcomp', 'pcomp'].includes(token.dep) && ['VB', 'VBG', 'VBN'].includes(token.tag) ? 'nonfinite'
       : final?.value === '?' || question || inversion ? 'interrogative'
       : grammaticalSubject || !['VB', 'VBP'].includes(token.tag) ? 'declarative' : 'imperative'
     node.fields.push('form=' + form)
@@ -251,21 +274,59 @@ export function projectDependencies(text, dependencies) {
           node.slots.add(slot)
         }
       }
+      const smallClauseSubject = part.dep === 'ccomp' && !verbs.has(part.pos) &&
+        under(part).find((child) => subject.has(child.dep))
+      let attachedResult = false
+      if (smallClauseSubject) {
+        const target = entity(smallClauseSubject)
+        if (target && !node.slots.has('direct_object')) {
+          node.fields.push(ref('direct_object', target))
+          node.slots.add('direct_object')
+          if (part.pos === 'ADJ') attachedResult = literal(node, 'result_complement', [part])
+          else if (nouns.has(part.pos) && !node.slots.has('predicative_entity')) {
+            const complement = entity(part)
+            if (complement) {
+              node.fields.push(ref('predicative_entity', complement))
+              node.slots.add('predicative_entity')
+            }
+          }
+        }
+      }
+      const comparative = part.tag === 'JJR' && parts.some((item) => roles.get(item.dep) === 'direct_object') &&
+        (part.pos === 'ADJ' && part.dep === 'advmod' ||
+         ['ADJ', 'ADV'].includes(part.pos) && part.dep === 'ccomp' && resultHeads.has(token.lemma))
+      const adjectivalComplement = part.pos === 'ADJ' && ['acomp', 'attr', 'oprd', 'xcomp'].includes(part.dep)
+      if (comparative || adjectivalComplement) {
+        attachedResult = literal(node, 'result_complement', [part]) || attachedResult
+      }
+      if (attachedResult) {
+        for (const degree of under(part).filter((item) => ['advmod', 'npadvmod'].includes(item.dep))) {
+          const chain = [...under(degree).filter((item) => ['det', 'amod'].includes(item.dep)), degree]
+            .sort((a, b) => a.index - b.index)
+          if (chain.every((item, index) => !index || item.index === chain[index - 1].index + 1)) {
+            literal(node, 'degree', chain, true)
+          }
+        }
+      }
       if (['aux', 'auxpass', 'cop'].includes(part.dep)) literal(node, 'auxiliary', [part], true)
       else if (part.dep === 'neg') literal(node, 'negation', [part], true)
       else if (part.dep === 'prt') literal(node, 'particle', [part], true)
-      else if (part.dep === 'advmod' && part.pos === 'ADV') literal(node, 'adverb', [part], true)
-      else if (['acomp', 'attr', 'oprd', 'xcomp'].includes(part.dep) && part.pos === 'ADJ') {
-        literal(node, 'result_complement', [part])
-      } else if (part.dep === 'intj' && greeting.has(part.lower)) literal(node, 'filler', [part], true)
+      else if (part.dep === 'advmod' && part.pos === 'ADV' ||
+          part.dep === 'intj' && ['now', 'then'].includes(part.lower)) {
+        if (relationalModifiers.has(part.lower) && under(part).some((item) => item.dep === 'prep')) {
+          deferredModifiers.add(part)
+        } else if (!comparative) literal(node, 'adverb', [part], true)
+      }
+      else if (part.dep === 'intj' && greeting.has(part.lower)) literal(node, 'filler', [part], true)
       const child = clauseOf(part)
-      if (child && ['xcomp', 'ccomp'].includes(part.dep) && !node.slots.has('clausal_complement')) {
+      const separated = boundaries.get(part.index)?.index < token.index
+      if (child && !separated && ['xcomp', 'ccomp'].includes(part.dep) && !node.slots.has('clausal_complement')) {
         node.fields.push(ref('clausal_complement', coordinate(part, child, clauseOf)))
         node.slots.add('clausal_complement')
         const cue = under(part).find((item) => item.dep === 'mark' && clauseMarkers.has(item.lower))
         if (cue) literal(child, 'marker', [cue])
       }
-      if (child && part.dep === 'advcl') {
+      if (child && !separated && part.dep === 'advcl') {
         const cue = under(part).find((item) => item.dep === 'mark' && subordinators.has(item.lower))
         relation(node, child, subordinators.get(cue?.lower) ?? 'adverbial_clause', cue ? [cue] : [])
       }
@@ -273,29 +334,46 @@ export function projectDependencies(text, dependencies) {
   }
   for (const node of primary) coordinate(node.token, node, clauseOf)
 
-  for (const token of tokens) {
-    const entityHost = entities.get(token.head)
-    const from = entityHost ?? clauses.get(token.head)
-    if (!from) continue
-    if (internalCues.has(token.index)) continue
-    const compound = compoundCues.get(token.index)
-    if (compound || ['prep', 'agent'].includes(token.dep)) {
-      const landmark = compound?.landmark ?? under(token).find((part) => ['pobj', 'obj', 'pcomp'].includes(part.dep))
-      if (!landmark) continue
-      const to = clauseOf(landmark) ?? entity(landmark)
-      const label = compound?.kind ?? (courtesy.has(from.token.index) && token.lower === 'for' ? 'reason'
-        : token.dep === 'agent' && under(from.token).some((part) => part.dep === 'auxpass') ? 'agent'
-        : landmark.numeric && landmark.value.includes(':') && token.lower === 'at' ? 'time'
-        : landmark.numeric && /^\d{4}-/u.test(landmark.value) && token.lower === 'on' ? 'date'
-        : /^[a-z]+$/u.test(token.lower) ? token.lower : 'prepositional')
-      relation(from, coordinate(landmark, to, to?.type === 'clause' ? clauseOf : entity), label, compound?.parts ?? [token])
+  for (const from of nodes) {
+    if (!['clause', 'entity'].includes(from.type)) continue
+    const {token: host} = from
+    // A nominal root owns its prepositions through its topic entity.
+    if (from.type === 'clause' && entities.has(host.index)) continue
+    const attached = [...under(host)]
+    for (const part of attached) {
+      if (relationalModifiers.has(part.lower) && part.pos === 'ADV' && !compoundCues.has(part.index)) {
+        for (const child of under(part)) {
+          if (child.dep === 'prep') attached.push(child)
+        }
+      }
+      if (internalCues.has(part.index)) continue
+      const compound = compoundCues.get(part.index)
+      if (compound || ['prep', 'agent'].includes(part.dep) || part.dep === 'dative' && part.pos === 'ADP') {
+        const landmark = compound?.landmark ?? under(part).find((item) => ['pobj', 'obj', 'pcomp'].includes(item.dep))
+        if (!landmark) continue
+        const to = clauseOf(landmark) ?? entity(landmark)
+        const label = compound?.kind ?? (courtesy.has(host.index) && part.lower === 'for' ? 'reason'
+          : part.dep === 'agent' && under(host).some((item) => item.dep === 'auxpass') ? 'agent'
+          : landmark.numeric && landmark.value.includes(':') && part.lower === 'at' ? 'time'
+          : landmark.numeric && /^\d{4}-/u.test(landmark.value) && part.lower === 'on' ? 'date'
+          : /^[a-z]+$/u.test(part.lower) ? part.lower : 'prepositional')
+        const local = under(part).filter((item) => item.dep === 'advmod' && item.pos === 'ADV')
+        const parent = tokens[part.head]
+        if (parent && (deferredModifiers.has(parent) ||
+            parent !== host && relationalModifiers.has(parent.lower) && parent.pos === 'ADV')) local.push(parent)
+        relation(from, coordinate(landmark, to, to?.type === 'clause' ? clauseOf : entity), label, compound?.parts ?? [part], local)
+        for (const child of under(part)) if (child.dep === 'prep') attached.push(child)
+      }
+      if (from.type === 'entity' && ['acl', 'relcl'].includes(part.dep)) {
+        const cue = attachments.get(part.index)
+        relation(from, clauseOf(part), cue ? subject.has(cue.dep) ? 'subject_relative' : 'object_relative'
+          : 'nominal_clause', cue ? [cue] : [])
+      }
+      if (part.dep === 'appos') relation(from, entity(part), 'apposition')
+      if (part.dep === 'npadvmod' && !courtesy.has(part.index) && nouns.has(part.pos) && !used.has(part.index)) {
+        relation(from, entity(part), 'nominal_adjunct')
+      }
     }
-    if (entityHost && ['acl', 'relcl'].includes(token.dep)) {
-      const cue = attachments.get(token.index)
-      relation(entityHost, clauseOf(token), cue ? subject.has(cue.dep) ? 'subject_relative' : 'object_relative'
-        : 'nominal_clause', cue ? [cue] : [])
-    }
-    if (entityHost && token.dep === 'appos') relation(entityHost, entity(token), 'apposition')
   }
 
   const outputClauses = [...clauses.values()].sort((a, b) => a.token.index - b.token.index)
