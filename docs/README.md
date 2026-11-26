@@ -66,3 +66,7 @@ The schema path list supplied to the adapter extends the validator. Loading lexi
 The benchmark parent can read independently reviewed NLU circuits from `annotations/nlu/v1/readings.jsonl` in a committed WebMeet dataset revision. It freezes the relevant references, their digest and their revision before opening any strategy. The default reference revision is the sampled dataset revision. To compare a previously frozen sample with newer annotations, set `NATIVE_REFERENCE_REVISION` explicitly. Workers continue to receive just the input ID and text.
 
 The source-first review always starts from the utterance and eligible circuits. When native reference annotations were available before generation, the final comparison awards L9 for an accepted reading matching one of those references. Candidate-set order has no effect. Annotations added after a run can affect subsequent comparisons.
+
+## Detached expressions
+
+A short expression can perform a separate speech act. In `Move it, thanks`, the instruction and the expression of gratitude can occupy separate clause wires. The fragment carries the written expression, its optional speech_act and the separator. Each occurrence of punctuation is claimed once. In `Give thanks`, the same word can supply the object of the verb. In `Write "thanks"`, it supplies the quoted content. The grammatical construction determines which reading each strategy offers.

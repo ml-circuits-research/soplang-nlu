@@ -16,6 +16,10 @@
 
 @nlu.clause core.type of=nlu.clause closed=true
 @nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment required=true present=true
+# An independent utterance may have a communicative function without a verb.
+@nlu.clause.expression core.slot of=nlu.clause key=expression kind=string
+@nlu.clause.speech_act core.slot of=nlu.clause key=speech_act kind=atom
+@nlu.clause.separator core.slot of=nlu.clause key=separator kind=string many=true
 @nlu.clause.predicate core.slot of=nlu.clause key=predicate kind=string
 @nlu.clause.subject core.slot of=nlu.clause key=subject kind=ref type=nlu.entity type=nlu.coordination
 @nlu.clause.direct_object core.slot of=nlu.clause key=direct_object kind=ref type=nlu.entity type=nlu.coordination
