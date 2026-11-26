@@ -74,3 +74,7 @@ Preserve closing and opening delimiters in the literal itself. For the exact tex
 ```
 
 The escaped quotation marks in the SOP literal are part of the source evidence. When the SOP is inside the result JSON string, escape again as JSON requires. For words that describe a result, retain the exact written adjective in `result_complement`. A bare semantic atom such as `result_color=teal` does not cover the source word `teal`.
+
+For quantified lookups, attach restrictions to the entity. In "Italicise every diamond in sight", `every` quantifies `diamond` and the phrase `in sight` restricts which diamonds to select. Keep the phrase on the entity lookup, not as an adverb of italicising. A location stated as an instruction's destination can instead attach to the action. Keep the difference between selection and requested change.
+
+For "Let us book Lab", preserve `Let` as the imperative predicate and `book` as the nonfinite predicate with its own object. The reference to the single written `us` can supply the embedded subject. Treat an unquoted multiword title in a title slot as one written name when it names a single item. An ordinary modifier and noun in a lookup remain separate.

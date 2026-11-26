@@ -17,3 +17,9 @@ A subsequent prompt clarifies that overt repeated pronouns use distinct grounded
 One headless request returned all 192 entries in 160 seconds. The original one-pass gate accepted 158. The model often spent a single written period twice on a matrix clause and its subordinate. It also repeated optional punctuation already included in a literal or a coordination cue.
 
 We replayed the same raw response through a local pass that removes only surplus optional comma and period claims before validation. It retained punctuation inside quoted literals and preserved question marks. The gate then accepted **187 of 192 (97.4%)**, with 47/48 calendar, 48/48 drawing, 44/48 diagram and 48/48 document inputs. It made no new model requests. The five remaining static failures and the quality of role assignments are separate from punctuation cleanup. Sixteen hash-selected accepted outputs received a manual spot check. This limited spot check cannot establish the greater-than-95% plausibility target. A new 256-row request on disjoint texts tests the revised prompt and checker together.
+
+## 256-row request and exact delimiter recovery
+
+A single request returned all 256 results in about 225 seconds. Its first version passed 180/256. Most misses were source delimiters or terminal punctuation, including 38 document readings that omitted both quote marks. Replaying the saved responses with exact literal-delimiter recovery and clause punctuation cleanup yielded 244/256 (95.3%) static passes without a second model call.
+
+The first twelve hash-selected static passes included one material role error. In “italicise every diamond in sight”, the circuit attached “in sight” to italicising, where the phrase should restrict the scope of “every diamond”. Counting that case caps plausible coverage at 243/256 (94.9%). Full-corpus conversion remains gated on the user's plausibility threshold.
