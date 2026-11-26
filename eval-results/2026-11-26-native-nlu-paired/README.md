@@ -44,3 +44,9 @@ Green levels meet the acceptance threshold. Static-only cases receive L0 or L2. 
 Generation wall time includes worker startup and shutdown. The transfer training split took 2.99 s and induction took 8.76 s before generation. Corpus review is timed separately. The prefilter percentages use the final offline validation of the frozen generation. A fully accounted circuit can still contain a wrong predicate or attachment.
 
 [Failure examples](failure-examples.md) · [Frozen sample](sample.json.gz) · [Environment and revisions](environment.json) · [Independent schema check](native-schema-audit.json)
+
+## Alternatives and independent checks
+
+The [first-candidate audit](candidate-audit/top1-vs-any-summary.json) compares the first publicly returned candidate with the best whole reading. The [cross-strategy comparison](symbolic-agreement.md) checks graphs up to local identifiers and ordering, and reports the effect of optional semantic enrichment.
+
+The [blinded reviewer comparison](source-review-v2/terra-comparison/README.md) measures agreement over the same complete candidate groups. The [preliminary filter audit](preliminary-filter-audit.md) replays the source checks on all generated circuits. The [candidate inventory](candidate-audit/candidate-inventory-summary.json) records the stricter independent checks used for native annotation publication.

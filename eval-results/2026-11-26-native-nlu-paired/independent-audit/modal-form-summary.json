@@ -1,0 +1,27 @@
+{
+  "profile": "nlu-native-inversion-audit-v1",
+  "packetsSha256": "d123454670c3036a3a4e2e0cd0e6c09156774cbe219e24b664b5884da0515433",
+  "sourceRule": "Sentence-initial English auxiliary followed by a subject pronoun, permitting an initial greeting or please.",
+  "circuitRule": "For each eligible candidate, find exactly one clause with the exact auxiliary and exact referenced subject pronoun. Flag only groups where every eligible candidate supplies those roles and emits a form other than interrogative.",
+  "engines": {
+    "z3": {
+      "sourceHasInvertedOpening": 145,
+      "hasExplicitMatchingModalAndSubject": 135,
+      "allEligibleExplicitlyMisclassifyForm": 55,
+      "hasExplicitInterrogativeAlternative": 55
+    },
+    "prolog-worlds": {
+      "sourceHasInvertedOpening": 145,
+      "hasExplicitMatchingModalAndSubject": 133,
+      "allEligibleExplicitlyMisclassifyForm": 85,
+      "hasExplicitInterrogativeAlternative": 48
+    },
+    "prolog-example-transfer": {
+      "sourceHasInvertedOpening": 145,
+      "hasExplicitMatchingModalAndSubject": 133,
+      "allEligibleExplicitlyMisclassifyForm": 85,
+      "hasExplicitInterrogativeAlternative": 48
+    }
+  },
+  "reviewCaveat": "A targeted diagnostic for a specific form pattern. Polite force may still be a directive. No grades are replaced by this check."
+}
