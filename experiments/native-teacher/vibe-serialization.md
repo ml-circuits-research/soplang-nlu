@@ -63,3 +63,14 @@ Keep one entity wire per overt occurrence. In "I will call. I will wait.", quote
 Treat a meaningful multiword relation as one semantic direction. In "Put the chair just left of the desk", use a relation with `kind=left_of cue="left of" adverb="just"`, directed from the placed chair to the desk. A generic `kind=of` would lose the placement. Apply the same distinction to `right_of`, `in_front_of`, `next_to` and similar phrases. Attach location and time to the event or entity it actually qualifies. Before retaining a draft, check its role and direction against the words, even when the draft already contains every token.
 
 Punctuation present in a literal belongs to that literal. In `Replace Caption with "Good morning.".`, the period inside the quotation belongs to the replacement text and the period after the closing quotation ends the sentence. In `I need you to open it.`, only the clause nearest the written sentence ending should carry the terminator. The outer control clause has no separate period to quote. For punctuation between coordinated clauses, use a cue or separator on one wire.
+
+Preserve closing and opening delimiters in the literal itself. For the exact text `Replace Caption with "Good morning.".`, write the following.
+
+```sop
+@c nlu.clause form=imperative predicate="Replace" direct_object=$target terminator="."
+@target nlu.entity name="Caption"
+@new nlu.entity literal="\"Good morning.\""
+@r nlu.relation kind=with from=$c to=$new cue="with"
+```
+
+The escaped quotation marks in the SOP literal are part of the source evidence. When the SOP is inside the result JSON string, escape again as JSON requires. For words that describe a result, retain the exact written adjective in `result_complement`. A bare semantic atom such as `result_color=teal` does not cover the source word `teal`.

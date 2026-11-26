@@ -4,7 +4,7 @@ import {mkdir, readFile, readdir, rename, writeFile} from 'node:fs/promises'
 import {dirname,join,resolve} from 'node:path'
 import {gunzipSync,gzipSync} from 'node:zlib'
 import {createAnalysisValidator,hasCompleteSource,sourceTokenMatches} from '../../lib/check-analysis.mjs'
-import {removeSurplusPunctuation} from './duplicate-punctuation.mjs'
+import {removeSurplusPunctuation,restoreLiteralDelimiters,restoreOptionalPunctuation} from './duplicate-punctuation.mjs'
 
 const [inputArg,outputArg,knowledgeArg,startArg='0',batchCountArg='1']=process.argv.slice(2)
 const offset=Number(startArg), batchCount=Number(batchCountArg)
@@ -125,10 +125,17 @@ function attempt(row,result,issue){
       sop=row.drafts[draftIndex]?.sop??null
     }else if(choice?.draftIndex===null&&typeof choice.sop==='string')sop=choice.sop.trim()
     if(sop&&backend==='vibe'){
-      const cleaned=removeSurplusPunctuation(row.text,sop)
+      const cleaned=removeSurplusPunctuation(row.text,restoreLiteralDelimiters(row.text,sop))
       if(cleaned!==sop){sop=cleaned;draftIndex=null}
     }
-    const check=sop?validate(row.text,sop,{alignSource:true}):null
+    let check=sop?validate(row.text,sop,{alignSource:true}):null
+    if(backend==='vibe'&&check?.valid&&!check.coverage.allAccountedFor){
+      const completed=restoreOptionalPunctuation(row.text,sop,check.placements)
+      if(completed!==sop){
+        const final=validate(row.text,completed,{alignSource:true})
+        if(hasCompleteSource(final)){sop=completed;draftIndex=null;check=final}
+      }
+    }
     const eligible=hasCompleteSource(check)
     tried.push({draftIndex,sop,check,eligible})
     if(!eligible)problems.push('Reading '+tried.length+' failed the static gate')

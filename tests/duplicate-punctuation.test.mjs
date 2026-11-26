@@ -15,3 +15,11 @@ test('leaves punctuation within source evidence and all explicit question marks'
   const result=removeSurplusPunctuation('Switch to "Tuesday, Thursday."?',draft)
   assert.equal(result,draft.replace(' separator=","',''))
 })
+
+test('restores only an unambiguous pair of written quotation marks',async()=>{
+  const {restoreLiteralDelimiters}=await import('../experiments/native-teacher/duplicate-punctuation.mjs')
+  const draft='@e nlu.entity literal="Good morning."'
+  assert.equal(restoreLiteralDelimiters('Use "Good morning.".',draft),
+    '@e nlu.entity literal='+JSON.stringify('"Good morning."'))
+  assert.equal(restoreLiteralDelimiters('Use "Good morning." and remove "Good morning.".',draft),draft)
+})
