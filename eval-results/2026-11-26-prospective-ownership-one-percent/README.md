@@ -9,3 +9,5 @@ The inference and review stages are in progress. The historical diagnostic that 
 ## Primary strategy inference complete
 
 The frozen selector-distilbert run returned 1,831 records with zero engine errors. Every public list respected the two-circuit budget. At least one circuit passed the complete-source gate on 1,761 texts (96.18%). This is the static eligibility count, so the 80% whole-reading claim still depends on blind judgments. With one low-priority CPU worker, inference took 616.70 seconds. Median request latency was 256.82 ms and the 95th percentile was 671.86 ms.
+
+All ten original strategy arms completed the 1,831 requests. Neuro-Z3 reported two reader errors. The recovery runner kept those outcomes in the frozen cohort and started blinded review from the saved artifacts. Exact deduplication left 9,127 eligible circuit targets across 1,764 source texts. The first reviewer processes one request at a time with up to 24 texts and 48 candidate groups per request. The frozen rubric and reviewer identities still apply.
