@@ -227,10 +227,12 @@ def strict_packets(packets, previous, *, native=False, extra=()):
                 continue
             packet = selected.setdefault(index, {**original, 'groups': {}, 'previousJudgments': {}})
             packet['groups'][group] = original['groups'][group]
-            packet['previousJudgments'][group] = {
-                'candidate': None if judgment['candidate'] is None else f'C{judgment["candidate"]}',
-                'grade': judgment['grade'], 'reason': judgment['reason'], 'auditTrigger': trigger,
-            }
+            packet['previousJudgments'][group] = {'auditTrigger': trigger}
+            if (index, group) not in extra:
+                packet['previousJudgments'][group].update({
+                    'candidate': None if judgment['candidate'] is None else f'C{judgment["candidate"]}',
+                    'grade': judgment['grade'], 'reason': judgment['reason'],
+                })
     return list(selected.values())
 
 
