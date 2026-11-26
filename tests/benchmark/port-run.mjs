@@ -110,6 +110,13 @@ const activeWorkers = Math.min(workers, rows.length)
 save('environment.json', {
   ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
   workers, activeWorkers, node: process.version, cpu: cpus()[0]?.model, platform: platform(), arch: arch(),
+  libraryRevision: execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
+  knowledgeRevision: (() => {
+    try { return execFileSync('git',['-C',knowledgeDir,'rev-parse','HEAD'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim() }
+    catch { return null }
+  })(),
+  z3SolverVersion: JSON.parse(readFileSync(join(root,'strategies/z3/package.json'),'utf8')).dependencies['z3-solver'],
+  prologVersion: execFileSync(strategies['prolog-worlds'].swipl || 'swipl',['--version'],{encoding:'utf8'}).trim(),
   strategies
 })
 writeFileSync(join(dir, 'sample.json.gz'), sample)
