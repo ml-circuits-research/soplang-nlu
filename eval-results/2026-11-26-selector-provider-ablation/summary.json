@@ -1,0 +1,108 @@
+{
+  "cohort": "Historical SHA250 selector diagnostic",
+  "texts": 250,
+  "eligibleExactPairs": 943,
+  "provenance": "../2026-11-26-neuro-selector-proposal-pools/inference-provenance.json",
+  "inputSha256": {
+    "pool.jsonl.gz": "ed641cb1a89411c90b0b73f8e4c7e7ea332b65ea6f4aad048a3c62db854e30a6",
+    "votes.jsonl.gz": "683e3f3f4406ce2324a513e51adae18dd9c0aa0cc37e0b65da61ff1078262e5a"
+  },
+  "ablation": [
+    {
+      "providers": [
+        "base-beam"
+      ],
+      "standaloneAny": 179,
+      "any": 179,
+      "anyPercent": 71.6,
+      "added": 179,
+      "serialComponentEstimateMs": 48.4
+    },
+    {
+      "providers": [
+        "base-beam",
+        "adapted-beam"
+      ],
+      "standaloneAny": 185,
+      "any": 194,
+      "anyPercent": 77.6,
+      "added": 15,
+      "addedIds": [
+        "diagram/charts-06.csv#2287",
+        "diagram/diagrams-04.csv#2363",
+        "diagram/nodes-01.csv#2081",
+        "diagram/nodes-01.csv#2091",
+        "diagram/nodes-01.csv#3774",
+        "diagram/nodes-04.csv#696",
+        "diagram/nodes-05.csv#2014",
+        "diagram/nodes-06.csv#1531",
+        "document/text-03.csv#1090",
+        "drawing/people-08.csv#250",
+        "drawing/scenes-11.csv#279",
+        "drawing/scenes-11.csv#3349",
+        "drawing/scenes-14.csv#576",
+        "drawing/scenes-20.csv#727",
+        "drawing/scenes-24.csv#34"
+      ],
+      "serialComponentEstimateMs": 97.81
+    },
+    {
+      "providers": [
+        "base-beam",
+        "adapted-beam",
+        "adapted-compact"
+      ],
+      "standaloneAny": 138,
+      "any": 199,
+      "anyPercent": 79.6,
+      "added": 5,
+      "addedIds": [
+        "diagram/nodes-13.csv#523",
+        "drawing/placement-02.csv#2881",
+        "drawing/scenes-11.csv#896",
+        "drawing/scenes-13.csv#4891",
+        "drawing/scenes-20.csv#432"
+      ],
+      "serialComponentEstimateMs": 99.77
+    },
+    {
+      "providers": [
+        "base-beam",
+        "adapted-beam",
+        "adapted-compact",
+        "neuro-prolog"
+      ],
+      "standaloneAny": 135,
+      "any": 203,
+      "anyPercent": 81.2,
+      "added": 4,
+      "addedIds": [
+        "drawing/objects-04.csv#444",
+        "drawing/scenes-03.csv#96",
+        "drawing/scenes-13.csv#3188",
+        "drawing/scenes-16.csv#3341"
+      ],
+      "serialComponentEstimateMs": 105.08
+    }
+  ],
+  "runtime": {
+    "componentMedianMs": {
+      "baseDirect": 47.61385599999994,
+      "adaptedDirect": 48.62884699999813,
+      "compactDirect": 1.9688220000000456,
+      "baseBeamExtra": 0.7816959987394512,
+      "prologMapping": 5.3052779999998165
+    },
+    "componentSources": {
+      "baseDirect": "../2026-11-26-spacy-transformer-head-adaptation-pilot/baseline/inference/spacy-direct.json",
+      "adaptedDirect": "../2026-11-26-spacy-transformer-head-adaptation-pilot/adapted/inference/spacy-direct.json",
+      "compactDirect": "../2026-11-26-spacy-compact-adaptation-pilot/adapted/inference/spacy-direct.json",
+      "baseBeamExtra": "../2026-11-26-spacy-dependency-beam-pilot/summary.json",
+      "prologMapping": "../2026-11-26-neuro-prolog-historical-diagnostic-250/inference/neuro-prolog.json",
+      "fullPool": "../2026-11-26-neuro-selector-proposal-pools/diagnostic/pool.jsonl.gz.timing.json"
+    },
+    "fullPoolMeasuredMedianMs": 113.58032800000001,
+    "fullPoolMeasuredP95Ms": 269.75358699999924,
+    "caveat": "Component median sums are rough serial estimates. Adapted beam overhead uses the measured base beam as a proxy."
+  }
+}
