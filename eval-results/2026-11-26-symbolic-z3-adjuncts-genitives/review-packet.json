@@ -1,0 +1,458 @@
+[
+  {
+    "reviewId": 1,
+    "text": "make Mia's jacket green, and make Leo's jacket yellow",
+    "A": [
+      {
+        "sop": "@p1 nlu.entity name=\"Mia's\"\n@e1 nlu.entity possessor=$p1 head=\"jacket\"\n@p2 nlu.entity head=\"Leo's\"\n@e2 nlu.entity possessor=$p2 head=\"jacket\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive direct_object=$e1 result_complement=\"green\" result_color=green\n@c2 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive direct_object=$e2 result_complement=\"yellow\" result_color=yellow",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity head=\"jacket\"\n@e2 nlu.entity compound=\"Leo's\" head=\"jacket\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive direct_object=$e1 result_complement=\"green\" result_color=green unresolved=\"Mia's\"\n@c2 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive direct_object=$e2 result_complement=\"yellow\" result_color=yellow",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 2,
+    "text": "Are the line on Orders by weekday dashed yet?",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"line\" kind=line\n@e2 nlu.entity name=\"Orders\"\n@rel1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=interrogative predicate=\"Are\" polarity=positive terminator=\"?\" predicative_entity=$e1 adverb=\"by\" unresolved=\"weekday\" unresolved=\"dashed\" adverb=\"yet\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"line\" kind=line\n@e2 nlu.entity name=\"Orders\"\n@rel1 nlu.relation kind=on from=$e1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=interrogative predicate=\"Are\" polarity=positive terminator=\"?\" predicative_entity=$e1 adverb=\"by\" unresolved=\"weekday\" unresolved=\"dashed\" adverb=\"yet\"",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"line\" kind=line\n@e2 nlu.entity name=\"Orders\"\n@e3 nlu.entity compound=\"weekday\" head=\"dashed\"\n@rel1 nlu.relation kind=on from=$e1 to=$e2 cue=\"on\"\n@rel2 nlu.relation kind=near from=$c1 to=$e3 cue=\"by\"\n@c1 nlu.clause form=interrogative predicate=\"Are\" polarity=positive terminator=\"?\" predicative_entity=$e1 adverb=\"yet\"",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"line\" kind=line\n@e2 nlu.entity name=\"Orders\"\n@e3 nlu.entity compound=\"weekday\" head=\"dashed\"\n@rel1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@rel2 nlu.relation kind=near from=$c1 to=$e3 cue=\"by\"\n@c1 nlu.clause form=interrogative predicate=\"Are\" polarity=positive terminator=\"?\" predicative_entity=$e1 adverb=\"yet\"",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 3,
+    "text": "how about another sleepy cat right on top of the same big rock, so it can be seen from the path.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"another\" head=\"sleepy\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"same\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=on from=$e2 to=$e3 cue=\"on top of\"\n@e4 nlu.entity pronoun=\"it\"\n@e5 nlu.entity head=\"seen\"\n@e6 nlu.entity determiner=\"the\" head=\"path\"\n@rel2 nlu.relation kind=from from=$c2 to=$e6 cue=\"from\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=interrogative predicate=\"cat\" polarity=positive question=\"how\" subject=$e1 direct_object=$e2 unresolved=\"about\"\n@c2 nlu.clause form=declarative predicate=\"be\" auxiliary=\"can\" polarity=positive terminator=\".\" subject=$e4 predicative_entity=$e5",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"another\" head=\"sleepy\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"same\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=on from=$c1 to=$e3 cue=\"on top of\"\n@e4 nlu.entity pronoun=\"it\"\n@e5 nlu.entity head=\"seen\"\n@e6 nlu.entity determiner=\"the\" head=\"path\"\n@rel2 nlu.relation kind=from from=$e5 to=$e6 cue=\"from\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=interrogative predicate=\"cat\" polarity=positive question=\"how\" subject=$e1 direct_object=$e2 unresolved=\"about\"\n@c2 nlu.clause form=declarative predicate=\"be\" auxiliary=\"can\" polarity=positive terminator=\".\" subject=$e4 predicative_entity=$e5",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"another\" modifier=\"sleepy\" head=\"cat\"\n@e2 nlu.entity determiner=\"the\" modifier=\"same\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=consequence from=$c1 to=$c2 cue=\"so\"\n@rel2 nlu.relation kind=about from=$c1 to=$e1 cue=\"about\"\n@rel3 nlu.relation kind=on from=$c1 to=$e2 cue=\"on top of\"\n@e3 nlu.entity pronoun=\"it\"\n@e4 nlu.entity head=\"seen\"\n@e5 nlu.entity determiner=\"the\" head=\"path\"\n@rel4 nlu.relation kind=from from=$c2 to=$e5 cue=\"from\"\n@c1 nlu.clause form=interrogative predicate=\"right\" polarity=positive question=\"how\" separator=\",\" terminator=\".\"\n@c2 nlu.clause form=declarative predicate=\"be\" auxiliary=\"can\" polarity=positive subject=$e3 predicative_entity=$e4",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"another\" modifier=\"sleepy\" compound=\"cat\" head=\"right\"\n@e2 nlu.entity determiner=\"the\" modifier=\"same\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=consequence from=$c1 to=$c2 cue=\"so\"\n@e3 nlu.entity pronoun=\"it\"\n@e4 nlu.entity head=\"seen\"\n@e5 nlu.entity determiner=\"the\" head=\"path\"\n@rel2 nlu.relation kind=from from=$c2 to=$e5 cue=\"from\"\n@c1 nlu.clause form=interrogative predicate=\"top\" polarity=positive question=\"how\" separator=\",\" terminator=\".\" subject=$e1 direct_object=$e2 unresolved=\"about\" unresolved=\"on\" unresolved=\"of\"\n@c2 nlu.clause form=declarative predicate=\"be\" auxiliary=\"can\" polarity=positive subject=$e3 predicative_entity=$e4",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 4,
+    "text": "make a riverside picnic spot in the low mist at dawn: a large brown table next to the river, a small boy with a surprised face right next to the table, two medium white swans right on the river, and a small girl sitting next to the boy",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" compound=\"riverside\" head=\"picnic\"\n@e2 nlu.entity determiner=\"the\" modifier=\"low\" head=\"mist\"\n@e3 nlu.entity head=\"dawn\"\n@rel1 nlu.relation kind=at from=$e2 to=$e3 cue=\"at\"\n@e4 nlu.entity determiner=\"a\" modifier=\"large\" modifier=\"brown\" color=brown head=\"table\"\n@e5 nlu.entity determiner=\"the\" head=\"river\"\n@e6 nlu.entity determiner=\"a\" modifier=\"small\" head=\"boy\"\n@e7 nlu.entity determiner=\"a\" modifier=\"surprised\" head=\"face\"\n@e8 nlu.entity determiner=\"the\" head=\"table\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 cue=\",\"\n@rel2 nlu.relation kind=near from=$e4 to=$coord1 cue=\"next to\"\n@rel3 nlu.relation kind=with from=$e6 to=$e7 cue=\"with\"\n@rel4 nlu.relation kind=near from=$c3 to=$e8 cue=\"next to\"\n@e9 nlu.entity quantity=\"two\" compound=\"medium\" head=\"white\"\n@e10 nlu.entity head=\"right\"\n@e11 nlu.entity determiner=\"the\" head=\"river\"\n@rel5 nlu.relation kind=on from=$c4 to=$e11 cue=\"on\"\n@e12 nlu.entity determiner=\"a\" modifier=\"small\" compound=\"girl\" head=\"sitting\"\n@e13 nlu.entity determiner=\"the\" head=\"boy\"\n@rel6 nlu.relation kind=near from=$e12 to=$e13 cue=\"next to\"\n@coord2 nlu.coordination kind=additive member=$c3 member=$c4 member=$c5 cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"spot\" polarity=positive terminator=\":\" direct_object=$e2 adverb=\"in\"\n@c3 nlu.clause form=declarative predicate=\"right\" polarity=positive subject=$e4\n@c4 nlu.clause form=declarative predicate=\"swans\" polarity=positive subject=$e9 direct_object=$e10\n@c5 nlu.clause form=fragment topic=$e12",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" compound=\"riverside\" head=\"picnic\"\n@e2 nlu.entity determiner=\"the\" modifier=\"low\" head=\"mist\"\n@e3 nlu.entity head=\"dawn\"\n@rel1 nlu.relation kind=at from=$e2 to=$e3 cue=\"at\"\n@e4 nlu.entity determiner=\"a\" modifier=\"large\" modifier=\"brown\" color=brown head=\"table\"\n@e5 nlu.entity determiner=\"the\" head=\"river\"\n@e6 nlu.entity determiner=\"a\" modifier=\"small\" head=\"boy\"\n@e7 nlu.entity determiner=\"a\" modifier=\"surprised\" head=\"face\"\n@e8 nlu.entity determiner=\"the\" head=\"table\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 cue=\",\"\n@rel2 nlu.relation kind=near from=$e4 to=$coord1 cue=\"next to\"\n@rel3 nlu.relation kind=with from=$e6 to=$e7 cue=\"with\"\n@rel4 nlu.relation kind=near from=$c3 to=$e8 cue=\"next to\"\n@e9 nlu.entity quantity=\"two\" compound=\"medium\" head=\"white\"\n@e10 nlu.entity head=\"right\"\n@e11 nlu.entity determiner=\"the\" head=\"river\"\n@rel5 nlu.relation kind=on from=$e10 to=$e11 cue=\"on\"\n@e12 nlu.entity determiner=\"a\" modifier=\"small\" compound=\"girl\" head=\"sitting\"\n@e13 nlu.entity determiner=\"the\" head=\"boy\"\n@rel6 nlu.relation kind=near from=$e12 to=$e13 cue=\"next to\"\n@coord2 nlu.coordination kind=additive member=$c3 member=$c4 member=$c5 cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"spot\" polarity=positive terminator=\":\" direct_object=$e2 unresolved=\"in\"\n@c3 nlu.clause form=declarative predicate=\"right\" polarity=positive subject=$e4\n@c4 nlu.clause form=declarative predicate=\"swans\" polarity=positive subject=$e9 direct_object=$e10\n@c5 nlu.clause form=fragment topic=$e12",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" compound=\"riverside\" head=\"picnic\"\n@e2 nlu.entity determiner=\"the\" modifier=\"low\" head=\"mist\"\n@e3 nlu.entity head=\"dawn\"\n@rel1 nlu.relation kind=at from=$c2 to=$e3 cue=\"at\"\n@e4 nlu.entity determiner=\"a\" modifier=\"large\" modifier=\"brown\" color=brown head=\"table\"\n@e5 nlu.entity determiner=\"the\" head=\"river\"\n@e6 nlu.entity determiner=\"a\" modifier=\"small\" head=\"boy\"\n@e7 nlu.entity determiner=\"a\" modifier=\"surprised\" head=\"face\"\n@e8 nlu.entity determiner=\"the\" head=\"table\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 cue=\",\"\n@rel2 nlu.relation kind=near from=$e4 to=$coord1 cue=\"next to\"\n@rel3 nlu.relation kind=with from=$e6 to=$e7 cue=\"with\"\n@rel4 nlu.relation kind=near from=$c3 to=$e8 cue=\"next to\"\n@e9 nlu.entity quantity=\"two\" compound=\"medium\" head=\"white\"\n@e10 nlu.entity head=\"right\"\n@e11 nlu.entity determiner=\"the\" head=\"river\"\n@rel5 nlu.relation kind=on from=$c4 to=$e11 cue=\"on\"\n@e12 nlu.entity determiner=\"a\" modifier=\"small\" compound=\"girl\" head=\"sitting\"\n@e13 nlu.entity determiner=\"the\" head=\"boy\"\n@rel6 nlu.relation kind=near from=$e12 to=$e13 cue=\"next to\"\n@coord2 nlu.coordination kind=additive member=$c3 member=$c4 member=$c5 cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"spot\" polarity=positive terminator=\":\" direct_object=$e2 unresolved=\"in\"\n@c3 nlu.clause form=declarative predicate=\"right\" polarity=positive subject=$e4\n@c4 nlu.clause form=declarative predicate=\"swans\" polarity=positive subject=$e9 direct_object=$e10\n@c5 nlu.clause form=fragment topic=$e12",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" compound=\"riverside\" head=\"picnic\"\n@e2 nlu.entity determiner=\"the\" modifier=\"low\" head=\"mist\"\n@e3 nlu.entity head=\"dawn\"\n@rel1 nlu.relation kind=at from=$c2 to=$e3 cue=\"at\"\n@e4 nlu.entity determiner=\"a\" modifier=\"large\" modifier=\"brown\" color=brown head=\"table\"\n@e5 nlu.entity determiner=\"the\" head=\"river\"\n@e6 nlu.entity determiner=\"a\" modifier=\"small\" head=\"boy\"\n@e7 nlu.entity determiner=\"a\" modifier=\"surprised\" head=\"face\"\n@e8 nlu.entity determiner=\"the\" head=\"table\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 cue=\",\"\n@rel2 nlu.relation kind=near from=$e4 to=$coord1 cue=\"next to\"\n@rel3 nlu.relation kind=with from=$e6 to=$e7 cue=\"with\"\n@rel4 nlu.relation kind=near from=$c3 to=$e8 cue=\"next to\"\n@e9 nlu.entity quantity=\"two\" compound=\"medium\" head=\"white\"\n@e10 nlu.entity head=\"right\"\n@e11 nlu.entity determiner=\"the\" head=\"river\"\n@rel5 nlu.relation kind=on from=$e10 to=$e11 cue=\"on\"\n@e12 nlu.entity determiner=\"a\" modifier=\"small\" compound=\"girl\" head=\"sitting\"\n@e13 nlu.entity determiner=\"the\" head=\"boy\"\n@rel6 nlu.relation kind=near from=$e12 to=$e13 cue=\"next to\"\n@coord2 nlu.coordination kind=additive member=$c3 member=$c4 member=$c5 cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"spot\" polarity=positive terminator=\":\" direct_object=$e2 unresolved=\"in\"\n@c3 nlu.clause form=declarative predicate=\"right\" polarity=positive subject=$e4\n@c4 nlu.clause form=declarative predicate=\"swans\" polarity=positive subject=$e9 direct_object=$e10\n@c5 nlu.clause form=fragment topic=$e12",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 5,
+    "text": "on the flat top of the big rock, draw a little cat, so the wind does not tip it over.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"flat\"\n@e2 nlu.entity determiner=\"the\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=on from=$c1 to=$e1 cue=\"on\"\n@rel2 nlu.relation kind=of from=$c1 to=$e2 cue=\"of\"\n@e3 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@rel3 nlu.relation kind=purpose from=$c2 to=$c3 cue=\"so\"\n@e4 nlu.entity determiner=\"the\" head=\"wind\"\n@e5 nlu.entity pronoun=\"it\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"top\" polarity=positive\n@c2 nlu.clause form=imperative predicate=\"draw\" act=make polarity=positive separator=\",\" terminator=\".\" direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"tip\" auxiliary=\"does\" negation=\"not\" polarity=negative subject=$e4 direct_object=$e5 result_complement=\"over\"",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"flat\"\n@e2 nlu.entity determiner=\"the\" modifier=\"big\" head=\"rock\"\n@rel1 nlu.relation kind=on from=$c1 to=$e1 cue=\"on\"\n@rel2 nlu.relation kind=of from=$c1 to=$e2 cue=\"of\"\n@e3 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@e4 nlu.entity determiner=\"the\" head=\"wind\"\n@coord1 nlu.coordination kind=additive member=$e3 member=$e4 cue=\",\" cue=\"so\"\n@coord2 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"top\" polarity=positive\n@c2 nlu.clause form=imperative predicate=\"draw\" act=make polarity=positive terminator=\".\" direct_object=$coord1 result_complement=\"over\" unresolved=\"does\" unresolved=\"not\" unresolved=\"tip\" unresolved=\"it\"",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 6,
+    "text": "uh for a birthday card, turn uh Title handwritten",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"birthday\"\n@rel1 nlu.relation kind=for from=$c1 to=$e1 cue=\"for\"\n@e2 nlu.entity name=\"Title\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"card\" polarity=positive filler=\"uh\"\n@c2 nlu.clause form=imperative predicate=\"turn\" act=change polarity=positive direct_object=$e2 result_complement=\"handwritten\" filler=\"uh\"",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"birthday\"\n@rel1 nlu.relation kind=for from=$c1 to=$e1 cue=\"for\"\n@e2 nlu.entity head=\"Title\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"card\" polarity=positive filler=\"uh\"\n@c2 nlu.clause form=imperative predicate=\"turn\" act=change polarity=positive direct_object=$e2 filler=\"uh\" unresolved=\"handwritten\"",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 7,
+    "text": "Can we see the sales chart as percentages of the total, so nobody has to explain it in the meeting",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" compound=\"sales\" head=\"chart\" kind=chart\n@e2 nlu.entity head=\"percentages\"\n@e3 nlu.entity determiner=\"the\" head=\"total\"\n@e4 nlu.entity pronoun=\"nobody\"\n@rel1 nlu.relation kind=as from=$e1 to=$e2 cue=\"as\"\n@coord1 nlu.coordination kind=additive member=$e3 member=$e4 cue=\",\" cue=\"so\"\n@rel2 nlu.relation kind=of from=$e2 to=$coord1 cue=\"of\"\n@e5 nlu.entity pronoun=\"it\"\n@e6 nlu.entity determiner=\"the\" head=\"meeting\" kind=meeting\n@rel3 nlu.relation kind=in from=$c2 to=$e6 cue=\"in\"\n@c1 nlu.clause form=interrogative predicate=\"has\" auxiliary=\"Can\" polarity=negative clausal_complement=$c2 subject=$e1 unresolved=\"we\" unresolved=\"see\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"explain\" act=ask polarity=positive direct_object=$e5",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" compound=\"sales\" head=\"chart\" kind=chart\n@e2 nlu.entity head=\"percentages\"\n@e3 nlu.entity determiner=\"the\" head=\"total\"\n@e4 nlu.entity pronoun=\"nobody\"\n@rel1 nlu.relation kind=as from=$e1 to=$e2 cue=\"as\"\n@coord1 nlu.coordination kind=additive member=$e3 member=$e4 cue=\",\" cue=\"so\"\n@rel2 nlu.relation kind=of from=$e2 to=$coord1 cue=\"of\"\n@e5 nlu.entity pronoun=\"it\"\n@e6 nlu.entity determiner=\"the\" head=\"meeting\" kind=meeting\n@rel3 nlu.relation kind=in from=$e5 to=$e6 cue=\"in\"\n@c1 nlu.clause form=interrogative predicate=\"has\" auxiliary=\"Can\" polarity=negative clausal_complement=$c2 subject=$e1 unresolved=\"we\" unresolved=\"see\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"explain\" act=ask polarity=positive direct_object=$e5",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"the\" compound=\"sales\" head=\"chart\" kind=chart\n@e3 nlu.entity head=\"percentages\"\n@e4 nlu.entity determiner=\"the\" head=\"total\"\n@rel1 nlu.relation kind=as from=$c1 to=$e3 cue=\"as\"\n@rel2 nlu.relation kind=of from=$e3 to=$e4 cue=\"of\"\n@e5 nlu.entity pronoun=\"nobody\"\n@e6 nlu.entity pronoun=\"it\"\n@e7 nlu.entity determiner=\"the\" head=\"meeting\" kind=meeting\n@rel3 nlu.relation kind=in from=$e6 to=$e7 cue=\"in\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=interrogative predicate=\"see\" auxiliary=\"Can\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"has\" polarity=negative clausal_complement=$c3 subject=$e5\n@c3 nlu.clause form=nonfinite marker=\"to\" predicate=\"explain\" act=ask polarity=positive direct_object=$e6",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"the\" compound=\"sales\" head=\"chart\" kind=chart\n@e3 nlu.entity head=\"percentages\"\n@e4 nlu.entity determiner=\"the\" head=\"total\"\n@rel1 nlu.relation kind=as from=$c1 to=$e3 cue=\"as\"\n@rel2 nlu.relation kind=of from=$c1 to=$e4 cue=\"of\"\n@e5 nlu.entity pronoun=\"nobody\"\n@e6 nlu.entity pronoun=\"it\"\n@e7 nlu.entity determiner=\"the\" head=\"meeting\" kind=meeting\n@rel3 nlu.relation kind=in from=$c3 to=$e7 cue=\"in\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=interrogative predicate=\"see\" auxiliary=\"Can\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"has\" polarity=negative clausal_complement=$c3 subject=$e5\n@c3 nlu.clause form=nonfinite marker=\"to\" predicate=\"explain\" act=ask polarity=positive direct_object=$e6",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 8,
+    "text": "we closed that store, so trash Thu on da chart",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"that\" head=\"store\"\n@e3 nlu.entity head=\"trash\"\n@e4 nlu.entity compound=\"da\" head=\"chart\" kind=chart\n@coord1 nlu.coordination kind=additive member=$e2 member=$e3 cue=\",\" cue=\"so\"\n@rel1 nlu.relation kind=on from=$c1 to=$e4 cue=\"on\"\n@c1 nlu.clause form=declarative predicate=\"closed\" polarity=positive subject=$e1 direct_object=$coord1 unresolved=\"Thu\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"that\" head=\"store\"\n@e3 nlu.entity name=\"Thu\"\n@e4 nlu.entity compound=\"da\" head=\"chart\" kind=chart\n@coord1 nlu.coordination kind=additive member=$e2 member=$e3 cue=\",\" cue=\"so\"\n@rel1 nlu.relation kind=on from=$c1 to=$e4 cue=\"on\"\n@c1 nlu.clause form=declarative predicate=\"closed\" polarity=positive subject=$e1 direct_object=$coord1 unresolved=\"trash\"",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"that\" head=\"store\"\n@e3 nlu.entity name=\"Thu\"\n@e4 nlu.entity compound=\"da\" head=\"chart\" kind=chart\n@rel1 nlu.relation kind=on from=$e3 to=$e4 cue=\"on\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=declarative predicate=\"closed\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"trash\" act=remove polarity=positive direct_object=$e3",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"that\" head=\"store\"\n@e3 nlu.entity name=\"Thu\"\n@e4 nlu.entity compound=\"da\" head=\"chart\" kind=chart\n@rel1 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\" cue=\"so\"\n@c1 nlu.clause form=declarative predicate=\"closed\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"trash\" act=remove polarity=positive direct_object=$e3",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 9,
+    "text": "show me a snow cabin in the first frost at dusk: a girl, three lanterns, a fox, and a bench",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"me\"\n@e2 nlu.entity determiner=\"a\" modifier=\"snow\" color=snow head=\"cabin\"\n@e3 nlu.entity determiner=\"the\" modifier=\"first\" head=\"frost\"\n@e4 nlu.entity head=\"dusk\"\n@rel1 nlu.relation kind=in from=$e2 to=$e3 cue=\"in\"\n@rel2 nlu.relation kind=at from=$e3 to=$e4 cue=\"at\"\n@e5 nlu.entity determiner=\"a\" head=\"girl\"\n@e6 nlu.entity quantity=\"three\" head=\"lanterns\"\n@e7 nlu.entity determiner=\"a\" head=\"fox\"\n@e8 nlu.entity determiner=\"a\" head=\"bench\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 member=$e7 member=$e8 cue=\",\" cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"show\" polarity=positive terminator=\":\" direct_object=$e2 indirect_object=$e1\n@c2 nlu.clause form=fragment topic=$coord1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"me\"\n@e2 nlu.entity determiner=\"a\" modifier=\"snow\" color=snow head=\"cabin\"\n@e3 nlu.entity determiner=\"the\" modifier=\"first\" head=\"frost\"\n@e4 nlu.entity head=\"dusk\"\n@rel1 nlu.relation kind=in from=$c1 to=$e3 cue=\"in\"\n@rel2 nlu.relation kind=at from=$c1 to=$e4 cue=\"at\"\n@e5 nlu.entity determiner=\"a\" head=\"girl\"\n@e6 nlu.entity quantity=\"three\" head=\"lanterns\"\n@e7 nlu.entity determiner=\"a\" head=\"fox\"\n@e8 nlu.entity determiner=\"a\" head=\"bench\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 member=$e7 member=$e8 cue=\",\" cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"show\" polarity=positive terminator=\":\" direct_object=$e2 indirect_object=$e1\n@c2 nlu.clause form=fragment topic=$coord1",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"me\"\n@e2 nlu.entity determiner=\"a\" modifier=\"snow\" color=snow head=\"cabin\"\n@e3 nlu.entity determiner=\"the\" modifier=\"first\" head=\"frost\"\n@e4 nlu.entity head=\"dusk\"\n@rel1 nlu.relation kind=in from=$c1 to=$e3 cue=\"in\"\n@rel2 nlu.relation kind=at from=$c1 to=$e4 cue=\"at\"\n@e5 nlu.entity determiner=\"a\" head=\"girl\"\n@e6 nlu.entity quantity=\"three\" head=\"lanterns\"\n@e7 nlu.entity determiner=\"a\" head=\"fox\"\n@e8 nlu.entity determiner=\"a\" head=\"bench\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 member=$e7 member=$e8 cue=\",\" cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"show\" polarity=positive terminator=\":\" direct_object=$e2 indirect_object=$e1\n@c2 nlu.clause form=fragment topic=$coord1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"me\"\n@e2 nlu.entity determiner=\"a\" modifier=\"snow\" color=snow head=\"cabin\"\n@e3 nlu.entity determiner=\"the\" modifier=\"first\" head=\"frost\"\n@e4 nlu.entity head=\"dusk\"\n@rel1 nlu.relation kind=in from=$c1 to=$e3 cue=\"in\"\n@rel2 nlu.relation kind=at from=$e3 to=$e4 cue=\"at\"\n@e5 nlu.entity determiner=\"a\" head=\"girl\"\n@e6 nlu.entity quantity=\"three\" head=\"lanterns\"\n@e7 nlu.entity determiner=\"a\" head=\"fox\"\n@e8 nlu.entity determiner=\"a\" head=\"bench\"\n@coord1 nlu.coordination kind=additive member=$e5 member=$e6 member=$e7 member=$e8 cue=\",\" cue=\",\" cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"show\" polarity=positive terminator=\":\" direct_object=$e2 indirect_object=$e1\n@c2 nlu.clause form=fragment topic=$coord1",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 10,
+    "text": "I need you to book Build room for Planning on 2026-12-10 from 10:00 UTC for 30 minutes. I appreciate it.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Build\" head=\"room\" kind=room\n@e4 nlu.entity name=\"Planning\"\n@e5 nlu.entity head=\"2026-12-10\"\n@e6 nlu.entity head=\"10:00\" modifier=\"UTC\"\n@e7 nlu.entity quantity=\"30\" head=\"minutes\"\n@rel1 nlu.relation kind=for from=$e3 to=$e4 cue=\"for\"\n@rel2 nlu.relation kind=date from=$c2 to=$e5 cue=\"on\"\n@rel3 nlu.relation kind=from from=$c2 to=$e6 cue=\"from\"\n@rel4 nlu.relation kind=for from=$c2 to=$e7 cue=\"for\"\n@e8 nlu.entity pronoun=\"I\"\n@e9 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"book\" act=make polarity=positive terminator=\".\" direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e8 direct_object=$e9",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Build\" head=\"room\" kind=room\n@e4 nlu.entity name=\"Planning\"\n@e5 nlu.entity head=\"2026-12-10\"\n@e6 nlu.entity head=\"10:00\" modifier=\"UTC\"\n@e7 nlu.entity quantity=\"30\" head=\"minutes\"\n@rel1 nlu.relation kind=for from=$c2 to=$e4 cue=\"for\"\n@rel2 nlu.relation kind=date from=$c2 to=$e5 cue=\"on\"\n@rel3 nlu.relation kind=from from=$c2 to=$e6 cue=\"from\"\n@rel4 nlu.relation kind=for from=$c2 to=$e7 cue=\"for\"\n@e8 nlu.entity pronoun=\"I\"\n@e9 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"book\" act=make polarity=positive terminator=\".\" direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e8 direct_object=$e9",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Build\" head=\"room\" kind=room\n@e4 nlu.entity name=\"Planning\"\n@e5 nlu.entity head=\"2026-12-10\"\n@e6 nlu.entity head=\"10:00\" modifier=\"UTC\"\n@e7 nlu.entity quantity=\"30\" head=\"minutes\"\n@rel1 nlu.relation kind=for from=$c2 to=$e4 cue=\"for\"\n@rel2 nlu.relation kind=date from=$c2 to=$e5 cue=\"on\"\n@rel3 nlu.relation kind=from from=$c2 to=$e6 cue=\"from\"\n@rel4 nlu.relation kind=for from=$c2 to=$e7 cue=\"for\"\n@e8 nlu.entity pronoun=\"I\"\n@e9 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"book\" act=make polarity=positive terminator=\".\" direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e8 direct_object=$e9",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Build\" head=\"room\" kind=room\n@e4 nlu.entity name=\"Planning\"\n@e5 nlu.entity head=\"2026-12-10\"\n@e6 nlu.entity head=\"10:00\" modifier=\"UTC\"\n@e7 nlu.entity quantity=\"30\" head=\"minutes\"\n@rel1 nlu.relation kind=for from=$e3 to=$e4 cue=\"for\"\n@rel2 nlu.relation kind=date from=$c2 to=$e5 cue=\"on\"\n@rel3 nlu.relation kind=from from=$c2 to=$e6 cue=\"from\"\n@rel4 nlu.relation kind=for from=$c2 to=$e7 cue=\"for\"\n@e8 nlu.entity pronoun=\"I\"\n@e9 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"book\" act=make polarity=positive terminator=\".\" direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e8 direct_object=$e9",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 11,
+    "text": "a little cat near the bench, then add a bench on each side of the lake as well, the layout has to come out clean",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@e2 nlu.entity determiner=\"the\" head=\"bench\"\n@e3 nlu.entity determiner=\"a\" head=\"bench\"\n@e4 nlu.entity determiner=\"each\" head=\"side\"\n@e5 nlu.entity determiner=\"the\" head=\"lake\"\n@e6 nlu.entity head=\"well\"\n@rel1 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@rel2 nlu.relation kind=of from=$c2 to=$e5 cue=\"of\"\n@rel3 nlu.relation kind=as from=$e5 to=$e6 cue=\"as\"\n@e7 nlu.entity determiner=\"the\" head=\"layout\"\n@e8 nlu.entity modifier=\"out\" head=\"clean\"\n@coord1 nlu.coordination kind=sequence member=$c1 member=$c2 member=$c3 cue=\",\" cue=\"then\" cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"near\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"add\" act=make polarity=positive direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"has\" polarity=positive clausal_complement=$c4 subject=$e7\n@c4 nlu.clause form=nonfinite marker=\"to\" predicate=\"come\" polarity=positive direct_object=$e8",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@e2 nlu.entity determiner=\"the\" head=\"bench\"\n@e3 nlu.entity determiner=\"a\" head=\"bench\"\n@e4 nlu.entity determiner=\"each\" head=\"side\"\n@e5 nlu.entity determiner=\"the\" head=\"lake\"\n@e6 nlu.entity head=\"well\"\n@rel1 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@rel2 nlu.relation kind=of from=$e4 to=$e5 cue=\"of\"\n@rel3 nlu.relation kind=as from=$c2 to=$e6 cue=\"as\"\n@e7 nlu.entity determiner=\"the\" head=\"layout\"\n@e8 nlu.entity modifier=\"out\" head=\"clean\"\n@coord1 nlu.coordination kind=sequence member=$c1 member=$c2 member=$c3 cue=\",\" cue=\"then\" cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"near\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"add\" act=make polarity=positive direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"has\" polarity=positive clausal_complement=$c4 subject=$e7\n@c4 nlu.clause form=nonfinite marker=\"to\" predicate=\"come\" polarity=positive direct_object=$e8",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@e2 nlu.entity determiner=\"the\" head=\"bench\"\n@e3 nlu.entity determiner=\"a\" head=\"bench\"\n@e4 nlu.entity determiner=\"each\" head=\"side\"\n@e5 nlu.entity determiner=\"the\" head=\"lake\"\n@e6 nlu.entity head=\"well\"\n@rel1 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@rel2 nlu.relation kind=of from=$c2 to=$e5 cue=\"of\"\n@rel3 nlu.relation kind=as from=$e5 to=$e6 cue=\"as\"\n@e7 nlu.entity determiner=\"the\" head=\"layout\"\n@e8 nlu.entity modifier=\"out\" head=\"clean\"\n@coord1 nlu.coordination kind=sequence member=$c1 member=$c2 member=$c3 cue=\",\" cue=\"then\" cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"near\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"add\" act=make polarity=positive direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"has\" polarity=positive clausal_complement=$c4 subject=$e7\n@c4 nlu.clause form=nonfinite marker=\"to\" predicate=\"come\" polarity=positive direct_object=$e8",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"little\" head=\"cat\"\n@e2 nlu.entity determiner=\"the\" head=\"bench\"\n@e3 nlu.entity determiner=\"a\" head=\"bench\"\n@e4 nlu.entity determiner=\"each\" head=\"side\"\n@e5 nlu.entity determiner=\"the\" head=\"lake\"\n@e6 nlu.entity head=\"well\"\n@rel1 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@rel2 nlu.relation kind=of from=$e4 to=$e5 cue=\"of\"\n@rel3 nlu.relation kind=as from=$e5 to=$e6 cue=\"as\"\n@e7 nlu.entity determiner=\"the\" head=\"layout\"\n@e8 nlu.entity modifier=\"out\" head=\"clean\"\n@coord1 nlu.coordination kind=sequence member=$c1 member=$c2 member=$c3 cue=\",\" cue=\"then\" cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"near\" polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"add\" act=make polarity=positive direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"has\" polarity=positive clausal_complement=$c4 subject=$e7\n@c4 nlu.clause form=nonfinite marker=\"to\" predicate=\"come\" polarity=positive direct_object=$e8",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 12,
+    "text": "darw a flock of birds over the lake",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"flock\"\n@e2 nlu.entity head=\"birds\"\n@e3 nlu.entity determiner=\"the\" head=\"lake\"\n@rel1 nlu.relation kind=of from=$c1 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@c1 nlu.clause form=imperative predicate=\"darw\" polarity=positive direct_object=$e1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"flock\"\n@e2 nlu.entity head=\"birds\"\n@e3 nlu.entity determiner=\"the\" head=\"lake\"\n@rel1 nlu.relation kind=of from=$c1 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=above from=$e2 to=$e3 cue=\"over\"\n@c1 nlu.clause form=imperative predicate=\"darw\" polarity=positive direct_object=$e1",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"flock\"\n@e2 nlu.entity head=\"birds\"\n@e3 nlu.entity determiner=\"the\" head=\"lake\"\n@rel1 nlu.relation kind=of from=$c1 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@c1 nlu.clause form=imperative predicate=\"darw\" polarity=positive direct_object=$e1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"flock\"\n@e2 nlu.entity head=\"birds\"\n@e3 nlu.entity determiner=\"the\" head=\"lake\"\n@rel1 nlu.relation kind=of from=$e1 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=above from=$e2 to=$e3 cue=\"over\"\n@c1 nlu.clause form=imperative predicate=\"darw\" polarity=positive direct_object=$e1",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 13,
+    "text": "make a bar chart of the projects by name",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"bar\"\n@e2 nlu.entity determiner=\"the\" head=\"projects\"\n@e3 nlu.entity head=\"name\"\n@rel1 nlu.relation kind=of from=$c2 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=near from=$e2 to=$e3 cue=\"by\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"chart\" polarity=positive",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"bar\"\n@e2 nlu.entity determiner=\"the\" head=\"projects\"\n@e3 nlu.entity head=\"name\"\n@rel1 nlu.relation kind=of from=$c2 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=near from=$c2 to=$e3 cue=\"by\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"chart\" polarity=positive",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"bar\"\n@e2 nlu.entity determiner=\"the\" head=\"projects\"\n@e3 nlu.entity head=\"name\"\n@rel1 nlu.relation kind=of from=$c2 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=near from=$c2 to=$e3 cue=\"by\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"chart\" polarity=positive",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"bar\"\n@e2 nlu.entity determiner=\"the\" head=\"projects\"\n@e3 nlu.entity head=\"name\"\n@rel1 nlu.relation kind=of from=$c2 to=$e2 cue=\"of\"\n@rel2 nlu.relation kind=near from=$e2 to=$e3 cue=\"by\"\n@c1 nlu.clause form=imperative predicate=\"make\" act=make polarity=positive clausal_complement=$c2 direct_object=$e1\n@c2 nlu.clause form=nonfinite predicate=\"chart\" polarity=positive",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 14,
+    "text": "cut the banner in half",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" modifier=\"banner\" modifier=\"in\" head=\"half\"\n@c1 nlu.clause form=imperative predicate=\"cut\" act=take_apart polarity=positive direct_object=$e1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"banner\"\n@e2 nlu.entity head=\"half\"\n@rel1 nlu.relation kind=in from=$c1 to=$e2 cue=\"in\"\n@c1 nlu.clause form=imperative predicate=\"cut\" act=take_apart polarity=positive direct_object=$e1",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" modifier=\"banner\" modifier=\"in\" head=\"half\"\n@c1 nlu.clause form=imperative predicate=\"cut\" act=take_apart polarity=positive direct_object=$e1",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"the\" head=\"banner\"\n@e2 nlu.entity head=\"half\"\n@rel1 nlu.relation kind=in from=$e1 to=$e2 cue=\"in\"\n@c1 nlu.clause form=imperative predicate=\"cut\" act=take_apart polarity=positive direct_object=$e1",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 15,
+    "text": "small rock right beside the white house, please.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity head=\"small\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"white\" color=white head=\"house\"\n@rel1 nlu.relation kind=near from=$c1 to=$e3 cue=\"beside\"\n@c1 nlu.clause form=declarative predicate=\"rock\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 unresolved=\",\" filler=\"please\"",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity head=\"small\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"white\" color=white head=\"house\"\n@rel1 nlu.relation kind=near from=$e2 to=$e3 cue=\"beside\"\n@c1 nlu.clause form=declarative predicate=\"rock\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 unresolved=\",\" filler=\"please\"",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity head=\"small\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"white\" color=white head=\"house\"\n@rel1 nlu.relation kind=near from=$e2 to=$e3 cue=\"beside\"\n@c1 nlu.clause form=declarative predicate=\"rock\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 unresolved=\",\" filler=\"please\"",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity head=\"small\"\n@e2 nlu.entity head=\"right\"\n@e3 nlu.entity determiner=\"the\" modifier=\"white\" color=white head=\"house\"\n@rel1 nlu.relation kind=near from=$c1 to=$e3 cue=\"beside\"\n@c1 nlu.clause form=declarative predicate=\"rock\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 unresolved=\",\" filler=\"please\"",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 16,
+    "text": "figures need a home; create a table block under Intro with rows Main, the Second header and a name riding the parent",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"home\"\n@e2 nlu.entity determiner=\"a\" modifier=\"table\" head=\"block\" kind=cube\n@e3 nlu.entity name=\"Intro\"\n@e4 nlu.entity head=\"rows\"\n@rel1 nlu.relation kind=below from=$e2 to=$e3 cue=\"under\"\n@rel2 nlu.relation kind=with from=$e3 to=$e4 cue=\"with\"\n@e5 nlu.entity determiner=\"the\" name=\"Second\"\n@e6 nlu.entity determiner=\"a\" head=\"name\"\n@e7 nlu.entity determiner=\"the\" head=\"parent\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 member=$c4 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"figures\" polarity=positive terminator=\";\" direct_object=$e1 filler=\"need\"\n@c2 nlu.clause form=imperative predicate=\"create\" act=make polarity=positive direct_object=$e2 result_complement=\"Main\"\n@c3 nlu.clause form=declarative predicate=\"header\" polarity=positive subject=$e5\n@c4 nlu.clause form=declarative predicate=\"riding\" polarity=positive subject=$e6 direct_object=$e7",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"home\"\n@e2 nlu.entity determiner=\"a\" modifier=\"table\" head=\"block\" kind=cube\n@e3 nlu.entity name=\"Intro\"\n@e4 nlu.entity head=\"rows\"\n@rel1 nlu.relation kind=below from=$e2 to=$e3 cue=\"under\"\n@rel2 nlu.relation kind=with from=$c2 to=$e4 cue=\"with\"\n@e5 nlu.entity determiner=\"the\" name=\"Second\"\n@e6 nlu.entity determiner=\"a\" head=\"name\"\n@e7 nlu.entity determiner=\"the\" head=\"parent\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 member=$c4 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"figures\" polarity=positive terminator=\";\" direct_object=$e1 filler=\"need\"\n@c2 nlu.clause form=imperative predicate=\"create\" act=make polarity=positive direct_object=$e2 result_complement=\"Main\"\n@c3 nlu.clause form=declarative predicate=\"header\" polarity=positive subject=$e5\n@c4 nlu.clause form=declarative predicate=\"riding\" polarity=positive subject=$e6 direct_object=$e7",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"home\"\n@e2 nlu.entity determiner=\"a\" modifier=\"table\" head=\"block\" kind=cube\n@e3 nlu.entity name=\"Intro\"\n@e4 nlu.entity head=\"rows\"\n@rel1 nlu.relation kind=below from=$c2 to=$e3 cue=\"under\"\n@rel2 nlu.relation kind=with from=$c2 to=$e4 cue=\"with\"\n@e5 nlu.entity determiner=\"the\" name=\"Second\"\n@e6 nlu.entity determiner=\"a\" head=\"name\"\n@e7 nlu.entity determiner=\"the\" head=\"parent\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 member=$c4 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"figures\" polarity=positive terminator=\";\" direct_object=$e1 filler=\"need\"\n@c2 nlu.clause form=imperative predicate=\"create\" act=make polarity=positive direct_object=$e2 result_complement=\"Main\"\n@c3 nlu.clause form=declarative predicate=\"header\" polarity=positive subject=$e5\n@c4 nlu.clause form=declarative predicate=\"riding\" polarity=positive subject=$e6 direct_object=$e7",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" head=\"home\"\n@e2 nlu.entity determiner=\"a\" modifier=\"table\" head=\"block\" kind=cube\n@e3 nlu.entity name=\"Intro\"\n@e4 nlu.entity head=\"rows\"\n@rel1 nlu.relation kind=below from=$e2 to=$e3 cue=\"under\"\n@rel2 nlu.relation kind=with from=$c2 to=$e4 cue=\"with\"\n@e5 nlu.entity determiner=\"the\" name=\"Second\"\n@e6 nlu.entity determiner=\"a\" head=\"name\"\n@e7 nlu.entity determiner=\"the\" head=\"parent\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 member=$c4 cue=\",\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"figures\" polarity=positive terminator=\";\" direct_object=$e1 filler=\"need\"\n@c2 nlu.clause form=imperative predicate=\"create\" act=make polarity=positive direct_object=$e2 result_complement=\"Main\"\n@c3 nlu.clause form=declarative predicate=\"header\" polarity=positive subject=$e5\n@c4 nlu.clause form=declarative predicate=\"riding\" polarity=positive subject=$e6 direct_object=$e7",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 17,
+    "text": "I need the legend at the top right",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity determiner=\"the\" head=\"legend\"\n@e3 nlu.entity determiner=\"the\" head=\"top\"\n@rel1 nlu.relation kind=at from=$c1 to=$e3 cue=\"at\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive subject=$e1 direct_object=$e2 result_complement=\"right\"",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity determiner=\"the\" head=\"legend\"\n@e3 nlu.entity determiner=\"the\" head=\"top\"\n@rel1 nlu.relation kind=at from=$e2 to=$e3 cue=\"at\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive subject=$e1 direct_object=$e2 result_complement=\"right\"",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity determiner=\"the\" head=\"legend\"\n@e3 nlu.entity determiner=\"the\" modifier=\"top\" head=\"right\"\n@rel1 nlu.relation kind=at from=$c1 to=$e3 cue=\"at\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive subject=$e1 direct_object=$e2",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity determiner=\"the\" head=\"legend\"\n@e3 nlu.entity determiner=\"the\" head=\"top\"\n@rel1 nlu.relation kind=at from=$e2 to=$e3 cue=\"at\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive subject=$e1 direct_object=$e2 result_complement=\"right\"",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 18,
+    "text": "Could you replace Speech draft with \"Bring the revised notes to the meeting.\". I appreciate it.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity compound=\"Speech\" head=\"draft\"\n@e3 nlu.entity name=\"\\\"Bring the revised notes to the meeting.\\\"\"\n@rel1 nlu.relation kind=with from=$e2 to=$e3 cue=\"with\"\n@e4 nlu.entity pronoun=\"I\"\n@e5 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=interrogative predicate=\"replace\" act=change auxiliary=\"Could\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e4 direct_object=$e5",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity compound=\"Speech\" head=\"draft\"\n@e3 nlu.entity name=\"\\\"Bring the revised notes to the meeting.\\\"\"\n@rel1 nlu.relation kind=with from=$c1 to=$e3 cue=\"with\"\n@e4 nlu.entity pronoun=\"I\"\n@e5 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=interrogative predicate=\"replace\" act=change auxiliary=\"Could\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e4 direct_object=$e5",
+        "complete": true
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity compound=\"Speech\" head=\"draft\"\n@e3 nlu.entity name=\"\\\"Bring the revised notes to the meeting.\\\"\"\n@rel1 nlu.relation kind=with from=$c1 to=$e3 cue=\"with\"\n@e4 nlu.entity pronoun=\"I\"\n@e5 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=interrogative predicate=\"replace\" act=change auxiliary=\"Could\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e4 direct_object=$e5",
+        "complete": true
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity compound=\"Speech\" head=\"draft\"\n@e3 nlu.entity name=\"\\\"Bring the revised notes to the meeting.\\\"\"\n@rel1 nlu.relation kind=with from=$e2 to=$e3 cue=\"with\"\n@e4 nlu.entity pronoun=\"I\"\n@e5 nlu.entity pronoun=\"it\"\n@c1 nlu.clause form=interrogative predicate=\"replace\" act=change auxiliary=\"Could\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2\n@c2 nlu.clause form=declarative predicate=\"appreciate\" polarity=positive terminator=\".\" subject=$e4 direct_object=$e5",
+        "complete": true
+      }
+    ]
+  },
+  {
+    "reviewId": 19,
+    "text": "I also need you to reposition Slide close beside Flask so the arrow coming out of Flask can reach it without crossing any of the other lines",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Slide\" head=\"close\"\n@e4 nlu.entity name=\"Flask\"\n@rel1 nlu.relation kind=near from=$c2 to=$e4 cue=\"beside\"\n@e5 nlu.entity determiner=\"the\" compound=\"arrow\" head=\"coming\"\n@e6 nlu.entity name=\"Flask\"\n@rel2 nlu.relation kind=from from=$e5 to=$e6 cue=\"out of\"\n@e7 nlu.entity pronoun=\"it\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 cue=\"so\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2 filler=\"also\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"reposition\" act=place polarity=positive direct_object=$e3\n@c3 nlu.clause form=declarative predicate=\"reach\" auxiliary=\"can\" polarity=positive clausal_complement=$c4 subject=$e5\n@c4 nlu.clause form=declarative predicate=\"crossing\" negation=\"without\" polarity=negative subject=$e7 unresolved=\"any\" unresolved=\"of\" unresolved=\"the\" unresolved=\"other\" unresolved=\"lines\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity name=\"Slide\"\n@e4 nlu.entity name=\"Flask\"\n@rel1 nlu.relation kind=near from=$c2 to=$e4 cue=\"beside\"\n@e5 nlu.entity determiner=\"the\" compound=\"arrow\" head=\"coming\"\n@e6 nlu.entity name=\"Flask\"\n@rel2 nlu.relation kind=from from=$e5 to=$e6 cue=\"out of\"\n@e7 nlu.entity pronoun=\"it\"\n@coord1 nlu.coordination kind=additive member=$c2 member=$c3 cue=\"so\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2 filler=\"also\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"reposition\" act=place polarity=positive direct_object=$e3 result_complement=\"close\"\n@c3 nlu.clause form=declarative predicate=\"reach\" auxiliary=\"can\" polarity=positive clausal_complement=$c4 subject=$e5\n@c4 nlu.clause form=declarative predicate=\"crossing\" negation=\"without\" polarity=negative subject=$e7 unresolved=\"any\" unresolved=\"of\" unresolved=\"the\" unresolved=\"other\" unresolved=\"lines\"",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Slide\" head=\"close\"\n@e4 nlu.entity name=\"Flask\"\n@e5 nlu.entity determiner=\"the\" compound=\"arrow\" head=\"coming\"\n@e6 nlu.entity name=\"Flask\"\n@coord1 nlu.coordination kind=additive member=$e4 member=$e5 cue=\"so\"\n@rel1 nlu.relation kind=near from=$c2 to=$coord1 cue=\"beside\"\n@rel2 nlu.relation kind=from from=$e5 to=$e6 cue=\"out of\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2 filler=\"also\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"reposition\" act=place polarity=positive direct_object=$e3 result_complement=\"crossing\" unresolved=\"can\" unresolved=\"reach\" unresolved=\"it\" unresolved=\"without\" unresolved=\"any\" unresolved=\"of\" unresolved=\"the\" unresolved=\"other\" unresolved=\"lines\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity compound=\"Slide\" head=\"close\"\n@e4 nlu.entity name=\"Flask\"\n@e5 nlu.entity determiner=\"the\" compound=\"arrow\" head=\"coming\"\n@e6 nlu.entity name=\"Flask\"\n@coord1 nlu.coordination kind=additive member=$e4 member=$e5 cue=\"so\"\n@rel1 nlu.relation kind=near from=$c2 to=$coord1 cue=\"beside\"\n@rel2 nlu.relation kind=from from=$c2 to=$e6 cue=\"out of\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive clausal_complement=$c2 subject=$e1 direct_object=$e2 filler=\"also\"\n@c2 nlu.clause form=nonfinite marker=\"to\" predicate=\"reposition\" act=place polarity=positive direct_object=$e3 result_complement=\"crossing\" unresolved=\"can\" unresolved=\"reach\" unresolved=\"it\" unresolved=\"without\" unresolved=\"any\" unresolved=\"of\" unresolved=\"the\" unresolved=\"other\" unresolved=\"lines\"",
+        "complete": false
+      }
+    ]
+  },
+  {
+    "reviewId": 20,
+    "text": "sketch a blue car and call it robot.",
+    "A": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"blue\" color=blue head=\"car\"\n@e2 nlu.entity pronoun=\"it\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"sketch\" act=make polarity=positive direct_object=$e1\n@c2 nlu.clause form=imperative predicate=\"call\" act=change polarity=positive terminator=\".\" direct_object=$e2 unresolved=\"robot\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"blue\" color=blue head=\"car\"\n@e2 nlu.entity head=\"robot\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"sketch\" act=make polarity=positive direct_object=$e1\n@c2 nlu.clause form=imperative predicate=\"call\" act=change polarity=positive terminator=\".\" direct_object=$e2 unresolved=\"it\"",
+        "complete": false
+      }
+    ],
+    "B": [
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"blue\" color=blue head=\"car\"\n@e2 nlu.entity head=\"robot\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"sketch\" act=make polarity=positive direct_object=$e1\n@c2 nlu.clause form=imperative predicate=\"call\" act=change polarity=positive terminator=\".\" direct_object=$e2 unresolved=\"it\"",
+        "complete": false
+      },
+      {
+        "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"blue\" color=blue head=\"car\"\n@e2 nlu.entity pronoun=\"it\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"sketch\" act=make polarity=positive direct_object=$e1\n@c2 nlu.clause form=imperative predicate=\"call\" act=change polarity=positive terminator=\".\" direct_object=$e2 unresolved=\"robot\"",
+        "complete": false
+      }
+    ]
+  }
+]
