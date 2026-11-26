@@ -73,3 +73,7 @@ The inspected indices were `48, 69, 57, 79, 95, 44, 31, 22, 85, 23, 68, 27, 67, 
 ## DeepSeek prompt with explicit role checks
 
 We clarified when to change a supplied draft and how to handle apposition, ordered lists, measures, adjective complements and coordinated control clauses. We replayed 100 sources from the diagram batch with the same drafts, disjoint from the preceding paired plausibility spot check. One request returned all 100 in 179 seconds. All passed the static gate, compared with 96 on exactly those sources under the previous prompt. Forty-one output circuit sets changed. On a fresh 24-row source-based spot check, 19 were plausible. Remaining defects included a finite reading of the bare passive in “I want the Start text bolded” and a detached “to scan” in “the options are easy to scan.” This prompt revision did not establish 90% plausibility. The timing and exact sample indices are in `diagram-role-check-100/`.
+
+## File-scoped rollout from already converted rows
+
+The previous 384-row source-only pilot included 96 texts from `document/text-01.csv`. All 96 passed a replay through the current validator. Of the 30 smallest source hashes using `mass-file-spot-v1` plus a NUL separator, 29 passed a manual whole-reading inspection. The conservative rejected example represents “lovely” as a nominal head in “cheers, that's lovely.” This is evidence for the document file only. The official corpus now stores the 96 existing outputs as statically checked conversions (WebMeet commit `677ff09`). No paid model requests were needed to recover them.
