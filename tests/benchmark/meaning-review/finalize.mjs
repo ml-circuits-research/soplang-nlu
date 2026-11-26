@@ -29,6 +29,13 @@ for (const j of strict) {
   primary.set(key,j)
 }
 const confirmed = new Map(lines(join(review,'confirmation.jsonl')).map(j=>[j.rowIndex+'/'+j.candidate,j]))
+const curationPath = join(review,'dataset-review.jsonl')
+const curation = existsSync(curationPath) ? lines(curationPath) : []
+for (const decision of curation) {
+  const key = decision.rowIndex+'/'+decision.candidate
+  if (confirmed.get(key)?.grade !== 10 || decision.grade >= 10) throw Error('Unexpected dataset review '+key)
+  confirmed.set(key,decision)
+}
 const rescues = new Map()
 if (existsSync(join(review,'rescue.jsonl'))) for (const j of lines(join(review,'rescue.jsonl'))) {
   const previous = rescues.get(j.rowIndex) ?? []
@@ -149,7 +156,8 @@ save('final.jsonl.gz',final)
 save('dataset-correction-candidates.jsonl.gz',corrections)
 save('primary.jsonl.gz',originalPrimary)
 if (strict.length) save('strict.jsonl.gz',strict)
-save('confirmations.jsonl.gz',[...confirmed.values()])
+save('confirmations.jsonl.gz',lines(join(review,'confirmation.jsonl')))
+if (curation.length) save('dataset-reviews.jsonl.gz',curation)
 save('targeted.jsonl.gz',[...manuals.values()].flat())
 if (rescues.size) save('alternative-witness-reviews.jsonl.gz',[...rescues.values()].flat())
 if (existsSync(join(review,'confirmation-audit.jsonl'))) save('confirmation-audit.jsonl.gz',lines(join(review,'confirmation-audit.jsonl')))

@@ -10,9 +10,9 @@
 | 🟠 L5 | 13.1% | 14.8% | 9.6% |
 | 🟠 L6 | 5.3% | 5.5% | 3.0% |
 | 🟠 L7 | 7.1% | 6.9% | 9.7% |
-| 🟢 L8 | 26.2% | 32.4% | 67.6% |
+| 🟢 L8 | 26.2% | 32.4% | 67.7% |
 | 🟢 L9 | 14.0% | 0.0% | 1.5% |
-| 🟢 L10 | 0.1% | 0.0% | 0.1% |
+| 🟢 L10 | 0.1% | 0.0% | 0.0% |
 | **Total** | **100.0%** | **100.0%** | **100.0%** |
 | **Accepted (L8–L10)** | **40.3%** | **32.4%** | **69.2%** |
 
@@ -151,5 +151,4 @@ Percentages use finalized strategy–message judgments. The denominator is the n
 | z3 | L7 | reference.failed-legacy-verifier | 1 |
 | z3 | L8 | reference.failed-legacy-verifier | 5 |
 | z3 | L8 | verifier.a phrase the text does not say (keep the words; the system normalises them) | 2 |
-| z3 | L10 | reference.confirmed-material-defect | 2 |
 

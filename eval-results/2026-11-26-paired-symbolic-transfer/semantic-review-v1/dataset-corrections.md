@@ -2,33 +2,6 @@
 
 Each entry records a reviewed candidate that corrects a material issue in the supplied references. The dataset revision and row IDs belong to the frozen sample. Recheck the current row against its original text and all alternatives before applying a correction.
 
-## drawing/people-04.csv#1175
-
-a bolt for me, hair
-
-**Proposed by** z3
-
-**Annotation issue** Reference 1 "attribute=part.id value=hair_front words=hair" — The exact part ID confines the bolt variant to front hair. The utterance leaves the hair position open.
-
-**Grounding** The candidate treats hair as the part type and bolt as the requested variant. The source reads "a bolt for me, hair". The candidate encodes "sort=hair\n@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bolt".
-
-### Proposed circuit
-
-```sop
-@r1 w.request.request act=make mood=do
-@r1.t w.request.target request=$r1 family=part mode=new determiner=indefinite sort=hair
-@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bolt operator=eq phase=result
-```
-
-### Existing reference circuits
-
-```sop
-@r1 w.request.request act=make mood=do
-@r1.t w.request.target request=$r1 family=part mode=new determiner=indefinite
-@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.id value=hair_front words=hair operator=eq phase=result
-@r1.c2 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bolt operator=eq phase=result
-```
-
 ## drawing/scenes-03.csv#3639
 
 make her shirt red
@@ -55,33 +28,6 @@ make her shirt red
 @r1.t w.request.target request=$r1 family=part mode=existing determiner=possessive fill=description sort=shirt
 @r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.colour value=red operator=eq phase=result
 @r1.c2 w.request.constraint request=$r1 on=attribute attribute=part.owner value=girl words=her operator=eq phase=result
-```
-
-## drawing/people-04.csv#1073
-
-add a bushy hair
-
-**Proposed by** z3
-
-**Annotation issue** Reference 1 "attribute=part.id value=hair_front words=hair" — The exact part ID restricts the addition to front hair. The utterance gives a hair type and variant and leaves the front or back choice open.
-
-**Grounding** The candidate adds a hair part with the bushy variant and leaves its position unspecified. The source reads "add a bushy hair". The candidate encodes "sort=hair\n@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bushy".
-
-### Proposed circuit
-
-```sop
-@r1 w.request.request act=make mood=do predicate=add
-@r1.t w.request.target request=$r1 family=part mode=new determiner=indefinite sort=hair
-@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bushy operator=eq phase=result
-```
-
-### Existing reference circuits
-
-```sop
-@r1 w.request.request act=make mood=do predicate=add
-@r1.t w.request.target request=$r1 family=part mode=new determiner=indefinite
-@r1.c1 w.request.constraint request=$r1 on=attribute attribute=part.id value=hair_front words=hair operator=eq phase=result
-@r1.c2 w.request.constraint request=$r1 on=attribute attribute=part.variant value=bushy operator=eq phase=result
 ```
 
 ## diagram/charts-01.csv#1651
