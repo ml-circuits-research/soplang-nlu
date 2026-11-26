@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url'
 const worker = fileURLToPath(new URL('./worker.py',import.meta.url))
 
 /** Transport for optional dependency evidence. Producing an SOP graph is the strategy's job. */
-export async function openDependencies({
+async function openSpacy({
   python = process.env.SOP_NLU_SYNTAX_PYTHON || 'python3',
   model = process.env.SOP_NLU_SYNTAX_MODEL || 'en_core_web_sm'
 } = {}) {
@@ -44,11 +44,6 @@ export async function openDependencies({
       const next = pending.then(async () => {
         child.stdin.write(JSON.stringify(text) + '\n')
         const {tokens} = await read()
-        if (!Array.isArray(tokens) || tokens.some((token,index) =>
-          token.i !== index || text.slice(token.start,token.end) !== token.text ||
-          !Number.isInteger(token.head) || token.head < 0 || token.head >= tokens.length)) {
-          throw Error('Invalid dependency token boundary or reference')
-        }
         return tokens
       })
       pending = next.catch(() => {})
@@ -59,6 +54,32 @@ export async function openDependencies({
       await pending
       child.stdin.end()
       await stopped
+    }
+  }
+}
+
+export const spacyDependencies = {name:'spacy', open:openSpacy}
+
+export async function openDependencies({syntaxModel = spacyDependencies, ...options} = {}) {
+  const backend = await syntaxModel.open(options)
+  return {
+    metadata: backend.metadata,
+    close: () => backend.close(),
+    async parse(text) {
+      const tokens = await backend.parse(text)
+      let previousEnd = 0
+      if (!Array.isArray(tokens)) throw TypeError('Dependency model must return a token array')
+      for (const [index, token] of tokens.entries()) {
+        if (token.i !== index || !Number.isInteger(token.start) || !Number.isInteger(token.end) ||
+            token.start < previousEnd || token.end <= token.start || token.end > text.length ||
+            text.slice(token.start, token.end) !== token.text ||
+            !Number.isInteger(token.head) || token.head < 0 || token.head >= tokens.length ||
+            !['pos','tag','dep','lemma'].every(key => typeof token[key] === 'string')) {
+          throw Error('Invalid dependency token, source boundary or head at index ' + index)
+        }
+        previousEnd = token.end
+      }
+      return tokens
     }
   }
 }

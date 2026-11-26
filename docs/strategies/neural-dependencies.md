@@ -23,3 +23,11 @@ English syntax. This experiment does not train on WebMeet examples.
 
 The sealed 1% benchmark includes both optional strategies with the same input as
 the symbolic strategies. Configure the Python environment before running it.
+
+A neuro-symbolic reader can select a dependency provider through the optional
+`syntaxModel` strategy at startup. Its `open(options)` returns `parse(text)`,
+`metadata`, and `close()`. Each token carries `i`, `text`, UTF-16 `start` and
+`end`, `pos`, `tag`, `lemma`, `dep` and the token index of its `head`.
+The adapter checks source slices and head indices for every provider. Choosing
+another encoder or a separately trained parser uses the same contract in either
+solver. The default provider opens the local spaCy worker.
