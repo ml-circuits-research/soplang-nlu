@@ -1,6 +1,6 @@
 # Fresh one-percent native evaluation
 
-The [sealed protocol](fresh-1pct.lock.json) pins the dataset revision, the native-reference revision, the random seed drawn before sample inspection, and the independent judge models. Sampling hashes the seed and committed row ID, then takes the lowest hashes through the rounded 1% boundary. Keep the frozen sample out of parser development. Prolog example transfer excludes all normalized occurrences of the held-out texts from training, using the same pinned revision.
+The [sealed protocol](fresh-1pct.lock.json) pins the dataset revision, the native-reference revision, the random seed drawn before sample inspection, and the independent judge models. Sampling hashes the seed and committed row ID, then takes the lowest hashes through the rounded 1% boundary. Keep the frozen sample out of parser development. Prolog example transfer excludes all exact occurrences of the held-out texts from training, using the same pinned revision.
 
 For development, use the 31 existing [role fixtures](analysis-breadth.md) or select a few targeted cases. Those fixtures do not adjust or draw the fresh cohort.
 
@@ -33,3 +33,5 @@ Two independent model passes review every eligible candidate. A fresh adjudicato
 The scorer grades each utterance and strategy as NONE (L0–L6), SOME (L7, mixed public proposals), or ALL (L8–L10) using the [proposal-set rubric](meaning-review/native-v3-legend.md). L9 compares the complete normalized acceptable public alternative set with its compatible frozen native gold. The blind candidate workflow does not infer L10 corrections. Counts and percentages use the frozen messages as denominator, and percentages are apportioned to 100.00%. Keep historical benchmark files unmodified.
 
 Archive the reviewed directory and inference artifacts. `candidate-review-summary.json` contains outcome and grade counts, timing and audit metadata. `candidate-decisions.jsonl.gz` retains exact candidate judgments from all reviewer passes. `public-set-judgments.jsonl.gz` retains the public proposals, per-candidate decisions, selected set grade, and reference comparisons. The offline scoring steps are reproducible from the saved prediction and judgment files.
+
+The November 26 run started its seven fixed baseline engines at projector revision `3fc0d95`. Its eighth strategy, `neuro-selector`, uses the same projection and a ranker fitted on a separate 500/100 training and validation split. The seed and both dataset revisions stayed fixed. The selector runs through the public reader in append mode after fitting and before any held-out candidate judgments. Its separate environment manifest records its library revision and model options.
