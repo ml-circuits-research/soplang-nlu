@@ -1,4 +1,6 @@
-const evidencePattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|(?<![\p{L}\p{N}])‘[^’\n]*’(?![\p{L}\p{N}])|(?<![\p{L}\p{N}])'(?:\\.|[^'\\\n])+'(?![\p{L}\p{N}])|\d{4}-\d{2}-\d{2}(?![\p{L}\p{M}\p{N}_])|\d{1,2}:\d{2}(?::\d{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:\d+\.\d+|\.\d+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu
+import {repairNominalRoles} from './nominal-roles.mjs'
+
+const evidencePattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|(?<![\p{L}\p{N}])‘[^’\n]*’(?![\p{L}\p{N}])|(?<![\p{L}\p{N}])'(?:\\.|[^'\\\n])+'(?![\p{L}\p{N}])|\d{4}-\d{2}-\d{2}(?![\p{L}\p{M}\p{N}_])|\d{1,2}:\d{2}(?::\d{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:\d+\.\d+|\.\d+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}]+(?:[-‐‑][\p{L}\p{M}\p{N}]+)+|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu
 const cliticPattern = /(?:n['’]t|['’](?:s|d|m|re|ve|ll))$/iu
 const nouns = new Set(['NOUN', 'PROPN', 'PRON', 'NUM'])
 const verbs = new Set(['VERB', 'AUX'])
@@ -90,11 +92,23 @@ function align(text, dependencies) {
       zone.head = token.index
     }
   }
+  // A nominal root can receive a spurious determiner edge even when
+  // the tagger correctly recognizes an initial base-form verb.
+  const first = tokens[0]
+  const nominal = first && tokens[first.head]
+  if (first?.pos === 'VERB' && first.tag === 'VB' && first.dep === 'det' &&
+      nominal?.dep === 'ROOT' && nouns.has(nominal.pos)) {
+    first.dep = 'ROOT'
+    first.head = first.index
+    nominal.dep = 'dobj'
+    nominal.head = first.index
+  }
   return tokens
 }
 
 export function projectDependencies(text, dependencies) {
   const tokens = align(text, dependencies)
+  repairNominalRoles(tokens)
   const children = Map.groupBy(tokens.filter((token) => token.head !== token.index), (token) => token.head)
   const under = (token) => children.get(token.index) ?? []
   // Generic dependency arcs often connect consecutive imperatives in
@@ -143,6 +157,7 @@ export function projectDependencies(text, dependencies) {
     return node
   }
   function literal(node, key, parts, repeat = false) {
+    if (parts.some((part, i) => i > 0 && part.index !== parts[i - 1].index + 1)) return false
     if (!parts.length || (!repeat && node.slots.has(key)) || parts.some(({index}) => used.has(index))) return false
     for (const {index} of parts) used.add(index)
     node.fields.push(quote(key, text.slice(parts[0].start, parts.at(-1).end)))
@@ -211,20 +226,37 @@ export function projectDependencies(text, dependencies) {
     // places them in an explicit nominal argument position.
     const commandName = verbs.has(token.pos) && ['pobj','dobj','obj','appos'].includes(token.dep) &&
       /^\p{Lu}/u.test(token.value) && !under(token).some(child => subject.has(child.dep) || child.dep === 'aux')
-    if (!commandName && !nouns.has(token.pos)) return
+    const nominalAdjective = token.pos === 'ADJ' && (token.dep === 'pobj' ||
+      ['dobj', 'obj', 'conj', 'appos'].includes(token.dep) &&
+      (under(token).some(t => t.dep === 'det') || ['other','more','less','fewer','enough'].includes(token.lower)))
+    if (!commandName && !nominalAdjective && !nouns.has(token.pos)) return
     if (entities.has(token.index)) return entities.get(token.index)
     if (used.has(token.index)) return
     const node = make('entity', token)
     entities.set(token.index, node)
     const key = token.quoted ? 'literal' : (commandName || token.pos === 'PROPN') ? 'name' : token.numeric ? 'literal' : token.pos === 'PRON' ? 'pronoun' : 'head'
+    const titleParts = []
+    if (key === 'name' && token.dep === 'appos') {
+      // Printed titles may contain numbers and capitalized common nouns.
+      // Only group an uninterrupted sequence of nominal source tokens.
+      const visit = [token]
+      for (const word of visit) {
+        for (const child of under(word)) {
+          if (['compound', 'flat', 'name', 'dep', 'nummod'].includes(child.dep) && nouns.has(child.pos) &&
+              (child.pos === 'NUM' || /^\p{Lu}/u.test(child.value)) && !visit.includes(child)) visit.push(child)
+        }
+      }
+      titleParts.push(...visit.sort((a,b) => a.index - b.index))
+    }
     const parts = [token, ...under(token).filter((part) => part.pos === 'PROPN' && ['compound', 'flat', 'name'].includes(part.dep))]
       .sort((a, b) => a.index - b.index)
-    if (key !== 'name' || !parts.every((part, index) => !index || part.index === parts[index - 1].index + 1) ||
-        !literal(node, key, parts)) literal(node, key, [token])
-    const pending = [...under(token)]
-    for (const part of pending) {
-      if (part.dep === 'compound') {
-        for (const child of under(part)) if (child.dep === 'compound' && !pending.includes(child)) pending.push(child)
+    if (!literal(node, key, titleParts) && (key !== 'name' || !literal(node, key, parts))) literal(node, key, [token])
+    for (const part of under(token)) {
+      if (used.has(part.index)) continue
+      if (part.dep === 'compound' && nouns.has(part.pos) &&
+          under(part).some(child => modifiers.has(child.dep) || child.dep === 'poss')) {
+        relation(node, entity(part), 'nominal_compound')
+        continue
       }
       if (part.dep === 'advmod' && part.pos === 'ADV' && !under(part).some(child => child.dep === 'prep')) {
         literal(node, 'adverb', [part], true)
@@ -245,6 +277,10 @@ export function projectDependencies(text, dependencies) {
           item.dep === 'conj' && item.pos === part.pos && item.index === part.index + 2)
         const conjunction = conjunct && tokens[part.index + 1]
         const chain = conjunction?.dep === 'cc' ? [part, conjunction, conjunct] : [part]
+        if (slot === 'modifier') {
+          const inner = under(part).find(child => child.dep === 'amod' && child.pos === 'ADJ' && child.index + 1 === part.index)
+          if (inner) chain.unshift(inner)
+        }
         if (slot === 'quantity') {
           const comparative = under(part).find(child => child.dep === 'amod' && child.tag === 'JJR' &&
             child.index === part.index + 1)
@@ -466,7 +502,10 @@ export function projectDependencies(text, dependencies) {
       else if (part.dep === 'intj' && greeting.has(part.lower)) literal(node, 'filler', [part], true)
       const child = clauseOf(part)
       const separated = boundaries.get(part.index)?.index < token.index
-      if (child && !separated && ['xcomp', 'ccomp'].includes(part.dep) && !node.slots.has('clausal_complement')) {
+      const childLocation = child && locativeComplement(part)
+      if (childLocation && !separated) {
+        relation(node, coordinate(part, child, clauseOf), 'where', [childLocation])
+      } else if (child && !separated && ['xcomp', 'ccomp'].includes(part.dep) && !node.slots.has('clausal_complement')) {
         node.fields.push(ref('clausal_complement', coordinate(part, child, clauseOf)))
         node.slots.add('clausal_complement')
       }
@@ -506,9 +545,15 @@ export function projectDependencies(text, dependencies) {
           : /^[a-z]+$/u.test(part.lower) ? part.lower : 'prepositional')
         const local = under(part).filter((item) => item.dep === 'advmod' && item.pos === 'ADV')
         const parent = tokens[part.head]
-        if (parent && (deferredModifiers.has(parent) ||
-            parent !== host && relationalModifiers.has(parent.lower) && parent.pos === 'ADV')) local.push(parent)
-        relation(from, coordinate(landmark, to, to?.type === 'clause' ? clauseOf : entity), label, compound?.parts ?? [part], local)
+        if (parent && (deferredModifiers.has(parent) || parent !== host && parent.pos === 'ADV')) {
+          local.push(...under(parent).filter(t => t.dep === 'advmod' && t.pos === 'ADV'), parent)
+        }
+        const edge = relation(from, coordinate(landmark, to, to?.type === 'clause' ? clauseOf : entity), label, compound?.parts ?? [part], local)
+        const measure = under(part).find(t => t.dep === 'npadvmod' && nouns.has(t.pos))
+        if (edge && measure) {
+          const amount = entity(measure)
+          if (amount) edge.fields.push(ref('measure', amount))
+        }
         for (const child of under(part)) if (child.dep === 'prep') attached.push(child)
       }
       if (from.type === 'entity' && ['acl', 'relcl'].includes(part.dep)) {
@@ -523,7 +568,27 @@ export function projectDependencies(text, dependencies) {
         const {kind, span} = subordinateCue(under(part))
         relation(from, coordinate(part, clauseOf(part), clauseOf), kind, span)
       }
-      if (part.dep === 'appos') relation(from, entity(part), 'apposition')
+      if (part.dep === 'appos') {
+        const group = coordinate(part, entity(part), entity)
+        const inventory = group?.type === 'coordination' &&
+          tokens.slice(host.index + 1,part.index).some(t => t.value === ':')
+        relation(from, group, inventory ? 'elaboration' : 'apposition')
+      }
+      if (part.dep === 'dep' && nouns.has(part.pos) && !used.has(part.index)) {
+        // Speech and drawing directives often place a bare nominal topic
+        // before a dash, or an inventory after a colon. Keep its attached
+        // modifiers and list members together as an explicit nominal fragment.
+        const lo = Math.min(host.index,part.index)
+        const hi = Math.max(host.index,part.index)
+        const boundary = tokens.slice(lo+1,hi).findLast(t => [':','—','–'].includes(t.value))
+        if (boundary) {
+          const topic = coordinate(part, entity(part), entity)
+          if (topic) {
+            const fragment = make('clause', part, ['form=fragment', ref('topic',topic)])
+            relation(from, fragment, part.index < host.index ? 'fronted_topic' : 'elaboration')
+          }
+        }
+      }
       if (part.dep === 'npadvmod' && !courtesy.has(part.index) && nouns.has(part.pos) && !used.has(part.index)) {
         relation(from, entity(part), 'nominal_adjunct')
       }

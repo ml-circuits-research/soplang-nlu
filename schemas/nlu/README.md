@@ -58,3 +58,5 @@ An entity may carry a quoted `adverb` modifying its nominal head, as in
 `and` in `and a picnic blanket` is grounded on the fragment clause as
 `connective="and"`. This preserves the connective while leaving its unwritten
 first conjunct unspecified.
+
+A quantified prepositional relation can point through `measure` to an entity with its written unit and quantity. For example, “two inches from the edge” supplies a distance measure on the `from` relation.
