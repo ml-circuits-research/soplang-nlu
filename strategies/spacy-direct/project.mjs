@@ -558,7 +558,7 @@ export function projectDependencies(text, dependencies) {
   for (const node of groupHeads) coordinate(node.token, node, clauseOf)
 
   for (const pair of nominalPairs) {
-    const from = clauses.get(pair.from) ?? entity(tokens[pair.from])
+    const from = entity(tokens[pair.from]) ?? clauses.get(pair.from)
     const to = entity(tokens[pair.to])
     relation(from, to, pair.kind, (pair.cue ?? []).map(index => tokens[index]))
   }
