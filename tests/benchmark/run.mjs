@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto'
 import {mkdirSync,writeFileSync,readFileSync} from 'node:fs'
 import {resolve,join} from 'node:path'
 import {pathToFileURL} from 'node:url'
-import {gzipSync} from 'node:zlib'
+import {gzipSync,gunzipSync} from 'node:zlib'
 import {Worker} from 'node:worker_threads'
 import {cpus,platform,arch} from 'node:os'
 import {fileURLToPath} from 'node:url'
@@ -11,12 +11,14 @@ const root=fileURLToPath(new URL('../../',import.meta.url))
 const base=resolve(process.env.SOP_WORKSPACE ?? join(root,'..'))
 const dataset=join(base,'webmeet-dataset')
 const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',maxBuffer:128*1024*1024})
-const revision=git(dataset,'rev-parse','HEAD').trim()
+const replay=process.argv[2]
+const previous=replay && JSON.parse(readFileSync(join(replay,'environment.json'),'utf8'))
+const revision=previous?.revision ?? git(dataset,'rev-parse','HEAD').trim()
 const {readRecords}=await import(pathToFileURL(join(dataset,'tools/rows.mjs')))
-const percent=Number(process.env.SAMPLE_PERCENT ?? 1)
-const workers=Number(process.env.WORKERS ?? 4)
+const percent=Number(previous?.percent ?? process.env.SAMPLE_PERCENT ?? 1)
+const workers=Number(previous?.workers ?? process.env.WORKERS ?? 4)
 if (!(percent>0 && percent<=100 && Number.isSafeInteger(workers) && workers>0)) throw Error('Invalid benchmark configuration')
-const seed=process.env.SAMPLE_SEED ?? '42'
+const seed=previous?.seed ?? process.env.SAMPLE_SEED ?? '42'
 const hash=value=>createHash('sha256').update(value).digest('hex')
 const pool=[]
 for (const file of git(dataset,'ls-tree','-r','--name-only',revision).trim().split('\n').filter(p=>/^(diagram|drawing|calendar|document)\/[^/]+\.csv$/.test(p))) {
@@ -29,16 +31,22 @@ for (const file of git(dataset,'ls-tree','-r','--name-only',revision).trim().spl
 }
 pool.sort((a,b)=>a.score.localeCompare(b.score))
 const rows=pool.slice(0,Math.max(1,Math.round(pool.length*percent/100)))
-const dir=join(root,'eval-results',new Date().toISOString().replaceAll(':','-'))
+const dir=replay ?? join(root,'eval-results',new Date().toISOString().replaceAll(':','-'))
 mkdirSync(dir,{recursive:true})
 const save=(name,data)=>writeFileSync(join(dir,name),JSON.stringify(data,null,2)+'\n')
-const metadata={revision,seed,percent,workers,population:pool.length,sample:rows.length,node:process.version,cpu:cpus()[0].model,platform:platform(),arch:arch(),strategies:{}}
-save('environment.json',metadata)
-writeFileSync(join(dir,'sample.json.gz'),gzipSync(JSON.stringify(rows.map(({score,...r})=>r))))
-for(const strategy of ['z3','prolog']){
-  const repo=join(base,strategy+'-formaliser')
+const metadata=previous ?? {revision,seed,percent,workers,population:pool.length,sample:rows.length,node:process.version,cpu:cpus()[0].model,platform:platform(),arch:arch(),strategies:{}}
+if (replay) {
+  const recorded=JSON.parse(gunzipSync(readFileSync(join(dir,'sample.json.gz'))))
+  if (JSON.stringify(recorded)!==JSON.stringify(rows.map(({score,...r})=>r))) throw Error('Replay sample mismatch')
+} else {
+  save('environment.json',metadata)
+  writeFileSync(join(dir,'sample.json.gz'),gzipSync(JSON.stringify(rows.map(({score,...r})=>r))))
+}
+for(const strategy of replay ? ['prolog-worlds'] : ['z3','prolog','prolog-worlds']){
+  if (metadata.strategies[strategy]) throw Error('Configuration already recorded: '+strategy)
+  const repo=join(base,(strategy==='prolog-worlds'?'prolog':strategy)+'-formaliser')
   const entry=join(repo,'src/reader.mjs')
-  const options=strategy==='z3'?{topK:8,knowledgeDir:join(base,'sop-knowledge-worlds')}:{evidence:true}
+  const options=strategy==='z3'?{topK:8,knowledgeDir:join(base,'sop-knowledge-worlds')}:{evidence:true,worldsOnly:strategy==='prolog-worlds'}
   const config={source:git(repo,'rev-parse','HEAD').trim(),workingDiffSha256:hash(git(repo,'diff','HEAD')),options}
   if(strategy==='prolog') config.modelSha256=hash(readFileSync(join(repo,'.cache/model.json')))
   metadata.strategies[strategy]=config

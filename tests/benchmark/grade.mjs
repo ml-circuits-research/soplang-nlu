@@ -17,7 +17,7 @@ const model = JSON.parse(readFileSync(join(workspace, 'prolog-formaliser/.cache/
 const trainingTexts = new Set(model.examples.map(example => normalizeText(example.text)))
 const statusById = new Map(sample.map(row => [row.id, {}]))
 const summary = {}
-for (const engine of ['z3', 'prolog']) {
+for (const engine of ['z3', 'prolog', 'prolog-worlds']) {
   const predictions = new Map(unpack(engine + '.jsonl.gz').trim().split('\n')
     .map(line => { const row = JSON.parse(line); return [row.id, row] }))
   const details = []
@@ -45,6 +45,12 @@ for (const {z3,prolog} of statusById.values()) {
   const accepted = grade => grade === 'L3' || grade === 'L4'
   cross[accepted(z3) ? (accepted(prolog) ? 'both' : 'z3Only') : (accepted(prolog) ? 'prologOnly' : 'neither')]++
 }
-summary.pairedAcceptance = cross
+summary.pairedAcceptance = {z3ComparedWithModelProlog:cross}
+const worlds = {both:0,z3Only:0,prologOnly:0,neither:0}
+for (const entry of statusById.values()) {
+  const passed = engine => ['L3','L4'].includes(entry[engine])
+  worlds[passed('z3') ? (passed('prolog-worlds') ? 'both' : 'z3Only') : (passed('prolog-worlds') ? 'prologOnly' : 'neither')]++
+}
+summary.pairedAcceptance.z3ComparedWithWorldsProlog = worlds
 writeFileSync(join(dir, 'grades.json'), JSON.stringify(summary,null,2)+'\n')
 console.log(summary)
