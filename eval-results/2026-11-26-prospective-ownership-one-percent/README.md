@@ -6,6 +6,8 @@ The benchmark runs in a detached source checkout with one CPU worker and low sch
 
 The inference and review stages are in progress. The historical diagnostic that motivated this test produced 81.2% ANY on 250 texts.
 
+An independent replay drew the same ordered 1,831 texts from the pinned WebMeet revision and reproduced the archived sample byte for byte for both ownership checkpoints. The population was 183,094 rows, with 178,219 eligible after the prospective exact-text exclusions. The replay also reproduced the baseline training-overlap report with zero matches in the named training and development archives.
+
 ## Primary strategy inference complete
 
 The frozen selector-distilbert run returned 1,831 records with zero engine errors. Every public list respected the two-circuit budget. At least one circuit passed the complete-source gate on 1,761 texts (96.18%). This is the static eligibility count, so the 80% whole-reading claim still depends on blind judgments. With one low-priority CPU worker, inference took 616.70 seconds. Median request latency was 256.82 ms and the 95th percentile was 671.86 ms.
