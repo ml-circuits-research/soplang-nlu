@@ -17,7 +17,10 @@ const sampleBytes = readFileSync(join(run, 'sample.json.gz'))
 const rows = JSON.parse(gunzipSync(sampleBytes))
 if (!Array.isArray(rows) || !rows.length ||
     new Set(rows.map(row => row.id)).size !== rows.length ||
-    environment.sample !== rows.length) throw Error('Invalid native benchmark sample.')
+    environment.sample !== rows.length ||
+    (environment.sampleSha256 && environment.sampleSha256 !== sha(sampleBytes))) {
+  throw Error('Invalid native benchmark sample.')
+}
 const names = new Set(rows.map(row => row.id))
 const validator = await createAnalysisValidator({knowledgeDir: resolve(installation)})
 const stores = engineNames.map(engine => {

@@ -292,7 +292,8 @@ def main():
     work = args.output.with_name(args.output.stem + '-batches')
     work.mkdir(parents=True, exist_ok=True)
     fingerprint = hashlib.sha256(args.packets.read_bytes())
-    fingerprint.update(args.profile.encode())
+    if args.profile != 'historical':
+        fingerprint.update(args.profile.encode())
     if args.strict_from:
         fingerprint.update(args.strict_from.read_bytes())
     fingerprint = fingerprint.hexdigest()
