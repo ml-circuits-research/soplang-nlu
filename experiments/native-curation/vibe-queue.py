@@ -27,7 +27,7 @@ def packed(rows):
     return gzip.compress("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows).encode(), mtime=0)
 
 
-def create_plan(inventory, dataset, queue, reserved_only, group_rows):
+def create_plan(inventory, dataset, queue, reserved_only, group_rows, source_file):
     manifest = json.loads((inventory / "manifest.json").read_text())
     revision = git(dataset, "rev-parse", "HEAD").strip()
     native_paths = git(dataset, "ls-tree", "-r", "--name-only", revision, "--", "annotations/nlu/v1").splitlines()
@@ -55,11 +55,12 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows):
         cached = inventory / "work" / batch["number"] / "drafts.jsonl.gz"
         drafts = {row["id"]: row for row in lines(cached)} if cached.exists() else {}
         for row in lines(sources):
-            if row["text"] not in approved:
+            name = row["id"].rsplit("#", 1)[0]
+            if row["text"] not in approved and (source_file is None or name == source_file):
                 candidate = drafts.get(row["id"], row)
                 if candidate["text"] != row["text"]:
                     raise ValueError("Draft source differs from frozen text")
-                files[row["id"].rsplit("#", 1)[0]].append(candidate)
+                files[name].append(candidate)
     groups = []
     for name, rows in sorted(files.items()):
         for start in range(0, len(rows), group_rows):
@@ -75,7 +76,8 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows):
             groups.append(group)
             (queue / (path + ".jsonl.gz")).write_bytes(data)
     return {"sourceRevision": manifest["sourceRevision"], "annotationRevision": revision,
-            "excludedReserved": reserved, "reservedOnly": reserved_only, "groupRows": group_rows, "groups": groups}
+            "excludedReserved": reserved, "reservedOnly": reserved_only, "groupRows": group_rows,
+            "sourceFile": source_file, "groups": groups}
 
 
 def git(repo, *args):
@@ -93,6 +95,7 @@ def main():
                    help="Concurrent model requests within one CSV group")
     p.add_argument("--group-rows", type=int, default=500, metavar="N",
                    help="Maximum rows from one CSV per new publication group")
+    p.add_argument("--source-file", help="Select one exact dataset-relative CSV path for this queue")
     p.add_argument("--min-percent", type=int, default=90, metavar="N",
                    help="Stop if less than this percentage passed in the last group")
     p.add_argument("--batch-rows", type=int, default=None, metavar="N",
@@ -115,7 +118,9 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         manifest = queue / "plan.json"
         if not manifest.exists():
-            plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows)
+            plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows, a.source_file)
+            if a.source_file and not plan["groups"]:
+                p.error("No pending inventory rows for the selected CSV")
             plan["backend"] = a.backend
             tmp = manifest.with_suffix(".tmp")
             tmp.write_text(json.dumps(plan, indent=2) + "\n")
@@ -125,6 +130,8 @@ def main():
             p.error("Use a separate queue for reserved sources")
         if plan.get("backend", "vibe") != a.backend:
             p.error("Use a separate queue for each backend")
+        if plan.get("sourceFile") != a.source_file:
+            p.error("Use a separate queue for each source file selection")
         print(json.dumps({"groups": len(plan["groups"]), "rows": sum(g["rows"] for g in plan["groups"])}), flush=True)
         if a.plan_only:
             return
