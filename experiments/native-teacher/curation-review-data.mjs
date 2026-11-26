@@ -10,6 +10,9 @@ if(!['prepare','accept'].includes(mode)||!knowledgeDir)
 const fromGzip=(path)=>gunzipSync(readFileSync(path)).toString().split('\n').filter(Boolean).map(JSON.parse)
 const validate=await createAnalysisValidator({knowledgeDir})
 const rows=fromGzip(join(logical,'records.jsonl.gz'))
+const {model}=JSON.parse(readFileSync(join(logical,'..','manifest.json')))
+const family={'gpt-6-sol':'sol-curated','gpt-6.1-terra':'terra-curated'}[model]
+if(!family)throw Error('Unsupported curator in generation manifest')
 const write=(name,bytes)=>writeFileSync(join(dest,name),bytes,{flag:'wx'})
 const pack=(name,values)=>write(name,gzipSync(values.map(row=>JSON.stringify(row)+'\n').join('')))
 const hash=name=>createHash('sha256').update(readFileSync(join(dest,name))).digest('hex')
@@ -18,7 +21,7 @@ const candidates=rows.map(({id,text,readings,status})=>{
     readings.length>0&&status!=='curated')throw Error('Unexpected curation result for '+id)
   const choices=readings.map(({sop},rank)=>{
     if(!hasCompleteSource(validate(text,sop)))throw Error('Grounding drift at '+id)
-    return {family:'sol-curated',rank,sop,eligible:true}
+    return {family,rank,sop,eligible:true}
   })
   return {id,text,candidates:choices}
 })

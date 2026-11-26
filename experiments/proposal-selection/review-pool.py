@@ -10,7 +10,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('stage', choices=['plan','audit','seal'])
 parser.add_argument('cohort', type=Path)
 parser.add_argument('prior', nargs='*', type=Path)
+parser.add_argument('--agreement-audit-limit',type=int,default=20)
 args = parser.parse_args()
+if args.agreement_audit_limit<0:
+    parser.error('--agreement-audit-limit must be nonnegative')
 work = args.cohort/'review'
 work.mkdir(exist_ok=True)
 def jsonl(path):
@@ -149,7 +152,7 @@ else:
         selected=[{**target,'stratum':'threshold disagreement'} for target in disagreements]
         for label,items in agreements.items():
             ordered=sorted(items,key=lambda target:sha('selector-blind-audit-v1\0'+target['fingerprint']))
-            selected.extend({**target,'stratum':'agreed accept' if label else 'agreed reject'} for target in ordered[:20])
+            selected.extend({**target,'stratum':'agreed accept' if label else 'agreed reject'} for target in ordered[:args.agreement_audit_limit])
         archive(work/'audit-packets.json.gz',restrict(read_archive(work/'all-packets.json.gz'),{key(t) for t in selected}))
         write_json('audit-selection.json',selected)
         print(json.dumps({'novelThresholdDisagreements':len(disagreements),'novelAgreementAudit':len(selected)-len(disagreements)}))

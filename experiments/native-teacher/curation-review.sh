@@ -16,6 +16,6 @@ review_pass candidate primary "${SOP_NLU_CURATION_PRIMARY_REVIEWER:-gpt-6.1-terr
 review_pass candidate independent "${SOP_NLU_CURATION_SECOND_REVIEWER:-gpt-6.2-sol}" & sol=$!
 wait "$terra"
 wait "$sol"
-python3 "$driver" audit "$work"
+python3 "$driver" audit "$work" --agreement-audit-limit "${SOP_NLU_CURATION_AGREEMENT_AUDIT_LIMIT:-20}"
 review_pass audit audit "${SOP_NLU_CURATION_ADJUDICATOR:-gpt-6.1-sol}"
 python3 "$driver" seal "$work"
