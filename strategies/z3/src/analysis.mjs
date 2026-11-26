@@ -65,6 +65,7 @@ function emitAnalysis(decoded, kb, objective) {
       meaning(id, fields, 'kind', shape ?? family, [{slot: 'head', text: head.surface}],
         shape ? 'Z3 shape vocabulary' : 'Z3 request family vocabulary')
     }
+    if (item.zone !== undefined) fields.push(quote('modifier', item.zone))
     entities.set(item, id)
     lines.push(wire(id, 'entity', fields))
   }
@@ -148,12 +149,14 @@ function emitAnalysis(decoded, kb, objective) {
       const passive = predicate && /(?:ed|en)$/u.test(tokens[predicate.index].lower) &&
         tokens.slice(clause.start, predicate.index).some((token) => token.pos === 'auxiliary' && token.copula)
       const cue = tokens[item.prep.start].lower
-      const kind = clause.gratitude && cue === 'for' && from === id ? 'reason'
-        : passive && cue === 'by' && from === id ? 'agent' : item.prep.kind
+      const kind = item.relation ?? (clause.gratitude && cue === 'for' && from === id ? 'reason'
+        : passive && cue === 'by' && from === id ? 'agent' : item.prep.kind)
       const relation = 'rel' + ++relationCount
       const fields = []
-      meaning(relation, fields, 'kind', atom(kind) ?? 'prepositional',
-        [{slot: 'cue', text: surface(item.prep.start, item.prep.end)}], 'Z3 preposition binding')
+      const source = [{slot: 'cue', text: surface(item.prep.start, item.prep.end)}]
+      if (item.relation) source.push({wire: entities.get(item), slot: 'head', text: tokens[item.head].surface})
+      meaning(relation, fields, 'kind', atom(kind) ?? 'prepositional', source,
+        item.relation ? 'Z3 numeric prepositional argument' : 'Z3 preposition binding')
       fields.push(refField('from', from), refField('to', to), quote('cue', item.prep.start, item.prep.end))
       lines.push(wire(relation, 'relation', fields))
     }

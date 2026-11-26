@@ -141,6 +141,37 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       }
     })
 
+    await t.test('preserves calendar clock literals and their trailing gratitude', async () => {
+      const text = 'Could you book Hall C for Planning on 2026-12-03 from 11:00 UTC for 45 minutes. Thanks!'
+      const [booking] = await analyse(text)
+      assert.match(booking.sop, /head="11:00" modifier="UTC"/)
+      assert.match(booking.sop, /kind=from from=\$c1 to=\$e\d+ cue="from"/)
+      assert.match(booking.sop, /expression="Thanks" speech_act=gratitude terminator="!"/)
+      assert.doesNotMatch(booking.sop, /terminator=":"|head="00"|unresolved="11"/)
+      assert.equal(booking.tokens.filter(({text}) => text === '11:00').length, 1)
+      const [schedule] = await analyse('Schedule Review at 11:00:30 UTC.')
+      assert.match(schedule.sop, /head="11:00:30" modifier="UTC"/)
+      assert.match(schedule.sop, /kind=time from=\$c1 to=\$e\d+ cue="at"/)
+      assert.deepEqual(schedule.unresolved, [])
+    })
+
+    await t.test('binds a whole decimal as a factor or target value and keeps a real terminator', async () => {
+      const [scaled] = await analyse('Scale it by 1.2.')
+      assert.match(scaled.sop, /nlu.entity head="1\.2"/)
+      assert.match(scaled.sop, /kind=factor from=\$c1 to=\$e2 cue="by"/)
+      assert.equal((scaled.sop.match(/terminator="\."/g) ?? []).length, 1)
+      assert.deepEqual(scaled.unresolved, [])
+      const [measured] = await analyse('Scale it by 1.2 inches.')
+      assert.doesNotMatch(measured.sop, /kind=factor/)
+      assert.ok(measured.tokens.some(({text}) => text === '1.2'))
+      const [assigned] = await analyse('Set it to +1.2.')
+      assert.match(assigned.sop, /head="\+1\.2"/)
+      assert.match(assigned.sop, /kind=target_value .* cue="to"/)
+      const [opaque] = await analyse('Wait 1.2.')
+      assert.match(opaque.sop, /unresolved="1\.2"/)
+      assert.equal((opaque.sop.match(/terminator="\."/g) ?? []).length, 1)
+    })
+
     await t.test('leaves the independently available legacy benchmark path intact', async () => {
       const result = await reader.propose('Draw a blue circle.')
       assert.ok(result.candidates[0]?.sop.startsWith('@r1 w.request.request'))

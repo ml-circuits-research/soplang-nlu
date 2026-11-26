@@ -1,6 +1,6 @@
 import { lemmatiseVerb, lemmatiseWord } from './lattice/morph.mjs'
 
-const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|'(?:[^'\\]|\\.)*'|‘[^’]*’|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
+const tokenPattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|'(?:[^'\\]|\\.)*'|‘[^’]*’|(?<clock>[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?)(?![\p{L}\p{M}\p{N}_])|(?<decimal>[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+))(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}]+(?:['’\-][\p{L}\p{M}\p{N}]+)*|[^\s]/gu
 const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner', 'adjective', 'adverb',
   'auxiliary', 'preposition', 'conjunction', 'numeral', 'ordinal', 'particle', 'interjection', 'quote']
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
@@ -9,6 +9,12 @@ const linkingVerbs = new Set(['be', 'become', 'feel', 'look', 'remain', 'seem', 
 const temporalAdverbs = new Set(['now', 'today', 'tomorrow', 'yesterday', 'tonight', 'already'])
 const contentVerbs = new Set(['believe', 'know', 'say', 'think', 'see', 'hear', 'hope', 'notice', 'remember'])
 const quotedArgumentVerbs = new Set(['call', 'label', 'name', 'print', 'quote', 'rename', 'say', 'type', 'write'])
+const clockPrepositions = new Map([['at', 'time'], ['from', 'from'], ['until', 'until'], ['to', 'to']])
+const timeZone = /^(?:UTC|GMT|[ECMP][SD]T|CET|CEST|EET|EEST|BST|IST|JST)$/u
+const numericFrames = new Map([
+  ['by', {relation: 'factor', verbs: new Set(['multiply', 'scale'])}],
+  ['to', {relation: 'target_value', verbs: new Set(['adjust', 'change', 'decrease', 'increase', 'lower', 'raise', 'resize', 'scale', 'set'])}]
+])
 const hardBoundary = new Set(['.', ':', '!', '?', ';'])
 const tokenTag = (index, tag) => `(= p${index} ${allowedTags.indexOf(tag)})`
 const disjunction = (clauses) => clauses.length ? `(or ${clauses.join(' ')})` : 'false'
@@ -37,7 +43,8 @@ function inputTokens(text, kb, lexicon) {
     if (kb.grammar.joiners.has(lower)) tags.add('conjunction')
     if (kb.grammar.ordinals.has(lower)) tags.add('ordinal')
     if (particles.has(lower)) tags.add('particle')
-    const numeric = /^\p{N}+$/u.test(surface) || (lower !== 'one' && tags.has('numeral'))
+    const literal = match.groups.clock ? 'clock' : match.groups.decimal ? 'decimal' : undefined
+    const numeric = literal || /^\p{N}+$/u.test(surface) || (lower !== 'one' && tags.has('numeral'))
     if (numeric) tags.add('numeral')
     if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
     if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size)) tags.add('proper')
@@ -60,7 +67,7 @@ function inputTokens(text, kb, lexicon) {
     }
     const linking = copula || lemmas.some((lemma) => linkingVerbs.has(lemma))
     return {surface, index, start, lower, end: start + surface.length, tags: allowed.length ? allowed : ['unknown'],
-      acts, copula, linking, negation, filler, lemmas}
+      acts, copula, linking, negation, filler, lemmas, literal}
   }).map((token, index, tokens) => {
     if (index > 0 && token.tags[0] === 'unknown' && /^\p{L}+$/u.test(token.surface) &&
         tokens[index - 1].tags.includes('determiner')) {
@@ -225,6 +232,30 @@ function prepositionsOf(tokens, clause, kb) {
   return prepositions
 }
 
+function numericLandmark(tokens, prep, clause, predicates, kb) {
+  const head = prep.end + 1
+  const number = tokens[head]
+  if (head > clause.end || !number?.literal) return null
+  const cue = tokens[prep.start].lower
+  let relation
+  let hosts = predicates
+  if (number.literal === 'clock') {
+    relation = clockPrepositions.get(cue)
+  } else {
+    const frame = numericFrames.get(cue)
+    if (!frame) return null
+    const suffix = tokens[head + 1]?.lower
+    if (frame.relation === 'factor' && head < clause.end &&
+        (kb.domain.units.has(suffix) || ['%', 'percent', 'pixel', 'pixels'].includes(suffix))) return null
+    hosts = predicates.filter(({index}) => tokens[index].lemmas.some((lemma) => frame.verbs.has(lemma)))
+    relation = frame.relation
+  }
+  if (!relation || !hosts.length) return null
+  const zone = number.literal === 'clock' && head < clause.end && timeZone.test(tokens[head + 1].surface)
+    ? head + 1 : undefined
+  return {start: head, end: zone ?? head, head, zone, relation, hosts, constraints: [tokenTag(head, 'numeral')]}
+}
+
 export function encodeSyntaxAnalysis(text, kb, lexicon) {
   const tokens = inputTokens(text, kb, lexicon)
   const discourse = detachedGratitude(tokens, kb, lexicon.gratitude)
@@ -362,8 +393,15 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
 
     for (const prep of prepositions) {
-      const hostEntities = clause.entities.filter((entity) => entity.end === prep.start - 1 && entity.role !== 'complement')
       const predicateHosts = predicates.filter((predicate) => predicate.index < prep.start)
+      const number = numericLandmark(tokens, prep, clause, predicateHosts, kb)
+      if (number) {
+        addEntity(number, 'prepositional', [
+          prepConstraint(prep), disjunction(number.hosts.map(({variable}) => variable))
+        ], 15 + 6 * (number.end - number.start), {prep})
+      }
+      const hostEntities = clause.entities.filter((entity) =>
+        entity.end === prep.start - 1 && entity.role !== 'complement' && !entity.relation)
       for (const entity of nominals.filter((item) => item.start === prep.end + 1)) {
         const requirement = tokens[prep.start].tags.includes('preposition') ? [tokenTag(prep.start, 'preposition')] : []
         const weight = 12 + 6 * (entity.end - entity.start)
