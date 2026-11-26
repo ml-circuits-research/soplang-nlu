@@ -45,6 +45,11 @@ MODAL_INVERSION = re.compile(
     re.I,
 )
 NEGATIVE_COMMAND = re.compile(r"^\s*(?:please[ ,]+)?(?:do\s+not\b|don['’]t\b|never\b)", re.I)
+PRONOUN_CONTRACTION = re.compile(
+    r"^\s*(?:(?:please|hello|hi|hey)[,\s]+){0,2}"
+    r"((?:i|you|we|they|he|she|it)['’](?:d|ll|m|re|ve|s))\b",
+    re.I,
+)
 
 
 def dump(data):
@@ -194,14 +199,18 @@ def plan_batches(packets, characters, rows):
 
 
 def native_form_conflict(packet, candidate):
-    first_clause = next((
-        packet['lines'][line] for line in packet['circuits'][candidate]
-        if re.match(r'^@\S+\s+nlu\.clause\b', packet['lines'][line])
-    ), '')
+    lines = [packet['lines'][line] for line in packet['circuits'][candidate]]
+    first_clause = next((line for line in lines if re.match(r'^@\S+\s+nlu\.clause\b', line)), '')
     if MODAL_INVERSION.match(packet['text']) and re.search(r'\bform=declarative(?:\s|$)', first_clause):
         return 'Initial auxiliary/subject inversion with selected main clause marked as declarative.'
     if NEGATIVE_COMMAND.match(packet['text']) and re.search(r'\bpolarity=positive(?:\s|$)', first_clause):
         return 'Explicit initial negation with selected main clause marked as positive.'
+    contracted = PRONOUN_CONTRACTION.match(packet['text'])
+    if contracted:
+        quoted = re.escape(json.dumps(contracted[1], ensure_ascii=False))
+        if any(re.match(r'^@\S+\s+nlu\.entity\b', line) and
+               re.search(r'\bname=' + quoted + r'(?:\s|$)', line) for line in lines):
+            return 'An initial contracted personal pronoun is represented as a written name.'
     return None
 
 
