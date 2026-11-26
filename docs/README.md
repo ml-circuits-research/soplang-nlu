@@ -38,3 +38,27 @@ Pass parsed facts from the configured worlds to createSyntaxReader in lib/syntax
 ## Comparing execution time
 
 Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. It opens one reader, awaits each proposal and closes the reader. Persist timing with each run, including startup, proposal time, shutdown, total wall time, throughput and median and 95th-percentile latency. Save per-input latency in sample order. Record hardware, runtime versions, model and world configuration, worker count and proposal budget. Record evaluator and reviewer time separately. Compare case-level outcomes in both directions to identify which strategy handles an attachment, ambiguity or unsupported phrase better.
+
+## Opening a strategy during migration
+
+The first adapters load an existing engine from an explicit installation directory. Both expose the shared lifecycle while retaining the engine's native candidates, confidence, rankings and diagnostics where available.
+
+```js
+import {createReader} from '../lib/reader.mjs'
+import {z3} from '../strategies/z3/index.mjs'
+
+const reader = await createReader({
+  strategy: z3,
+  engineDirectory: process.env.Z3_FORMALISER,
+  knowledgeDir: process.env.SOP_KNOWLEDGE,
+  topK: 8
+})
+try {
+  const result = await reader.propose('Move it to the left')
+  console.log(result.candidates)
+} finally {
+  await reader.close()
+}
+```
+
+For Prolog import prolog from strategies/prolog/index.mjs and supply its engineDirectory. Its adapter accepts modelPath, worldsOnly, languageFrames and evidence. Its underlying loader currently uses the installed knowledge snapshot and SOP_WORLDS overlays. Supply analyseSyntax from createSyntaxReader when syntax evidence is required.
