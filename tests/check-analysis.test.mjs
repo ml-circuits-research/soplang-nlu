@@ -4,7 +4,7 @@ import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
-import {createAnalysisValidator} from '../lib/check-analysis.mjs'
+import {createAnalysisValidator, hasCompleteSource} from '../lib/check-analysis.mjs'
 
 const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR ?? fileURLToPath(new URL('../../sop-knowledge-worlds', import.meta.url))
 const validate = await createAnalysisValidator({knowledgeDir})
@@ -138,4 +138,61 @@ test('loads explicitly installed analysis extensions without permitting slot ove
   } finally {
     await rm(directory, {recursive: true, force: true})
   }
+})
+
+test('only permits explicitly accounted incidental commas and final full stops', () => {
+  const source = 'Hey, move it.'
+  const marks = '@c nlu.clause form=imperative filler="Hey" predicate="move" direct_object=$x'
+  const entity = '@x nlu.entity pronoun="it"'
+  const explicit = validate(source, lines(marks + ' unresolved="," unresolved="."', entity))
+  assert.equal(explicit.valid, true)
+  assert.equal(explicit.coverage.unresolved, 2)
+  assert.equal(hasCompleteSource(explicit), true)
+  assert.deepEqual(explicit.sourceGaps.incidentalPunctuation, [
+    {text: ',', category: 'unresolved'}, {text: '.', category: 'unresolved'}
+  ])
+  const missingComma = validate(source, lines(marks + ' unresolved="."', entity))
+  assert.equal(missingComma.valid, true)
+  assert.equal(hasCompleteSource(missingComma), false)
+  for (const mark of ['?', ';', ':', '—', 'now']) {
+    const gap = validate('move it ' + mark, lines(
+      '@c nlu.clause form=imperative predicate="move" direct_object=$x unresolved=' + JSON.stringify(mark),
+      entity
+    ))
+    assert.equal(gap.sourceGaps.materialUnresolved, 1, mark)
+    assert.equal(hasCompleteSource(gap), false, mark)
+  }
+  for (const input of ['1,2', '1, 2']) {
+    const gap = validate(input, '@c nlu.clause form=fragment filler="1" unresolved="," filler="2"')
+    assert.equal(gap.valid, true)
+    assert.equal(hasCompleteSource(gap), false, input)
+  }
+  const internalPeriod = validate('Move. Stop', lines(
+    '@c nlu.clause form=imperative predicate="Move" unresolved="."',
+    '@d nlu.clause form=imperative predicate="Stop"'
+  ))
+  assert.equal(hasCompleteSource(internalPeriod), false)
+})
+
+test('preserves decimal numbers and clock readings as whole source tokens', () => {
+  const decimal = validate('Scale it by 1.2.', lines(
+    '@c nlu.clause form=imperative predicate="Scale" direct_object=$x unresolved="by" unresolved="1" terminator="."',
+    '@x nlu.entity pronoun="it"',
+    '@d nlu.clause form=fragment unresolved="2"'
+  ))
+  assert.equal(decimal.schemaValid, true)
+  assert.equal(decimal.sourceValid, false)
+  assert.ok(decimal.findings.some(({code,text}) => code === 'source-quote-not-found' && text === '1'))
+  const clock = validate('Move it to 10:00', lines(
+    '@c nlu.clause form=imperative predicate="Move" direct_object=$x unresolved="to" unresolved="10" terminator=":"',
+    '@x nlu.entity pronoun="it"',
+    '@d nlu.clause form=fragment unresolved="00"'
+  ))
+  assert.equal(clock.sourceValid, false)
+  const whole = validate('At 10:00 scale to +1.2.', lines(
+    '@c nlu.clause form=imperative predicate="scale" unresolved="At 10:00" unresolved="to +1.2" terminator="."'
+  ))
+  assert.equal(whole.valid, true)
+  assert.equal(whole.sourceGaps.materialUnresolved, 4)
+  assert.equal(hasCompleteSource(whole), false)
 })
