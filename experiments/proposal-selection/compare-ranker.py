@@ -41,9 +41,14 @@ def compare(model, features, score_report):
         selected.append([labels[index] for index in result['selectedIndices']])
         any_pool += any(labels)
     assert summarize(selected)['counts'] == selections['summary']['counts']
+    def paired(predicate):
+        pairs = [(predicate(old),predicate(new)) for old,new in zip(three,selected,strict=True)]
+        return {'retained':pairs.count((True,True)), 'gained':pairs.count((False,True)),
+                'lost':pairs.count((True,False)), 'neither':pairs.count((False,False))}
     return {'split':selections['split'],'rows':len(inputs),'modelSha256':digest,
             'selection':summarize(selected),'originalOrderTop1':summarize(first),
-            'originalOrderTop3':summarize(three),'poolOracleAnyPercent':100*any_pool/len(inputs)}
+            'originalOrderTop3':summarize(three),'poolOracleAnyPercent':100*any_pool/len(inputs),
+            'pairedAgainstOriginalOrderTop3':{'ANY':paired(any),'ALL':paired(lambda values: bool(values) and all(values))}}
 
 
 if __name__ == '__main__':
