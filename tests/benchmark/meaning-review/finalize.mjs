@@ -20,6 +20,14 @@ for (const judgment of lines(join(review,'full.jsonl'))) {
   if (primary.has(key)) throw Error('Duplicate primary group '+key)
   primary.set(key,judgment)
 }
+const strictPath = join(review,'strict.jsonl')
+const strict = existsSync(strictPath) ? lines(strictPath) : []
+const originalPrimary = [...primary.values()]
+for (const j of strict) {
+  const key = j.rowIndex + '/' + j.group
+  if (!primary.has(key)) throw Error('Unexpected strict group '+key)
+  primary.set(key,j)
+}
 const confirmed = new Map(lines(join(review,'confirmation.jsonl')).map(j=>[j.rowIndex+'/'+j.candidate,j]))
 const rescues = new Map()
 if (existsSync(join(review,'rescue.jsonl'))) for (const j of lines(join(review,'rescue.jsonl'))) {
@@ -139,7 +147,8 @@ function save(name,rows) {
 }
 save('final.jsonl.gz',final)
 save('dataset-correction-candidates.jsonl.gz',corrections)
-save('primary.jsonl.gz',[...primary.values()])
+save('primary.jsonl.gz',originalPrimary)
+if (strict.length) save('strict.jsonl.gz',strict)
 save('confirmations.jsonl.gz',[...confirmed.values()])
 save('targeted.jsonl.gz',[...manuals.values()].flat())
 if (rescues.size) save('alternative-witness-reviews.jsonl.gz',[...rescues.values()].flat())
@@ -157,7 +166,7 @@ const examples = corrections.map(row=>[
 ].join('\n\n'))
 writeFileSync(join(destination,'dataset-corrections.md'),[
   '# Confirmed proposals for dataset review',
-  'Each entry records a reviewed candidate that corrects a material issue in the supplied references. The dataset revision and row IDs belong to the frozen sample. These are proposals for the dataset owner.',
+  'Each entry records a reviewed candidate that corrects a material issue in the supplied references. The dataset revision and row IDs belong to the frozen sample. Recheck the current row against its original text and all alternatives before applying a correction.',
   ...examples
 ].join('\n\n')+'\n')
 console.log({messages:packed.length,decisions:final.length,correctionWitnesses:corrections.length})

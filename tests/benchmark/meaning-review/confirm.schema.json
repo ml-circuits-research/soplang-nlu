@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {"type": "integer"},
+          "grade": {"type": "string", "enum": ["L0","L1","L2","L3","L4","L5","L6","L7","L8","L9","L10"]},
+          "fallbackGrade": {"type": "string", "enum": ["L0","L1","L2","L3","L4","L5","L6","L7","L8","L9"]},
+          "reason": {"type": "string"},
+          "sourceQuote": {"type": "string"},
+          "candidateQuote": {"type": "string"},
+          "defects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "referenceIndex": {"type": "integer"},
+                "quote": {"type": "string"},
+                "defect": {"type": "string"}
+              },
+              "required": ["referenceIndex","quote","defect"]
+            }
+          }
+        },
+        "required": ["key","grade","fallbackGrade","reason","sourceQuote","candidateQuote","defects"]
+      }
+    }
+  },
+  "required": ["results"]
+}
