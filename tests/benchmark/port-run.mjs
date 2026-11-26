@@ -6,6 +6,7 @@ import {dirname, isAbsolute, join, relative, resolve, sep} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {gunzipSync, gzipSync} from 'node:zlib'
 import {compareAlternatives} from '../../lib/compare-alternatives.mjs'
+import {readNativeReferences,nativeReferenceDigest} from './native-references.mjs'
 import {datasetRevision, readCommittedRows, splitTrainingRows} from './train-split.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -237,6 +238,9 @@ const strategies = {
     knowledgeDir, evidence: true, swipl: process.env.SWIPL
   }
 }
+const nativeReferenceRevision = evaluatedSchema === 'nlu'
+  ? datasetRevision(dataset, process.env.NATIVE_REFERENCE_REVISION ?? sampleMetadata.revision) : undefined
+const nativeReferences = nativeReferenceRevision ? readNativeReferences(dataset, nativeReferenceRevision, rows.map(row=>row.text)) : []
 const selected = (process.env.STRATEGIES ?? Object.keys(strategies).join(','))
   .split(',').map(name => name.trim() === 'prolog' ? 'prolog-worlds' : name.trim())
 if (new Set(selected).size !== selected.length || selected.some(name => !Object.hasOwn(strategies, name))) {
@@ -250,6 +254,9 @@ if (append) {
     throw Error('Append requires the same frozen evaluation sample and dataset revision.')
   }
   if ((prior.evaluatedSchema ?? 'w.request') !== evaluatedSchema) throw Error('Append requires the original output schema.')
+  if ((prior.nativeReferenceRevision ?? prior.revision) !== (nativeReferenceRevision ?? prior.revision)) {
+    throw Error('Append requires the original native annotation revision.')
+  }
   if (prior.workers !== workers) throw Error('Append requires the original worker count.')
 } else {
   mkdirSync(dirname(dir), {recursive: true})
@@ -268,7 +275,9 @@ for (const name of selected) {
 }
 const activeWorkers = Math.min(workers, rows.length)
 const environment = {
-  evaluatedSchema, ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
+  evaluatedSchema, nativeReferenceRevision,
+  ...(nativeReferenceRevision ? {nativeReferenceTexts:nativeReferences.length, nativeReferenceSha256:nativeReferenceDigest(nativeReferences)} : {}),
+  ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
   workers, activeWorkers, workerTimeoutMs, node: process.version, cpu: cpus()[0]?.model, platform: platform(), arch: arch(),
   libraryRevision: execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   knowledgeRevision: (() => {
@@ -285,6 +294,7 @@ const environment = {
 }
 if (!append) {
   save('environment.json', environment)
+  if (nativeReferences.length) writeFileSync(join(dir,'native-references.json.gz'),gzipSync(JSON.stringify(nativeReferences)),{flag:'wx'})
   writeFileSync(join(dir, 'sample.json.gz'), sample, {flag: 'wx'})
 }
 

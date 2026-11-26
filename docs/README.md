@@ -60,3 +60,9 @@ A confirmed L10 triggers an automatic correction review. A reasonable L8 can sup
 Export an object with a name and an asynchronous open(configuration) method. Opening receives the knowledge installation, configured world paths and engine options. Return an engine with analyse(text) and close(). analyse returns an analyses array of objects with a sop string and any native evidence, plus optional analysisDiagnostics. Each array element is a whole candidate. On engine failure return an empty array and analysisDiagnostics.error. The adapter validates each circuit and exposes it as result.candidates. A strategy that also implements the historical WebMeet request generator can expose it separately as propose(text).
 
 The schema path list supplied to the adapter extends the validator. Loading lexical rules, deciding which extra worlds an engine understands, parsing fragments, binding semantic values and choosing alternative attachments all belong to the strategy. A third-party engine with only propose(text) can still return its existing candidate contract.
+
+## Native reference annotations
+
+The benchmark parent can read independently reviewed NLU circuits from `annotations/nlu/v1/readings.jsonl` in a committed WebMeet dataset revision. It freezes the relevant references, their digest and their revision before opening any strategy. The default reference revision is the sampled dataset revision. To compare a previously frozen sample with newer annotations, set `NATIVE_REFERENCE_REVISION` explicitly. Workers continue to receive just the input ID and text.
+
+The source-first review always starts from the utterance and eligible circuits. When native reference annotations were available before generation, the final comparison awards L9 for an accepted reading matching one of those references. Candidate-set order has no effect. Annotations added after a run can affect subsequent comparisons.
