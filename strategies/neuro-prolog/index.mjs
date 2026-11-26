@@ -43,7 +43,9 @@ function rank(text,validate,neural,symbolic) {
   }
   const valid=[...distinct.values()].filter(({check})=>check.valid)
   const complete=valid.filter(({check})=>hasCompleteSource(check))
-  const ranked=complete.length ? complete : valid.sort((a,b)=>
+  const independent=complete.find(({candidate})=>candidate.origin==='dependency-prolog')
+  const completeLeaders=independent ? [...complete.filter(item=>item!==independent).slice(0,2),independent] : complete
+  const ranked=completeLeaders.length ? completeLeaders : valid.sort((a,b)=>
     a.check.sourceGaps.materialUnresolved+a.check.sourceGaps.materialUncovered-
     b.check.sourceGaps.materialUnresolved-b.check.sourceGaps.materialUncovered
   )

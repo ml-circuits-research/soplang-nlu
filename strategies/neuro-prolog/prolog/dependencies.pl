@@ -3,7 +3,10 @@
 :- use_module(library(apply)).
 :- use_module(library(pairs)).
 
-dependency_graph(Q,Json) :-
+:- use_module(normalization).
+
+dependency_graph(Input,Json) :-
+    normalize_dependencies(Input,Q),
     findall(Wires,(member(T,Q.tokens),T.dep=="ROOT",word(T),\+ quote_range(Q,T,_,_),project_root(Q,T,Wires)),Trees),
     findall(Wires,(member(T,Q.tokens),T.dep\=="ROOT",gratitude(Q,T,_,_,_),project_gratitude(Q,T,Wires)),Edges),
     append(Trees,Roots), append(Edges,Detached), append(Roots,Detached,Initial),
@@ -188,8 +191,8 @@ edge(Q,Type,_,ID,C,[],Wires) :-
     multiword_cue_start(Q,C,Start), pp_with_cue(Q,Type,ID,Prep,Start,Wires), !.
 edge(Q,clause,T,_,C,[],[]) :-
     C.dep=="advmod", text(C,"else"), previous(Q,C,P), child(Q,T,P), indefinite_pronoun(P), !.
-edge(_,clause,_,_,C,[Field],[]) :-
-    C.dep=="advmod", memberchk(C.pos,["ADV","PART"]), quoted(adverb,C,Field), !.
+edge(Q,clause,_,_,C,[Field],[]) :-
+    C.dep=="advmod", memberchk(C.pos,["ADV","PART"]), adverb_field(Q,C,Field), !.
 edge(Q,clause,T,ID,C,[],[Link|Wires]) :-
     C.dep=="prt",C.pos=="ADP",
     child(Q,T,Wh),Wh.dep=="pobj",wh_token(Wh),Wh.i<T.i,
@@ -200,6 +203,9 @@ edge(_,clause,_,_,C,[Field],[]) :-
 edge(Q,clause,_,_,C,[Field],[]) :-
     C.dep=="prep", children(Q,C,["pobj","pcomp"],[]),
     text(C,Word),memberchk(Word,["back","down","off","out","over","up"]),quoted(particle,C,Field), !.
+edge(Q,clause,_,ID,C,[],[Link|Wires]) :-
+    C.dep=="measure", nominal(C), project(Q,C,entity,Ref,Wires),
+    relation_wire(C,measure,ID,Ref,[],Link), !.
 edge(Q,clause,_,ID,C,[],[Link|Wires]) :-
     C.dep=="npadvmod", nominal(C), temporal_nominal(Q,C),
     project(Q,C,entity,Ref,Wires), relation_wire(C,time,ID,Ref,[],Link), !.
@@ -221,8 +227,9 @@ edge(Q,clause,T,ID,C,[ref(direct_object,Object)|Fields],Wires) :-
     project(Q,Target,entity,Object,TargetWires),
     predicative_phrase(Q,C,ID,Fields,Attachments),
     append(TargetWires,Attachments,Wires), !.
-edge(_,clause,_,_,C,[Field],[]) :-
-    memberchk(C.dep,["acomp","oprd"]), C.pos=="ADJ", quoted(result_complement,C,Field), !.
+edge(Q,clause,_,ID,C,Fields,Wires) :-
+    memberchk(C.dep,["acomp","oprd"]), memberchk(C.pos,["ADJ","ADV"]),
+    predicative_phrase(Q,C,ID,Fields,Wires), !.
 edge(Q,clause,_,_,C,[ref(predicative_entity,Ref)],Wires) :-
     memberchk(C.dep,["attr","oprd"]), nominal(C),
     project(Q,C,entity,Ref,Wires), !.
@@ -247,9 +254,11 @@ edge(Q,entity,T,ID,C,Fields,Wires) :-
 bare_infinitival_control(Q,Parent,Child) :-
     memberchk(Parent.lemma,["let","make","have","help"]),
     Child.tag=="VB",children(Q,Child,["aux","auxpass","mark"],[]),
-    child(Q,Child,Subject),Subject.dep=="nsubj",Subject.i>Parent.i,Subject.i<Child.i,
-    ( Subject.tag=="PRP", text(Subject,Pronoun),memberchk(Pronoun,["me","you","him","her","it","us","them"])
-    ; Subject.pos=="PROPN" ), !.
+    child(Q,Child,Subject),Subject.i>Parent.i,Subject.i<Child.i,
+    ( Subject.dep=="nsubj",
+      ( Subject.tag=="PRP", text(Subject,Pronoun),memberchk(Pronoun,["me","you","him","her","it","us","them"])
+      ; Subject.pos=="PROPN" )
+    ; Subject.dep=="expl",Parent.lemma=="let",text(Subject,"there") ), !.
 
 nonfinite_clause(ClauseID,wire(ID,clause,At,Fields),wire(ID,clause,At,[atom(form,nonfinite)|Rest])) :-
     ID==ClauseID, !, exclude(field_is(form),Fields,Rest).
@@ -262,6 +271,11 @@ argument_role("dobj",direct_object).
 argument_role("obj",direct_object).
 argument_role("iobj",indirect_object).
 argument_role("dative",indirect_object).
+
+adverb_field(Q,C,q(adverb,Start,End)) :-
+    previous(Q,C,P),child(Q,C,P), P.dep=="advmod", P.pos=="ADV",
+    Start=P.i, End is C.i+1, !.
+adverb_field(_,C,Field) :- quoted(adverb,C,Field).
 
 negative_span(Q,T,C,S,E) :-
     span(C,I,E),
@@ -359,6 +373,12 @@ entity_edge(Q,_,_,C,[ref(possessor,Ref)|Markers],Wires) :-
     findall(M,(child(Q,C,P),P.dep=="case",quoted(possessive_marker,P,M)),Markers).
 entity_edge(_,_,_,C,[Field],[]) :-
     C.dep=="poss", C.pos=="DET", quoted(determiner,C,Field), !.
+entity_edge(Q,_,ID,C,[],[Link,Wire]) :-
+    C.dep=="acl",C.lemma=="face",C.tag=="VBG",
+    child(Q,C,Direction),Direction.dep=="advmod",
+    text(Direction,DirectionWord),memberchk(DirectionWord,["left","right","north","south","east","west","forward","backward"]),
+    quoted(cue,C,Cue), quoted(head,Direction,Head),token_id(e,Direction,Ref),
+    Wire=wire(Ref,entity,Direction.i,[Head]),relation_wire(C,orientation,ID,Ref,[Cue],Link), !.
 entity_edge(Q,_,ID,C,[],[Link,Wire]) :-
     memberchk(C.dep,["acl","relcl"]), nominal_annotation(Q,C,Target,Kind,Wire),
     quoted(cue,C,Cue), relation_wire(C,Kind,ID,Target,[Cue],Link), !.

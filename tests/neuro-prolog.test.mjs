@@ -45,6 +45,25 @@ test('neuro-Prolog projects dependency evidence into independent, source-grounde
       ['I want Decision a little bit taller.', [
         /predicate="want" subject=.*direct_object=.*result_complement="taller" degree="a little bit"/u
       ]],
+      ['I want Decision a little bit taller', [
+        /predicate="want" subject=.*direct_object=.*result_complement="taller" degree="a little bit"/u
+      ]],
+      ['Can you make the caps on the error bars bigger?', [
+        /direct_object=\$e4 result_complement="bigger"/u, /kind=on from=\$e4 to=\$e8/u
+      ]],
+      ['Give Start a width of 180 and height of 90', [
+        /indirect_object=\$e1 direct_object=\$g3/u, /kind=of from=\$e3 to=\$e5/u,
+        /kind=of from=\$e7 to=\$e9/u
+      ]],
+      ['Move Publish 300 px from the left', [
+        /kind=measure from=\$c0 to=\$e3/u, /head="px" quantity="300"/u
+      ]],
+      ['Press delete on the current selection', [
+        /form=imperative predicate="Press"/u, /name="delete"/u
+      ]],
+      ['let there be 3 cats lined up along the bench facing right, and that is the scene so far', [
+        /form=nonfinite predicate="be"/u, /kind=orientation from=\$e4 to=\$e11 cue="facing"/u, /adverb="so far"/u
+      ]],
       ['Start on 2027-02-19.', [/kind=time .*cue="on"/u, /head="2027-02-19"/u]],
       ['Thanks for sorting the calendar!', [
         /expression="Thanks" speech_act=gratitude/u, /kind=reason .*cue="for"/u,
@@ -57,7 +76,7 @@ test('neuro-Prolog projects dependency evidence into independent, source-grounde
       assert.equal(result.analysisDiagnostics.model.library,'spacy')
       const [candidate]=result.candidates
       assert.equal(candidate?.origin,'dependency-prolog')
-      assert.ok(hasCompleteSource(candidate.check),JSON.stringify(candidate.check))
+      assert.ok(hasCompleteSource(candidate.check),text + ' ' + JSON.stringify(candidate.check))
       for (const pattern of expected) assert.match(candidate.sop,pattern)
     }
   } finally {
