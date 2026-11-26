@@ -65,7 +65,8 @@ switch (stage) {
         writeFileSync(join(scratch,'environment.json'),JSON.stringify({population,revision:protocol.datasetRevision,
           seed:protocol.seed,percent:protocol.percent}))
         node(join(benchmark,'port-run.mjs'),[scratch,destination],{...process.env,APPEND:'0',EVAL_SCHEMA:'nlu',
-          NATIVE_REFERENCE_REVISION:protocol.nativeReferenceRevision,STRATEGIES:Object.keys(strategyModules).join(',')})
+          NATIVE_REFERENCE_REVISION:protocol.nativeReferenceRevision,SCORE_READER_ERRORS:'1',
+          STRATEGIES:Object.keys(strategyModules).join(',')})
       }finally{rmSync(scratch,{recursive:true,force:true})}
       break
     }

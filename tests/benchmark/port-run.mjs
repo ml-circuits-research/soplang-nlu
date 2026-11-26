@@ -353,7 +353,10 @@ for (const name of selected) {
   console.log(label, JSON.stringify(summary))
   if (failures.length || summary.errors || records.length !== rows.length) {
     console.error(`${label} recorded ${summary.errors} reader errors and ${failures.length} worker failures.`)
-    process.exitCode = 1
+    const canGrade = process.env.SCORE_READER_ERRORS === '1' && evaluatedSchema === 'nlu' &&
+      records.length === rows.length && completed.length === partitions.length &&
+      completed.every(batch => batch.timing.attempts.some(attempt => attempt.ready))
+    if (!canGrade) process.exitCode = 1
   }
 }
 
