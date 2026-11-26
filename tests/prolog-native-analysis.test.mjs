@@ -164,7 +164,7 @@ test('Prolog composes noun phrases, lists and nested prepositional relations', {
     for (const [text, expected, excluded=[]] of cases) {
       const result=await reader.propose(text)
       assert.equal(result.error,null)
-      assert.ok(result.candidates.length >= 1 && result.candidates.length <= 3)
+      assert.ok(result.candidates.length >= 1 && result.candidates.length <= 2)
       const [candidate]=result.candidates
       assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
       assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)

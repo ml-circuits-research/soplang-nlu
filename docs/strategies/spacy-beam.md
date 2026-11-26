@@ -22,13 +22,13 @@ try {
 
 The [dependency transport](neural-dependencies.md) accepts a local Python executable and an installed model. Its default model is `en_core_web_sm`. A custom `syntaxModel` must implement `parseBeam(text)` and return the greedy `tokens` and up to three `alternatives`. Each alternative contains a finite `score` and a dependency graph over the same lexical tokens.
 
-The parser reuses the greedy pass’s encoded model features. It uses beam width eight and extracts at most three distinct dependency graphs. The strategy then applies a fixed public selection rule:
+The parser reuses the greedy pass’s encoded model features. It uses beam width eight and extracts at most three distinct dependency graphs. The strategy then ranks native proposals using a fixed rule:
 
 1. Keep the greedy SOP first if it is source-complete.
 2. Append up to two distinct source-complete beam SOPs in descending parser score.
 3. Keep the original greedy partial if none of the circuits is complete.
 
-The public cap is three. Source completeness checks exact source coverage and permits incidental punctuation gaps under the shared checker. Scores rank parser hypotheses and provide no semantic guarantee.
+The public reader retains at most two validated proposals. The earlier three-candidate policy is retained inside the fitted selector pool. Source completeness checks exact source coverage and permits incidental punctuation gaps under the shared checker. Scores rank parser hypotheses and provide no semantic guarantee.
 
 On the [historical 250-text pilot](../../eval-results/2026-11-26-spacy-dependency-beam-pilot/README.md), the transformer beam raised the number of inputs with at least one accepted reading from 152 to 171. The number with every returned reading accepted fell from 152 to 113, and 58 inputs had a mix of accepted and rejected readings. Those judgments used projector revision `24f248b`. A client selecting the first complete candidate received 157 accepted readings and abstained 40 times on that pilot.
 

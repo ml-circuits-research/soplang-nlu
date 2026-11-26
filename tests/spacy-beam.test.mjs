@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import {fileURLToPath} from 'node:url'
 import {test} from 'node:test'
 import {createReader} from '../lib/index.mjs'
+import {createProviderReader} from '../lib/reader.mjs'
 import {hasCompleteSource} from '../lib/check-analysis.mjs'
 import {spacyBeam} from '../strategies/spacy-beam/index.mjs'
 
@@ -29,8 +30,9 @@ const provider = (tokens, alternatives) => ({async open() {
     async close() {}
   }
 }})
-async function propose(tokens, alternatives) {
-  const reader = await createReader({strategy: spacyBeam, knowledgeDir, syntaxModel: provider(tokens, alternatives)})
+async function propose(tokens, alternatives, internal = false) {
+  const options = {strategy: spacyBeam, knowledgeDir, syntaxModel: provider(tokens, alternatives)}
+  const reader = internal ? await createProviderReader(options,3) : await createReader(options)
   try {
     return await reader.propose(source)
   } finally {
@@ -46,12 +48,15 @@ const alternatives = [
 test('spacy-beam keeps complete greedy first and caps distinct alternatives', async () => {
   const result = await propose(reading('attr'), alternatives)
   assert.equal(result.engine, 'spacy-beam')
-  assert.equal(result.candidateCount, 3)
+  assert.equal(result.candidateCount, 2)
   assert.ok(result.candidates.every(candidate => hasCompleteSource(candidate.check)))
   assert.match(result.candidates[0].sop, /predicative_entity=/)
   assert.match(result.candidates[1].sop, /direct_object=/)
-  assert.match(result.candidates[2].sop, /indirect_object=/)
-  assert.deepEqual(result.candidates.map(candidate => candidate.beamScore), [undefined, 0.8, 0.4])
+  assert.deepEqual(result.candidates.map(candidate => candidate.beamScore), [undefined, 0.8])
+  const internal = await propose(reading('attr'), alternatives, true)
+  assert.equal(internal.candidateCount, 3)
+  assert.match(internal.candidates[2].sop, /indirect_object=/)
+  assert.deepEqual(internal.candidates.slice(0,2),result.candidates)
 })
 
 test('spacy-beam replaces a partial greedy only with complete alternatives', async () => {

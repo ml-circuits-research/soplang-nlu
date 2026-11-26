@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import {fileURLToPath} from 'node:url'
 import {createReader} from '../lib/reader.mjs'
 
 test('passes third-party results through without interpreting the text', async () => {
-  const candidates = [{sop:'example',confidence:0.8}]
+  const candidates = ['example','second','third'].map(sop=>({sop,confidence:0.8}))
   const strategy = {name:'fixture',open:async () => ({
     propose:async text => ({text,candidates,status:'partial'}),close:async () => {}
   })}
@@ -60,4 +61,34 @@ test('retains a rejected native circuit with its actual source failure', {skip: 
     assert.equal(result.rejected[0].sop,sop)
     assert.equal(result.rejected[0].check.sourceValid,false)
   } finally { await reader.close() }
+})
+
+test('native reading budget follows rejection and keeps engine order', async () => {
+  const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR ??
+    fileURLToPath(new URL('../../sop-knowledge-worlds',import.meta.url))
+  const bad = '@c nlu.clause form=imperative predicate="Invent"'
+  const secondBad = '@c nlu.clause form=bogus predicate="Draw"'
+  const first = '@c nlu.clause form=fragment unresolved="Draw"'
+  const second = '@c nlu.clause form=imperative predicate="Draw"'
+  const third = '@c nlu.clause form=nonfinite predicate="Draw"'
+  const strategy = {name:'ranked',open:async configuration => ({
+    analyse:async () => {
+      assert.equal(configuration.maxReadings,undefined)
+      return {analyses:[bad,first,secondBad,second,third].map(sop=>({sop})),
+        analysisDiagnostics:{status:'partial'}}
+    },close() {}
+  })}
+  for (const maxReadings of [undefined,1]) {
+    const reader = await createReader({strategy,knowledgeDir,maxReadings})
+    try {
+      const result = await reader.propose('Draw')
+      assert.deepEqual(result.candidates.map(({sop})=>sop),maxReadings===1?[first]:[first,second])
+      assert.deepEqual(result.rejected.map(({sop})=>sop),[bad,secondBad])
+      assert.equal(result.analysisDiagnostics.status,'partial')
+      assert.equal(result.error,null)
+      assert.equal(result.candidateCount,maxReadings??2)
+      assert.equal(result.multipleInterpretations,maxReadings!==1)
+    } finally {await reader.close()}
+  }
+  await assert.rejects(createReader({strategy,maxReadings:3}),/maxReadings must be 1 or 2/)
 })

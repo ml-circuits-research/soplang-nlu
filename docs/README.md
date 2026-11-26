@@ -1,6 +1,6 @@
 # Formalising the current text
 
-A reader proposes zero or more independent SOP Lang circuits for a single utterance. Configure worlds when opening the reader. Worlds supply vocabulary, schemas and knowledge. The utterance supplies the participants, instructions and evidence. Preserve a pronoun as written and leave its referent open. Every reading stands on its own.
+A native reader proposes up to two independent SOP Lang circuits for a single utterance. Pass `maxReadings: 1` to `createReader` to receive at most one. Configure worlds when opening the reader. Worlds supply vocabulary, schemas and knowledge. The utterance supplies the participants, instructions and evidence. Preserve a pronoun as written and leave its referent open. Every reading stands on its own.
 
 ## Reading a circuit
 
@@ -39,7 +39,7 @@ Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. I
 
 ## Opening a strategy
 
-The [library entry point](../README.md) accepts a strategy and a knowledge installation. Both strategy implementations live in this repository. Configure additional SOP files or directories with worldPaths. Each strategy interprets the world declarations it supports. The engines perform lexical analysis, attachment and semantic inference independently. The public adapter dispatches the request to the native analysis method, validates the supplied integrated circuits and preserves their order. For WebMeet evaluation, the separately available legacy request candidates can be compared with the reference schema used by the CSVs.
+The [library entry point](../README.md) accepts a strategy and a knowledge installation. Both strategy implementations live in this repository. Configure additional SOP files or directories with worldPaths. Each strategy interprets the world declarations it supports. The engines perform lexical analysis, attachment and semantic inference independently. The public adapter dispatches the request to the native analysis method, validates the supplied integrated circuits and preserves their order. It applies the reading budget after rejecting invalid circuits. Rejected circuits retain their diagnostics. For WebMeet evaluation, the separately available legacy request candidates can be compared with the reference schema used by the CSVs.
 
 ## Running the paired benchmark
 

@@ -22,7 +22,7 @@ test('neuro-z3 builds source-grounded circuits from the dependency model', {skip
     assert.equal(result.analysisDiagnostics.status, 'sat')
     assert.equal(result.analysisDiagnostics.solver, 'z3')
     assert.ok(result.analysisDiagnostics.dependencyProductions > 0)
-    assert.ok(result.candidates.length > 0 && result.candidates.length <= 3)
+    assert.ok(result.candidates.length > 0 && result.candidates.length <= 2)
     const complete = result.candidates.find(({check}) => hasCompleteSource(check))
     assert.ok(complete, result.candidates.map(({sop}) => sop).join('\n\n'))
     return complete.sop

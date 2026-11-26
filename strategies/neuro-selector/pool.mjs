@@ -1,4 +1,4 @@
-import {createReader} from '../../lib/reader.mjs'
+import {createProviderReader} from '../../lib/reader.mjs'
 import {hasCompleteSource} from '../../lib/check-analysis.mjs'
 import {spacyBeam} from '../spacy-beam/index.mjs'
 import {spacyDirect} from '../spacy-direct/index.mjs'
@@ -54,7 +54,7 @@ export async function openProposalPool({
     }}
   }
   async function add(family, strategy, options) {
-    readers.push([family,await createReader({strategy,knowledgeDir,...options})])
+    readers.push([family,await createProviderReader({strategy,knowledgeDir,...options},3)])
   }
   async function closeResources() {
     const results = await Promise.allSettled([...readers.map(([,reader]) => reader.close()),base.close()])

@@ -89,7 +89,7 @@ test('neuro-Prolog ranks at most three distinct complete public analyses when av
   try {
     const result=await reader.propose('I saw the child with a toy on a bench.')
     assert.equal(result.error,null)
-    assert.ok(result.candidates.length>=1 && result.candidates.length<=3)
+    assert.ok(result.candidates.length>=1 && result.candidates.length<=2)
     assert.ok(result.candidates.every(candidate=>hasCompleteSource(candidate.check)))
     assert.equal(new Set(result.candidates.map(candidate=>candidate.sop)).size,result.candidates.length)
   } finally {
