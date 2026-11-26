@@ -39,6 +39,10 @@ def summarize(path):
         values = re.findall(r'(?m)^tokens used\n([\d,]+)$', log.read_text())
         if values:
             tokens.append(int(values[-1].replace(',', '')))
+    call_seconds = {}
+    for phase, pattern in [('initial', '*-initial.json'), ('repair', '*-repair-*.json')]:
+        call_seconds[phase] = [json.loads(p.read_text())['wallMs'] / 1000 for p in logical.glob(pattern)
+                               if not p.name.endswith('.response.json')]
     seconds = (path / 'summary.json').stat().st_mtime - min(p.stat().st_mtime for p in initial)
     valid = [row for row in generated if row['readings']]
     result = {
@@ -53,6 +57,8 @@ def summarize(path):
         'sealedInvocationWallSeconds': json.loads((path / 'summary.json').read_text())['wallMs'] / 1000,
         'totalReportedCodexTokens': sum(tokens), 'rowsPerMinute': len(generated) * 60 / seconds,
         'medianReportedTokensPerCall': statistics.median(tokens) if tokens else None,
+        'modelCallWallSeconds': {phase: {'median': statistics.median(times) if times else None, 'sum': sum(times)}
+                                 for phase, times in call_seconds.items()},
         'acceptedSources': len(agreed), 'twoAcceptedReadings': sum(len(row['readings']) == 2 for row in agreed),
         'acceptedDraftConfirmations': sum(c['draftIndex'] is not None for row in agreed for c in row['readings']),
         'acceptedNewCircuits': sum(c['draftIndex'] is None for row in agreed for c in row['readings']),
