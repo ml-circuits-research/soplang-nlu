@@ -20,7 +20,7 @@ def packed(rows):
     return gzip.compress("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows).encode(), mtime=0)
 
 
-def create_plan(inventory, dataset, queue):
+def create_plan(inventory, dataset, queue, reserved_only):
     manifest = json.loads((inventory / "manifest.json").read_text())
     revision = git(dataset, "rev-parse", "HEAD").strip()
     native_paths = git(dataset, "ls-tree", "-r", "--name-only", revision, "--", "annotations/nlu/v1").splitlines()
@@ -33,8 +33,9 @@ def create_plan(inventory, dataset, queue):
     files = defaultdict(list)
     reserved = 0
     for batch in manifest["groups"]:
-        if batch["usage"] != "development":
-            reserved += batch["rows"]
+        is_reserved = batch["usage"] == "reserved-evaluation"
+        if is_reserved != reserved_only:
+            reserved += batch["rows"] if is_reserved else 0
             continue
         sources = inventory / batch["file"]
         if hashlib.sha256(sources.read_bytes()).hexdigest() != batch["sha256"]:
@@ -51,11 +52,16 @@ def create_plan(inventory, dataset, queue):
     for name, rows in sorted(files.items()):
         for start in range(0, len(rows), 500):
             path = f"{Path(name).with_suffix('').as_posix().replace('/', '-')}-{start//500:02d}"
-            group = {"sourceFile": name, "key": path, "rows": len(rows[start:start+500])}
+            if reserved_only:
+                path = "reserved-" + path
+            chunk = rows[start:start+500]
+            data = packed(chunk)
+            group = {"sourceFile": name, "key": path, "rows": len(chunk),
+                     "sha256": hashlib.sha256(data).hexdigest()}
             groups.append(group)
-            (queue / (path + ".jsonl.gz")).write_bytes(packed(rows[start:start+500]))
+            (queue / (path + ".jsonl.gz")).write_bytes(data)
     return {"sourceRevision": manifest["sourceRevision"], "annotationRevision": revision,
-            "excludedReserved": reserved, "groups": groups}
+            "excludedReserved": reserved, "reservedOnly": reserved_only, "groups": groups}
 
 
 def git(repo, *args):
@@ -68,19 +74,26 @@ def main():
         p.add_argument(name, type=Path)
     p.add_argument("--limit", type=int, default=0, help="Run at most this many unfinished groups; 0 means all")
     p.add_argument("--plan-only", action="store_true")
+    p.add_argument("--reserved-only", action="store_true", help="Convert reserved rows after scoring the frozen benchmark")
     a = p.parse_args()
     inventory, dataset, queue = (path.resolve() for path in (a.inventory, a.dataset, a.queue))
     root = Path(__file__).resolve().parents[2]
+    if a.reserved_only:
+        benchmark = root / "eval-results/2026-11-26-prospective-ownership-one-percent/source-review"
+        if not (benchmark / "candidate-review-summary.json").is_file():
+            p.error("Finish scoring the frozen holdout before converting its reserved texts")
     queue.mkdir(parents=True, exist_ok=True)
     with (queue / "queue.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         manifest = queue / "plan.json"
         if not manifest.exists():
-            plan = create_plan(inventory, dataset, queue)
+            plan = create_plan(inventory, dataset, queue, a.reserved_only)
             tmp = manifest.with_suffix(".tmp")
             tmp.write_text(json.dumps(plan, indent=2) + "\n")
             tmp.replace(manifest)
         plan = json.loads(manifest.read_text())
+        if bool(plan.get("reservedOnly")) != a.reserved_only:
+            p.error("Use a separate queue for reserved sources")
         print(json.dumps({"groups": len(plan["groups"]), "rows": sum(g["rows"] for g in plan["groups"])}), flush=True)
         if a.plan_only:
             return
@@ -91,6 +104,8 @@ def main():
                 break
             key = group["key"]
             source = queue / (key + ".jsonl.gz")
+            if group.get("sha256") and hashlib.sha256(source.read_bytes()).hexdigest() != group["sha256"]:
+                raise ValueError(f"Conversion input digest mismatch: {source}")
             work = queue / "work" / key
             work.mkdir(parents=True, exist_ok=True)
             with (work / "run.log").open("a") as log:
