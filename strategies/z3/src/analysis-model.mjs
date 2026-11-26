@@ -5,6 +5,8 @@ const allowedTags = ['unknown', 'verb', 'noun', 'pronoun', 'proper', 'determiner
   'auxiliary', 'preposition', 'conjunction', 'numeral', 'ordinal', 'particle', 'interjection', 'quote']
 const nominalTags = ['noun', 'pronoun', 'proper', 'quote']
 const modifierTags = ['determiner', 'adjective', 'numeral', 'ordinal']
+const monthNames = new Set(['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+  'september', 'october', 'november', 'december'])
 const modalAuxiliaries = new Set(['can', 'could', 'may', 'might', 'must', 'shall', 'should', 'will', 'would'])
 const linkingVerbs = new Set(['be', 'become', 'feel', 'look', 'remain', 'seem', 'smell', 'sound', 'taste'])
 const degreeAdverbs = new Set(['considerably', 'far', 'less', 'more', 'much', 'slightly', 'too', 'very'])
@@ -14,6 +16,8 @@ const contentVerbs = new Set(['believe', 'know', 'say', 'think', 'see', 'hear', 
 const infinitivalVerbs = new Set(['agree', 'ask', 'decide', 'expect', 'hope', 'like', 'need', 'offer', 'plan', 'promise', 'refuse', 'try', 'want'])
 const objectControlVerbs = new Set(['ask', 'expect', 'like', 'need', 'want'])
 const quotedArgumentVerbs = new Set(['call', 'label', 'name', 'print', 'quote', 'rename', 'say', 'type', 'write'])
+const numericObjectVerbs = new Set(['add', 'assign', 'average', 'count', 'display', 'divide', 'equal', 'get',
+  'have', 'label', 'multiply', 'need', 'receive', 'return', 'select', 'set', 'show', 'subtract', 'total', 'use'])
 const measureUnits = new Set(['%', 'percent', 'percentage', 'time', 'times'])
 const clockPrepositions = new Map([['at', 'time'], ['from', 'from'], ['until', 'until'], ['to', 'to']])
 const timeZone = /^(?:UTC|GMT|[ECMP][SD]T|CET|CEST|EET|EEST|BST|IST|JST)$/u
@@ -21,7 +25,7 @@ const numericFrames = new Map([
   ['by', {relation: 'factor', verbs: new Set(['multiply', 'scale'])}],
   ['to', {relation: 'target_value', verbs: new Set(['adjust', 'change', 'decrease', 'increase', 'lower', 'raise', 'resize', 'scale', 'set'])}]
 ])
-const hardBoundary = new Set(['.', ':', '!', '?', ';'])
+const hardBoundary = new Set(['.', ':', '!', '?', ';', '—'])
 const tokenTag = (index, tag) => `(= p${index} ${allowedTags.indexOf(tag)})`
 const disjunction = (clauses) => clauses.length ? `(or ${clauses.join(' ')})` : 'false'
 const conjunction = (clauses) => clauses.length ? `(and ${clauses.join(' ')})` : 'true'
@@ -44,7 +48,7 @@ function inputTokens(text, kb, lexicon) {
     if (acts.length) tags.add('verb')
     if (kb.grammar.pronouns.has(lower)) tags.add('pronoun')
     if (kb.grammar.determiners.has(lower)) tags.add('determiner')
-    if (kb.grammar.prepositions.has(lower) || lower === 'than') tags.add('preposition')
+    if (kb.grammar.prepositions.has(lower) || lower === 'than' || lower === 'per') tags.add('preposition')
     if (kb.grammar.auxiliaries.has(lower) || lower === "let's") tags.add('auxiliary')
     if (kb.grammar.joiners.has(lower)) tags.add('conjunction')
     if (kb.grammar.ordinals.has(lower)) tags.add('ordinal')
@@ -55,7 +59,7 @@ function inputTokens(text, kb, lexicon) {
       (lower !== 'one' && (tags.has('numeral') || (cardinal && !cardinal.ordinal)))
     if (numeric) tags.add('numeral')
     if (/^["“'‘].+["”'’]$/su.test(surface)) tags.add('quote')
-    if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size)) tags.add('proper')
+    if (/^\p{Lu}\p{L}*$/u.test(surface) && (index > 0 || !tags.size || monthNames.has(lower))) tags.add('proper')
     if (kb.domain.shapes.has(lower) || kb.catalog.familyWords.has(lower)) tags.add('noun')
     if (kb.domain.colours.has(lower) || /(?:able|ible|ous|less)$/u.test(lower)) tags.add('adjective')
     const negation = lexicon.negative.has(lower) || [...lexicon.negativeEndings].some((suffix) => lower.endsWith(suffix))
@@ -98,6 +102,10 @@ function predicateCandidates(tokens, start, end) {
   for (let index = start; index <= end; index++) {
     const token = tokens[index]
     if (!token.tags.includes('verb')) continue
+    const next = tokens[index + 1]
+    const properSubject = token.tags.includes('proper') && next?.tags.includes('verb') &&
+      (/s$/u.test(next.lower) || next.tags.includes('auxiliary'))
+    if (properSubject) continue
     if (modalAuxiliaries.has(token.lower) && tokens.slice(index + 1, end + 1).some((later) =>
       later.tags.includes('verb') && !later.tags.includes('auxiliary'))) continue
     const before = tokens[index - 1]?.tags ?? []
@@ -159,7 +167,7 @@ function detachedGratitude(tokens, kb, phrases) {
   return detached
 }
 
-function clauseRanges(tokens, discourse, nominalsOf) {
+function splitAtCues(tokens, discourse, nominalsOf) {
   const clauses = []
   let start = 0
   const add = (end) => {
@@ -186,91 +194,106 @@ function clauseRanges(tokens, discourse, nominalsOf) {
       const coordinators = [index]
       while (tokens[next]?.tags.includes('conjunction') || tokens[next]?.lower === 'then') coordinators.push(next++)
       while (tokens[next] && (tokens[next].filler || tokens[next].negation)) next++
-      const explicitSubject = tokens[next]?.tags.includes('pronoun') &&
-        predicateCandidates(tokens, next, Math.min(tokens.length - 1, next + 4))
-          .some(({index: predicate}) => predicate > next && !hardBoundary.has(tokens[predicate - 1].surface))
+      const lookahead = Math.min(tokens.length - 1, next + 8)
+      const boundary = tokens.slice(next, lookahead + 1).find((word) =>
+        hardBoundary.has(word.surface) || word.surface === ',' || word.tags.includes('conjunction'))?.index
+      const explicitSubject = left.length && predicateCandidates(tokens, next, (boundary ?? lookahead + 1) - 1)
+        .some(({index: predicate}) => {
+          if (predicate <= next) return false
+          const verb = tokens[predicate]
+          if (!verb.copula && verb.baseVerb && !tokens[predicate - 1].tags.includes('auxiliary') &&
+              !tokens[next].tags.includes('pronoun')) return false
+          return nominalsOf(next, predicate - 1).some((entity) => entity.start === next &&
+            tokens.slice(entity.end + 1, predicate).every((word) => word.tags.includes('auxiliary') || word.negation))
+        })
       if (left.length && (explicitSubject || (tokens[next]?.tags.includes('verb') &&
           (tokens[next].acts.length || !tokens[next].tags.includes('noun'))))) {
         add(index - 1)
         clauses.at(-1).coordinator = index
         clauses.at(-1).coordinators = coordinators
+        const couldBeNominal = tokens[next].tags.some((tag) => nominalTags.includes(tag) || modifierTags.includes(tag))
+        clauses.at(-1).strongBoundary = coordinators.some((position) => tokens[position].lower === 'then') ||
+          explicitSubject || !couldBeNominal
         start = coordinators.at(-1) + 1
         index = coordinators.at(-1)
       }
     }
   }
   add(tokens.length - 1)
+  return clauses
+}
+
+function expandClause(tokens, clause, nominalsOf) {
   const expanded = []
-  for (const clause of clauses) {
-    const infinitival = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end)
-      .map(({index}) => {
-        const lemmas = tokens[index].lemmas
-        if (!lemmas.some((lemma) => infinitivalVerbs.has(lemma)) &&
-            !tokens[index].frames.has('infinitive') && !tokens[index].frames.has('object_infinitive')) return null
-        const window = lemmas.some((lemma) => objectControlVerbs.has(lemma)) ||
-          tokens[index].frames.has('object_infinitive') ? 6 : 1
-        const marker = tokens.slice(index + 1, Math.min(clause.end, index + window) + 1)
-          .find((token) => token.lower === 'to' && tokens[token.index + 1]?.tags.includes('verb'))
-        return marker ? {index, marker: marker.index} : null
-      }).find(Boolean)
-    if (infinitival) {
-      expanded.push({start: clause.start, end: infinitival.marker - 1, complement: expanded.length + 1})
-      expanded.push({...clause, start: infinitival.marker + 1, marker: infinitival.marker})
-      continue
+
+  const infinitival = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end)
+    .map(({index}) => {
+      const lemmas = tokens[index].lemmas
+      if (!lemmas.some((lemma) => infinitivalVerbs.has(lemma)) &&
+          !tokens[index].frames.has('infinitive') && !tokens[index].frames.has('object_infinitive')) return null
+      const window = lemmas.some((lemma) => objectControlVerbs.has(lemma)) ||
+        tokens[index].frames.has('object_infinitive') ? 6 : 1
+      const marker = tokens.slice(index + 1, Math.min(clause.end, index + window) + 1)
+        .find((token) => token.lower === 'to' && tokens[token.index + 1]?.tags.includes('verb'))
+      return marker ? {index, marker: marker.index} : null
+    }).find(Boolean)
+  if (infinitival) {
+    expanded.push({start: clause.start, end: infinitival.marker - 1, complement: expanded.length + 1})
+    expanded.push({...clause, start: infinitival.marker + 1, marker: infinitival.marker})
+    return expanded
+  }
+  const bare = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
+    tokens[index].frames.has('object_bare_infinitive') &&
+    tokens[index].lemmas.some((lemma) => ['have', 'help', 'let', 'make'].includes(lemma)))
+  if (bare) {
+    const child = predicateCandidates(tokens, bare.index + 2, clause.end).find(({index}) => {
+      const heads = nominalsOf(bare.index + 1, index - 1)
+      return heads.some((head) => head.start === bare.index + 1 && head.end === index - 1) &&
+        tokens[index].baseVerb && !tokens[index].tags.includes('adjective') &&
+        (!tokens[index].tags.includes('noun') || (index === clause.end && tokens[index].frames.has('intransitive')) ||
+          tokens[index + 1]?.tags.includes('preposition') ||
+          tokens[index + 1]?.tags.includes('determiner') || tokens[index - 1].tags.includes('pronoun'))
+    })
+    if (child) {
+      expanded.push({start: clause.start, end: child.index - 1, complement: expanded.length + 1})
+      expanded.push({...clause, start: child.index, nonfinite: true})
+      return expanded
     }
-    const bare = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
-      tokens[index].frames.has('object_bare_infinitive') &&
-      tokens[index].lemmas.some((lemma) => ['have', 'help', 'let', 'make'].includes(lemma)))
-    if (bare) {
-      const child = predicateCandidates(tokens, bare.index + 2, clause.end).find(({index}) => {
-        const heads = nominalsOf(bare.index + 1, index - 1)
-        return heads.some((head) => head.start === bare.index + 1 && head.end === index - 1) &&
-          tokens[index].baseVerb && !tokens[index].tags.includes('adjective') &&
-          (!tokens[index].tags.includes('noun') || (index === clause.end && tokens[index].frames.has('intransitive')) ||
-            tokens[index + 1]?.tags.includes('preposition') ||
-            tokens[index + 1]?.tags.includes('determiner') || tokens[index - 1].tags.includes('pronoun'))
-      })
-      if (child) {
-        expanded.push({start: clause.start, end: child.index - 1, complement: expanded.length + 1})
-        expanded.push({...clause, start: child.index, nonfinite: true})
-        continue
-      }
-    }
-    const relative = !clause.gratitude && tokens.slice(clause.start + 2, clause.end)
-      .find((token) => {
-        if (!['who', 'which', 'that'].includes(token.lower)) return false
-        const host = tokens[token.index - 1]
-        if (!host.tags.some((tag) => tag === 'noun' || tag === 'proper')) return false
-        const parent = predicateCandidates(tokens, clause.start, token.index - 2)
-        const child = predicateCandidates(tokens, token.index + 1, clause.end)
-        return parent.length && child.some(({index}) =>
-          index === token.index + 1 || nominalsOf(token.index + 1, index - 1)
-            .some((entity) => entity.start === token.index + 1 && entity.end === index - 1))
-      })
-    if (relative) {
-      expanded.push({start: clause.start, end: relative.index - 1,
-        relative: expanded.length + 1, relativeCue: relative.index})
-      expanded.push({...clause, start: relative.index + 1, relativeClause: true})
-      continue
-    }
-    const matrix = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
-      index >= clause.start && (tokens[index].lemmas.some((lemma) => contentVerbs.has(lemma)) ||
-        tokens[index].frames.has('finite_clause')))
-    const cue = matrix && tokens[matrix.index + 1]?.lower === 'that' ? matrix.index + 1 : undefined
-    const start = matrix ? (cue ?? matrix.index) + 1 : clause.end + 1
-    const hasSubject = tokens[start]?.tags.some((tag) => ['determiner', ...nominalTags].includes(tag))
-    const embedded = hasSubject && predicateCandidates(tokens, start, clause.end).find(({index}) =>
-      index > start && nominalsOf(start, index - 1).some((entity) => entity.start === start &&
-        tokens.slice(entity.end + 1, index).every((token) => token.negation || token.tags.includes('auxiliary') ||
-          token.tags.includes('adverb'))) && (cue !== undefined || tokens[index].tags.includes('auxiliary') ||
-        tokens[index - 1].tags.includes('auxiliary') || /(?:s|ed)$/u.test(tokens[index].lower) ||
-        tokens[start].tags.includes('pronoun')))
-    if (embedded) {
-      expanded.push({start: clause.start, end: matrix.index, complement: expanded.length + 1, complementCue: cue})
-      expanded.push({...clause, start})
-    } else {
-      expanded.push(clause)
-    }
+  }
+  const relative = !clause.gratitude && tokens.slice(clause.start + 2, clause.end)
+    .find((token) => {
+      if (!['who', 'which', 'that'].includes(token.lower)) return false
+      const host = tokens[token.index - 1]
+      if (!host.tags.some((tag) => tag === 'noun' || tag === 'proper')) return false
+      const parent = predicateCandidates(tokens, clause.start, token.index - 2)
+      const child = predicateCandidates(tokens, token.index + 1, clause.end)
+      return parent.length && child.some(({index}) =>
+        index === token.index + 1 || nominalsOf(token.index + 1, index - 1)
+          .some((entity) => entity.start === token.index + 1 && entity.end === index - 1))
+    })
+  if (relative) {
+    expanded.push({start: clause.start, end: relative.index - 1,
+      relative: expanded.length + 1, relativeCue: relative.index})
+    expanded.push({...clause, start: relative.index + 1, relativeClause: true})
+    return expanded
+  }
+  const matrix = !clause.gratitude && predicateCandidates(tokens, clause.start, clause.end).find(({index}) =>
+    index >= clause.start && (tokens[index].lemmas.some((lemma) => contentVerbs.has(lemma)) ||
+      tokens[index].frames.has('finite_clause')))
+  const cue = matrix && tokens[matrix.index + 1]?.lower === 'that' ? matrix.index + 1 : undefined
+  const start = matrix ? (cue ?? matrix.index) + 1 : clause.end + 1
+  const hasSubject = tokens[start]?.tags.some((tag) => ['determiner', ...nominalTags].includes(tag))
+  const embedded = hasSubject && predicateCandidates(tokens, start, clause.end).find(({index}) =>
+    index > start && nominalsOf(start, index - 1).some((entity) => entity.start === start &&
+      tokens.slice(entity.end + 1, index).every((token) => token.negation || token.tags.includes('auxiliary') ||
+        token.tags.includes('adverb'))) && (cue !== undefined || tokens[index].tags.includes('auxiliary') ||
+      tokens[index - 1].tags.includes('auxiliary') || /(?:s|ed)$/u.test(tokens[index].lower) ||
+      tokens[start].tags.includes('pronoun')))
+  if (embedded) {
+    expanded.push({start: clause.start, end: matrix.index, complement: expanded.length + 1, complementCue: cue})
+    expanded.push({...clause, start})
+  } else {
+    expanded.push(clause)
   }
   return expanded
 }
@@ -279,14 +302,16 @@ function nominalCandidates(tokens, first, last) {
   const entities = []
   for (let head = first; head <= last; head++) {
     const token = tokens[head]
-    const tags = token.tags.filter((tag) => nominalTags.includes(tag))
+    const standaloneNumber = token.tags.includes('numeral') &&
+      !tokens[head + 1]?.tags.some((tag) => tag === 'noun' || tag === 'adjective')
+    const tags = token.tags.filter((tag) => nominalTags.includes(tag) || (standaloneNumber && tag === 'numeral'))
     if (!tags.length || degreeAdverbs.has(token.lower) ||
         (measureUnits.has(token.lower) && tokens[head - 1]?.tags.includes('numeral') &&
           tokens[head + 1]?.tags.includes('adjective')) ||
         (token.tags.includes('preposition') && directionalAdverbs.has(token.lower))) continue
     const constraints = [disjunction(tags.map((tag) => tokenTag(head, tag)))]
     entities.push({start: head, end: head, head, tags, constraints})
-    if (tags.every((tag) => tag === 'pronoun' || tag === 'quote')) continue
+    if (tags.every((tag) => tag === 'pronoun' || tag === 'quote' || tag === 'numeral')) continue
 
     let phase = 'compound'
     const prefix = []
@@ -324,16 +349,31 @@ function prepositionsOf(tokens, clause, kb) {
       key += (last === first ? '' : ' ') + tokens[last].lower
       const lateral = /^on the (left|right) of$/u.test(key)
         ? kb.grammar.prepositions.get(key.replace(/^on/u, 'to')) : undefined
-      if (kb.grammar.prepositions.has(key) || lateral || key === 'than') {
+      if (kb.grammar.prepositions.has(key) || lateral || key === 'than' || key === 'per') {
         const previous = prepositions.at(-1)
         if (previous?.start === first) prepositions.pop()
-        const info = kb.grammar.prepositions.get(key) ?? lateral ?? {rel: 'comparison'}
+        const info = kb.grammar.prepositions.get(key) ?? lateral ?? {rel: key === 'than' ? 'comparison' : key}
         prepositions.push({start: first, end: last, kind: info.rel ?? 'prepositional', space: info.space})
       }
     }
     if (prepositions.at(-1)?.start === first) first = prepositions.at(-1).end
   }
   return prepositions
+}
+
+function subjectAgreement(tokens, entity, predicate, clause, kb) {
+  const verb = tokens[predicate.index]
+  const head = tokens[entity.head]
+  if (entity.end >= predicate.index || verb.copula ||
+      tokens.slice(clause.start, predicate.index).some((word) =>
+        word.tags.includes('auxiliary') || word.tags.includes('conjunction'))) return 0
+  if (kb.grammar.pastForms.has(verb.lower) || /ed$/u.test(verb.lower)) return 0
+  const pronoun = kb.grammar.pronouns.get(head.lower)
+  const thirdSingular = pronoun ? pronoun.person === '3' && pronoun.number === 'sg'
+    : !/s$/u.test(head.lower) || head.tags.includes('proper') ||
+      ['a', 'an', 'each', 'every'].includes(tokens[entity.start].lower)
+  const agrees = thirdSingular ? /s$/u.test(verb.lower) && !verb.baseVerb : verb.baseVerb
+  return agrees ? 2 : -5
 }
 
 function numericLandmark(tokens, prep, clause, predicates, kb) {
@@ -362,7 +402,26 @@ function numericLandmark(tokens, prep, clause, predicates, kb) {
   return {start: head, end: zone ?? head, head, zone, relation, hosts, constraints: [tokenTag(head, 'numeral')]}
 }
 
-export function encodeSyntaxAnalysis(text, kb, lexicon) {
+// Store a sparse set of span hypotheses. The edges between boundaries form a
+// DAG, so choosing one incoming and outgoing edge along the path partitions the
+// input while retaining lexical and clausal readings for the same cue.
+function clausePlans(tokens, discourse, nominalsOf, compact) {
+  const base = splitAtCues(tokens, discourse, nominalsOf)
+  const plans = []
+  for (let from = 0; from < base.length; from++) {
+    for (let to = from; to < Math.min(base.length, from + 3); to++) {
+      if (to > from && (compact || base[to - 1].coordinator === undefined ||
+          base[to - 1].strongBoundary || base[to].end - base[from].start >= 36)) break
+      const span = {...base[to], start: base[from].start}
+      const expanded = expandClause(tokens, span, nominalsOf)
+      if (expanded.length > 1) plans.push({from, to: to + 1, clauses: expanded, linked: true})
+      plans.push({from, to: to + 1, clauses: [span]})
+    }
+  }
+  return {plans, end: base.length}
+}
+
+export function encodeSyntaxAnalysis(text, kb, lexicon, {compact = false} = {}) {
   const tokens = inputTokens(text, kb, lexicon)
   for (const token of tokens) {
     token.baseVerb = lexicon.verbFrames.has(token.lower)
@@ -375,7 +434,8 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     if (!nominalChart.has(key)) nominalChart.set(key, nominalCandidates(tokens, start, end))
     return nominalChart.get(key)
   }
-  const clauses = clauseRanges(tokens, discourse, nominalsOf)
+  const partition = clausePlans(tokens, discourse, nominalsOf, compact)
+  const clauses = []
   for (const {start} of discourse.values()) {
     if (!tokens[start].tags.includes('interjection')) tokens[start].tags.unshift('interjection')
   }
@@ -387,7 +447,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
   const select = (prefix, clauseIndex, itemIndex, condition, weight, structural = true) => {
     const variable = `${prefix}${clauseIndex}_${itemIndex}`
     assertions.push(`(declare-const ${variable} Bool)`)
-    push(`(=> ${variable} ${condition})`)
+    push(`(=> ${variable} ${conjunction([clauses[clauseIndex].active, condition])})`)
     prefer(variable, weight)
     query.push(variable)
     if (structural) block.push(variable)
@@ -395,6 +455,35 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
   }
   const atMostOne = (variables) => {
     if (variables.length > 1) push(`((_ at-most 1) ${variables.join(' ')})`)
+  }
+
+  const incoming = Array.from({length: partition.end + 1}, () => [])
+  const outgoing = Array.from({length: partition.end + 1}, () => [])
+  for (const [index, plan] of partition.plans.entries()) {
+    const variable = 'span' + index
+    assertions.push(`(declare-const ${variable} Bool)`)
+    incoming[plan.to].push(variable)
+    outgoing[plan.from].push(variable)
+    query.push(variable)
+    block.push(variable)
+    const offset = clauses.length
+    for (const [position, clause] of plan.clauses.entries()) {
+      clauses.push({...clause, active: variable, planFrom: plan.from, planTo: plan.to,
+        firstInPlan: position === 0, requiresPredicate: plan.linked || clause.coordinator !== undefined,
+        complement: clause.complement === undefined ? undefined : offset + clause.complement,
+        relative: clause.relative === undefined ? undefined : offset + clause.relative})
+    }
+  }
+  if (partition.end > 0) {
+    push(disjunction(outgoing[0]))
+    push(disjunction(incoming[partition.end]))
+    for (let boundary = 0; boundary <= partition.end; boundary++) {
+      atMostOne(incoming[boundary])
+      atMostOne(outgoing[boundary])
+      if (boundary > 0 && boundary < partition.end) {
+        push(`(= ${disjunction(incoming[boundary])} ${disjunction(outgoing[boundary])})`)
+      }
+    }
   }
 
   for (const token of tokens) {
@@ -406,6 +495,14 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     assertions.push(`(declare-const ${variable} Int)`)
     push(disjunction(token.tags.map((tag) => tokenTag(token.index, tag))))
     prefer(tokenTag(token.index, token.tags[0]), 1)
+    const counts = lexicon.posUsage.get(token.lower) ?? token.lemmas.map((lemma) =>
+      lexicon.posUsage.get(lemma)).find(Boolean)
+    if (counts) {
+      const ranked = token.tags.filter((tag) => counts[tag] > 0).toSorted((a, b) => counts[b] - counts[a])
+      if (ranked.length > 1 && counts[ranked[0]] >= counts[ranked[1]] * 2) {
+        prefer(tokenTag(token.index, ranked[0]), 1)
+      }
+    }
     query.push(variable)
   }
 
@@ -420,6 +517,9 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
     atMostOne(predicates.map(({variable}) => variable))
     clause.predicates = predicates
+    if (clause.requiresPredicate && predicates.length) {
+      push(`(=> ${clause.active} ${disjunction(predicates.map(({variable}) => variable))})`)
+    }
     clause.entities = []
     const nominalStart = clause.gratitude ? clause.expressionEnd + 1 : clause.start
     const nominals = nominalsOf(nominalStart, clause.end)
@@ -448,7 +548,10 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
           tokens.slice(entity.end + 1, predicate.index).some((token) => token.tags.includes('conjunction')) ||
           prepositions.some((prep) => prep.start === entity.end + 1 && prep.end < predicate.index)))
 
-      const preceding = predicates.filter((predicate) => predicate.index < entity.start && !tokens[predicate.index].copula && !inverted(predicate) &&
+      const preceding = predicates.filter((predicate) => predicate.index < entity.start &&
+        !tokens[predicate.index].copula && !inverted(predicate) &&
+        (!entity.tags.includes('numeral') ||
+          tokens[predicate.index].lemmas.some((lemma) => numericObjectVerbs.has(lemma))) &&
         !(tokens[predicate.index].linking && entity.start === entity.head &&
           tokens[entity.head].tags.includes('adjective') && !tokens[entity.head].tags.includes('proper')))
       const following = [...subjectOrder, ...predicates.filter((predicate) => inverted(predicate) && predicate.index < entity.start)]
@@ -457,8 +560,16 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
       const weight = 11 + 6 * (entity.end - entity.start) - (clippedModifier ? 5 : 0)
       const conditions = prepositions.filter((prep) => prep.start <= entity.end)
         .map((prep) => `(not ${prepConstraint(prep)})`)
-      variants(entity, 'subject', following, weight, conditions)
-      variants(entity, 'object', preceding, weight, conditions)
+      const pronoun = kb.grammar.pronouns.get(tokens[entity.head].lower)
+      const cases = entity.tags.includes('pronoun') ? pronoun?.cases ?? [] : []
+      if (!cases.includes('object') || cases.includes('subject') || cases.includes('nominative')) {
+        for (const predicate of following) {
+          variants(entity, 'subject', [predicate], weight + subjectAgreement(tokens, entity, predicate, clause, kb), conditions)
+        }
+      }
+      if (!cases.some((form) => form === 'subject' || form === 'nominative') || cases.includes('object')) {
+        variants(entity, 'object', preceding, weight, conditions)
+      }
       addEntity(entity, 'fragment', [`(not ${disjunction(predicates.map(({variable}) => variable))})`, ...conditions], weight - 1)
     }
 
@@ -468,6 +579,7 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     for (const entity of clause.gratitude ? [] : nominals) {
       if (tokens[entity.head].tags.includes('pronoun')) continue
       const copulas = predicates.filter(({index}) => tokens[index].copula && index < entity.start &&
+        !['where', 'when'].includes(tokens[clause.start].lower) &&
         tokens.slice(index + 1, entity.start).every((token) => token.negation || token.tags.includes('adverb')))
       const clippedModifier = tokens[entity.head].tags.includes('adjective') &&
         nominals.some((longer) => longer.start === entity.start && longer.head === entity.head + 1)
@@ -561,7 +673,8 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
       }
       const hostEntities = clause.entities.filter((entity) =>
         entity.end === prep.start - 1 && entity.role !== 'complement' && !entity.relation)
-      for (const entity of nominals.filter((item) => item.start === prep.end + 1)) {
+      for (const entity of nominals.filter((item) => item.start === prep.end + 1 &&
+          (!number || item.head !== number.head))) {
         const requirement = tokens[prep.start].tags.includes('preposition') ? [tokenTag(prep.start, 'preposition')] : []
         const weight = 12 + 6 * (entity.end - entity.start)
         const item = {...entity, constraints: [...entity.constraints, ...requirement]}
@@ -577,14 +690,26 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
         }
         if (!options.length) options.push(addEntity(item, 'prepositional', [], weight, {prep}))
         atMostOne(options.map(({variable}) => variable))
-        const cue = tokens[entity.end + 1]
-        if (cue?.tags.includes('conjunction')) {
-          for (const option of options) {
-            for (const member of nominals.filter((nominal) => nominal.start === entity.end + 2)) {
-              const bonus = prep.kind === 'between' ? 3 : 0
-              addEntity(member, 'prepositional-member', [option.variable, tokenTag(cue.index, 'conjunction')],
-                10 + bonus + 6 * (member.end - member.start), {parent: option})
-            }
+        for (const option of options) {
+          const ends = new Map([[entity.end, [option]]])
+          const members = nominals.filter(({start}) => start > entity.end)
+            .toSorted((a, b) => a.start - b.start || a.end - b.end)
+          for (const member of members) {
+            let boundary = member.start - 1
+            const cues = []
+            if (tokens[boundary]?.tags.includes('conjunction')) cues.unshift(boundary--)
+            if (tokens[boundary]?.surface === ',') cues.unshift(boundary--)
+            if (!cues.length) continue
+            const predecessors = ends.get(boundary)
+            if (!predecessors) continue
+            const requirements = cues.filter((index) => tokens[index].surface !== ',')
+              .map((index) => tokenTag(index, 'conjunction'))
+            const bonus = prep.kind === 'between' && predecessors.includes(option) ? 3 : 0
+            const item = addEntity(member, 'prepositional-member',
+              [disjunction(predecessors.map(({variable}) => variable)), ...requirements],
+              10 + bonus + 6 * (member.end - member.start), {parent: option, cues})
+            if (!ends.has(member.end)) ends.set(member.end, [])
+            ends.get(member.end).push(item)
           }
         }
       }
@@ -623,8 +748,9 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     atMostOne(clause.entities.filter(({role}) => role === 'complement' || role === 'predicative').map(({variable}) => variable))
     const occupied = Array.from({length: clause.end - clause.start + 1}, () => [])
     for (const {index, variable} of predicates) occupied[index - clause.start].push(variable)
-    for (const {start, end, variable, prep} of clause.entities) {
+    for (const {start, end, variable, prep, cues} of clause.entities) {
       if (prep) for (let index = prep.start; index <= prep.end; index++) occupied[index - clause.start].push(variable)
+      for (const cue of cues ?? []) occupied[cue - clause.start].push(variable)
       for (let index = start; index <= end; index++) occupied[index - clause.start].push(variable)
     }
     for (const variables of occupied) atMostOne(variables)
@@ -670,26 +796,34 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
     }
 
   }
-  for (let index = 1; index < clauses.length; index++) {
-    const prior = clauses[index - 1]
-    const next = clauses[index]
-    if (prior.coordinator === undefined) continue
-    const cue = prior.coordinators.map((position) => tokens[position].lower).find((word) => word === 'and' || word === 'or')
-    if (cue !== 'and' && cue !== 'or') continue
-    const negativePredicates = prior.predicates.filter((predicate) =>
-      tokens.slice(prior.start, predicate.index).some((token) => token.negation)).map(({variable}) => variable)
-    if (prior.inheritedNegation) negativePredicates.push(prior.inheritedNegation)
+  const coordinating = Map.groupBy(clauses.filter((clause) => clause.coordinator !== undefined),
+    (clause) => clause.planTo)
+  for (const [index, next] of clauses.entries()) {
+    if (!next.firstInPlan) continue
+    const previous = coordinating.get(next.planFrom) ?? []
+    const negativeScopes = []
+    const disjunctionScopes = []
+    for (const prior of previous) {
+      const cue = prior.coordinators.map((position) => tokens[position].lower)
+        .find((word) => word === 'and' || word === 'or')
+      if (cue !== 'and' && cue !== 'or') continue
+      const negatives = prior.predicates.filter((predicate) =>
+        tokens.slice(prior.start, predicate.index).some((token) => token.negation)).map(({variable}) => variable)
+      if (prior.inheritedNegation) negatives.push(prior.inheritedNegation)
+      negativeScopes.push(...negatives)
+      if (cue === 'or') disjunctionScopes.push(...negatives)
+    }
     const barePredicates = next.predicates.filter((predicate) =>
-      tokens.slice(next.start, predicate.index).every((token) => token.filler) &&
-      !tokens.slice(next.start, predicate.index).some((token) => token.negation)).map(({variable}) => variable)
-    if (!negativePredicates.length || !barePredicates.length) continue
+      tokens.slice(next.start, predicate.index).every((token) => token.filler)).map(({variable}) => variable)
+    if (!negativeScopes.length || !barePredicates.length) continue
     const variable = `neg${index}`
-    const licensed = conjunction([disjunction(negativePredicates), disjunction(barePredicates)])
+    const licensed = conjunction([disjunction(negativeScopes), disjunction(barePredicates)])
     assertions.push(`(declare-const ${variable} Bool)`)
     push(`(=> ${variable} ${licensed})`)
-    // A shared negative disjunction is the conventional reading. A bare
-    // "and" leaves narrow and wide scope as equal alternatives.
-    if (cue === 'or') prefer(`(=> ${licensed} ${variable})`, 3)
+    if (disjunctionScopes.length) {
+      const disjunctionScope = conjunction([disjunction(disjunctionScopes), disjunction(barePredicates)])
+      prefer(`(=> ${disjunctionScope} ${variable})`, 3)
+    }
     query.push(variable)
     block.push(variable)
     next.inheritedNegation = variable
@@ -699,10 +833,16 @@ export function encodeSyntaxAnalysis(text, kb, lexicon) {
 
 export function decodeSyntaxAnalysis(encoded, model) {
   const tokens = encoded.tokens.map((token) => ({...token, pos: allowedTags[model.get(`p${token.index}`)] ?? token.tags[0]}))
-  const clauses = encoded.clauses.map((clause) => {
+  const selected = encoded.clauses.map((clause, index) => ({clause, index}))
+    .filter(({clause}) => model.get(clause.active))
+  const positions = new Map(selected.map(({index}, position) => [index, position]))
+  const clauses = selected.map(({clause}) => {
     const predicate = clause.predicates.find(({variable}) => model.get(variable))
-    return {...clause, gratitude: model.get(clause.expression) === true, predicate, action: predicate?.acts.find(({variable}) => model.get(variable)),
-      inheritedNegation: model.get(clause.inheritedNegation) === true, entities: clause.entities.filter(({variable}) => model.get(variable))}
+    return {...clause, gratitude: model.get(clause.expression) === true, predicate,
+      complement: positions.get(clause.complement), relative: positions.get(clause.relative),
+      action: predicate?.acts.find(({variable}) => model.get(variable)),
+      inheritedNegation: model.get(clause.inheritedNegation) === true,
+      entities: clause.entities.filter(({variable}) => model.get(variable))}
   })
   return {text: encoded.text, tokens, clauses}
 }

@@ -162,6 +162,23 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       }
     })
 
+    await t.test('chooses clause or phrase coordination from competing source roles', async () => {
+      const [numbered] = await analyse('March gets 40 and April gets 32')
+      assert.match(numbered.sop, /name="March".*\n@e2 nlu.entity head="40"/)
+      assert.match(numbered.sop, /name="April".*\n@e4 nlu.entity head="32"/)
+      assert.match(numbered.sop, /member=\$c1 member=\$c2 cue="and"/)
+      assert.equal((numbered.sop.match(/form=declarative predicate="gets"/g) ?? []).length, 2)
+      const [fragment] = await analyse('a bar chart of roles per role')
+      assert.match(fragment.sop, /compound="bar" head="chart"/)
+      assert.match(fragment.sop, /form=fragment topic=\$e1/)
+      assert.doesNotMatch(fragment.sop, /predicate=/)
+      assert.deepEqual(fragment.unresolved, [])
+      const [listed] = await analyse('Move it beside the tree, the square, and the house.')
+      assert.match(listed.sop, /member=\$e2 member=\$e3 member=\$e4 cue="," cue="," cue="and"/)
+      assert.match(listed.sop, /kind=near from=\$c1 to=\$coord1/)
+      assert.deepEqual(listed.unresolved, [])
+    })
+
     await t.test('separates initial, final and standalone gratitude from argument roles', async () => {
       for (const [text, phrase, separated] of [
         ['Thanks, move it.', 'Thanks', true],

@@ -170,7 +170,7 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
 
   // Solve a MaxSMT problem body (declarations + assertions + assert-soft), returning values for `queryVars`.
   // Supports topK > 1 via blocking clauses over `blockVars`.
-  async function solve(smtBody, queryVars, { topK = 1, blockVars = [], timeout = timeoutMs } = {}) {
+  async function solve(smtBody, queryVars, { topK = 1, blockVars = [], timeout = timeoutMs, objectiveSlack = Infinity } = {}) {
     await ensureInit();
     await maybeReset();
     solveCount++;
@@ -211,6 +211,8 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
         if (solutions.length > 0) break;
         return { ok: false, status: parsed.status, solutions, objectives, raw };
       }
+      if (typeof objectives[0] === 'number' && typeof parsed.objective === 'number' &&
+        parsed.objective > objectives[0] + objectiveSlack) break;
       solutions.push(parsed.values);
       objectives.push(parsed.objective);
 

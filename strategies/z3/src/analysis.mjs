@@ -170,8 +170,9 @@ function emitAnalysis(decoded, kb, objective) {
 
     for (const item of roles('prepositional')) {
       const from = entities.get(item.host) ?? id
-      const member = roles('prepositional-member').find((candidate) => candidate.parent === item)
-      const to = member ? coordination([entities.get(item), entities.get(member)], [item.end + 1]) : entities.get(item)
+      const members = roles('prepositional-member').filter((candidate) => candidate.parent === item)
+      const to = members.length ? coordination([item, ...members].map((member) => entities.get(member)),
+        members.flatMap((member) => member.cues)) : entities.get(item)
       const passive = predicate && /(?:ed|en)$/u.test(tokens[predicate.index].lower) &&
         tokens.slice(clause.start, predicate.index).some((token) => token.pos === 'auxiliary' && token.copula)
       const cue = tokens[item.prep.start].lower
@@ -221,9 +222,16 @@ function emitAnalysis(decoded, kb, objective) {
 }
 
 export async function analyseWithZ3(text, {kb, lexicon, runner, timeout, topK = 4}) {
-  const encoded = encodeSyntaxAnalysis(text, kb, lexicon)
+  let encoded = encodeSyntaxAnalysis(text, kb, lexicon)
   const limit = Math.min(4, Math.max(1, topK))
-  const solved = await runner.solve(encoded.smt, encoded.query, {timeout, topK: limit, blockVars: encoded.block})
+  const solve = (options) => runner.solve(encoded.smt, encoded.query, {timeout, objectiveSlack: 2,
+    topK: limit, blockVars: encoded.block, ...options})
+  let solved = await solve()
+  const fallback = solved.status === 'unknown' && encoded.clauses.length > 1
+  if (fallback) {
+    encoded = encodeSyntaxAnalysis(text, kb, lexicon, {compact: true})
+    solved = await solve({topK: 1})
+  }
   if (!solved.ok) return {analyses: [], analysisDiagnostics: {solver: 'z3', status: solved.status, error: solved.error}}
   const analyses = []
   const seen = new Set()
@@ -237,5 +245,5 @@ export async function analyseWithZ3(text, {kb, lexicon, runner, timeout, topK = 
     analyses.push(analysis)
     if (analyses.length >= Math.min(3, limit)) break
   }
-  return {analyses, analysisDiagnostics: {solver: 'z3', status: solved.status, solvedModels: solved.solutions.length}}
+  return {analyses, analysisDiagnostics: {solver: 'z3', status: solved.status, solvedModels: solved.solutions.length, ...(fallback ? {compactChart: true} : {})}}
 }
