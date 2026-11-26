@@ -7,8 +7,10 @@ import {createReader} from '../../lib/reader.mjs'
 import {hasCompleteSource} from '../../lib/check-analysis.mjs'
 import {distilBert} from '../../strategies/distilbert/index.mjs'
 
-const [study,baselinePath,out,knowledgeDir,python,modelPath]=process.argv.slice(2)
+const [study,baselinePath,out,knowledgeDir,python,modelPath,variant]=process.argv.slice(2)
 if (!modelPath) throw Error('Usage: study.mjs STUDY BASELINE OUTPUT KNOWLEDGE PYTHON MODEL')
+if (variant && variant!=='selector-repair') throw Error('Unknown study variant.')
+const strategy=variant ? (await import('./repair/strategy.mjs')).selectorRepair : distilBert
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex')
 const studyBytes=await readFile(study)
 const baselineBytes=await readFile(baselinePath)
@@ -23,7 +25,7 @@ const write=(name,bytes)=>writeFile(join(out,name),bytes,{flag:'wx'})
 const json=(name,value)=>write(name,JSON.stringify(value,null,2)+'\n')
 const pack=(name,values)=>write(name,gzipSync(values.map(r=>JSON.stringify(r)).join('\n')+'\n'))
 const started=performance.now()
-const reader=await createReader({strategy:distilBert,knowledgeDir,python,modelPath,device:'cpu'})
+const reader=await createReader({strategy,knowledgeDir,python,modelPath,device:'cpu'})
 const startupMs=performance.now()-started
 const pool=[]
 const traces=[]
@@ -38,7 +40,7 @@ try {
     requestMs.push(wallMs)
     traces.push({id,text,wallMs,...result})
     pool.push({id,text,candidates:result.candidates.map(({sop,check},rank)=>({
-      family:'distilbert',rank,sop,eligible:hasCompleteSource(check)
+      family:strategy.name,rank,sop,eligible:hasCompleteSource(check)
     }))})
   }
 } finally {

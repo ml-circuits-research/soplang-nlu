@@ -26,3 +26,9 @@ The static CPU probe checks the full development split through the public valida
 ## Experimental worker
 
 Run `python infer.py CHECKPOINT --device cpu` to open a JSONL session. After loading it emits one readiness message. Send `{id,text,tokens,draftNodes}`. Source coordinates are UTF-16 character offsets, and draft spans are half-open token intervals. The worker responds `{id,nodes}` or `{id,error}`. Render and verify proposals in the ordinary public adapter before consuming them. This directory does not register a public strategy.
+
+## Paired CPU study
+
+The experimental reader obtains the selector's two public readings from the current text. It sends the first reading to the editor. If the edit passes the full source gate and differs structurally from both originals, it occupies the second slot alongside a complete first draft. When the first draft is incomplete, the eligible edit goes first. Otherwise the original readings are preserved. The comparison preserves directed semantic roles and sequence member order, and ignores wire names and line order. Engine and transport errors fail the study. This policy was fixed before evaluating the study texts.
+
+Run the paired source study with the existing DistilBERT study command and append `selector-repair` after the checkpoint argument. CPU request times include live proposal generation, editing and validation. The ordinary blind review and study scoring commands accept the resulting pool.

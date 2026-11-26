@@ -16,19 +16,19 @@ async function deadline(action, timeoutMs, description) {
   }
 }
 
-async function open({
+export async function openGraphWorker({
   python = process.env.SOP_NLU_DISTILBERT_PYTHON ?? 'python3',
   modelPath = process.env.SOP_NLU_DISTILBERT_MODEL,
   device = process.env.SOP_NLU_DISTILBERT_DEVICE ?? 'auto',
   workerPath = defaultWorker,
   timeoutMs = 120000
-} = {}) {
+} = {}, {modelFlag = '--model'} = {}) {
   if (!modelPath) throw Error('Set SOP_NLU_DISTILBERT_MODEL or pass modelPath.')
   if (!['auto','cpu','cuda'].includes(device)) throw Error('Expected DistilBERT device auto, cpu or cuda.')
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647) {
     throw Error('Expected a positive DistilBERT worker timeout in milliseconds.')
   }
-  const child = spawn(python,['-u',workerPath,'--model',modelPath,'--device',device],{stdio:['pipe','pipe','pipe']})
+  const child = spawn(python,['-u',workerPath,...(modelFlag ? [modelFlag] : []),modelPath,'--device',device],{stdio:['pipe','pipe','pipe']})
   let stderr = ''
   child.stderr.setEncoding('utf8').on('data',chunk=>{ stderr = (stderr + chunk).slice(-2000) })
   child.stdin.on('error',()=>{})
@@ -73,7 +73,7 @@ async function open({
     return {analyses:[],analysisDiagnostics:{...diagnostics,status:'error',error:error.message}}
   }
 
-  async function run(text) {
+  async function run(text,draftNodes) {
     if (fatal) return failure(fatal)
     if (typeof text !== 'string' || !text.trim()) return failure(Error('Expected a nonempty source string.'))
     const tokens = tokenizeSource(text)
@@ -81,7 +81,7 @@ async function open({
     const id = ++requestId
     let response
     try {
-      const line = JSON.stringify({id,text,tokens})+'\n'
+      const line = JSON.stringify({id,text,tokens,...(draftNodes === undefined ? {} : {draftNodes})})+'\n'
       await deadline(new Promise((resolve,reject)=>{
         child.stdin.write(line,error=>error ? reject(error) : resolve())
       }),timeoutMs,'DistilBERT request write')
@@ -104,9 +104,9 @@ async function open({
     }
   }
 
-  function analyse(text) {
+  function analyse(text,draftNodes) {
     if (closing) return Promise.resolve(failure(Error('DistilBERT reader is closed.')))
-    const next = pending.then(()=>run(text))
+    const next = pending.then(()=>run(text,draftNodes))
     pending = next.catch(()=>{})
     return next
   }
@@ -121,4 +121,4 @@ async function open({
   }}
 }
 
-export const distilBert = {name:'distilbert',open}
+export const distilBert = {name:'distilbert',open:options=>openGraphWorker(options)}

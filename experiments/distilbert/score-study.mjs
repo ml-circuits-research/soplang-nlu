@@ -14,7 +14,10 @@ const votes=new Map(jsonl('votes.jsonl.gz').map(v=>[key(v.id,v.sop),v.accepted])
 const validate=await createAnalysisValidator({knowledgeDir})
 if(baseline.length!==pool.length)throw Error('Unexpected cohort length')
 const baselineFields=['pretrained-direct','base-beam','selector']
-const fields=['distilbert',...baselineFields]
+const families=new Set(pool.flatMap(row=>row.candidates.map(candidate=>candidate.family)))
+if(families.size>1) throw Error('Expected one strategy per study')
+const strategy=[...families][0] ?? 'distilbert'
+const fields=[strategy,...baselineFields]
 let baselineGateChanges=0
 const outcomes=pool.map(({id,text,candidates},i)=>{
   const old=baseline[i]
@@ -22,7 +25,7 @@ const outcomes=pool.map(({id,text,candidates},i)=>{
   for (const field of baselineFields) for(const c of old[field]) {
     if(hasCompleteSource(validate(text,c.sop))!==c.eligible)baselineGateChanges++
   }
-  return {id,text,...Object.fromEntries(baselineFields.map(f=>[f,old[f]])),distilbert:candidates.map(c=>{
+  return {id,text,...Object.fromEntries(baselineFields.map(f=>[f,old[f]])),[strategy]:candidates.map(c=>{
     const k=key(id,c.sop)
     const accepted=votes.get(k)
     if(hasCompleteSource(validate(text,c.sop))!==c.eligible || c.eligible&&typeof accepted!=='boolean')throw Error('Eligibility or vote mismatch on '+id)
@@ -38,8 +41,8 @@ function metrics(cap){
   const selection=(row,field)=>row[field].slice(0,cap)
   const pass=(row,field)=>any(selection(row,field))
   const result={strategies:{},paired:{},
-    distilbertOnlyAcrossBaselines:n(r=>pass(r,'distilbert')&&baselineFields.every(k=>!pass(r,k))),
-    combinedSelectorDistilbertAny:n(r=>pass(r,'distilbert')||pass(r,'selector'))}
+    [strategy+'OnlyAcrossBaselines']:n(r=>pass(r,strategy)&&baselineFields.every(k=>!pass(r,k))),
+    [strategy==='distilbert'?'combinedSelectorDistilbertAny':'combinedSelectorAndStudyAny']:n(r=>pass(r,strategy)||pass(r,'selector'))}
   for(const field of fields){
     const passes=n(r=>pass(r,field)), uniform=n(r=>all(selection(r,field)))
     result.strategies[field]={coverage:n(r=>selection(r,field).some(c=>c.eligible)),
@@ -47,10 +50,10 @@ function metrics(cap){
       outputs:outcomes.reduce((total,r)=>total+selection(r,field).length,0)}
   }
   for(const field of baselineFields){
-    result.paired[field]={both:n(r=>pass(r,'distilbert')&&pass(r,field)),
-      distilbertOnly:n(r=>pass(r,'distilbert')&&!pass(r,field)),
-      baselineOnly:n(r=>!pass(r,'distilbert')&&pass(r,field)),
-      neither:n(r=>!pass(r,'distilbert')&&!pass(r,field))}
+    result.paired[field]={both:n(r=>pass(r,strategy)&&pass(r,field)),
+      [strategy+'Only']:n(r=>pass(r,strategy)&&!pass(r,field)),
+      baselineOnly:n(r=>!pass(r,strategy)&&pass(r,field)),
+      neither:n(r=>!pass(r,strategy)&&!pass(r,field))}
   }
   return result
 }
