@@ -1,0 +1,562 @@
+{
+  "protocol": "nlu-public-candidate-review-v1",
+  "sample": 1831,
+  "revision": "38ae0b563db2392bd7bfc5d11f6c2e9f4a0339bf",
+  "seed": "3cd40b9f07f89593ad3f613d1cb0698f5e386b4d43202899",
+  "libraryRevision": "3fc0d9520027dcc5f037be2b8cc35259f7b80904",
+  "knowledgeRevision": "3b2deebd85aa6ca070b7dc2ce94ff775fc891658",
+  "sampleSha256": "9a6cdc16332e32b7d78ed1500738e75ada86a86234e44396d173860086b44e65",
+  "frozenNativeReferenceTexts": 2,
+  "candidateTargets": 8786,
+  "audit": {
+    "thresholdDisagreements": 954,
+    "exactGradeAgreements": 7176,
+    "agreementAuditCount": 40,
+    "agreementAuditContradictions": 6
+  },
+  "reviewDigests": {
+    "primary": "f5841b5e6aefc07c0b69cf82b705cb3f82d783eb1c3a715c4c6cffeedce5e9dd",
+    "independent": "ee86808cbe2dc84152c13ab231bee1dcc74558eaf4c6c3549a3c9bb3059eb36d",
+    "audit": "6896409a6e6664f00def447c15562cf35777ba0c13c8a848c39e63f336c62020"
+  },
+  "reviewExecution": {
+    "primary": {
+      "profile": "native",
+      "model": "gpt-6-sol",
+      "rows": 1717,
+      "groups": 8786,
+      "emptyGroups": 0,
+      "batches": 408,
+      "jobs": 12,
+      "maxRowsPerBatch": 10,
+      "maxCharactersPerBatch": 36000,
+      "maxGroupsPerBatch": 24,
+      "retries": 2,
+      "timeoutSeconds": 180,
+      "strictRecheck": false,
+      "promptSha256": "2b199f24ac792fea7af6638dbd610f0e64d3eea726ff1f0fa19a851746cb592c",
+      "packetsSha256": "3e5aae88a21354e416d73f64f24dc0589fadbee8cf930fbc1fb6730b51e646ac",
+      "timeSeconds": 863.3272418409979
+    },
+    "independent": {
+      "profile": "native",
+      "model": "gpt-6.1-terra",
+      "rows": 1717,
+      "groups": 8786,
+      "emptyGroups": 0,
+      "batches": 408,
+      "jobs": 12,
+      "maxRowsPerBatch": 10,
+      "maxCharactersPerBatch": 36000,
+      "maxGroupsPerBatch": 24,
+      "retries": 2,
+      "timeoutSeconds": 180,
+      "strictRecheck": false,
+      "promptSha256": "2b199f24ac792fea7af6638dbd610f0e64d3eea726ff1f0fa19a851746cb592c",
+      "packetsSha256": "3e5aae88a21354e416d73f64f24dc0589fadbee8cf930fbc1fb6730b51e646ac",
+      "timeSeconds": 825.3564724690004
+    },
+    "audit": {
+      "profile": "native",
+      "model": "gpt-6.2-sol",
+      "rows": 604,
+      "groups": 994,
+      "emptyGroups": 0,
+      "batches": 61,
+      "jobs": 12,
+      "maxRowsPerBatch": 10,
+      "maxCharactersPerBatch": 36000,
+      "maxGroupsPerBatch": 24,
+      "retries": 2,
+      "timeoutSeconds": 180,
+      "strictRecheck": false,
+      "promptSha256": "2b199f24ac792fea7af6638dbd610f0e64d3eea726ff1f0fa19a851746cb592c",
+      "packetsSha256": "6975640a261c9ff2c15e2f9c969850ba9e7ab74146bc5e064e99f7513b398262",
+      "timeSeconds": 162.15765845999704
+    }
+  },
+  "engines": {
+    "z3": {
+      "outcomes": {
+        "counts": {
+          "none": 1479,
+          "some": 93,
+          "all": 259
+        },
+        "percentages": {
+          "none": 80.78,
+          "some": 5.08,
+          "all": 14.14
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 2,
+          "L1": 171,
+          "L2": 1022,
+          "L3": 199,
+          "L4": 58,
+          "L5": 4,
+          "L6": 23,
+          "L7": 93,
+          "L8": 259,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0.11,
+          "L1": 9.34,
+          "L2": 55.82,
+          "L3": 10.87,
+          "L4": 3.17,
+          "L5": 0.22,
+          "L6": 1.25,
+          "L7": 5.08,
+          "L8": 14.14,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 204082.365407,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 8.971867786559852,
+        "medianMs": 214.43870699999388,
+        "p95Ms": 2635.6101000000017,
+        "errors": 1,
+        "withSchemaValidReading": 1829,
+        "withFullyAccountedReading": 1829,
+        "withAllWordsAssignedRoles": 727,
+        "failures": []
+      }
+    },
+    "prolog-worlds": {
+      "outcomes": {
+        "counts": {
+          "none": 1336,
+          "some": 150,
+          "all": 345
+        },
+        "percentages": {
+          "none": 72.97,
+          "some": 8.19,
+          "all": 18.84
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 281,
+          "L2": 715,
+          "L3": 249,
+          "L4": 63,
+          "L5": 4,
+          "L6": 24,
+          "L7": 150,
+          "L8": 345,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 15.35,
+          "L2": 39.05,
+          "L3": 13.6,
+          "L4": 3.44,
+          "L5": 0.22,
+          "L6": 1.31,
+          "L7": 8.19,
+          "L8": 18.84,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 12776.476900000009,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 143.3102422781353,
+        "medianMs": 5.421041999999943,
+        "p95Ms": 86.12238400000001,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1116,
+        "failures": []
+      }
+    },
+    "prolog-example-transfer": {
+      "outcomes": {
+        "counts": {
+          "none": 1331,
+          "some": 202,
+          "all": 298
+        },
+        "percentages": {
+          "none": 72.69,
+          "some": 11.03,
+          "all": 16.28
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 281,
+          "L2": 715,
+          "L3": 244,
+          "L4": 63,
+          "L5": 4,
+          "L6": 24,
+          "L7": 202,
+          "L8": 298,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 15.35,
+          "L2": 39.05,
+          "L3": 13.33,
+          "L4": 3.44,
+          "L5": 0.22,
+          "L6": 1.31,
+          "L7": 11.03,
+          "L8": 16.27,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 34524.965037000016,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 53.034087016098,
+        "medianMs": 21.29893600000014,
+        "p95Ms": 411.49181899999894,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1116,
+        "failures": []
+      }
+    },
+    "neuro-z3": {
+      "outcomes": {
+        "counts": {
+          "none": 1207,
+          "some": 1,
+          "all": 623
+        },
+        "percentages": {
+          "none": 65.92,
+          "some": 0.05,
+          "all": 34.03
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 1,
+          "L1": 115,
+          "L2": 956,
+          "L3": 99,
+          "L4": 18,
+          "L5": 3,
+          "L6": 15,
+          "L7": 1,
+          "L8": 623,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0.06,
+          "L1": 6.28,
+          "L2": 52.21,
+          "L3": 5.41,
+          "L4": 0.98,
+          "L5": 0.16,
+          "L6": 0.82,
+          "L7": 0.05,
+          "L8": 34.03,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 35697.17045799998,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 51.292580798645915,
+        "medianMs": 83.66297000000122,
+        "p95Ms": 148.1465270000008,
+        "errors": 1,
+        "withSchemaValidReading": 1830,
+        "withFullyAccountedReading": 1830,
+        "withAllWordsAssignedRoles": 710,
+        "failures": []
+      }
+    },
+    "neuro-prolog": {
+      "outcomes": {
+        "counts": {
+          "none": 879,
+          "some": 343,
+          "all": 609
+        },
+        "percentages": {
+          "none": 48.01,
+          "some": 18.73,
+          "all": 33.26
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 186,
+          "L2": 473,
+          "L3": 185,
+          "L4": 8,
+          "L5": 5,
+          "L6": 22,
+          "L7": 343,
+          "L8": 609,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 10.16,
+          "L2": 25.83,
+          "L3": 10.11,
+          "L4": 0.44,
+          "L5": 0.27,
+          "L6": 1.2,
+          "L7": 18.73,
+          "L8": 33.26,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 32116.503367000027,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 57.011187646329134,
+        "medianMs": 62.63182700000107,
+        "p95Ms": 118.51800300000104,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1358,
+        "failures": []
+      }
+    },
+    "spacy-direct": {
+      "outcomes": {
+        "counts": {
+          "none": 723,
+          "some": 0,
+          "all": 1108
+        },
+        "percentages": {
+          "none": 39.49,
+          "some": 0,
+          "all": 60.51
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 138,
+          "L2": 398,
+          "L3": 156,
+          "L4": 3,
+          "L5": 4,
+          "L6": 24,
+          "L7": 0,
+          "L8": 1108,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 7.54,
+          "L2": 21.74,
+          "L3": 8.52,
+          "L4": 0.16,
+          "L5": 0.22,
+          "L6": 1.31,
+          "L7": 0,
+          "L8": 60.51,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 24326.85295000003,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 75.26662013221886,
+        "medianMs": 62.45545800000036,
+        "p95Ms": 98.68908399999964,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1433,
+        "failures": []
+      }
+    },
+    "spacy-beam": {
+      "outcomes": {
+        "counts": {
+          "none": 643,
+          "some": 367,
+          "all": 821
+        },
+        "percentages": {
+          "none": 35.12,
+          "some": 20.04,
+          "all": 44.84
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 139,
+          "L2": 290,
+          "L3": 169,
+          "L4": 4,
+          "L5": 8,
+          "L6": 33,
+          "L7": 367,
+          "L8": 821,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 7.59,
+          "L2": 15.84,
+          "L3": 9.23,
+          "L4": 0.22,
+          "L5": 0.44,
+          "L6": 1.8,
+          "L7": 20.04,
+          "L8": 44.84,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 26294.185893999995,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 69.6351660165988,
+        "medianMs": 65.75974599999972,
+        "p95Ms": 105.58345300000019,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1541,
+        "failures": []
+      }
+    },
+    "neuro-selector": {
+      "outcomes": {
+        "counts": {
+          "none": 458,
+          "some": 674,
+          "all": 699
+        },
+        "percentages": {
+          "none": 25.01,
+          "some": 36.81,
+          "all": 38.18
+        }
+      },
+      "grades": {
+        "counts": {
+          "L0": 0,
+          "L1": 83,
+          "L2": 129,
+          "L3": 189,
+          "L4": 5,
+          "L5": 12,
+          "L6": 40,
+          "L7": 674,
+          "L8": 699,
+          "L9": 0,
+          "L10": 0
+        },
+        "percentages": {
+          "L0": 0,
+          "L1": 4.53,
+          "L2": 7.05,
+          "L3": 10.32,
+          "L4": 0.27,
+          "L5": 0.66,
+          "L6": 2.18,
+          "L7": 36.81,
+          "L8": 38.18,
+          "L9": 0,
+          "L10": 0
+        }
+      },
+      "timing": {
+        "wallMs": 61148.113205,
+        "requests": 1831,
+        "expectedRequests": 1831,
+        "attemptedRequests": 1831,
+        "requestsPerSecond": 29.943687614064952,
+        "medianMs": 135.73487699999987,
+        "p95Ms": 310.35118299999885,
+        "errors": 0,
+        "withSchemaValidReading": 1831,
+        "withFullyAccountedReading": 1831,
+        "withAllWordsAssignedRoles": 1702,
+        "failures": []
+      }
+    }
+  },
+  "training": {
+    "splitVersion": "exact-original-text-v1",
+    "population": 183094,
+    "evaluationRows": 1831,
+    "evaluationTexts": 1831,
+    "excludedRows": 1831,
+    "excludedCircuits": 1832,
+    "trainingRows": 181263,
+    "trainingTexts": 181263,
+    "trainingCircuits": 181537,
+    "exactTextOverlap": 0,
+    "evaluationSha256": "b1daa10ea789d3d544302cdd185f7f5300085c7c14f7313c4a6cd08035195ba4",
+    "trainingSha256": "c9a21ed69aaf980b470ec985d68b50d5e6c06b91fc3e676985cbef4746bcb1f0",
+    "excludedSha256": "9cf3fc2dae0244536b3a95b666f28945fb308a371bbfdd453320a6bc12a92a2e",
+    "revision": "38ae0b563db2392bd7bfc5d11f6c2e9f4a0339bf",
+    "splitMs": 3053.166105000011,
+    "trainingMs": 8543.158507000015,
+    "modelSha256": "8dee248ed3580cb16fdf6d23a61ebdb88b6f3fafe5ee86ac5568ea57f8f54e87",
+    "modelVersion": 2,
+    "modelTemplates": 76430,
+    "modelTraining": {
+      "inputTexts": 181263,
+      "distinctTexts": 181263,
+      "inputCircuits": 181537,
+      "duplicateReferences": 0,
+      "skippedTextCircuits": 0,
+      "parseRejected": 0,
+      "unsupportedCircuit": 33178,
+      "unalignedCircuit": 43215,
+      "eligibleCircuits": 105144,
+      "weakGroups": 2511,
+      "templates": 76430
+    }
+  }
+}

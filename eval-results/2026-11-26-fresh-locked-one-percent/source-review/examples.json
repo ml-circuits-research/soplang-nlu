@@ -1,0 +1,301 @@
+[
+  {
+    "id": "drawing/scenes-22.csv#166",
+    "note": "Direct left the number 100 unresolved and scored NONE. Beam supplied an accepted nominal adjunct linking “100 high” to the house, alongside a rejected apposition, so it scored SOME.",
+    "readings": [
+      {
+        "id": "drawing/scenes-22.csv#166",
+        "rowIndex": 449,
+        "engine": "spacy-direct",
+        "text": "draw a house, 100 high",
+        "outcome": "none",
+        "grade": 2,
+        "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\" unresolved=\"100\"\n@n2 nlu.entity head=\"house\" determiner=\"a\" modifier=\"high\""
+        ],
+        "acceptedCandidateSops": [],
+        "candidates": [
+          {
+            "index": 6,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\" unresolved=\"100\"\n@n2 nlu.entity head=\"house\" determiner=\"a\" modifier=\"high\"",
+            "grade": 2,
+            "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+            "reviewed": false
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      },
+      {
+        "id": "drawing/scenes-22.csv#166",
+        "rowIndex": 449,
+        "engine": "spacy-beam",
+        "text": "draw a house, 100 high",
+        "outcome": "some",
+        "grade": 7,
+        "reason": "Directs drawing a house and attaches “100 high” to it.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\"\n@n2 nlu.entity head=\"house\" determiner=\"a\"\n@n3 nlu.entity literal=\"100\" modifier=\"high\"\n@n4 nlu.relation kind=apposition from=$n2 to=$n3",
+          "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\"\n@n2 nlu.entity head=\"house\" determiner=\"a\"\n@n3 nlu.entity literal=\"100\" modifier=\"high\"\n@n4 nlu.relation kind=nominal_adjunct from=$n2 to=$n3"
+        ],
+        "acceptedCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\"\n@n2 nlu.entity head=\"house\" determiner=\"a\"\n@n3 nlu.entity literal=\"100\" modifier=\"high\"\n@n4 nlu.relation kind=nominal_adjunct from=$n2 to=$n3"
+        ],
+        "candidates": [
+          {
+            "index": 4,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\"\n@n2 nlu.entity head=\"house\" determiner=\"a\"\n@n3 nlu.entity literal=\"100\" modifier=\"high\"\n@n4 nlu.relation kind=apposition from=$n2 to=$n3",
+            "grade": 3,
+            "reason": "‘Draw’ correctly takes a house as its object, but apposition gives ‘100 high’ the wrong grammatical relationship to the house. The phrase specifies its height.",
+            "reviewed": true
+          },
+          {
+            "index": 5,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"draw\" polarity=positive direct_object=$n2 separator=\",\"\n@n2 nlu.entity head=\"house\" determiner=\"a\"\n@n3 nlu.entity literal=\"100\" modifier=\"high\"\n@n4 nlu.relation kind=nominal_adjunct from=$n2 to=$n3",
+            "grade": 8,
+            "reason": "Directs drawing a house and attaches “100 high” to it.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      }
+    ]
+  },
+  {
+    "id": "drawing/people-07.csv#25",
+    "note": "Direct scored ALL by making her hair the object and “longer” its requested result. Beam included that circuit plus readings that made “longer” a modifier of the hair, giving SOME.",
+    "readings": [
+      {
+        "id": "drawing/people-07.csv#25",
+        "rowIndex": 1627,
+        "engine": "spacy-direct",
+        "text": "make her hair longer",
+        "outcome": "all",
+        "grade": 8,
+        "reason": "Imperative make has her hair as object and longer as result complement.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\""
+        ],
+        "acceptedCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\""
+        ],
+        "candidates": [
+          {
+            "index": 10,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\"",
+            "grade": 8,
+            "reason": "Imperative make has her hair as object and longer as result complement.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      },
+      {
+        "id": "drawing/people-07.csv#25",
+        "rowIndex": 1627,
+        "engine": "spacy-beam",
+        "text": "make her hair longer",
+        "outcome": "some",
+        "grade": 7,
+        "reason": "Imperative make has her hair as object and longer as result complement.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\"",
+          "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2\n@n2 nlu.entity head=\"hair\" determiner=\"her\" modifier=\"longer\"",
+          "@n1 nlu.clause form=declarative predicate=\"make\" polarity=positive subject=$n2\n@n2 nlu.entity head=\"hair\" determiner=\"her\" modifier=\"longer\""
+        ],
+        "acceptedCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\""
+        ],
+        "candidates": [
+          {
+            "index": 10,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2 result_complement=\"longer\"\n@n2 nlu.entity head=\"hair\" determiner=\"her\"",
+            "grade": 8,
+            "reason": "Imperative make has her hair as object and longer as result complement.",
+            "reviewed": true
+          },
+          {
+            "index": 9,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"make\" polarity=positive direct_object=$n2\n@n2 nlu.entity head=\"hair\" determiner=\"her\" modifier=\"longer\"",
+            "grade": 7,
+            "reason": "Recognizes the imperative and her hair, but records longer as a modifier rather than the requested result.",
+            "reviewed": true
+          },
+          {
+            "index": 8,
+            "sop": "@n1 nlu.clause form=declarative predicate=\"make\" polarity=positive subject=$n2\n@n2 nlu.entity head=\"hair\" determiner=\"her\" modifier=\"longer\"",
+            "grade": 1,
+            "reason": "Reads the directive as a declaration and attaches longer to hair rather than as the result.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      }
+    ]
+  },
+  {
+    "id": "diagram/nodes-01.csv#2245",
+    "note": "Both standalone spaCy sets left Start unresolved. Both selector circuits linked Start as recipient and “a red fill” as direct object, giving ALL.",
+    "readings": [
+      {
+        "id": "diagram/nodes-01.csv#2245",
+        "rowIndex": 735,
+        "engine": "spacy-direct",
+        "text": "give Start a red fill",
+        "outcome": "none",
+        "grade": 2,
+        "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive direct_object=$n2 unresolved=\"Start\"\n@n2 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\""
+        ],
+        "acceptedCandidateSops": [],
+        "candidates": [
+          {
+            "index": 3,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive direct_object=$n2 unresolved=\"Start\"\n@n2 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\"",
+            "grade": 2,
+            "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+            "reviewed": false
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      },
+      {
+        "id": "diagram/nodes-01.csv#2245",
+        "rowIndex": 735,
+        "engine": "spacy-beam",
+        "text": "give Start a red fill",
+        "outcome": "none",
+        "grade": 2,
+        "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive direct_object=$n2 unresolved=\"Start\"\n@n2 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\""
+        ],
+        "acceptedCandidateSops": [],
+        "candidates": [
+          {
+            "index": 3,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive direct_object=$n2 unresolved=\"Start\"\n@n2 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\"",
+            "grade": 2,
+            "reason": "The grounded proposal leaves material source uncovered or unresolved.",
+            "reviewed": false
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      },
+      {
+        "id": "diagram/nodes-01.csv#2245",
+        "rowIndex": 735,
+        "engine": "neuro-selector",
+        "text": "give Start a red fill",
+        "outcome": "all",
+        "grade": 8,
+        "reason": "Imperative “give” has Start as recipient and a red fill as its object.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive indirect_object=$n2 direct_object=$n3\n@n2 nlu.entity name=\"Start\"\n@n3 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\"",
+          "@e1 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\" color=red\n@e2 nlu.entity name=\"Start\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2"
+        ],
+        "acceptedCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive indirect_object=$n2 direct_object=$n3\n@n2 nlu.entity name=\"Start\"\n@n3 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\"",
+          "@e1 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\" color=red\n@e2 nlu.entity name=\"Start\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2"
+        ],
+        "candidates": [
+          {
+            "index": 4,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"give\" polarity=positive indirect_object=$n2 direct_object=$n3\n@n2 nlu.entity name=\"Start\"\n@n3 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\"",
+            "grade": 8,
+            "reason": "Imperative “give” has Start as recipient and a red fill as its object.",
+            "reviewed": true
+          },
+          {
+            "index": 1,
+            "sop": "@e1 nlu.entity head=\"fill\" determiner=\"a\" modifier=\"red\" color=red\n@e2 nlu.entity name=\"Start\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2",
+            "grade": 8,
+            "reason": "Imperative “give” has Start as recipient and a red fill as its object.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      }
+    ]
+  },
+  {
+    "id": "drawing/scenes-07.csv#1302",
+    "note": "Direct kept “settle” as a separate command and attached “on the boat” to it. The three selector circuits all made “settle” an entity, so direct scored ALL and the selector scored NONE.",
+    "readings": [
+      {
+        "id": "drawing/scenes-07.csv#1302",
+        "rowIndex": 1060,
+        "engine": "spacy-direct",
+        "text": "guide the kite up four spaces, then over one space to the right and then settle on the boat",
+        "outcome": "all",
+        "grade": 8,
+        "reason": "Captures guiding the kite up four spaces, over one space to the right, then settling on the boat.",
+        "publicCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"guide\" polarity=positive direct_object=$n3 particle=\"up\" adverb=\"then\"\n@n2 nlu.clause form=imperative predicate=\"settle\" polarity=positive adverb=\"then\"\n@n3 nlu.entity head=\"kite\" determiner=\"the\"\n@n4 nlu.coordination kind=additive member=$n1 member=$n2 cue=\",\" cue=\"and\"\n@n5 nlu.entity head=\"spaces\" quantity=\"four\"\n@n6 nlu.relation kind=nominal_adjunct from=$n1 to=$n5\n@n7 nlu.entity head=\"space\" quantity=\"one\"\n@n8 nlu.relation kind=over from=$n1 to=$n7 cue=\"over\"\n@n9 nlu.entity head=\"right\" determiner=\"the\"\n@n10 nlu.relation kind=to from=$n1 to=$n9 cue=\"to\"\n@n11 nlu.entity head=\"boat\" determiner=\"the\"\n@n12 nlu.relation kind=on from=$n2 to=$n11 cue=\"on\""
+        ],
+        "acceptedCandidateSops": [
+          "@n1 nlu.clause form=imperative predicate=\"guide\" polarity=positive direct_object=$n3 particle=\"up\" adverb=\"then\"\n@n2 nlu.clause form=imperative predicate=\"settle\" polarity=positive adverb=\"then\"\n@n3 nlu.entity head=\"kite\" determiner=\"the\"\n@n4 nlu.coordination kind=additive member=$n1 member=$n2 cue=\",\" cue=\"and\"\n@n5 nlu.entity head=\"spaces\" quantity=\"four\"\n@n6 nlu.relation kind=nominal_adjunct from=$n1 to=$n5\n@n7 nlu.entity head=\"space\" quantity=\"one\"\n@n8 nlu.relation kind=over from=$n1 to=$n7 cue=\"over\"\n@n9 nlu.entity head=\"right\" determiner=\"the\"\n@n10 nlu.relation kind=to from=$n1 to=$n9 cue=\"to\"\n@n11 nlu.entity head=\"boat\" determiner=\"the\"\n@n12 nlu.relation kind=on from=$n2 to=$n11 cue=\"on\""
+        ],
+        "candidates": [
+          {
+            "index": 6,
+            "sop": "@n1 nlu.clause form=imperative predicate=\"guide\" polarity=positive direct_object=$n3 particle=\"up\" adverb=\"then\"\n@n2 nlu.clause form=imperative predicate=\"settle\" polarity=positive adverb=\"then\"\n@n3 nlu.entity head=\"kite\" determiner=\"the\"\n@n4 nlu.coordination kind=additive member=$n1 member=$n2 cue=\",\" cue=\"and\"\n@n5 nlu.entity head=\"spaces\" quantity=\"four\"\n@n6 nlu.relation kind=nominal_adjunct from=$n1 to=$n5\n@n7 nlu.entity head=\"space\" quantity=\"one\"\n@n8 nlu.relation kind=over from=$n1 to=$n7 cue=\"over\"\n@n9 nlu.entity head=\"right\" determiner=\"the\"\n@n10 nlu.relation kind=to from=$n1 to=$n9 cue=\"to\"\n@n11 nlu.entity head=\"boat\" determiner=\"the\"\n@n12 nlu.relation kind=on from=$n2 to=$n11 cue=\"on\"",
+            "grade": 8,
+            "reason": "Captures guiding the kite up four spaces, over one space to the right, then settling on the boat.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      },
+      {
+        "id": "drawing/scenes-07.csv#1302",
+        "rowIndex": 1060,
+        "engine": "neuro-selector",
+        "text": "guide the kite up four spaces, then over one space to the right and then settle on the boat",
+        "outcome": "none",
+        "grade": 1,
+        "reason": "Treats settle as an entity coordinated with right instead of the second imperative action.",
+        "publicCandidateSops": [
+          "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$c1 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\"",
+          "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$e1 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\"",
+          "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$e5 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\""
+        ],
+        "acceptedCandidateSops": [],
+        "candidates": [
+          {
+            "index": 1,
+            "sop": "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$c1 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\"",
+            "grade": 1,
+            "reason": "Treats settle as an entity coordinated with right instead of the second imperative action.",
+            "reviewed": true
+          },
+          {
+            "index": 2,
+            "sop": "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$e1 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\"",
+            "grade": 1,
+            "reason": "Treats settle as an entity rather than an imperative predicate.",
+            "reviewed": true
+          },
+          {
+            "index": 3,
+            "sop": "@e1 nlu.entity head=\"kite\" determiner=\"the\" kind=kite\n@e2 nlu.entity head=\"spaces\" quantity=\"four\"\n@r1 nlu.relation kind=direction from=$c1 to=$e2 cue=\"up\"\n@e3 nlu.entity head=\"space\" quantity=\"one\"\n@r2 nlu.relation kind=above from=$c1 to=$e3 cue=\"over\"\n@e4 nlu.entity head=\"right\" determiner=\"the\"\n@e5 nlu.entity head=\"settle\"\n@g1 nlu.coordination kind=sequence member=$e4 member=$e5 cue=\"and then\"\n@r3 nlu.relation kind=to from=$c1 to=$g1 cue=\"to\"\n@e6 nlu.entity head=\"boat\" determiner=\"the\" kind=boat\n@r4 nlu.relation kind=on from=$e5 to=$e6 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"guide\" direct_object=$e1 filler=\",\" filler=\"then\"",
+            "grade": 1,
+            "reason": "Links on the boat to settle, but still treats settle as an entity rather than an imperative predicate.",
+            "reviewed": true
+          }
+        ],
+        "readerError": null,
+        "savedRejectedCount": 0
+      }
+    ]
+  }
+]
