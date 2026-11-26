@@ -241,6 +241,7 @@ const strategies = {
 if (evaluatedSchema === 'nlu') {
   const neural = {python:process.env.SOP_NLU_SYNTAX_PYTHON, model:process.env.SOP_NLU_SYNTAX_MODEL}
   strategies.distilbert = {knowledgeDir}
+  strategies['selector-distilbert'] = {knowledgeDir,swipl:process.env.SWIPL,...neural}
   strategies['spacy-beam'] = {knowledgeDir, ...neural}
   strategies['spacy-direct'] = {knowledgeDir, ...neural}
   strategies['neuro-prolog'] = {knowledgeDir, swipl:process.env.SWIPL, ...neural}
@@ -250,7 +251,7 @@ if (evaluatedSchema === 'nlu') {
 const nativeReferenceRevision = evaluatedSchema === 'nlu'
   ? datasetRevision(dataset, process.env.NATIVE_REFERENCE_REVISION ?? sampleMetadata.revision) : undefined
 const nativeReferences = nativeReferenceRevision ? readNativeReferences(dataset, nativeReferenceRevision, rows.map(row=>row.text)) : []
-const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => name !== 'neuro-selector' && name !== 'distilbert').filter(name => (!name.startsWith('neuro-') && !name.startsWith('spacy-')) || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
+const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => name !== 'neuro-selector' && name !== 'distilbert' && name !== 'selector-distilbert').filter(name => (!name.startsWith('neuro-') && !name.startsWith('spacy-')) || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
   .split(',').map(name => name.trim() === 'prolog' ? 'prolog-worlds' : name.trim())
 if (new Set(selected).size !== selected.length || selected.some(name => !Object.hasOwn(strategies, name))) {
   throw Error('STRATEGIES must list unique strategy names.')

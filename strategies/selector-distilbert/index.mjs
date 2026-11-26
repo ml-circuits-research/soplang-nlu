@@ -1,10 +1,10 @@
 import {resolve,join} from 'node:path'
 import {pathToFileURL} from 'node:url'
-import {createReader} from '../../../lib/reader.mjs'
-import {hasCompleteSource} from '../../../lib/check-analysis.mjs'
-import {directedGraph,sameDirectedGraph} from '../../../lib/directed-graph.mjs'
-import {neuroSelector} from '../../../strategies/neuro-selector/index.mjs'
-import {distilBert} from '../../../strategies/distilbert/index.mjs'
+import {createReader} from '../../lib/reader.mjs'
+import {hasCompleteSource} from '../../lib/check-analysis.mjs'
+import {directedGraph,sameDirectedGraph} from '../../lib/directed-graph.mjs'
+import {neuroSelector} from '../neuro-selector/index.mjs'
+import {distilBert} from '../distilbert/index.mjs'
 
 export function combineReadings(base,additional,parse,isComplete=c=>hasCompleteSource(c.check)){
   const graphs=base.map(c=>directedGraph(parse(c.sop),'strict'))
@@ -13,7 +13,7 @@ export function combineReadings(base,additional,parse,isComplete=c=>hasCompleteS
   return distinct ? [base[0],distinct].filter(Boolean) : base.slice(0,2)
 }
 
-async function open({knowledgeDir,graphOptions={},...options}){
+async function open({knowledgeDir=process.env.SOP_KNOWLEDGE_DIR,graphOptions={},...options}={}){
   const {parse}=await import(pathToFileURL(join(resolve(knowledgeDir),'tools/sopworld/sopworld.mjs')))
   const selector=await createReader({strategy:neuroSelector,knowledgeDir,...options})
   let graph
@@ -30,4 +30,4 @@ async function open({knowledgeDir,graphOptions={},...options}){
     return {analyses:combined.map(({sop})=>({sop}))}
   },close:()=>Promise.all([selector.close(),graph.close()])}
 }
-export const pairedGraph={name:'selector-distilbert',open}
+export const selectorDistilBert={name:'selector-distilbert',open}

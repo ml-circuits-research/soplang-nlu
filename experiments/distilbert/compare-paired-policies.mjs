@@ -3,7 +3,7 @@ import {readFileSync,writeFileSync} from 'node:fs'
 import {resolve,join} from 'node:path'
 import {pathToFileURL} from 'node:url'
 import {gunzipSync} from 'node:zlib'
-import {combineReadings} from '../proposal-selection/paired-graph/index.mjs'
+import {combineReadings} from '../../strategies/selector-distilbert/index.mjs'
 
 const [input,name,output]=process.argv.slice(2)
 if(!output||!process.env.SOP_KNOWLEDGE_DIR)throw Error('Expected OUTCOMES MODEL_FIELD REPORT with SOP_KNOWLEDGE_DIR')

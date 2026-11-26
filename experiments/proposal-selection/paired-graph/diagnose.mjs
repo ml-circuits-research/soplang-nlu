@@ -3,14 +3,14 @@ import {join} from 'node:path'
 import {gunzipSync,gzipSync} from 'node:zlib'
 import {performance} from 'node:perf_hooks'
 import {hasCompleteSource} from '../../../lib/check-analysis.mjs'
-import {pairedGraph} from './index.mjs'
+import {selectorDistilBert} from '../../../strategies/selector-distilbert/index.mjs'
 const [sources,output,python,modelPath]=process.argv.slice(2)
 if(!modelPath)throw Error('Expected SOURCES NEW_OUTPUT PYTHON CHECKPOINT')
 const rows=gunzipSync(readFileSync(sources)).toString().trim().split('\n').map(JSON.parse)
 mkdirSync(output)
 const pool=[],durations=[]
 const started=performance.now()
-const strategy=await pairedGraph.open({knowledgeDir:process.env.SOP_KNOWLEDGE_DIR,graphOptions:{python,modelPath,device:'cpu'}})
+const strategy=await selectorDistilBert.open({knowledgeDir:process.env.SOP_KNOWLEDGE_DIR,graphOptions:{python,modelPath,device:'cpu'}})
 const startupMs=performance.now()-started
 try{
   for(const {id,text} of rows){
