@@ -7,8 +7,7 @@ def write(value):
     print(json.dumps(value, ensure_ascii=True, separators=(",", ":")), flush=True)
 
 
-def tokenize(parser, source):
-    document = parser(source)
+def tokenize(document, source):
     # JavaScript offsets count UTF-16 code units. Python indexes code points.
     units = [0]
     for character in source:
@@ -21,6 +20,34 @@ def tokenize(parser, source):
     ]
 
 
+def parse_beam(pipeline, source, document, greedy):
+    # Use the same lexical evidence and encoded features as the greedy pass.
+    # A new document avoids inheriting greedy sentence boundaries.
+    before = pipeline.make_doc(source)
+    before.tensor = document.tensor
+    if document.has_extension("trf_data"):
+        before._.trf_data = document._.trf_data
+    for first, second in zip(before, document):
+        first.tag = second.tag
+    parser = pipeline.get_pipe("parser")
+    beam = parser.beam_parse([before], beam_width=8, beam_density=0.0001)[0]
+    alternatives = []
+    seen = set()
+    for score, arcs in parser.moves.get_beam_parses(beam):
+        tokens = [dict(token, dep="ROOT", head=token["i"]) for token in greedy]
+        for head, index, dependency in arcs:
+            tokens[index]["head"] = head
+            tokens[index]["dep"] = dependency
+        signature = tuple((token["head"], token["dep"]) for token in tokens)
+        if signature in seen:
+            continue
+        seen.add(signature)
+        alternatives.append(dict(score=score, tokens=tokens))
+        if len(alternatives) == 3:
+            break
+    return alternatives
+
+
 def main():
     import spacy
     parser = spacy.load(sys.argv[1], exclude=["ner", "textcat"])
@@ -31,10 +58,17 @@ def main():
                              pipeline=parser.pipe_names, sources=parser.meta.get("sources", []))))
     for line in sys.stdin:
         try:
-            source = json.loads(line)
+            request = json.loads(line)
+            beam = isinstance(request, dict) and request.get("beam") is True
+            source = request.get("text") if beam else request
             if not isinstance(source, str):
                 raise ValueError("Expected a source string")
-            write(dict(tokens=tokenize(parser, source)))
+            document = parser(source)
+            tokens = tokenize(document, source)
+            if beam:
+                write(dict(tokens=tokens, alternatives=parse_beam(parser, source, document, tokens)))
+            else:
+                write(dict(tokens=tokens))
         except Exception as error:
             write(dict(error=str(error)))
 

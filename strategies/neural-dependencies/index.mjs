@@ -36,19 +36,20 @@ async function openSpacy({
   }
   let pending = Promise.resolve()
   let closed = false
+  function request(text, beam = false) {
+    if (closed) return Promise.reject(Error('Dependency parser is closed'))
+    if (typeof text !== 'string') return Promise.reject(TypeError('Expected a source string'))
+    const next = pending.then(async () => {
+      child.stdin.write(JSON.stringify(beam ? {text, beam: true} : text) + '\n')
+      return read()
+    })
+    pending = next.catch(() => {})
+    return next
+  }
   return {
     metadata,
-    parse(text) {
-      if (closed) return Promise.reject(Error('Dependency parser is closed'))
-      if (typeof text !== 'string') return Promise.reject(TypeError('Expected a source string'))
-      const next = pending.then(async () => {
-        child.stdin.write(JSON.stringify(text) + '\n')
-        const {tokens} = await read()
-        return tokens
-      })
-      pending = next.catch(() => {})
-      return next
-    },
+    async parse(text) { return (await request(text)).tokens },
+    parseBeam(text) { return request(text, true) },
     async close() {
       closed = true
       await pending
@@ -60,26 +61,43 @@ async function openSpacy({
 
 export const spacyDependencies = {name:'spacy', open:openSpacy}
 
+function validateTokens(text, tokens) {
+  let previousEnd = 0
+  if (!Array.isArray(tokens)) throw TypeError('Dependency model must return a token array')
+  for (const [index, token] of tokens.entries()) {
+    if (token.i !== index || !Number.isInteger(token.start) || !Number.isInteger(token.end) ||
+        token.start < previousEnd || token.end <= token.start || token.end > text.length ||
+        text.slice(token.start, token.end) !== token.text ||
+        !Number.isInteger(token.head) || token.head < 0 || token.head >= tokens.length ||
+        !['pos','tag','dep','lemma'].every(key => typeof token[key] === 'string')) {
+      throw Error('Invalid dependency token, source boundary or head at index ' + index)
+    }
+    previousEnd = token.end
+  }
+  return tokens
+}
+
 export async function openDependencies({syntaxModel = spacyDependencies, ...options} = {}) {
   const backend = await syntaxModel.open(options)
+  const parseBeam = typeof backend.parseBeam === 'function' ? async (text) => {
+    const {tokens, alternatives} = await backend.parseBeam(text)
+    validateTokens(text, tokens)
+    if (!Array.isArray(alternatives) || alternatives.length > 3) throw Error('Expected at most three dependency alternatives')
+    const lexicalKeys = ['text', 'start', 'end', 'pos', 'tag', 'lemma']
+    for (const alternative of alternatives) {
+      const {score, tokens: graph} = alternative
+      validateTokens(text, graph)
+      if (!Number.isFinite(score) || graph.length !== tokens.length || graph.some((token, i) =>
+        lexicalKeys.some(key => token[key] !== tokens[i][key]))) {
+        throw Error('Beam alternatives must share the source and lexical evidence of the greedy parse')
+      }
+    }
+    return {tokens, alternatives}
+  } : undefined
   return {
     metadata: backend.metadata,
     close: () => backend.close(),
-    async parse(text) {
-      const tokens = await backend.parse(text)
-      let previousEnd = 0
-      if (!Array.isArray(tokens)) throw TypeError('Dependency model must return a token array')
-      for (const [index, token] of tokens.entries()) {
-        if (token.i !== index || !Number.isInteger(token.start) || !Number.isInteger(token.end) ||
-            token.start < previousEnd || token.end <= token.start || token.end > text.length ||
-            text.slice(token.start, token.end) !== token.text ||
-            !Number.isInteger(token.head) || token.head < 0 || token.head >= tokens.length ||
-            !['pos','tag','dep','lemma'].every(key => typeof token[key] === 'string')) {
-          throw Error('Invalid dependency token, source boundary or head at index ' + index)
-        }
-        previousEnd = token.end
-      }
-      return tokens
-    }
+    async parse(text) { return validateTokens(text, await backend.parse(text)) },
+    ...(parseBeam ? {parseBeam} : {})
   }
 }
