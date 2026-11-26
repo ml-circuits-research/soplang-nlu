@@ -1,4 +1,5 @@
 import {repairClauseBoundaries, separateQuestionRestarts, separateWrittenClauses} from './clause-boundaries.mjs'
+import {collectExplicitValues} from './explicit-literals.mjs'
 import {repairPredicateAttachments} from './predicate-attachments.mjs'
 import {repairNominalRoles} from './nominal-roles.mjs'
 
@@ -67,7 +68,7 @@ function align(text, dependencies) {
   }
   const positions = new Map()
   let cursor = 0
-  const tokens = spans.map(([start, end], index) => {
+  const tokens = collectExplicitValues(text,spans).map(([start, end, structured], index) => {
     while (dependencies[cursor]?.end <= start) cursor++
     const parts = []
     for (let i = cursor; dependencies[i]?.start < end; i++) {
@@ -83,12 +84,23 @@ function align(text, dependencies) {
     const value = text.slice(start, end)
     const quoted = /^["“'‘].+["”'’]$/su.test(value)
     const numeric = /^[-+.]?\d[\d.:-]*$/u.test(value)
-    return {index, start, end, value, quoted, numeric, lower: value.toLowerCase().replaceAll('’', "'"),
-      head: root?.head, dep: root?.dep, lemma: root?.lemma?.toLowerCase(), tag: root?.tag, pos: quoted ? 'PROPN' : numeric ? 'NUM' : root?.pos,
+    return {index, start, end, value, quoted, structured, numeric, lower: value.toLowerCase().replaceAll('’', "'"),
+      head: root?.head, dep: root?.dep, lemma: root?.lemma?.toLowerCase(), tag: root?.tag, pos: quoted || structured ? 'PROPN' : numeric ? 'NUM' : root?.pos,
       negated: parts.some((part) => part.dep === 'neg')}
   })
   for (const token of tokens) token.head = positions.get(token.head) ?? token.index
   for (const token of tokens) {
+    if (token.structured) {
+      const previous = tokens[token.index-1]
+      if (previous && nouns.has(previous.pos) && previous.head !== token.index) {
+        token.dep = 'appos'
+        token.head = previous.index
+        token.nominalRelation = 'value'
+      } else if (previous?.pos === 'VERB' && previous.head !== token.index) {
+        token.dep = 'dobj'
+        token.head = previous.index
+      }
+    }
     if (!token.numeric || !/[\-:]/u.test(token.value)) continue
     const prep = tokens[token.index - 1]
     if (prep?.dep !== 'prep') continue
@@ -157,6 +169,7 @@ export function projectDependencies(text, dependencies) {
   }
   const nodes = []
   const used = new Set()
+  const sourceRoles = new Map()
   const entities = new Map()
   const clauses = new Map()
   const groups = new Map()
@@ -172,7 +185,10 @@ export function projectDependencies(text, dependencies) {
   function literal(node, key, parts, repeat = false) {
     if (parts.some((part, i) => i > 0 && part.index !== parts[i - 1].index + 1)) return false
     if (!parts.length || (!repeat && node.slots.has(key)) || parts.some(({index}) => used.has(index))) return false
-    for (const {index} of parts) used.add(index)
+    for (const {index} of parts) {
+      used.add(index)
+      sourceRoles.set(index,{node,key})
+    }
     node.fields.push(quote(key, text.slice(parts[0].start, parts.at(-1).end)))
     if (!repeat) node.slots.add(key)
     return true
@@ -250,6 +266,13 @@ export function projectDependencies(text, dependencies) {
   }
   if (!clauses.size) clauses.set(tokens[0].index, make('clause', tokens[0]))
 
+  const measurementHeads = new Map()
+  for (const property of tokens.filter(t => t.pos === 'ADJ' || t.pos === 'ADV')) {
+    const measure = under(property).find(t => ['npadvmod','advmod','quantmod','nummod'].includes(t.dep) &&
+      (t.pos === 'NUM' || nouns.has(t.pos) && under(t).some(c => c.dep === 'nummod')))
+    if (measure) measurementHeads.set(property.index,measure)
+  }
+
   function entity(token) {
     if (!token || courtesy.has(token.index)) return
     // Command names often have a verbal lexical tag even when the parser
@@ -259,12 +282,15 @@ export function projectDependencies(text, dependencies) {
     const nominalAdjective = token.pos === 'ADJ' && (token.dep === 'pobj' ||
       ['dobj', 'obj', 'conj', 'appos'].includes(token.dep) &&
       (under(token).some(t => t.dep === 'det') || ['other','more','less','fewer','enough'].includes(token.lower)))
-    if (!commandName && !nominalAdjective && !nouns.has(token.pos)) return
+    const unknownNoun = token.pos === 'X' && ['obj','dobj','iobj','pobj','nsubj','attr'].includes(token.dep) && /\p{L}/u.test(token.value)
+    const nominalAdverb = token.pos === 'ADV' && token.dep === 'pobj' && ['now','then','here','there','today','tomorrow','yesterday'].includes(token.lower)
+    if (!commandName && !nominalAdjective && !measurementHeads.has(token.index) &&
+        !unknownNoun && !nominalAdverb && !nouns.has(token.pos)) return
     if (entities.has(token.index)) return entities.get(token.index)
     if (used.has(token.index)) return
     const node = make('entity', token)
     entities.set(token.index, node)
-    const key = token.quoted ? 'literal' : (token.nominalName || commandName || token.pos === 'PROPN') ? 'name' : token.numeric ? 'literal' : token.pos === 'PRON' ? 'pronoun' : 'head'
+    const key = token.quoted || token.structured ? 'literal' : (token.nominalName || commandName || token.pos === 'PROPN') ? 'name' : token.numeric ? 'literal' : token.pos === 'PRON' ? 'pronoun' : 'head'
     const titleParts = []
     if (key === 'name' && token.dep === 'appos') {
       // Printed titles may contain numbers and capitalized common nouns.
@@ -282,6 +308,11 @@ export function projectDependencies(text, dependencies) {
       .sort((a, b) => a.index - b.index)
     const namedSpan = token.nominalName?.map(index => tokens[index]) ?? []
     if (!literal(node, key, namedSpan) && !literal(node, key, titleParts) && (key !== 'name' || !literal(node, key, parts))) literal(node, key, [token])
+    const measure = measurementHeads.get(token.index)
+    if (measure && measure !== token) {
+      const amount = entity(measure)
+      if (amount) node.fields.push(ref('measure',amount))
+    }
     for (const part of under(token)) {
       if (used.has(part.index) || qualifiedAdjectives.has(part.index)) continue
       if (part.dep === 'compound' && nouns.has(part.pos) &&
@@ -506,7 +537,13 @@ export function projectDependencies(text, dependencies) {
         if (target && !node.slots.has('direct_object')) {
           node.fields.push(ref('direct_object', target))
           node.slots.add('direct_object')
-          if (part.pos === 'ADJ') attachedResult = literal(node, 'result_complement', [part])
+          if (measurementHeads.has(part.index)) {
+            const property = coordinate(part,entity(part),entity)
+            if (property) {
+              node.fields.push(ref('predicative_entity',property))
+              node.slots.add('predicative_entity')
+            }
+          } else if (part.pos === 'ADJ') attachedResult = literal(node, 'result_complement', [part])
           else if (nouns.has(part.pos) && !node.slots.has('predicative_entity')) {
             const complement = entity(part)
             if (complement) {
@@ -636,6 +673,9 @@ export function projectDependencies(text, dependencies) {
         const {kind, span} = subordinateCue(under(part))
         relation(from, coordinate(part, clauseOf(part), clauseOf), kind, span)
       }
+      if (measurementHeads.has(part.index) && !used.has(part.index) && ['amod','dep','oprd','acomp'].includes(part.dep)) {
+        relation(from, coordinate(part,entity(part),entity), 'measurement')
+      }
       if (part.dep === 'appos') {
         const group = coordinate(part, entity(part), entity)
         const inventory = group?.type === 'coordination' &&
@@ -666,6 +706,20 @@ export function projectDependencies(text, dependencies) {
 
   for (const [index, edge] of prepRelations) {
     if (tokens[index].dep !== 'conj') coordinate(tokens[index], edge, token => prepRelations.get(token.index))
+  }
+  // Recover dependent modifiers against the exact already-grounded role,
+  // including cues whose owner is a relation instead of a clause or noun.
+  for (const token of tokens) {
+    if (used.has(token.index)) continue
+    const host = sourceRoles.get(token.head)
+    if (!host) continue
+    if (token.dep === 'advmod' && token.pos === 'ADV') {
+      if (host.node.type === 'relation' && ['cue','adverb'].includes(host.key)) literal(host.node,'adverb',[token],true)
+      else if (['entity','clause'].includes(host.node.type) &&
+          ['modifier','result_complement','adverb','degree','quantity','question','marker'].includes(host.key)) {
+        literal(host.node, 'degree', [token],true)
+      }
+    }
   }
   const outputClauses = [...clauses.values()].sort((a, b) => a.token.index - b.token.index)
   const unresolved = []

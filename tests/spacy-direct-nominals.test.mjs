@@ -201,3 +201,22 @@ test('explicit coordinate axes retain their lexical source and corresponding val
   assert.match(sop,/kind=horizontal_value .*cue="x"/u)
   assert.match(sop,/kind=vertical_value .*cue="y"/u)
 })
+
+test('a predicated dimension owns both its amount and written unit', () => {
+  const sop = circuit('Make it 65 pixels wide.',[
+    ['Make','VERB','VB','ROOT',0], ['it','PRON','PRP','nsubj',4],
+    ['65','NUM','CD','nummod',3], ['pixels','NOUN','NNS','npadvmod',4],
+    ['wide','ADJ','JJ','ccomp',0], ['.','PUNCT','.','punct',0]
+  ])
+  assert.match(sop,/direct_object=\$n2 predicative_entity=\$n3/)
+  assert.match(sop,/@n3 nlu.entity head="wide" measure=\$n4/)
+  assert.match(sop,/@n4 nlu.entity head="pixels" quantity="65"/)
+})
+
+test('source brackets become a data literal only when their contents constitute valid JSON', async () => {
+  const {collectExplicitValues} = await import('../strategies/spacy-direct/explicit-literals.mjs')
+  for (const [source,expected] of [['[[1,2]]',true],['[move it]',false],['{]',false]]) {
+    const spans=[...source.matchAll(/\w+|[^\w\s]/gu)].map(m=>[m.index,m.index+m[0].length])
+    assert.equal(collectExplicitValues(source,spans).some(([, , structured]) => structured),expected)
+  }
+})
