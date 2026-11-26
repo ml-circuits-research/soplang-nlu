@@ -185,10 +185,10 @@ def validate(payload, batch):
     return outputs, {key: issues.get(key, 'missing judgment') for key in expected - outputs.keys()}
 
 
-def plan_batches(packets, characters, rows):
+def plan_batches(packets, characters, rows, *, inline=False):
     batch, size = [], 0
     for packet in packets:
-        width = len(dump(packet))
+        width = len(dump(label_candidates(expanded(packet) if inline else packet)))
         if batch and (size + width > characters or len(batch) >= rows):
             yield batch
             batch, size = [], 0
@@ -214,6 +214,14 @@ def native_form_conflict(packet, candidate):
     return None
 
 
+def native_typed_omission(packet, judgment):
+    if not 5 <= judgment['grade'] <= 7:
+        return False
+    candidate = judgment['candidate']
+    coverage = packet['checks'][candidate]['coverage']
+    return coverage['allAccountedFor'] and coverage['unresolved'] == 0
+
+
 def strict_packets(packets, previous, *, native=False, extra=()):
     packet_by_row = {packet['rowIndex']: packet for packet in packets}
     selected = {}
@@ -227,6 +235,8 @@ def strict_packets(packets, previous, *, native=False, extra=()):
             trigger = None
             if (index, group) in extra:
                 trigger = 'This group was selected by an independent disagreement or calibration audit.'
+            elif native and native_typed_omission(original, judgment):
+                trigger = 'The previous review reports missing meaning, but the selected circuit accounts for every occurrence without unresolved text. Check what the emitted roles actually express.'
             elif judgment['grade'] >= 8:
                 if POSSIBLE_OMISSION.search(judgment['reason']):
                     trigger = 'The accepted reason describes a possible omission.'
@@ -418,7 +428,7 @@ def main():
         pending = [{**packet, 'groups': {key: group for key, group in packet['groups'].items()
                                          if (packet['rowIndex'], key) not in all_results}}
                    for packet in pending if any((packet['rowIndex'], key) not in all_results for key in packet['groups'])]
-    batches = list(plan_batches(pending, args.characters, args.rows))
+    batches = list(plan_batches(pending, args.characters, args.rows, inline=args.expanded))
     print(f'{len(packets)} rows, {empty_count} empty groups, {len(all_results) - empty_count} salvaged, '
           f'{len(batches)} jobs ({args.jobs} concurrent)', flush=True)
     start = time.monotonic()

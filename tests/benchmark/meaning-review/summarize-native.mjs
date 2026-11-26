@@ -46,8 +46,37 @@ for (const [key, review] of audit?.records ?? []) {
   judgments.set(key, review)
 }
 
+// Groups can differ while sharing a candidate. An accepted whole circuit is
+// positive evidence for every group that actually emitted it for this text.
+const promotions = new Map()
+const conflictingWitnesses = []
+for (const packet of packets) {
+  const accepted = []
+  const independentlyRejected = new Set()
+  for (const group of Object.keys(packet.groups)) {
+    const key = keyFor({rowIndex: packet.rowIndex, group})
+    const judgment = judgments.get(key)
+    const audited = audit?.records.has(key) ?? false
+    if (judgment.grade === 8) accepted.push({judgment, audited})
+    else if (audited && judgment.candidate !== null) independentlyRejected.add(judgment.candidate)
+  }
+  for (const {judgment} of accepted) {
+    if (independentlyRejected.has(judgment.candidate)) {
+      conflictingWitnesses.push({rowIndex: packet.rowIndex, group: judgment.group, candidate: judgment.candidate})
+    }
+  }
+  accepted.sort((a,b) => Number(b.audited) - Number(a.audited) || a.judgment.candidate - b.judgment.candidate)
+  for (const [group, eligible] of Object.entries(packet.groups)) {
+    const key = keyFor({rowIndex: packet.rowIndex, group})
+    if (judgments.get(key).grade === 8) continue
+    const shared = accepted.find(({judgment}) =>
+      !independentlyRejected.has(judgment.candidate) && eligible.includes(judgment.candidate))
+    if (shared) promotions.set(key, shared.judgment)
+  }
+}
+
 const engineSummary = Object.fromEntries(engines.map(engine => [engine, {
-  rows: 0, accepted: 0, engineErrors: 0, noEligibleCandidates: 0,
+  rows: 0, accepted: 0, engineErrors: 0, noEligibleCandidates: 0, sharedWitnessPromotions: 0,
   counts: Object.fromEntries(Array.from({length: 11}, (_, grade) => ['L' + grade, 0])),
   examples: {}
 }]))
@@ -55,7 +84,9 @@ const rows = []
 for (const packet of packets) {
   for (const engine of engines) {
     const {key, original, error, rejected} = packet.memberships[engine]
-    const judgment = judgments.get(packet.rowIndex + ':' + key)
+    const groupKey = keyFor({rowIndex: packet.rowIndex, group: key})
+    const promoted = promotions.get(groupKey)
+    const judgment = promoted ?? judgments.get(groupKey)
     if (!judgment) throw Error('Missing native review judgment: ' + packet.rowIndex + ':' + key)
     const {grade, candidate, reason} = judgment
     const emittedIndex = candidate === null ? null : original.indexOf(candidate)
@@ -66,11 +97,13 @@ for (const packet of packets) {
     summary.rows++
     summary.counts[label]++
     if (grade === 8) summary.accepted++
+    if (promoted) summary.sharedWitnessPromotions++
     if (error) summary.engineErrors++
     if (!packet.groups[key].length) summary.noEligibleCandidates++
     const detail = {id: packet.id, rowIndex: packet.rowIndex, engine, grade, text: packet.text,
       reason, emittedIndex, candidate, sop, check: candidate === null ? null : packet.checks[candidate],
-      engineError: error, rejected, eligibleCandidates: packet.groups[key].length}
+      engineError: error, rejected, eligibleCandidates: packet.groups[key].length,
+      ...(promoted ? {sharedWitnessFromGroup: promoted.group} : {})}
     rows.push(detail)
     const examples = summary.examples[label] ?? []
     if (examples.length < 3) examples.push({id: packet.id, text: packet.text, reason, sop})
@@ -83,7 +116,8 @@ for (const summary of Object.values(engineSummary)) {
     [level, 100 * count / summary.rows]))
 }
 const summary = {profile: manifest.profile, sample: packets.length, reviewedGroups,
-  auditGroups: audit?.records.size ?? 0, primarySha256, auditSha256: audit?.sha256, engines: engineSummary}
+  auditGroups: audit?.records.size ?? 0, primarySha256, auditSha256: audit?.sha256,
+  sharedWitnessGroups: promotions.size, conflictingWitnesses, engines: engineSummary}
 writeFileSync(join(directory, 'native-judgments.jsonl.gz'), gzipSync(rows.map(row => JSON.stringify(row)).join('\n')))
 writeFileSync(join(directory, 'native-summary.json'), JSON.stringify(summary,null,2)+'\n')
 console.log(JSON.stringify({profile: manifest.profile, sample: packets.length, reviewedGroups,
