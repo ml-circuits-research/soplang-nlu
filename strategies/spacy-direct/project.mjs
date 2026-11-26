@@ -610,7 +610,8 @@ export function projectDependencies(text, dependencies) {
         const group = coordinate(part, entity(part), entity)
         const inventory = group?.type === 'coordination' &&
           tokens.slice(host.index + 1,part.index).some(t => t.value === ':')
-        relation(from, group, part.nominalRelation ?? (inventory ? 'elaboration' : 'apposition'))
+        relation(from, group, part.nominalRelation ?? (inventory ? 'elaboration' : 'apposition'),
+          (part.nominalCue ?? []).map(index => tokens[index]))
       }
       if (part.dep === 'dep' && nouns.has(part.pos) && !used.has(part.index)) {
         // Speech and drawing directives often place a bare nominal topic
