@@ -70,3 +70,24 @@ test('spacy-direct grounds result clauses and recursively visits prepositional l
   assert.match(sop, /@n2 nlu.entity head="caps"/)
   assert.match(sop, /kind=above from=\$n2 to=\$n3 cue="above" adverb="right"/)
 })
+
+test('a capitalized workflow label used as a landmark retains its source spelling', async () => {
+  const text = 'Route it around Verify.'
+  const rows = [
+    ['Route','VERB','VB','ROOT',0], ['it','PRON','PRP','dobj',0],
+    ['around','ADP','IN','prep',0], ['Verify','VERB','VB','pobj',2],
+    ['.','PUNCT','.','punct',0]
+  ]
+  let offset = 0
+  const tokens = rows.map(([word,pos,tag,dep,head], i) => {
+    const start = text.indexOf(word, offset)
+    offset = start + word.length
+    return {i,text:word,lemma:word.toLowerCase(),pos,tag,dep,head,start,end:offset}
+  })
+  const {sop} = projectDependencies(text,tokens)
+  const validate = await createAnalysisValidator({knowledgeDir})
+  assert.ok(hasCompleteSource(validate(text,sop)), sop)
+  assert.match(sop,/kind=around /)
+  assert.match(sop,/name="Verify"/)
+  assert.doesNotMatch(sop,/predicate="Verify"/)
+})

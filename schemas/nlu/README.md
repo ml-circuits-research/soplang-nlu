@@ -52,3 +52,9 @@ lookup with determiner `a`, modifier `straight` and head `line`.
 An adverb can qualify the relation itself. For `Place it directly behind the wall`,
 the relation from the clause to the wall carries `cue="behind" adverb="directly"`.
 When `directly` instead modifies a verb, the corresponding clause owns the adverb.
+
+An entity may carry a quoted `adverb` modifying its nominal head, as in
+`pronoun="everything" adverb="else"`. A leading discourse connective such as
+`and` in `and a picnic blanket` is grounded on the fragment clause as
+`connective="and"`. This preserves the connective while leaving its unwritten
+first conjunct unspecified.
