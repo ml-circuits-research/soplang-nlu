@@ -1,6 +1,7 @@
 :- module(constituents, [constituent_graph/2]).
 :- use_module(library(lists)).
 :- use_module(library(apply)).
+:- use_module(library(pairs)).
 
 % A chart cell retains the best derivation of a syntactic category over one
 % source interval. Lower weights express stronger lexical/grammatical evidence.
@@ -16,6 +17,7 @@ parse_graph(Q,Wires) :-
         forall(member(Family,F.frames),assertz(frame(I,Family))),
         forall(member(Pos,F.pos),assertz(feature(I,Pos))),
         (F.base==true -> assertz(feature(I,base)); true),
+        (F.participle==true -> assertz(feature(I,participle)); true),
         (F.acts\=[] -> assertz(feature(I,action)); true)))),
     forall(nth0(I,Q.tokens,[Raw,Quoted]), (
         lex(I,_,Lower), nth0(I,Q.forms,Forms), forall(member(F,Forms),
@@ -53,9 +55,18 @@ add_quote(Q,I,Open) :-
         J is K+1,keep(I,J,np,I,n(entity,I,[q(name,I,J)]),0)
     ; true ).
 
+pos_cost(F,Cat,Penalty) :-
+    (memberchk(Cat-Key,[noun-noun,verb-verb,adj-adjective,adv-adverb]),
+     dict_pairs(F.usage,_,Pairs),Pairs\=[] ->
+        pairs_values(Pairs,Values),max_list(Values,Max),
+        (get_dict(Key,F.usage,Count) -> true;Count=0),
+        Penalty is min(6,round(1.5*log((Max+2)/(Count+2))))
+    ; Penalty=0).
+
 % All literal fields are half-open intervals in the original strategy packet.
 entry(I,_,W,false,F,Cat,I,Tree,P) :-
-    J=F.end, J=:=I+1, atomic_entry(W,F,Cat,I,J,Tree,P).
+    J=F.end, J=:=I+1, atomic_entry(W,F,Cat,I,J,Tree,Base),
+    pos_cost(F,Cat,Penalty),P is Base+Penalty.
 entry(I,_,_,false,F,prep,I,span(I,J),0) :-
     J=F.end,F.preposition\=[], (J>I+1; lex(I,_,W), preposition(W)).
 entry(I,_,_,false,F,det,I,span(I,J),0) :-
@@ -146,7 +157,7 @@ combine(to,vp,_,H,span(I,K),X,_,_,_,inf,H,T,-1) :- put(X,q(marker,I,K),N),put(N,
 combine(vp,inf,H,_,X,Y,_,_,_,vp,H,T,-2) :- \+has(X,clausal_complement),control(H),put(X,arg(clausal_complement,Y),T).
 combine(vp,vp,H,_,X,Y,_,_,_,vp,H,T,0) :- has(X,direct_object),control(H),\+has(X,clausal_complement),put(Y,a(form,nonfinite),N),put(X,arg(clausal_complement,N),T).
 combine(vp,clause,H,_,X,Y,_,_,_,vp,H,T,0) :- finite_complement(H),has(Y,subject),\+has(X,clausal_complement),put(X,arg(clausal_complement,Y),T).
-combine(np,vp,H,H2,X,Y,_,_,_,np,H,T,-2) :- participle(H2),put(Y,a(form,nonfinite),N),put(X,rel(modifier,none,N),T).
+combine(np,vp,H,H2,X,Y,_,_,_,np,H,T,-2) :- \+has(X,pronoun),participle(H2),put(Y,a(form,nonfinite),N),put(X,rel(modifier,none,N),T).
 combine(relative,vp,_,H,span(I,K),X,_,_,_,relative_clause,H,T,0) :- put(X,q(marker,I,K),N),put(N,a(form,declarative),T).
 combine(relative,clause,_,H,span(I,K),X,_,_,_,relative_clause,H,T,1) :- has(X,subject),put(X,q(marker,I,K),T).
 combine(np,relative_clause,H,_,X,Y,_,_,_,np,H,T,-2) :- put(X,rel(modifier,none,Y),T).
@@ -258,7 +269,8 @@ members(n(coordination,_,A),Kind,R) :- !, select(a(kind,Kind),A,R).
 members(T,_,[arg(member,T)]).
 prep_link(X,I,K,Y,T) :- lex(I,_,W), (K=:=I+1 -> atom_string(Kind,W); Kind=prepositional), put(X,rel(Kind,span(I,K),Y),T).
 sub_link(X,I,K,Y,T) :- lex(I,_,W),atom_string(Kind,W),put(X,rel(Kind,span(I,K),Y),T).
-participle(H) :- lex(H,_,W), (sub_string(W,_,3,0,"ing");sub_string(W,_,2,0,"ed");memberchk(W,["shown","drawn","written","left","set","given","made","put"])).
+participle(H) :- feature(H,participle),!.
+participle(H) :- lex(H,_,W),frame(H,_), \+feature(H,base), sub_string(W,_,3,0,"ing").
 control(H) :- frame(H,F),memberchk(F,["infinitive","object_infinitive","bare_infinitive","object_bare_infinitive"]).
 control(H) :- lex(H,_,W),memberchk(W,["want","wants","need","needs","try","tries","like","prefer","help","let","lets","have","make","get","ask","tell","plan","wish","hope","allow","expect","start","begin","continue","stop","keep"]).
 finite_complement(H) :- frame(H,"finite_clause").

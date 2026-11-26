@@ -1,4 +1,4 @@
-import {loadVerbFrames} from '../../../lib/verb-frames.mjs';
+import {loadPosUsage,loadVerbFrames} from '../../../lib/verb-frames.mjs';
 import {syntaxLexicon} from './syntax-lexicon.mjs';
 import {compileMeasuredMotion} from './measured-motion.mjs';
 import {compileLandmarkPairs,landmarkPairType,landmarkSelectorsMatchCatalog} from './landmark-pairs.mjs';
@@ -640,7 +640,7 @@ function compile(facts) {
     numericSettingKeys:new Set(requestKeys.filter(key=>key.head.split('+').includes('number')).map(key=>key.name)),
     bodyLeads:{neutral:leadForms('neutral'),nominal:leadForms('nominal'),actionOnly:leadForms('action_only')},
     knownWords, requestKeys, negatives, fillerPhrases, discourse,
-    syntaxLexicon:syntaxLexicon(facts,senses,loadVerbFrames(parse,facts('en.valency.verb'))),
+    syntaxLexicon:syntaxLexicon(facts,senses,loadVerbFrames(parse,facts('en.valency.verb')),loadPosUsage(parse,facts('en.valency.pos_usage'))),
     syntaxRecipientActs:[...new Set(facts('k.actions.role').filter(wire=>one(wire,'name')==='recipient')
       .map(wire=>one(wire,'act')))],
     nominalSelectorRules,

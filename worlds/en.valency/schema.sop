@@ -1,4 +1,11 @@
-@en.valency core.module name=en.valency version=1 exports=verb
+@en.valency core.module name=en.valency version=2 exports=verb exports=pos_usage
 @en.valency.verb core.type of=en.valency.verb closed=true
 @en.valency.verb.lemma core.slot of=en.valency.verb key=lemma kind=string required=true
 @en.valency.verb.frame core.slot of=en.valency.verb key=frame kind=atom many=true required=true
+
+@en.valency.pos_usage core.type of=en.valency.pos_usage closed=true
+@en.valency.pos_usage.lemma core.slot of=en.valency.pos_usage key=lemma kind=string required=true
+@en.valency.pos_usage.noun core.slot of=en.valency.pos_usage key=noun kind=integer min=0
+@en.valency.pos_usage.verb core.slot of=en.valency.pos_usage key=verb kind=integer min=0
+@en.valency.pos_usage.adjective core.slot of=en.valency.pos_usage key=adjective kind=integer min=0
+@en.valency.pos_usage.adverb core.slot of=en.valency.pos_usage key=adverb kind=integer min=0

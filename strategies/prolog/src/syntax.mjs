@@ -61,7 +61,7 @@ function nativeInput(text, worlds) {
     }
     const markers=lookup.filter(([role])=>role==='marker').map(([,act,slot,relation])=>[act,slot,relation]);
     const result = {
-      frames:facts.frames ?? [], base:Boolean(facts.base), pos:uniq(positions), acts:uniq(lookup.filter(([role])=>role==='act').map(([,act])=>act)),
+      usage:facts.usage ?? {}, frames:facts.frames ?? [], base:Boolean(facts.base), pos:uniq(positions), acts:uniq(lookup.filter(([role])=>role==='act').map(([,act])=>act)),
       kinds:uniq(shapes.length || shapeKinds.has(surface) && positions.includes('noun') ?
         [...shapes, surface] : targets.map(([, , family, , sort])=>sort || family)), colors, markers,
       preposition:uniq([...(facts.preposition ?? []),...markers.map(([,slot,relation])=>relation || slot)]),

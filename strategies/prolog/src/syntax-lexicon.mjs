@@ -6,7 +6,7 @@ const clausalClasses = new Set(['verb.cognition','verb.communication','verb.perc
 const decode = raw => raw?.startsWith('"') ? JSON.parse(raw) : raw;
 const values = (wire,slot) => (wire.attrs[slot] ?? []).map(decode);
 
-export function syntaxLexicon(facts,senses,verbFrames) {
+export function syntaxLexicon(facts,senses,verbFrames,posUsage) {
   const forms = new Map(), cache = new Map();
   function add(surface,slot,value) {
     if (!surface || !value) return;
@@ -97,6 +97,7 @@ export function syntaxLexicon(facts,senses,verbFrames) {
     const exact=verbFrames.get(surface);
     form.frames=exact ? [...exact] : [...new Set([...lemmas].flatMap(lemma=>[...(verbFrames.get(lemma) ?? [])]))];
     form.base=Boolean(exact);
+    form.usage=[...lemmas].map(lemma=>posUsage.get(lemma)).find(Boolean);
     if (form.comparative) combined.add('adjective');
     if (combined.size) form.pos = [...combined];
     cache.set(surface,form);
