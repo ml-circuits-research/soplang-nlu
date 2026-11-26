@@ -8,6 +8,7 @@ import {removeSurplusPunctuation,restoreLiteralDelimiters,restoreOptionalPunctua
 
 import {removeRedundantConnective} from './duplicate-connective.mjs'
 import {groundEntityAnchor} from './ground-entity-anchor.mjs'
+import {readVibeResponse} from './vibe-response.mjs'
 
 const [inputArg,outputArg,knowledgeArg,startArg='0',batchCountArg='1']=process.argv.slice(2)
 const offset=Number(startArg), batchCount=Number(batchCountArg)
@@ -48,6 +49,7 @@ const schema=await readLocal('../../schemas/nlu/schema.sop')
 const punctuationCode=backend==='vibe'?await readLocal('./duplicate-punctuation.mjs'):''
 const anchorCode=backend==='vibe'?await readLocal('./ground-entity-anchor.mjs'):''
 const connectiveCode=backend==='vibe'?await readLocal('./duplicate-connective.mjs'):''
+const responseCode=backend==='vibe'?await readLocal('./vibe-response.mjs'):''
 const checker=await readLocal('../../lib/check-analysis.mjs')
 const code=await readLocal('./curate.mjs')
 const knowledge=await readFile(join(knowledgeDir,'tools/sopworld/sopworld.mjs'))
@@ -65,7 +67,7 @@ const jsonContract=backend==='vibe'?
 const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),connectiveSha256:sha(connectiveCode)}:{codex})}
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),connectiveSha256:sha(connectiveCode),responseSha256:sha(responseCode)}:{codex})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
 async function ensure(path,text){
   await mkdir(dirname(path),{recursive:true})
@@ -182,22 +184,27 @@ async function request(dir,label,rows){
     child.once('error',error=>resolve(error.message))
     child.once('close',code=>resolve(code))
   }).finally(()=>clearTimeout(timer))
-  if(useVibe&&status!==0){
-    await save(base+'.log',diagnostics)
-    throw Error('Vibe failed ('+status+'); rerun the same batch to retry this request.')
-  }
   if(useVibe)await save(raw,output)
   const body=await get(raw)
   await save(base+'.log',diagnostics)
   if(body!==undefined)await rename(raw,base+'.response.json')
   let issue, results=[]
   try{
-    if(status!==0)throw Error(backend+' process failed: '+status)
-    const content=useVibe?body.trim().replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/iu,'$1'):body
-    results=JSON.parse(content).results
-    if(!Array.isArray(results)||results.some(row=>!rows.some(source=>source.index===row.index))||
+    if(!useVibe&&status!==0)throw Error(backend+' process failed: '+status)
+    const parsed=useVibe?readVibeResponse(body):{results:JSON.parse(body).results}
+    results=parsed.results
+    const expected=new Set(rows.map(row=>row.index))
+    if(!Array.isArray(results)||results.some(row=>!expected.has(row?.index))||
       new Set(results.map(row=>row.index)).size!==results.length)throw Error('Invalid response index set')
-  }catch(error){issue=error.message;results=[]}
+    if(useVibe&&(status!==0||parsed.partial)){
+      if(!results.length)throw Error('No usable response rows')
+      issue='Incomplete Vibe response: '+results.length+' of '+rows.length+' entries (exit '+status+').'
+    }
+  }catch(error){
+    if(useVibe&&status!==0)throw Error('Vibe failed ('+status+'): '+error.message)
+    issue=error.message
+    results=[]
+  }
   const response={results,issue,status,args,wallMs:performance.now()-began}
   await save(sealed,stringify(response))
   return response
