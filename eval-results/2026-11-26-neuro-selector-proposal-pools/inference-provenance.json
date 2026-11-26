@@ -1,0 +1,51 @@
+{
+  "projectorRevision": "3fc0d9520027dcc5f037be2b8cc35259f7b80904",
+  "collectorImplementation": "188ad31b6863c7ae7ad1a106accfb22ce6012191",
+  "collectorTimingFormat": "Initial release, before per-call timing instrumentation. Candidate semantics unchanged.",
+  "knowledgeRevision": "3b2deebd85aa6ca070b7dc2ce94ff775fc891658",
+  "scopeVerifiedAgainstProjector": [
+    "lib",
+    "schemas",
+    "worlds",
+    "strategies/spacy-direct",
+    "strategies/spacy-beam",
+    "strategies/neuro-prolog",
+    "strategies/neural-dependencies"
+  ],
+  "models": {
+    "baseBeamAndNeuroProlog": {
+      "path": "/tmp/sop-nlu-trf-model/en_core_web_trf/en_core_web_trf-3.8.0",
+      "artifacts": {
+        "config.cfg": "ec6d73663a9a137377402267eaff233e24aa06ed5079af80caf01566e56e858e",
+        "meta.json": "8f77a2124b659dc1285516a6400c50dfb159d0b93242d3945eecaedf5429c9a0",
+        "tagger/model": "a489a41d998a6c042eaa279b6b823cd24b40854faf602e696d280788ed62f84c",
+        "parser/model": "aab8d7722a0c422d3a1452a2e6c3d6b8f9166f9d6844f6d5b2bfbd495b1f7cf9",
+        "transformer/model": "2b7061c623f424486e5dddcff79276927127cee339cc6a9d26d87837c3e6074a"
+      }
+    },
+    "adaptedBeam": {
+      "path": "/tmp/wm-spacy-trf-heads/adapted-model",
+      "artifacts": {
+        "config.cfg": "6a69bae45273ac420a28727b579ef4d19978b101bf7baca2427f152bfce31f30",
+        "meta.json": "fa4b24c6dc84c8e987f579cd65c21a7e8dd288f3a5b602e08cfad089c7b3b4f6",
+        "tagger/model": "df23c5c2561ed662f8024ac6e7858204549b9e18f9d8d6349eda7a5d59b69539",
+        "parser/model": "eaf908df53f70f6ef283ae9e0b9c93cb7eb9aaaf261e0d0f6d7628115e0ef5b0",
+        "transformer/model": "2b7061c623f424486e5dddcff79276927127cee339cc6a9d26d87837c3e6074a"
+      }
+    },
+    "adaptedCompact": {
+      "path": "/tmp/wm-spacy-adaptation/adapted-model",
+      "artifacts": {
+        "config.cfg": "0d8043307626cb367b2c34873628893ebf450d8bcaaf3750339b7e9665b409c7",
+        "meta.json": "d9c231cbd17b8cc0c9e519cd6a5f7d5d7813d7f6c21c0a3910fcecfc405f9898",
+        "tagger/model": "271a97e2ed3920962a6e3e244d4a6bbe7ead36813b5234921ef2b11d1a9a07af",
+        "parser/model": "6bc4f84dd0b1591be600ca1db7bbb900054eda1214ee089402aa6b3a04aaf120",
+        "tok2vec/model": "ce5f3f5164fe575b6cddee5a02442b587ebe02bd504f876b37754fbc8de3f1de"
+      }
+    }
+  },
+  "poolDigests": {
+    "train": "78c2ebe98c4126992d0d85efb590deb2ace3e7359040159eef261be341578e04",
+    "diagnostic": "ed641cb1a89411c90b0b73f8e4c7e7ea332b65ea6f4aad048a3c62db854e30a6"
+  }
+}
