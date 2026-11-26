@@ -38,6 +38,13 @@ POSSIBLE_OMISSION = re.compile(
     r'leaves.*unread|falls short|incomplete|not fully represented)\b',
     re.I,
 )
+MODAL_INVERSION = re.compile(
+    r'^\s*(?:(?:please|hello|hi|hey)[,\s]+){0,2}'
+    r'(?:can|could|would|will|should|may|might|do|does|did|am|is|are|was|were)\s+'
+    r'(?:you|i|we|they|he|she|it)\b',
+    re.I,
+)
+NEGATIVE_COMMAND = re.compile(r"^\s*(?:please[ ,]+)?(?:do\s+not\b|don['’]t\b|never\b)", re.I)
 
 
 def dump(data):
@@ -186,7 +193,19 @@ def plan_batches(packets, characters, rows):
         yield batch
 
 
-def strict_packets(packets, previous):
+def native_form_conflict(packet, candidate):
+    first_clause = next((
+        packet['lines'][line] for line in packet['circuits'][candidate]
+        if re.match(r'^@\S+\s+nlu\.clause\b', packet['lines'][line])
+    ), '')
+    if MODAL_INVERSION.match(packet['text']) and re.search(r'\bform=declarative(?:\s|$)', first_clause):
+        return 'Initial auxiliary/subject inversion with selected main clause marked as declarative.'
+    if NEGATIVE_COMMAND.match(packet['text']) and re.search(r'\bpolarity=positive(?:\s|$)', first_clause):
+        return 'Explicit initial negation with selected main clause marked as positive.'
+    return None
+
+
+def strict_packets(packets, previous, *, native=False, extra=()):
     packet_by_row = {packet['rowIndex']: packet for packet in packets}
     selected = {}
     with previous.open() as source:
@@ -194,14 +213,23 @@ def strict_packets(packets, previous):
             if not line.strip():
                 continue
             judgment = json.loads(line)
-            if judgment['grade'] < 8 or not POSSIBLE_OMISSION.search(judgment['reason']):
-                continue
             index, group = judgment['rowIndex'], judgment['group']
             original = packet_by_row[index]
+            trigger = None
+            if (index, group) in extra:
+                trigger = 'This group was selected by an independent disagreement or calibration audit.'
+            elif judgment['grade'] >= 8:
+                if POSSIBLE_OMISSION.search(judgment['reason']):
+                    trigger = 'The accepted reason describes a possible omission.'
+                elif native:
+                    trigger = native_form_conflict(original, judgment['candidate'])
+            if not trigger:
+                continue
             packet = selected.setdefault(index, {**original, 'groups': {}, 'previousJudgments': {}})
             packet['groups'][group] = original['groups'][group]
             packet['previousJudgments'][group] = {
-                'candidate': f'C{judgment["candidate"]}', 'grade': judgment['grade'], 'reason': judgment['reason']
+                'candidate': None if judgment['candidate'] is None else f'C{judgment["candidate"]}',
+                'grade': judgment['grade'], 'reason': judgment['reason'], 'auditTrigger': trigger,
             }
     return list(selected.values())
 
@@ -283,11 +311,15 @@ def main():
                         help='reevaluate accepted judgments whose stated reasons describe a material loss')
     parser.add_argument('--strict-from', type=Path,
                         help='select potential omission contradictions from a complete prior review JSONL')
+    parser.add_argument('--strict-select', type=Path,
+                        help='add independent audit groups from a JSON array of rowIndex/group objects')
     parser.add_argument('--salvage', type=Path, action='append', default=[],
                         help='reuse valid judgments from an earlier run directory (repeatable)')
     args = parser.parse_args()
     if min(args.jobs, args.rows, args.characters, args.timeout) < 1 or args.retries < 0:
         parser.error('job, row, character and timeout counts must be positive; retries must be nonnegative')
+    if args.strict_select and not args.strict_from:
+        parser.error('--strict-select requires --strict-from')
     args.output = args.output.resolve()
     work = args.output.with_name(args.output.stem + '-batches')
     work.mkdir(parents=True, exist_ok=True)
@@ -296,6 +328,8 @@ def main():
         fingerprint.update(args.profile.encode())
     if args.strict_from:
         fingerprint.update(args.strict_from.read_bytes())
+    if args.strict_select:
+        fingerprint.update(args.strict_select.read_bytes())
     fingerprint = fingerprint.hexdigest()
     manifest = work / 'packet-sha256.txt'
     if manifest.exists() and manifest.read_text().strip() != fingerprint:
@@ -322,10 +356,21 @@ def main():
             'Courtesy, punctuation and optional reference formatting are immaterial. '
             'Use previousJudgments only to locate the possible omission; it is not gold.'
         )
+        if args.profile == 'native':
+            prompt += (
+                '\nIf the initial auxiliary is inverted before the subject, an interrogative is normally required. '
+                'A conventional courtesy-modal request can also be read as imperative when its structure conveys the request. '
+                'A plain declarative analysis with inverted auxiliary and subject is defective. '
+                'Check that clause boundaries and role references connect the correct participants. '
+                'Prefer a complete reading with an isolated structural-form error over a shell that omits the action or operands. '
+                'An accepted witness takes precedence over either partial reading. Re-evaluate independently of the prior grade.'
+            )
     with gzip.open(args.packets, 'rt', encoding='utf-8') as source:
         packets = json.load(source)
     if args.strict_from:
-        packets = strict_packets(packets, args.strict_from)
+        extra = {(row['rowIndex'], row['group']) for row in json.loads(args.strict_select.read_text())} \
+            if args.strict_select else set()
+        packets = strict_packets(packets, args.strict_from, native=args.profile == 'native', extra=extra)
     pending = []
     all_results = {}
     for packet in packets:
