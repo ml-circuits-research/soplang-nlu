@@ -16,15 +16,19 @@ if(!knowledgeArg||!Number.isSafeInteger(offset)||offset<0||offset%500||!Number.i
   throw Error('Usage: curate.mjs INPUT.jsonl[.gz] OUTPUT KNOWLEDGE_DIR [START_ROW_MULTIPLE_OF_500] [LOGICAL_BATCH_COUNT]')
 const input=resolve(inputArg), output=resolve(outputArg), knowledgeDir=resolve(knowledgeArg)
 const backend=process.env.SOP_NLU_CURATION_BACKEND??'codex'
-const models={codex:['gpt-6-sol','gpt-6.1-terra'],vibe:['deepseek-v4-1-flash-1017']}
+const models={codex:['gpt-6-sol','gpt-6.2-sol','gpt-6.1-terra'],vibe:['deepseek-v4-1-flash-1017']}
 if(!Object.hasOwn(models,backend))throw Error('Unsupported curation backend: '+backend)
 const model=process.env.SOP_NLU_CURATION_MODEL??models[backend][0]
 if(!models[backend].includes(model))throw Error('Unsupported curation model: '+model)
-const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):500
+const wideSol=backend==='codex'&&process.env.SOP_NLU_SOL_BATCH_ROWS!==undefined
+const singlePass=backend==='vibe'||wideSol
+const requestedSolWidth=Number(process.env.SOP_NLU_SOL_BATCH_ROWS??10)
+const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):
+  wideSol?Math.max(500,requestedSolWidth):500
 if(!Number.isSafeInteger(logicalSize)||logicalSize<500||logicalSize>5000||
-   (backend==='vibe'&&offset!==0))throw Error('Vibe expects an offset of zero and group size of 500 to 5000')
-const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):10
-const microBytes=backend==='vibe'?Math.max(60000, microRows*2000):28000
+   (singlePass&&offset!==0))throw Error('Single-pass runs require offset zero and a group size of 500 to 5000')
+const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):requestedSolWidth
+const microBytes=singlePass?Math.max(60000, microRows*2000):28000
 if(!Number.isSafeInteger(microRows)||microRows<1||microRows>5000)throw Error('Expected 1 to 5000 rows per model request')
 const jobs=Number(process.env.SOP_NLU_CURATION_JOBS??8)
 if(!Number.isSafeInteger(jobs)||jobs<1||jobs>64)throw Error('SOP_NLU_CURATION_JOBS must be an integer from 1 to 64')
@@ -46,10 +50,10 @@ for(const row of selected){
 const readLocal=url=>readFile(new URL(url,import.meta.url),'utf8')
 const instructions=await readLocal('./curation-prompt.md')
 const schema=await readLocal('../../schemas/nlu/schema.sop')
-const punctuationCode=backend==='vibe'?await readLocal('./duplicate-punctuation.mjs'):''
-const anchorCode=backend==='vibe'?await readLocal('./ground-entity-anchor.mjs'):''
-const connectiveCode=backend==='vibe'?await readLocal('./duplicate-connective.mjs'):''
-const responseCode=backend==='vibe'?await readLocal('./vibe-response.mjs'):''
+const punctuationCode=singlePass?await readLocal('./duplicate-punctuation.mjs'):''
+const anchorCode=singlePass?await readLocal('./ground-entity-anchor.mjs'):''
+const connectiveCode=singlePass?await readLocal('./duplicate-connective.mjs'):''
+const responseCode=singlePass?await readLocal('./vibe-response.mjs'):''
 const checker=await readLocal('../../lib/check-analysis.mjs')
 const code=await readLocal('./curate.mjs')
 const knowledge=await readFile(join(knowledgeDir,'tools/sopworld/sopworld.mjs'))
@@ -60,14 +64,16 @@ const properties={index:{type:'integer'},readings:{type:'array',items:{type:'obj
 const replySchema={type:'object',additionalProperties:false,required:['results'],properties:{
   results:{type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(properties),properties}}
 }}
-const serialization=backend==='vibe'?await readLocal('./vibe-serialization.md'):''
-const jsonContract=backend==='vibe'?
+const serialization=singlePass?await readLocal('./vibe-serialization.md'):''
+const jsonContract=singlePass?
   '\nReturn {"results":[{"index":0,"readings":[{"draftIndex":0,"sop":null}],"ambiguity":null,"reason":null}]}. '+
   'Use each input index exactly once. Include all four fields per result.\n':''
 const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),connectiveSha256:sha(connectiveCode),responseSha256:sha(responseCode)}:{codex})}
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe}:{codex}),
+  ...(singlePass?{singlePass,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),
+    connectiveSha256:sha(connectiveCode),responseSha256:sha(responseCode)}:{})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
 async function ensure(path,text){
   await mkdir(dirname(path),{recursive:true})
@@ -131,13 +137,13 @@ function attempt(row,result,issue){
       draftIndex=choice.draftIndex
       sop=row.drafts[draftIndex]?.sop??null
     }else if(choice?.draftIndex===null&&typeof choice.sop==='string')sop=choice.sop.trim()
-    if(sop&&backend==='vibe'){
+    if(sop&&singlePass){
       const punctuated=removeSurplusPunctuation(row.text,restoreLiteralDelimiters(row.text,sop))
       const cleaned=groundEntityAnchor(removeRedundantConnective(row.text,punctuated))
       if(cleaned!==sop){sop=cleaned;draftIndex=null}
     }
     let check=sop?validate(row.text,sop,{alignSource:true}):null
-    if(backend==='vibe'&&check?.valid&&!check.coverage.allAccountedFor){
+    if(singlePass&&check?.valid&&!check.coverage.allAccountedFor){
       const completed=restoreOptionalPunctuation(row.text,sop,check.placements)
       if(completed!==sop){
         const final=validate(row.text,completed,{alignSource:true})
@@ -169,7 +175,7 @@ async function request(dir,label,rows){
   const raw=base+'.'+process.pid+'.response.json'
   const began=performance.now()
   const useVibe=backend==='vibe'
-  const limit=useVibe?Math.max(150,Math.ceil(rows.length*1.8)+45):165
+  const limit=singlePass?Math.max(150,Math.ceil(rows.length*1.8)+45):165
   const args=useVibe?['--trust','--auto-approve','--enabled-tools','__no_tools__',
     '--model',model,'--max-turns','1','--time-limit',String(limit),'--output','text','--prompt-file',base+'.prompt.txt']:
     [...callArgs,'-o',raw,'-']
@@ -190,15 +196,15 @@ async function request(dir,label,rows){
   if(body!==undefined)await rename(raw,base+'.response.json')
   let issue, results=[]
   try{
-    if(!useVibe&&status!==0)throw Error(backend+' process failed: '+status)
-    const parsed=useVibe?readVibeResponse(body):{results:JSON.parse(body).results}
+    if(!singlePass&&status!==0)throw Error(backend+' process failed: '+status)
+    const parsed=singlePass?readVibeResponse(body):{results:JSON.parse(body).results}
     results=parsed.results
     const expected=new Set(rows.map(row=>row.index))
     if(!Array.isArray(results)||results.some(row=>!expected.has(row?.index))||
       new Set(results.map(row=>row.index)).size!==results.length)throw Error('Invalid response index set')
-    if(useVibe&&(status!==0||parsed.partial)){
+    if(singlePass&&(status!==0||parsed.partial)){
       if(!results.length)throw Error('No usable response rows')
-      issue='Incomplete Vibe response: '+results.length+' of '+rows.length+' entries (exit '+status+').'
+      issue='Incomplete model response: '+results.length+' of '+rows.length+' entries (exit '+status+').'
     }
   }catch(error){
     if(useVibe&&status!==0)throw Error('Vibe failed ('+status+'): '+error.message)
@@ -225,7 +231,7 @@ async function runMicro(dir,number,rows){
   const missing=rows.filter(row=>!known.has(row.index))
   const fresh=missing.length?await request(dir,name+'-initial',missing):{results:[]}
   const initial=lift(rows,{...fresh,results:[...fresh.results,...rows.flatMap(row=>known.has(row.index)?[known.get(row.index)]:[])]})
-  const pending=backend==='vibe'?[]:rows.flatMap((row,i)=>initial[i].problems.length?
+  const pending=singlePass?[]:rows.flatMap((row,i)=>initial[i].problems.length?
     [{...row,repair:feedback(row,initial[i])}]:[])
   const correction=new Map()
   for(const [i,chunk] of partition(pending).entries()){
