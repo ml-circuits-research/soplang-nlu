@@ -18,6 +18,32 @@ async function loadZ3Module(explicitModule) {
   return explicitModule ?? await import('z3-solver');
 }
 
+function createSmtEvaluator(Z3, em) {
+  const nativeEvaluate = em?._async_Z3_eval_smtlib2_string;
+  if (typeof nativeEvaluate !== 'function' || typeof em.async_call !== 'function' ||
+      typeof em._malloc !== 'function' || typeof em._free !== 'function' || !em.HEAPU8) {
+    return (context, script) => Z3.eval_smtlib2_string(context, script);
+  }
+
+  // The generated ccall wrapper puts strings on a temporary WASM stack
+  // before dispatching to a worker. Keep the script in shared heap memory
+  // until the asynchronous evaluator has finished reading it.
+  const encoder = new TextEncoder();
+  return async (context, script) => {
+    const bytes = encoder.encode(script);
+    const pointer = em._malloc(bytes.length + 1);
+    if (!pointer) throw new Error('Z3 could not allocate the SMT script buffer');
+    try {
+      const heap = em.HEAPU8;
+      heap.set(bytes, pointer);
+      heap[pointer + bytes.length] = 0;
+      return await em.async_call(nativeEvaluate, context, pointer);
+    } finally {
+      em._free(pointer);
+    }
+  };
+}
+
 // Parse an S-expression string returned by Z3's (get-objectives) + (get-value (...))
 // into { status, values: Map<name, value>, objective: number|null, raw }.
 export function parseSmtValues(output) {
@@ -118,6 +144,7 @@ export function parseSmtValues(output) {
 export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 } = {}) {
   const z3Mod = await loadZ3Module(explicitModule);
   const { Context, Z3, em } = await z3Mod.init();
+  const evaluate = createSmtEvaluator(Z3, em);
   let ctx = new Context('nl_formaliser');
   let initialised = false;
   let solveCount = 0;
@@ -125,7 +152,7 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
   async function ensureInit() {
     if (initialised) return;
     const header = `(set-option :timeout ${timeoutMs})\n${PRELUDE_SMT}\n${AXIOMS_SMT}\n`;
-    const res = await Z3.eval_smtlib2_string(ctx.ptr, header);
+    const res = await evaluate(ctx.ptr, header);
     if (/\(error\b/.test(String(res))) {
       throw new Error('Z3 prelude/axioms SMT-LIB2 error: ' + res);
     }
@@ -165,7 +192,7 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
         '(pop 1)',
       ].join('\n');
 
-      const raw = await Z3.eval_smtlib2_string(ctx.ptr, script);
+      const raw = await evaluate(ctx.ptr, script);
       const parsed = parseSmtValues(raw);
       const diagnostics = String(raw).split(/\r?\n/).filter((line) => /^\s*\(error\b/.test(line));
       // The batch still asks for a model after a non-satisfiable check. This
@@ -216,7 +243,7 @@ export async function createZ3Runner({ module: explicitModule, timeoutMs = 4000 
       '(check-sat)',
       '(get-unsat-core)',
     ].join('\n');
-    const raw = await Z3.eval_smtlib2_string(diagCtx.ptr, script);
+    const raw = await evaluate(diagCtx.ptr, script);
     return String(raw).trim();
   }
 
