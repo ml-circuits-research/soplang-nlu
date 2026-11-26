@@ -5,15 +5,20 @@
 % A chart cell retains the best derivation of a syntactic category over one
 % source interval. Lower weights express stronger lexical/grammatical evidence.
 % A new request always starts with an empty chart. No source text is retained.
-:- dynamic cell/6, lex/3, frame/2.
+:- dynamic cell/6, lex/3, frame/2, feature/2.
 constituent_graph(Q, Wires) :-
-    setup_call_cleanup(true, parse_graph(Q,Wires), (retractall(cell(_,_,_,_,_,_)),retractall(lex(_,_,_)),retractall(frame(_,_)))).
+    setup_call_cleanup(true, parse_graph(Q,Wires), (retractall(cell(_,_,_,_,_,_)),retractall(lex(_,_,_)),retractall(frame(_,_)),retractall(feature(_,_)))).
 
 parse_graph(Q,Wires) :-
     length(Q.tokens,N), N>0, N=<100,
+    forall(nth0(I,Q.tokens,[Raw,_]),(string_lower(Raw,Lower),assertz(lex(I,Raw,Lower)))),
+    forall(nth0(I,Q.forms,Forms), forall((member(F,Forms),F.end=:=I+1), (
+        forall(member(Family,F.frames),assertz(frame(I,Family))),
+        forall(member(Pos,F.pos),assertz(feature(I,Pos))),
+        (F.base==true -> assertz(feature(I,base)); true),
+        (F.acts\=[] -> assertz(feature(I,action)); true)))),
     forall(nth0(I,Q.tokens,[Raw,Quoted]), (
-        string_lower(Raw,Lower), assertz(lex(I,Raw,Lower)),
-        nth0(I,Q.forms,Forms), forall((member(F,Forms),F.end=:=I+1,member(Family,F.frames)),assertz(frame(I,Family))), forall(member(F,Forms),
+        lex(I,_,Lower), nth0(I,Q.forms,Forms), forall(member(F,Forms),
           forall(entry(I,Raw,Lower,Quoted,F,Category,Head,Tree,Cost),
             keep(I,F.end,Category,Head,Tree,Cost))))),
     forall(nth0(I,Q.tokens,[Mark,true]),add_quote(Q,I,Mark)),
@@ -70,7 +75,7 @@ atomic_entry(W,F,unknown_nominal,I,J,n(entity,I,[q(head,I,J)]),5) :- F.word==tru
 atomic_entry(W,F,proper,I,J,n(entity,I,[q(name,I,J)]),1) :-
     F.word==true, content(W), (I>0;F.acts=[]), lex(I,Raw,_),string_codes(Raw,[L|_]),code_type(L,upper).
 atomic_entry(W,F,verb,I,J,n(clause,I,[q(predicate,I,J)]),P) :-
-    content(W), (F.acts\=[] -> P=0 ; memberchk("verb",F.pos) -> P=2 ; F.copula==true -> P=0).
+    content(W), (F.acts\=[] -> P=0 ; F.copula==true -> P=0 ; F.frames\=[] -> P=1; memberchk("verb",F.pos) -> P=2).
 atomic_entry(W,F,unknown_verb,I,J,n(clause,I,[q(predicate,I,J)]),7) :-
     I=0,F.word==true,F.pos=[],F.acts=[],content(W).
 atomic_entry(W,F,adj,I,J,span(I,J),1) :- memberchk("adjective",F.pos),content(W).
@@ -98,7 +103,15 @@ promote(noun,_,T,np,T,0).
 promote(proper,_,T,np,T,0).
 promote(pron,_,T,np,T,0).
 promote(verb,_,T,vp,T,1).
-promote(vp,_,T,clause,R,1) :- put(T,a(form,imperative),R).
+promote(vp,H,T,clause,R,P) :-
+    lex(H,_,W),
+    (has(T,auxiliary) -> P=4, Form=declarative
+    ; feature(H,base) -> P=0, Form=imperative
+    ; participle(H) -> P=4, Form=nonfinite
+    ; feature(H,action) -> P=1, Form=imperative
+    ; \+feature(H,"verb") -> P=4, Form=imperative
+    ; \+sub_string(W,_,1,0,"s"), P=3, Form=imperative),
+    put(T,a(form,Form),R).
 promote(np,H,T,clause,n(clause,H,[a(form,fragment),arg(topic,T)]),7).
 promote(clause,_,T,message,T,0).
 
@@ -108,7 +121,7 @@ combine(num,np,_,H,span(I,K),X,_,_,_,np,H,T,-1) :- put(X,q(quantity,I,K),T), X=n
 combine(adj,np,_,H,span(I,K),X,_,_,_,np,H,T,0) :- X=n(entity,_,_),\+has(X,determiner),\+has(X,pronoun),put(X,q(modifier,I,K),T).
 combine(degree,adj,_,H,X,Y,_,_,_,adjp,H,ap(X,Y),-1).
 combine(adjp,np,_,H,ap(span(I,K),span(L,M)),X,_,_,_,np,H,T,-1) :- X=n(entity,_,_),\+has(X,determiner),put(X,q(modifier,L,M),N),put(N,q(degree,I,K),T).
-combine(noun,np,_,H,_,X,I,K,_,np,H,T,3) :- X=n(entity,_,_),\+has(X,determiner),\+has(X,pronoun),\+has(X,name),put(X,q(compound,I,K),T).
+combine(noun,np,_,H,_,X,I,K,_,np,H,T,2) :- X=n(entity,_,_),\+has(X,determiner),\+has(X,pronoun),\+has(X,name),put(X,q(compound,I,K),T).
 combine(proper,proper,H,_,_,_,I,_,J,proper,H,n(entity,H,[q(name,I,J)]),0).
 combine(prep,np,_,H,span(I,K),X,_,_,_,pp,H,pp(I,K,X),0).
 combine(np,pp,H,_,X,pp(I,K,Y),_,_,_,np,H,T,P) :- lex(I,_,W),
@@ -116,7 +129,7 @@ combine(np,pp,H,_,X,pp(I,K,Y),_,_,_,np,H,T,P) :- lex(I,_,W),
     prep_link(X,I,K,Y,T).
 combine(vp,pp,H,_,X,pp(I,K,Y),_,_,_,vp,H,T,P) :- lex(I,_,W),(W=="of" -> P=6; P=0),prep_link(X,I,K,Y,T).
 combine(verb,np,H,_,X,Y,_,_,_,vp,H,T,-2) :- (predicative(H,0),lex(H,_,W),memberchk(W,["am","is","are","was","were","be","become"]) -> put(X,arg(predicative_entity,Y),T); put(X,arg(direct_object,Y),T)).
-combine(verb,adj,H,_,X,span(I,J),_,_,_,vp,H,T,P) :- predicative(H,P),put(X,q(result_complement,I,J),T).
+combine(verb,adj,H,_,X,span(I,J),_,_,_,vp,H,T,P) :- predicative(H,Penalty),P is Penalty-3,put(X,q(result_complement,I,J),T).
 combine(vp,adj,H,_,X,span(I,J),_,_,_,vp,H,T,-1) :- object_result(H), has(X,direct_object),\+has(X,result_complement),put(X,q(result_complement,I,J),T).
 combine(vp,adjp,H,_,X,ap(span(I,K),span(L,M)),_,_,_,vp,H,T,-2) :-
     (object_result(H); predicative(H,_)),\+has(X,result_complement),put(X,q(result_complement,L,M),N),put(N,q(degree,I,K),T).
@@ -124,7 +137,7 @@ combine(vp,adv,H,_,X,span(I,J),_,_,_,vp,H,T,0) :- put(X,q(adverb,I,J),T).
 combine(adv,vp,_,H,span(I,K),X,_,_,_,vp,H,T,1) :- put(X,q(adverb,I,K),T).
 combine(aux,vp,_,H,span(I,K),X,_,_,_,vp,H,T,-2) :- put(X,q(auxiliary,I,K),T).
 combine(neg,vp,_,H,span(I,K),X,_,_,_,vp,H,T,-2) :- put(X,q(negation,I,K),T).
-combine(np,vp,_,H,X,Y,_,_,_,clause,H,T,-3) :- put(Y,a(form,declarative),N),put(N,arg(subject,X),T).
+combine(np,vp,_,H,X,Y,_,_,_,clause,H,T,P) :- agreement(X,Y,H,B),P is B-3, put(Y,a(form,declarative),N),put(N,arg(subject,X),T).
 combine(aux,np,_,H,span(I,K),X,_,_,_,inverted,H,inv(I,K,X),1).
 combine(inverted,vp,_,H,inv(I,K,X),Y,_,_,_,clause,H,T,-3) :-
     put(Y,a(form,interrogative),N),put(N,q(auxiliary,I,K),M),put(M,arg(subject,X),T).
@@ -133,7 +146,7 @@ combine(to,vp,_,H,span(I,K),X,_,_,_,inf,H,T,-1) :- put(X,q(marker,I,K),N),put(N,
 combine(vp,inf,H,_,X,Y,_,_,_,vp,H,T,-2) :- \+has(X,clausal_complement),control(H),put(X,arg(clausal_complement,Y),T).
 combine(vp,vp,H,_,X,Y,_,_,_,vp,H,T,0) :- has(X,direct_object),control(H),\+has(X,clausal_complement),put(Y,a(form,nonfinite),N),put(X,arg(clausal_complement,N),T).
 combine(vp,clause,H,_,X,Y,_,_,_,vp,H,T,0) :- finite_complement(H),has(Y,subject),\+has(X,clausal_complement),put(X,arg(clausal_complement,Y),T).
-combine(np,vp,H,H2,X,Y,_,_,_,np,H,T,0) :- participle(H2),put(Y,a(form,nonfinite),N),put(X,rel(modifier,none,N),T).
+combine(np,vp,H,H2,X,Y,_,_,_,np,H,T,-2) :- participle(H2),put(Y,a(form,nonfinite),N),put(X,rel(modifier,none,N),T).
 combine(relative,vp,_,H,span(I,K),X,_,_,_,relative_clause,H,T,0) :- put(X,q(marker,I,K),N),put(N,a(form,declarative),T).
 combine(relative,clause,_,H,span(I,K),X,_,_,_,relative_clause,H,T,1) :- has(X,subject),put(X,q(marker,I,K),T).
 combine(np,relative_clause,H,_,X,Y,_,_,_,np,H,T,-2) :- put(X,rel(modifier,none,Y),T).
@@ -210,12 +223,39 @@ split_clitic(I,Base,Suffix,K,L) :-
     K>0, After>0, Start is K+1,sub_string(W,0,K,_,Base),sub_string(W,Start,After,0,Suffix),
     memberchk(Suffix,["s","m","d","ll","re","ve"]),L is After+1.
 
+% Agreement is strong evidence against turning a compound's singular head
+% into an uninflected main verb ("a stone wall near the house").
+agreement(X,Y,H,P) :-
+    X=n(_,S,_), lex(S,_,Subject),
+    \+ (has(X,pronoun), memberchk(Subject,["me","him","us","them"])),
+    (has(Y,auxiliary) -> P=0
+    ; lex(H,_,V), subject_number(X,Number), finite_cost(H,V,Number,P)).
+subject_number(n(coordination,_,_),plural) :- !.
+subject_number(X,Number) :-
+    X=n(_,S,_),lex(S,_,W),
+    (memberchk(W,["i","you","we","they","these","those"]) -> Number=plural
+    ; memberchk(W,["he","she","it","that","this","nothing","everything","someone","something"]) -> Number=singular
+    ; has(X,quantity) -> Number=unknown
+    ; sub_string(W,_,1,0,"s"), \+sub_string(W,_,2,0,"ss") -> Number=plural
+    ; Number=singular).
+finite_cost(_,W,N,P) :- memberchk(W,["am","are","were","is","was","have","has","do","does"]), !,
+    ((N==singular,memberchk(W,["are","have","do"]);N==plural,memberchk(W,["is","has","does"])) -> P=5 ; P= -2).
+finite_cost(H,W,N,P) :-
+    (sub_string(W,_,3,0,"ing"),\+feature(H,base) -> fail
+    ; N==singular,feature(H,base),\+memberchk(W,["put","cut","set","hit","let","read","cost","spread","cast","split","shut"]) -> P=9
+    ; N==plural,sub_string(W,_,1,0,"s"),\+feature(H,base) -> P=8
+    ; P=0).
+
 has(n(_,_,Args),Key) :- member(A,Args),arg(1,A,Key).
 with_mark(n(clause,H,A),F,n(clause,H,[F|A])) :- F=..[_,Key|_], \+ (Key==terminator,has(n(clause,H,A),terminator)).
-with_mark(n(coordination,H,[arg(member,B)|R]),F,n(coordination,H,[arg(member,C)|R])) :- with_mark(B,F,C).
-coord(I,K,H,X,Y,n(coordination,H,[arg(member,Y),arg(member,X),q(cue,I,K),a(kind,Kind)])) :-
-    \+ X=n(coordination,_,_),\+ Y=n(coordination,_,_),
-    (between(I,K,A),A<K,lex(A,_,"or") -> Kind=alternative; between(I,K,A),A<K,lex(A,_,"then") -> Kind=sequence; Kind=conjunctive).
+with_mark(n(coordination,H,Attrs),F,n(coordination,H,Next)) :-
+    append(Prefix,[arg(member,T)|Rest],Attrs), \+memberchk(arg(member,_),Rest),
+    with_mark(T,F,U),append(Prefix,[arg(member,U)|Rest],Next).
+coord(I,K,H,X,Y,n(coordination,H,Attrs)) :-
+    (between(I,K,A),A<K,lex(A,_,"or") -> Kind=alternative; between(I,K,A),A<K,lex(A,_,"then") -> Kind=sequence; Kind=conjunctive),
+    members(X,Kind,L),members(Y,Kind,R),append([L,[q(cue,I,K)],R,[a(kind,Kind)]],Attrs).
+members(n(coordination,_,A),Kind,R) :- !, select(a(kind,Kind),A,R).
+members(T,_,[arg(member,T)]).
 prep_link(X,I,K,Y,T) :- lex(I,_,W), (K=:=I+1 -> atom_string(Kind,W); Kind=prepositional), put(X,rel(Kind,span(I,K),Y),T).
 sub_link(X,I,K,Y,T) :- lex(I,_,W),atom_string(Kind,W),put(X,rel(Kind,span(I,K),Y),T).
 participle(H) :- lex(H,_,W), (sub_string(W,_,3,0,"ing");sub_string(W,_,2,0,"ed");memberchk(W,["shown","drawn","written","left","set","given","made","put"])).
