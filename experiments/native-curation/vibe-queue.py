@@ -75,7 +75,7 @@ def main():
         p.add_argument(name, type=Path)
     p.add_argument("--limit", type=int, default=0, help="Run at most this many unfinished groups; 0 means all")
     p.add_argument("--plan-only", action="store_true")
-    p.add_argument("--jobs", type=int, default=1, choices=range(1, 5),
+    p.add_argument("--jobs", type=int, default=1, choices=[1],
                    help="Concurrent Vibe requests within one CSV group")
     p.add_argument("--batch-rows", type=int, default=None, choices=range(1, 101), metavar="N",
                    help="Request width for new groups; unfinished groups retain their manifest width")
@@ -114,6 +114,9 @@ def main():
             work = queue / "work" / key
             work.mkdir(parents=True, exist_ok=True)
             group_env = env.copy()
+            prior = queue / "previous" / key
+            if prior.is_dir():
+                group_env["SOP_NLU_VIBE_PRIOR"] = str(prior)
             group_manifest = work / "manifest.json"
             if group_manifest.exists():
                 group_env["SOP_NLU_VIBE_BATCH_ROWS"] = str(json.loads(group_manifest.read_text())["microRows"])
@@ -123,11 +126,11 @@ def main():
                 if not (work / "summary.json").exists():
                     command = ["node", root / "experiments/native-teacher/curate.mjs", source, work,
                                env["SOP_KNOWLEDGE_DIR"]]
-                    for attempt in range(3):
+                    for attempt in range(2):
                         result = subprocess.run(command, cwd=root, env=group_env, stdout=log, stderr=subprocess.STDOUT)
                         if not result.returncode:
                             break
-                        if attempt == 2:
+                        if attempt == 1:
                             result.check_returncode()
                         print(f"{key}: Vibe process failed; retrying from the last checkpoint", flush=True)
                         time.sleep(30 * (attempt + 1))
@@ -162,6 +165,8 @@ def main():
                 raise RuntimeError("Could not verify staged conversion")
             (queue / (key + ".done")).write_text(str(converted) + "\n")
             print(f"{key}: {converted}/{len(results)} pass current checks", flush=True)
+            if 10 * converted < 9 * len(results):
+                raise SystemExit(f"{key}: fewer than 90% passed; stopping before the next group")
 
 
 if __name__ == "__main__":

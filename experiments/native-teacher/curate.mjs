@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process'
 import {createHash} from 'node:crypto'
-import {mkdir, readFile, rename, writeFile} from 'node:fs/promises'
+import {mkdir, readFile, readdir, rename, writeFile} from 'node:fs/promises'
 import {dirname,join,resolve} from 'node:path'
 import {gunzipSync,gzipSync} from 'node:zlib'
 import {createAnalysisValidator,hasCompleteSource,sourceTokenMatches} from '../../lib/check-analysis.mjs'
@@ -49,13 +49,14 @@ const properties={index:{type:'integer'},readings:{type:'array',items:{type:'obj
 const replySchema={type:'object',additionalProperties:false,required:['results'],properties:{
   results:{type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(properties),properties}}
 }}
+const serialization=backend==='vibe'?await readLocal('./vibe-serialization.md'):''
 const jsonContract=backend==='vibe'?
   '\nReturn {"results":[{"index":0,"readings":[{"draftIndex":0,"sop":null}],"ambiguity":null,"reason":null}]}. '+
   'Use each input index exactly once. Include all four fields per result.\n':''
-const header=instructions+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
+const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
-  logicalSize,microRows,microBytes,promptSha256:sha(instructions),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe}:{codex})}
+  logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe,singlePass:true}:{codex})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
 async function ensure(path,text){
   await mkdir(dirname(path),{recursive:true})
@@ -69,13 +70,25 @@ async function save(path,text){
   await rename(tmp,path)
 }
 await ensure(join(output,'manifest.json'),stringify(config))
-await ensure(join(output,'curation-prompt.md'),instructions)
+await ensure(join(output,'curation-prompt.md'),instructions+serialization)
 await ensure(join(output,'schema.sop'),schema)
 const outputSchema=join(output,'output-schema.json')
 await ensure(outputSchema,stringify(replySchema))
 const emptyDir=join(output,'sandbox')
 await mkdir(emptyDir,{recursive:true})
 const started=performance.now()
+const known=new Map()
+const prior=process.env.SOP_NLU_VIBE_PRIOR
+if(backend==='vibe'&&prior){
+  const old=JSON.parse(await readFile(join(prior,'manifest.json'),'utf8'))
+  if(old.inputSha256!==config.inputSha256||old.offset!==offset||old.rows!==selected.length||
+     old.model!==model)throw Error('Prior checkpoint does not belong to this exact Vibe input.')
+  for(const file of (await readdir(join(prior,'logical-00000'))).sort()){
+    if(!/^\d{3}-(?:initial|repair-\d+)\.json$/u.test(file))continue
+    const cached=JSON.parse(await readFile(join(prior,'logical-00000',file),'utf8'))
+    for(const row of cached.results??[])known.set(row.index,row)
+  }
+}
 const inputRow=(index,row)=>({index,text:row.text,drafts:row.candidates.map(({sop},index)=>({index,sop}))})
 const size=rows=>Buffer.byteLength(header)+Buffer.byteLength(JSON.stringify(rows))
 function partition(rows){
@@ -169,7 +182,7 @@ async function request(dir,label,rows){
 }
 const lift=(rows,batch)=> {
   const byIndex=new Map(batch.results.map(result=>[result.index,result]))
-  return rows.map(row=>attempt(row,byIndex.get(row.index),batch.issue))
+  return rows.map(row=>attempt(row,byIndex.get(row.index),byIndex.has(row.index)?undefined:batch.issue))
 }
 function feedback(row,record){
   return {previous:record.result,issues:record.problems,checks:record.tried.map(({check})=>check?{
@@ -180,8 +193,10 @@ function feedback(row,record){
 }
 async function runMicro(dir,number,rows){
   const name=String(number).padStart(3,'0')
-  const initial=lift(rows,await request(dir,name+'-initial',rows))
-  const pending=rows.flatMap((row,i)=>initial[i].problems.length?
+  const missing=rows.filter(row=>!known.has(row.index))
+  const fresh=missing.length?await request(dir,name+'-initial',missing):{results:[]}
+  const initial=lift(rows,{...fresh,results:[...fresh.results,...rows.flatMap(row=>known.has(row.index)?[known.get(row.index)]:[])]})
+  const pending=backend==='vibe'?[]:rows.flatMap((row,i)=>initial[i].problems.length?
     [{...row,repair:feedback(row,initial[i])}]:[])
   const correction=new Map()
   for(const [i,chunk] of partition(pending).entries()){
