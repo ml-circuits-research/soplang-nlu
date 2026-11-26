@@ -64,6 +64,11 @@ test('neuro-selector emits the selected circuit or the first unscored partial', 
     assert.equal(partial.analysisDiagnostics.status,'partial')
     assert.equal(partial.analysisDiagnostics.fallbackFamily,partials[0].family)
     assert.equal(partial.error,null)
+    const failure = await reader.propose('Dependency mock returns the wrong source for this input.')
+    assert.deepEqual(failure.candidates,[])
+    assert.equal(failure.analysisDiagnostics.status,'error')
+    assert.match(failure.error,/Invalid dependency token/)
+    assert.equal((await reader.propose(text)).candidates[0].sop,result.candidates[0].sop)
   } finally {
     await reader?.close()
     await rm(directory,{recursive:true,force:true})
