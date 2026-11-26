@@ -85,6 +85,10 @@ for (const packet of packets) {
     const membership = packet.memberships[engine]
     const previous = byEngine.get(rowKey(packet.rowIndex,engine))
     if (!previous) throw Error('Missing settled v2 judgment for ' + packet.id + ' ' + engine)
+    if (!Number.isSafeInteger(membership.returned) || membership.returned < 0 ||
+        membership.returned > membership.original.length) {
+      throw Error('Invalid recorded public candidate boundary for ' + packet.id + ' ' + engine)
+    }
     const evidence = membership.original.map((index, ordinal) => ({index,
       scope:ordinal < membership.returned ? 'returned' : 'raw-rejection-record',
       ...classifyCandidate(packet,membership,index,previous.grade === 8)}))
@@ -159,7 +163,7 @@ if (needed.size) {
   const summary = {profile:'nlu-source-first-v3', sample:packets.length,
     scope:'public returned candidate list, order-independent', packetSha256:digest(packetBytes),
     v2JudgmentsSha256:digest(readFileSync(reviewPath)), inventorySha256:digest(readFileSync(inventoryPath)),
-    singletonSha256:singletonPath ? digest(readFileSync(singletonPath)) : null,
+    singletonSha256:singletonPath ? digest(textOf(singletonPath)) : null,
     independentlyReviewedSingletons:singleton.size, frozenNativeReferenceTexts:refs.length,
     addedRawCandidates, rawClassificationChanges, engines:engineSummary}
   writeFileSync(join(output,'native-summary.json'),JSON.stringify(summary,null,2)+'\n')
