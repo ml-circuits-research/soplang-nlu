@@ -27,18 +27,29 @@ export function nativeReferenceDigest(references) {
   return createHash('sha256').update(JSON.stringify(references)).digest('hex')
 }
 
-export function matchReviewedReferences(judgments, witnesses, references) {
-  const byText = new Map(references.map(row => [row.text,new Set(row.references.map(normalizeCircuit))]))
-  const matched = new Map()
-  // The same accepted reading can support every strategy that actually emitted it.
-  for (const witness of witnesses) {
-    if (!byText.get(witness.text)?.has(normalizeCircuit(witness.sop))) continue
-    for (const engine of witness.engines) matched.set(witness.id+'\0'+engine,witness.sop)
-  }
+const normalizeSet = circuits => new Set(circuits.map(normalizeCircuit))
+const sameSet = (a, b) => a.size === b.size && [...a].every(circuit => b.has(circuit))
+
+export function matchReviewedReferences(judgments, references, confirmedDefects = []) {
+  const byText = new Map(references.map(row => [row.text, normalizeSet(row.references)]))
   return judgments.map(row => {
-    if (row.grade !== 8) return row
-    const direct = byText.get(row.text)?.has(normalizeCircuit(row.sop)) ? row.sop : undefined
-    const matchedReference = direct ?? matched.get(row.id+'\0'+row.engine)
-    return matchedReference ? {...row, grade:9, matchedReference} : row
+    const expected = byText.get(row.text)
+    if (!expected?.size || !Array.isArray(row.publicCandidateSops)) return row
+    const returned = normalizeSet(row.publicCandidateSops)
+    const exact = sameSet(expected, returned)
+    const nativeReferenceSet = {
+      expected: expected.size, returned: returned.size, exact,
+      missing: [...expected].filter(circuit => !returned.has(circuit)).length,
+      novel: [...returned].filter(circuit => !expected.has(circuit)).length
+    }
+    if (row.outcome !== 'all' || row.grade !== 8) return {...row, nativeReferenceSet}
+    if (exact) return {...row, grade: 9, nativeReferenceSet}
+    const confirmation = confirmedDefects.find(record => record.text === row.text &&
+      record.independentlyConfirmed === true && typeof record.reason === 'string' && record.reason.trim() &&
+      Array.isArray(record.defectiveReferences) && sameSet(normalizeSet(record.defectiveReferences), expected) &&
+      Array.isArray(record.acceptableCandidates) && sameSet(normalizeSet(record.acceptableCandidates), returned))
+    return confirmation
+      ? {...row, grade: 10, nativeReferenceSet, referenceIssue: confirmation.reason}
+      : {...row, nativeReferenceSet}
   })
 }
