@@ -35,3 +35,15 @@ On the [historical 250-text pilot](../../eval-results/2026-11-26-spacy-dependenc
 Use `STRATEGIES=spacy-beam` to time this strategy independently with the benchmark runner.
 
 The deployment check compared the live public API against paired recomputation of all 250 saved dependency beams using a later, fixed projector snapshot. All candidate lists matched that recomputation in order and stayed within the cap. The later snapshot had 199 complete greedy outputs and 209 complete beam outputs. It produced the same list as the previously reviewed projector on 200 texts. Its CPU transformer public API timings were 2.47 s to open and 52.09 ms median per request, with p95 of 92.00 ms. The later snapshot has no new semantic judgments.
+
+At projector revision `0b955a1`, the same diagnostic yielded a plausible circuit on 66.4% of texts with direct projection and 71.6% with beam projection. Every beam candidate was acceptable on 48.0%, some were acceptable on 23.6%, and none were acceptable on 28.4%.
+
+For `focus on arrow a1`, direct projection and the first beam reading give the arrow `quantity="a1"`. Both fail independent review. Another beam reading makes `a1` the name of the arrow. It preserves the same imperative and directional relation:
+
+```sop
+@n1 nlu.clause form=imperative predicate="focus" polarity=positive
+@n2 nlu.entity name="a1" compound="arrow"
+@n3 nlu.relation kind=on from=$n1 to=$n2 cue="on"
+```
+
+The beam also returned an accepted appositional reading. This source counts as SOME because a quantity reading reached the caller alongside the two accepted alternatives. [Paired diagnostic with exact public circuits](../../eval-results/2026-11-26-spacy-beam-refresh-diagnostic-250/README.md)
