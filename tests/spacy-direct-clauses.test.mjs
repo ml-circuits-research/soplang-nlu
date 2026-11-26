@@ -48,6 +48,13 @@ test('direct projection grounds interrogative and subordinate cues without exter
   assert.match(relative, /kind=locative_relative from=\$n3 to=\$n2 cue="where"/)
   assert.match(relative, /form=declarative predicate="meets"/)
 
+  const location = read('Leave it where it is.', [
+    'VERB/VB/ROOT/0', 'PRON/PRP/dobj/0', 'ADV/WRB/advmod/4',
+    'PRON/PRP/nsubj/4', 'AUX/VBZ/ccomp/0', 'PUNCT/./punct/0'
+  ])
+  assert.match(location, /kind=where from=\$n1 to=\$n2 cue="where"/)
+  assert.doesNotMatch(location, /question=|clausal_complement=/)
+
   assert.match(read('How about a violin?', [
     'SCONJ/WRB/advmod/3', 'SCONJ/IN/mark/3', 'DET/DT/det/3', 'NOUN/NN/ROOT/3', 'PUNCT/./punct/3'
   ]), /form=fragment .*question="How about" topic=\$n2/)

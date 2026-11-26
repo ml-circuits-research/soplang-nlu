@@ -33,6 +33,7 @@ const subordinatePhrases = new Map([
 const questionModifiers = new Set(['many', 'much', 'few', 'long', 'far', 'old', 'early', 'late', 'often',
   'high', 'low', 'big', 'large', 'small', 'tall', 'short', 'wide', 'deep', 'close', 'fast', 'quickly'])
 const polarQuestionVerbs = new Set(['ask', 'check', 'confirm', 'decide', 'determine', 'discover', 'know', 'see', 'wonder'])
+const locativeClauseVerbs = new Set(['keep', 'leave', 'place', 'put', 'set', 'stay'])
 const recipientComplementVerbs = new Set(['ask', 'inform', 'notify', 'remind', 'show', 'teach', 'tell'])
 const clauseMarkers = new Set(['if', 'whether', 'that'])
 const reportingVerbs = new Set(['call', 'contain', 'label', 'name', 'print', 'quote', 'read', 'rename', 'say', 'type', 'write'])
@@ -336,6 +337,11 @@ export function projectDependencies(text, dependencies) {
     return lead ? {kind: subordinators.get(lead.lower), span: [lead]} : {kind: 'adverbial_clause', span: []}
   }
 
+  function locativeComplement(token) {
+    if (!['ccomp', 'xcomp'].includes(token.dep) || !locativeClauseVerbs.has(tokens[token.head]?.lemma)) return
+    return under(token).find((part) => part.lower === 'where' && part.dep === 'advmod')
+  }
+
   const attachments = new Map()
   for (const node of [...clauses.values()].sort((a, b) => a.token.index - b.token.index)) {
     const token = node.token
@@ -358,8 +364,9 @@ export function projectDependencies(text, dependencies) {
     const interrogativeContext = ['ROOT', 'parataxis', 'ccomp', 'xcomp', 'pcomp'].includes(token.dep) || final?.value === '?'
     const polar = token.dep === 'ccomp' && polarQuestionVerbs.has(tokens[token.head]?.lemma) &&
       parts.find((part) => part.dep === 'mark' && ['if', 'whether'].includes(part.lower))
+    const locationCue = locativeComplement(token)
     const question = !verbs.has(token.pos) ? questionPhrase(token, parts, {proposal: true})
-      : relative || !interrogativeContext ? [] : polar ? [polar] : questionPhrase(token, parts)
+      : relative || locationCue || !interrogativeContext ? [] : polar ? [polar] : questionPhrase(token, parts)
     const grammaticalSubject = parts.find((part) => subject.has(part.dep))
     const inversion = grammaticalSubject && [token, ...parts.filter((part) => part.dep === 'aux')]
       .some((part) => part.pos === 'AUX' && part.index < grammaticalSubject.index)
@@ -393,7 +400,7 @@ export function projectDependencies(text, dependencies) {
     }
     if (relativizer) attachments.set(token.index, relativizer)
     for (const part of parts) {
-      if (joiningAdverbs.has(part) || part === marker || question.includes(part) || part === relativizer || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
+      if (joiningAdverbs.has(part) || part === marker || question.includes(part) || part === relativizer || part === locationCue || courtesy.has(part.index) || compoundCues.has(part.index) || internalCues.has(part.index)) continue
       const reportedQuote = part.quoted && ['ccomp', 'xcomp', 'dep'].includes(part.dep) && reportingVerbs.has(token.lemma)
       const recipient = ['dobj', 'obj'].includes(part.dep) && recipientComplementVerbs.has(token.lemma) &&
         parts.some((item) => ['ccomp', 'xcomp'].includes(item.dep) && clauses.has(item.index))
@@ -478,9 +485,12 @@ export function projectDependencies(text, dependencies) {
     if (from.type === 'clause' && entities.has(host.index)) continue
     const attached = [...under(host), ...(resultDependents.get(from) ?? [])]
     for (const part of attached) {
-      if (relationalModifiers.has(part.lower) && part.pos === 'ADV' && !compoundCues.has(part.index)) {
+      if (part.pos === 'ADV' && !compoundCues.has(part.index)) {
         for (const child of under(part)) {
           if (child.dep === 'prep') attached.push(child)
+          if (child.dep === 'npadvmod' && nouns.has(child.pos) && !used.has(child.index)) {
+            relation(from, entity(child), 'extent')
+          }
         }
       }
       if (internalCues.has(part.index)) continue
