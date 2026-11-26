@@ -11,6 +11,7 @@ const dir = resolve(process.argv[2])
 const verifier = await createVerifier({knowledgeDir: process.env.KNOWLEDGE_DIR ?? join(workspace, 'sop-knowledge-worlds')})
 const unpack = name => gunzipSync(readFileSync(join(dir, name))).toString()
 const sample = JSON.parse(unpack('sample.json.gz'))
+const diagnosticsById = new Map(sample.map(({id,text,references}) => [id,{id,text,references,engines:{}}]))
 const statusById = new Map(sample.map(row => [row.id, {}]))
 const summary = {}
 for (const engine of ['z3', 'prolog-worlds']) {
@@ -27,8 +28,10 @@ for (const engine of ['z3', 'prolog-worlds']) {
     const category = grade.startsWith('L') ? grade.slice(0,2) : grade
     counts[category]++
     statusById.get(id)[engine] = grade
-    details.push({id, grade, reasons:result.predErrorReasons, referenceIssues:result.goldIssueReasons,
-      errors:result.predCheck.errors, warnings:result.predCheck.warnings})
+    const diagnostics = {grade, reasons:result.predErrorReasons, referenceIssues:result.goldIssueReasons,
+      errors:result.predCheck.errors, warnings:result.predCheck.warnings}
+    details.push({id, ...diagnostics})
+    diagnosticsById.get(id).engines[engine] = {...diagnostics, candidates:row.candidates}
   }
   summary[engine] = counts
   writeFileSync(join(dir, engine + '-grades.jsonl.gz'), gzipSync(details.map(row => JSON.stringify(row)).join('\n')))
@@ -39,5 +42,12 @@ for (const entry of statusById.values()) {
   worlds[passed('z3') ? (passed('prolog-worlds') ? 'both' : 'z3Only') : (passed('prolog-worlds') ? 'prologOnly' : 'neither')]++
 }
 summary.pairedAcceptance = worlds
+const failures = [...diagnosticsById.values()].filter(row =>
+  Object.values(row.engines).some(result => !['L3','L4'].includes(result.grade)))
+for (let i = 0; i < failures.length; i += 1000) {
+  const batch = failures.slice(i,i + 1000).map(row => JSON.stringify(row)).join('\n')
+  writeFileSync(join(dir,'review-' + (1 + i / 1000) + '.jsonl.gz'), gzipSync(batch))
+}
+summary.reviewCases = failures.length
 writeFileSync(join(dir, 'grades.json'), JSON.stringify(summary,null,2)+'\n')
 console.log(summary)
