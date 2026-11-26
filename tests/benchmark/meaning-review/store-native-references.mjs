@@ -51,7 +51,13 @@ for (const item of approved) {
       new Set(affirmative.map(vote=>vote.model)).size < 2 || affirmative.length !== item.evidence.length ||
       item.dissentModels?.length) throw Error('Missing exact-candidate confirmation: '+item.text)
   const entry = registry.get(item.text) ?? {text:item.text,readings:[]}
-  if (!entry.readings.some(reading=>normalizeCircuit(reading.sop) === sop)) {
+  const superseded = entry.readings.some(reading => {
+    for (let prior = reading.review?.supersedes; prior; prior = prior.supersedes) {
+      if (prior.identity === item.identity) return true
+    }
+    return false
+  })
+  if (!superseded && !entry.readings.some(reading=>normalizeCircuit(reading.sop) === sop)) {
     entry.readings.push({sop,engines:[...engines].sort(),
       review:{run:runId,sourceRevision:environment.revision,identity:item.identity,auditSha256:auditDigest}})
     registry.set(item.text,entry)
