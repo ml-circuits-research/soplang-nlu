@@ -92,6 +92,7 @@ await writeFile(join(out,'prompt.md'),instructions,{flag:'wx'})
 await writeFile(join(out,'schema.sop'),schema,{flag:'wx'})
 await write('output-schema.json',outputSchema)
 await packed('sources.jsonl.gz',rows.map(({id,text})=>({id,text})))
+await packed('teacher-inputs.jsonl.gz',rows.map(row=>({...row,sourceSha256:sha(row.text)})))
 
 async function batch(inputs,phase,index) {
   const base = join(out,'batches',phase+'-'+index)
