@@ -8,7 +8,9 @@ export async function createRecordWriter(knowledgeDir) {
   if ((process.env.EVAL_SCHEMA ?? 'nlu') === 'nlu') {
     return (text, result) => ({
       evaluatedSchema: 'nlu', candidates: result.candidates.map(candidate => candidate.sop),
-      checks: result.candidates.map(candidate => candidate.check), diagnostics: result.analysisDiagnostics,
+      checks: result.candidates.map(candidate => candidate.check),
+      evidence: result.candidates.map(candidate => candidate.semanticEvidence ?? candidate.evidence ?? []),
+      diagnostics: result.analysisDiagnostics,
       error: result.error
     })
   }
