@@ -25,11 +25,11 @@ const singlePass=backend==='vibe'||wideSol
 const requestedSolWidth=Number(process.env.SOP_NLU_SOL_BATCH_ROWS??10)
 const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):
   wideSol?Math.max(500,requestedSolWidth):500
-if(!Number.isSafeInteger(logicalSize)||logicalSize<500||logicalSize>5000||
-   (singlePass&&offset!==0))throw Error('Single-pass runs require offset zero and a group size of 500 to 5000')
+if(!Number.isSafeInteger(logicalSize)||logicalSize<500||logicalSize>10000||
+   (singlePass&&offset!==0))throw Error('Single-pass runs require offset zero and a group size of 500 to 10000')
 const microRows=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_BATCH_ROWS??24):requestedSolWidth
 const microBytes=singlePass?Math.max(60000, microRows*2000):28000
-if(!Number.isSafeInteger(microRows)||microRows<1||microRows>5000)throw Error('Expected 1 to 5000 rows per model request')
+if(!Number.isSafeInteger(microRows)||microRows<1||microRows>10000)throw Error('Expected 1 to 10000 rows per model request')
 const jobs=Number(process.env.SOP_NLU_CURATION_JOBS??8)
 if(!Number.isSafeInteger(jobs)||jobs<1||jobs>64)throw Error('SOP_NLU_CURATION_JOBS must be an integer from 1 to 64')
 const codex=process.env.SOP_NLU_CURATION_CODEX??'codex'

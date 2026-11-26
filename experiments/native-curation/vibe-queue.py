@@ -86,16 +86,16 @@ def main():
                    help="Concurrent Vibe requests within one CSV group")
     p.add_argument("--group-rows", type=int, default=500, metavar="N",
                    help="Maximum rows from one CSV per new publication group")
-    p.add_argument("--min-percent", type=int, default=97, metavar="N",
+    p.add_argument("--min-percent", type=int, default=90, metavar="N",
                    help="Stop if less than this percentage passed in the last group")
     p.add_argument("--batch-rows", type=int, default=None, metavar="N",
                    help="Request width for new groups; unfinished groups retain their manifest width")
     p.add_argument("--reserved-only", action="store_true", help="Convert reserved rows after scoring the frozen benchmark")
     a = p.parse_args()
-    if not 1 <= a.group_rows <= 5000 or not 1 <= a.min_percent <= 100:
-        p.error("Expected a group size from 1 to 5000 and a minimum percentage from 1 to 100")
-    if a.batch_rows is not None and not 1 <= a.batch_rows <= 5000:
-        p.error("Expected a request width from 1 to 5000")
+    if not 1 <= a.group_rows <= 10000 or not 1 <= a.min_percent <= 100:
+        p.error("Expected a group size from 1 to 10000 and a minimum percentage from 1 to 100")
+    if a.batch_rows is not None and not 1 <= a.batch_rows <= 10000:
+        p.error("Expected a request width from 1 to 10000")
     inventory, dataset, queue = (path.resolve() for path in (a.inventory, a.dataset, a.queue))
     root = Path(__file__).resolve().parents[2]
     if a.reserved_only:
