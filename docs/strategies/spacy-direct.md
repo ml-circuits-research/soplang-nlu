@@ -25,3 +25,20 @@ To run the public adapter smoke test with a local model:
 SOP_NLU_SYNTAX_PYTHON=/path/to/python SOP_NLU_SYNTAX_MODEL=en_core_web_sm \
   node --test tests/spacy-direct.test.mjs
 ```
+
+## Noun phrases and separate speech acts
+
+With the pretrained transformer, `the red circle` yields a fragment whose topic points at the qualified entity. In `Move the red circle, thanks.`, the imperative takes that entity as its object and the detached expression of gratitude gets its own clause:
+
+```sop
+@n1 nlu.clause form=imperative predicate="Move" polarity=positive direct_object=$n3
+@n2 nlu.clause form=fragment speech_act=gratitude expression="thanks" separator="," terminator="."
+@n3 nlu.entity head="circle" determiner="the" modifier="red"
+```
+
+For `Nothing!`, the same public strategy emits a pronominal topic and preserves the exclamation mark. The source leaves the topic's reference open.
+
+```sop
+@n1 nlu.clause form=fragment terminator="!" topic=$n2
+@n2 nlu.entity pronoun="Nothing"
+```
