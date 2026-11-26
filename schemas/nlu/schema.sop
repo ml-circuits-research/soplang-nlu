@@ -6,6 +6,10 @@
 @nlu.entity.head core.slot of=nlu.entity key=head kind=string
 @nlu.entity.determiner core.slot of=nlu.entity key=determiner kind=string
 @nlu.entity.modifier core.slot of=nlu.entity key=modifier kind=string many=true
+@nlu.entity.compound core.slot of=nlu.entity key=compound kind=string many=true
+@nlu.entity.degree core.slot of=nlu.entity key=degree kind=string many=true
+@nlu.entity.possessor core.slot of=nlu.entity key=possessor kind=ref type=nlu.entity type=nlu.coordination
+@nlu.entity.possessive_marker core.slot of=nlu.entity key=possessive_marker kind=string
 @nlu.entity.pronoun core.slot of=nlu.entity key=pronoun kind=string
 @nlu.entity.name core.slot of=nlu.entity key=name kind=string
 @nlu.entity.quantity core.slot of=nlu.entity key=quantity kind=string
@@ -15,7 +19,7 @@
 @nlu.entity.unresolved core.slot of=nlu.entity key=unresolved kind=string many=true
 
 @nlu.clause core.type of=nlu.clause closed=true
-@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment required=true present=true
+@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment enum=nonfinite required=true present=true
 # An independent utterance may have a communicative function without a verb.
 @nlu.clause.expression core.slot of=nlu.clause key=expression kind=string
 @nlu.clause.speech_act core.slot of=nlu.clause key=speech_act kind=atom
@@ -28,6 +32,8 @@
 @nlu.clause.result_complement core.slot of=nlu.clause key=result_complement kind=string
 @nlu.clause.result_color core.slot of=nlu.clause key=result_color kind=atom
 @nlu.clause.clausal_complement core.slot of=nlu.clause key=clausal_complement kind=ref type=nlu.clause type=nlu.coordination
+@nlu.clause.degree core.slot of=nlu.clause key=degree kind=string many=true
+@nlu.clause.marker core.slot of=nlu.clause key=marker kind=string
 @nlu.clause.adverb core.slot of=nlu.clause key=adverb kind=string many=true
 @nlu.clause.particle core.slot of=nlu.clause key=particle kind=string many=true
 @nlu.clause.auxiliary core.slot of=nlu.clause key=auxiliary kind=string many=true

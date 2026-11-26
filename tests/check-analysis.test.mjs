@@ -196,3 +196,30 @@ test('preserves decimal numbers and clock readings as whole source tokens', () =
   assert.equal(whole.sourceGaps.materialUnresolved, 4)
   assert.equal(hasCompleteSource(whole), false)
 })
+
+test('grounds a possessive clitic and preserves the full written form when quoted whole', () => {
+  for (const marker of ["'s", '’s']) {
+    const text = 'Move ' + 'Jan' + marker + ' office chair.'
+    const split = lines(
+      '@c nlu.clause form=imperative predicate="Move" direct_object=$chair terminator="."',
+      '@chair nlu.entity compound="office" head="chair" possessor=$jan possessive_marker="' + marker + '"',
+      '@jan nlu.entity name="Jan"'
+    )
+    assert.equal(hasCompleteSource(validate(text, split)), true)
+    assert.equal(validate(text, split.replace('name="Jan"', 'name="Jan' + marker + '"')).valid, false)
+    assert.equal(hasCompleteSource(validate('Jan' + marker, lines(
+      '@c nlu.clause form=fragment topic=$n',
+      '@n nlu.entity name="Jan' + marker + '"'
+    ))), true)
+  }
+})
+
+test('represents nonfinite modification and degree on a qualified lookup', () => {
+  const sop = lines(
+    '@c nlu.clause form=imperative predicate="Find" direct_object=$bird',
+    '@bird nlu.entity determiner="the" degree="very" modifier="small" head="bird"',
+    '@f nlu.clause form=nonfinite predicate="facing" adverb="left"',
+    '@r nlu.relation kind=modifier from=$bird to=$f'
+  )
+  assert.equal(hasCompleteSource(validate('Find the very small bird facing left', sop)), true)
+})
