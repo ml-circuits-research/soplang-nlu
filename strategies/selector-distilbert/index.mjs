@@ -6,10 +6,32 @@ import {directedGraph,sameDirectedGraph} from '../../lib/directed-graph.mjs'
 import {neuroSelector} from '../neuro-selector/index.mjs'
 import {distilBert} from '../distilbert/index.mjs'
 
+function hasDetachedComponent(wires){
+  const links=new Map(wires.map(wire=>[wire.id,new Set()]))
+  for(const wire of wires){
+    for(const value of Object.values(wire.attrs).flat()){
+      if(!value.startsWith('$'))continue
+      const target=value.slice(1)
+      links.get(wire.id).add(target)
+      links.get(target)?.add(wire.id)
+    }
+  }
+  const attached=new Set(wires.filter(wire=>wire.type==='nlu.clause').map(wire=>wire.id))
+  for(const id of attached)for(const neighbor of links.get(id)??[])attached.add(neighbor)
+  return wires.some(wire=>!attached.has(wire.id))
+}
+
 export function combineReadings(base,additional,parse,isComplete=c=>hasCompleteSource(c.check)){
-  const graphs=base.map(c=>directedGraph(parse(c.sop),'strict'))
-  const distinct=additional.find(c=>isComplete(c)&&
-    graphs.every(g=>!sameDirectedGraph(g,directedGraph(parse(c.sop),'strict'))))
+  const originals=base.map(c=>parse(c.sop))
+  const graphs=originals.map(wires=>directedGraph(wires,'strict'))
+  const hasConnectedSecond=base[1]&&isComplete(base[1])&&!hasDetachedComponent(originals[1])
+  const distinct=additional.find(candidate=>{
+    if(!isComplete(candidate))return false
+    const wires=parse(candidate.sop)
+    if(hasConnectedSecond&&hasDetachedComponent(wires))return false
+    const graph=directedGraph(wires,'strict')
+    return graphs.every(g=>!sameDirectedGraph(g,graph))
+  })
   return distinct ? [base[0],distinct].filter(Boolean) : base.slice(0,2)
 }
 
