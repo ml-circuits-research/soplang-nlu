@@ -26,9 +26,27 @@ for (const engine of engines) {
   const details = []
   const counts = {L0:0, L1:0, L2:0, L3:0, L4:0, invalidReference:0, readerError:0}
   const alternatives = {distinct:0,accepted:0,exactReferences:0,totalReferences:0}
+  const syntax = {rows:0,passed:0,tokens:0,tokensWithPos:0,tokensInPhraseHypotheses:0}
+  const grounding = {quotedKeys:0,unlocatedQuotedKeys:0,ambiguousQuotedKeys:0,invalidCandidates:0}
+  const subgrades = {}
   for (const {id, text, references} of sample) {
     const row = predictions.get(id)
     if (!row) throw Error('Missing timing record: ' + id)
+    if (row.syntax) {
+      syntax.rows++
+      if (row.syntax.check?.ok) syntax.passed++
+      syntax.tokens += row.syntax.tokens
+      syntax.tokensWithPos += row.syntax.tokensWithPos
+      syntax.tokensInPhraseHypotheses += row.syntax.check?.tokensInPhraseHypotheses ?? 0
+    }
+    for (const candidate of row.candidateEvidence ?? []) {
+      for (const entry of candidate.sourceEvidence ?? []) {
+        if (entry.kind !== 'quoted') continue
+        grounding.quotedKeys++
+        if (!entry.ranges.length) grounding.unlocatedQuotedKeys++
+        if (entry.ranges.length > 1) grounding.ambiguousQuotedKeys++
+      }
+    }
     const goldReferences = [...new Set(references)].sort().map((sop, i) => ({sop, column:String(i)}))
     const proposals = [...new Set(row.candidates)].sort()
     const options = {text,goldReferences,verifier}
@@ -36,9 +54,11 @@ for (const engine of engines) {
     const grade = row.error ? 'readerError' : result.goldValid ? result.legendGrade : 'invalidReference'
     const category = grade.startsWith('L') ? grade.slice(0,2) : grade
     counts[category]++
+    subgrades[grade] = (subgrades[grade] ?? 0) + 1
     let reasonable = 0
     for (const proposal of proposals) {
       const assessed = proposals.length === 1 ? result : compareProposals({...options,proposals:[proposal]})
+      if (!assessed.predValid) grounding.invalidCandidates++
       if (assessed.goldValid && accepted(assessed.legendGrade)) reasonable++
     }
     alternatives.distinct += proposals.length
@@ -51,7 +71,7 @@ for (const engine of engines) {
     diagnosticsById.get(id).engines[engine] = {...diagnostics,candidates:proposals}
   }
   summary[engine] = counts
-  writeFileSync(join(dir,engine+'-alternative-quality.json'), JSON.stringify({...alternatives,evaluationMs:performance.now()-started},null,2)+'\n')
+  writeFileSync(join(dir,engine+'-alternative-quality.json'), JSON.stringify({...alternatives,syntax,grounding,subgrades,evaluationMs:performance.now()-started},null,2)+'\n')
   writeFileSync(join(dir,engine+'-grades.jsonl.gz'),gzipSync(details.map(row => JSON.stringify(row)).join('\n')))
 }
 
