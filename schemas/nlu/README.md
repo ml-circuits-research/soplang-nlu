@@ -9,7 +9,7 @@ The `nlu` SOP module declares clauses, entities, relations, and coordination. It
 @placement nlu.relation kind=beside from=$circle to=$square cue="beside"
 ```
 
-An entity can use a head, written name, or pronoun. A fragment still has a clause, but need not have a predicate. A coordination wire binds two or more distinct clauses or two or more distinct entities. Clause arguments can reference entities or entity coordination. Relations can connect clauses, entities, or coordination. The repeatable `unresolved` and `filler` keys preserve literal text on a clause or entity when the analysis leaves it unresolved or classifies it as filler.
+An entity can use a head, written name, or pronoun. A nominal fragment can reference its entity through the clause's `topic` role without assigning a subject or object. A coordination wire binds two or more distinct clauses or two or more distinct entities. Clause arguments can reference entities or entity coordination. Relations can connect clauses, entities, or coordination. The repeatable `unresolved` and `filler` keys preserve literal text on a clause or entity when the analysis leaves it unresolved or classifies it as filler.
 
 Async `createAnalysisValidator({knowledgeDir, schemaPaths})` returns a synchronous `validate(text, sop)` function. Validation reports `schemaValid`, `sourceValid`, `valid` (both checks), and structured `findings`. Exact source claims are matched in the original text with case and Unicode intact. Each claim uses its own occurrence. Repeated evidence can be ambiguous and is reported without public offsets. Semantic atoms such as `color=red` do not consume a second occurrence of the source word `"red"`.
 
