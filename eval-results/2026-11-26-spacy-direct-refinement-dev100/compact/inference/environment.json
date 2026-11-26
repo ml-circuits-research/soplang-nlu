@@ -1,0 +1,55 @@
+{
+  "revision": "d25c2645c098f1fe33074086ae2a5e1c0d68ae31",
+  "seed": "1d15ff225eec1baa171d7b67603f9095df081534de8e807b",
+  "sample": 100,
+  "nativeReferenceRevision": "d25c2645c098f1fe33074086ae2a5e1c0d68ae31",
+  "nativeReferenceSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "nativeReferenceTexts": 0,
+  "sampleSha256": "7dbb866f45693719d7095ec45c9423e518a734272df9f2cc12d6b8929ea59bcd",
+  "evaluatedSchema": "nlu",
+  "workers": 1,
+  "strategies": [
+    "spacy-direct"
+  ],
+  "libraryRevision": "fe2b2b0a8d725df713feb063a0e29d6cd22a1409",
+  "knowledgeRevision": "3b2deebd85aa6ca070b7dc2ce94ff775fc891658",
+  "model": {
+    "library": "spacy",
+    "version": "3.8.16",
+    "model": "core_web_sm",
+    "modelVersion": "3.8.0",
+    "pipeline": [
+      "tok2vec",
+      "tagger",
+      "parser",
+      "attribute_ruler",
+      "lemmatizer"
+    ],
+    "sources": [
+      {
+        "name": "OntoNotes 5",
+        "url": "https://catalog.ldc.upenn.edu/LDC2013T19",
+        "license": "commercial (licensed by Explosion)",
+        "author": "Ralph Weischedel, Martha Palmer, Mitchell Marcus, Eduard Hovy, Sameer Pradhan, Lance Ramshaw, Nianwen Xue, Ann Taylor, Jeff Kaufman, Michelle Franchini, Mohammed El-Bachouti, Robert Belvin, Ann Houston"
+      },
+      {
+        "name": "ClearNLP Constituent-to-Dependency Conversion",
+        "url": "https://github.com/clir/clearnlp-guidelines/blob/master/md/components/dependency_conversion.md",
+        "license": "Citation provided for reference, no code packaged with model",
+        "author": "Emory University"
+      },
+      {
+        "name": "WordNet 3.0",
+        "url": "https://wordnet.princeton.edu/",
+        "author": "Princeton University",
+        "license": "WordNet 3.0 License"
+      }
+    ]
+  },
+  "modelStartupMs": 407.202421,
+  "modelInference": {
+    "sumMs": 232.75339700000018,
+    "medianMs": 2.20637099999999,
+    "p95Ms": 3.6903239999999187
+  }
+}
