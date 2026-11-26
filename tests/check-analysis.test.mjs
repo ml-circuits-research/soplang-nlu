@@ -234,3 +234,9 @@ test('grounds contracted subjects and auxiliaries in their original spelling', (
     assert.equal(hasCompleteSource(validate(text, sop)), true)
   }
 })
+
+test('allows a separately grounded negative clitic while rejecting partial source words', () => {
+  const sop = '@c nlu.clause form=imperative auxiliary="Do" negation="n’t" predicate="move"'
+  assert.equal(hasCompleteSource(validate('Don’t move', sop)), true)
+  assert.equal(validate('Don’t move', sop.replace('negation="n’t"', 'negation="’t"')).valid, false)
+})
