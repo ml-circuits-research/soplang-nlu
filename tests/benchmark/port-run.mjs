@@ -1,7 +1,7 @@
 import {execFileSync} from 'node:child_process'
 import {createHash} from 'node:crypto'
-import {existsSync, mkdirSync, readFileSync, rmdirSync, writeFileSync} from 'node:fs'
-import {arch, cpus, platform} from 'node:os'
+import {existsSync, mkdirSync, mkdtempSync, rmSync, readFileSync, rmdirSync, writeFileSync} from 'node:fs'
+import {arch, cpus, platform, tmpdir} from 'node:os'
 import {dirname, isAbsolute, join, relative, resolve, sep} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
@@ -60,7 +60,7 @@ async function trainModel(revision, evaluationRows, options, save) {
   writeFileSync(options.modelPath, modelBytes, {flag: 'wx'})
   save(exampleTransfer + '-training.json', {
     ...metadata, revision: pinnedRevision, splitMs, trainingMs,
-    modelPath: options.modelPath, modelSha256: hash(modelBytes), modelVersion: model.version,
+    modelSha256: hash(modelBytes), modelVersion: model.version,
     modelTemplates: model.templates.length, modelTraining: model.training
   })
 }
@@ -117,8 +117,7 @@ const strategies = {
   z3: {knowledgeDir, topK: 8, z3Module: process.env.Z3_MODULE ? resolve(process.env.Z3_MODULE) : undefined},
   'prolog-worlds': {knowledgeDir, evidence: true, swipl: process.env.SWIPL},
   [exampleTransfer]: {
-    knowledgeDir, evidence: true, swipl: process.env.SWIPL,
-    modelPath: join(dir, exampleTransfer + '-model.json')
+    knowledgeDir, evidence: true, swipl: process.env.SWIPL
   }
 }
 const selected = (process.env.STRATEGIES ?? Object.keys(strategies).join(','))
@@ -144,7 +143,7 @@ process.once('exit', () => rmdirSync(lock))
 const save = (name, data) => writeFileSync(join(dir, name), JSON.stringify(data, null, 2) + '\n', {flag: 'wx'})
 for (const name of selected) {
   const files = [name + '.json', name + '.jsonl.gz', name + '-environment.json']
-  if (name === exampleTransfer) files.push(name + '-model.json', name + '-training.json')
+  if (name === exampleTransfer) files.push(name + '-training.json')
   for (const file of files) {
     if (existsSync(join(dir, file))) throw Error('Benchmark artifact already exists: ' + join(dir, file))
   }
@@ -175,10 +174,15 @@ const partitions = Array.from({length: activeWorkers}, () => [])
 for (const [index, {id, text}] of rows.entries()) partitions[index % activeWorkers].push({id, text})
 
 for (const name of selected) {
-  const options = strategies[name]
+  const options = {...strategies[name]}
   const label = strategyLabel(name)
-  if (name === exampleTransfer) await trainModel(sampleMetadata.revision, rows, options, save)
-  if (append) save(name + '-environment.json', {...environment, strategies: {[name]: options}})
+  if (name === exampleTransfer) {
+    const temporary = mkdtempSync(join(tmpdir(),'soplang-example-transfer-'))
+    process.once('exit', () => rmSync(temporary,{recursive:true,force:true}))
+    options.modelPath = join(temporary,'templates.json')
+    await trainModel(sampleMetadata.revision, rows, options, save)
+  }
+  if (append) save(name + '-environment.json', {...environment, strategies: {[name]: strategies[name]}})
   console.log(`${label} starting ${rows.length} requests in ${dir}`)
   const start = performance.now()
   const batches = await Promise.allSettled(partitions.map((batch, index) => runWorker(name, options, batch, index)))
