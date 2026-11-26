@@ -1,0 +1,7 @@
+# Sol native syntax curation, first 500 sources
+
+The first batch follows the exact order and source text of the first 500 inputs in the expansion sample. All 500 inputs supplied previously generated drafts. GPT-6 Sol returned 495 source-complete circuits for 470 of those sources. It selected 299 unchanged drafts by index and supplied 196 new or revised circuits. Twenty-five sources had two statically valid candidate readings with an explicit ambiguity. Thirty sources remained in the rework queue.
+
+The public source validator identified 77 sources for one corrective attempt. Forty-seven passed after correction. The generation run made 50 first calls and 40 repair calls with concurrency ten. Codex reported 652,034 tokens across those calls. End-to-end generation took 324 seconds, including a restart after a local feedback formatter failed on synthetic clitic tokens. The restart preserved all seven sealed model responses. Throughput for this run was about 93 sources per minute before semantic confirmation. This is a single-run observation.
+
+The inputs, source-complete outputs, exact prompts, validated responses and original and updated manifests are preserved here. The actual NLU schema is included. Static completeness is a gate for independent semantic review. The generation records report `curated` for source-complete cases, with independent decisions recorded separately. Novel confirmation scheduled 253 circuit identities and deferred 242 exact identities to the already-running expansion review.
