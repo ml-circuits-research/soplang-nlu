@@ -13,7 +13,7 @@ const knowledgeDir = process.env.SOP_KNOWLEDGE_DIR ??
   fileURLToPath(new URL('../../sop-knowledge-worlds', import.meta.url))
 const swipl = process.env.SWIPL
 
-test('neuro-selector emits exactly the circuit selected by the fitted policy', {
+test('neuro-selector emits the selected circuit or the first unscored partial', {
   skip: !swipl && 'Set SWIPL to test the optional Prolog family'
 }, async () => {
   const text = 'Draw it.'
@@ -22,17 +22,24 @@ test('neuro-selector emits exactly the circuit selected by the fitted policy', {
     {i:1,text:'it',start:5,end:7,pos:'PRON',tag:'PRP',dep:'dobj',head:0,lemma:'it'},
     {i:2,text:'.',start:7,end:8,pos:'PUNCT',tag:'.',dep:'punct',head:0,lemma:'.'}
   ]
+  const partialText = 'Draw it toward.'
+  const partialGraph = [...graph.slice(0,2),
+    {i:2,text:'toward',start:8,end:14,pos:'ADP',tag:'IN',dep:'prep',head:0,lemma:'toward'},
+    {...graph[2],i:3,start:14,end:15}]
+  const tokens = source => source === partialText ? partialGraph : graph
   const syntaxModel = {async open() {
-    return {async parse() {return graph}, async parseBeam() {return {tokens:graph,alternatives:[]}}, async close() {}}
+    return {async parse(source) {return tokens(source)}, async parseBeam(source) {return {tokens:tokens(source),alternatives:[]}}, async close() {}}
   }}
   const options = {knowledgeDir,swipl,baseSyntaxModel:syntaxModel,adaptedSyntaxModel:syntaxModel,compactSyntaxModel:syntaxModel}
   const pool = await openProposalPool(options)
-  let input
+  let input, partials
   try {
     const {parse} = await import(pathToFileURL(join(resolve(knowledgeDir),'tools/sopworld/sopworld.mjs')))
     input = selectorChoices(text,await pool.propose(text),parse)
+    partials = await pool.propose(partialText)
   } finally { await pool.close() }
   assert.ok(input.candidates.length)
+  assert.ok(partials.length && !partials.some(row => row.eligible))
   const directory = await mkdtemp(join(tmpdir(),'sop-selector-'))
   const selectorModelPath = join(directory,'model.json')
   let reader
@@ -51,6 +58,12 @@ test('neuro-selector emits exactly the circuit selected by the fitted policy', {
     assert.equal(result.candidates[0].selectorScore,.5)
     assert.ok(result.candidates[0].check.valid)
     assert.match(result.analysisDiagnostics.modelSha256,/^[a-f0-9]{64}$/)
+    const partial = await reader.propose(partialText)
+    assert.deepEqual(partial.candidates.map(({sop})=>sop),[partials[0].sop])
+    assert.equal(partial.candidates[0].selectorScore,undefined)
+    assert.equal(partial.analysisDiagnostics.status,'partial')
+    assert.equal(partial.analysisDiagnostics.fallbackFamily,partials[0].family)
+    assert.equal(partial.error,null)
   } finally {
     await reader?.close()
     await rm(directory,{recursive:true,force:true})

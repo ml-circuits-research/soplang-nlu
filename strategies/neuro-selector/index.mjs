@@ -59,9 +59,15 @@ async function open({
     try {
       const observations = await pool.propose(text)
       const input = selectorChoices(text,observations,parse)
+      if (!input.candidates.length) {
+        const first = observations[0]
+        return {analyses:first ? [{sop:first.sop}] : [],analysisDiagnostics:{...diagnostics,
+          status:first ? 'partial' : 'no-eligible',observations:observations.length,eligibleCircuits:0,
+          ...(first ? {fallbackFamily:first.family,fallbackRank:first.rank} : {})}}
+      }
       const analyses = selectReadings(input,model).map(({index,probability}) =>
         ({sop:input.candidates[index].sop,selectorScore:probability}))
-      return {analyses,analysisDiagnostics:{...diagnostics,status:analyses.length ? 'ok' : 'no-eligible',
+      return {analyses,analysisDiagnostics:{...diagnostics,status:'ok',
         observations:observations.length,eligibleCircuits:input.candidates.length}}
     } catch (error) {
       return {analyses:[],analysisDiagnostics:{...diagnostics,status:'error',error:error.message}}

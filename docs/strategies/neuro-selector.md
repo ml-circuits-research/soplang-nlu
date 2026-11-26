@@ -17,6 +17,6 @@ try {
 }
 ```
 
-The ranker sees current source and circuit features, including agreement across proposal families. It deduplicates exact SOPs and applies the fitted candidate cap and similarity policy. Every output is an unchanged proposal from one or more families. If the pool has no source-complete reading, the strategy returns an empty candidate list with status `no-eligible`. Selector scores rank readings and do not guarantee their meaning.
+The ranker sees current source and circuit features, including agreement across proposal families. It deduplicates exact SOPs and applies the fitted candidate cap and similarity policy. Every output is an unchanged proposal from one or more families. If the pool has source-grounded partials but no complete reading, the strategy returns the first public partial unscored with status `partial`. An empty pool returns no candidates with status `no-eligible`. Selector scores rank readings and do not guarantee their meaning.
 
 Run the benchmark with `STRATEGIES=neuro-selector` to measure this strategy explicitly. It loads two transformer models and one compact model per worker.
