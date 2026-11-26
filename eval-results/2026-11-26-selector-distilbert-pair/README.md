@@ -12,3 +12,13 @@ A separate blind Astra pass reviewed all four apparent gains and twelve addition
 - For the claims-line example, the graph describes the axis as predicative of the line. The additional reviewer interpreted the axis as being requested for the line.
 
 The archived judgments include per-case reasons. The independent 250-source diagnostic uses live public inference with the same cap and fixed policy. The reserved 1% remains separate.
+
+## Live 250-source diagnostic
+
+| Strategy | None | Some | All | At least one |
+| --- | ---: | ---: | ---: | ---: |
+| Selector | 22.0% | 25.2% | 52.8% | 78.0% |
+| Span-head DistilBERT | 54.8% | 0.0% | 45.2% | 45.2% |
+| Fixed two-reading pair | 20.8% | 25.6% | 53.6% | 79.2% |
+
+The pair gained ten texts and lost seven. It took 51.22 seconds including startup for 250 texts in one CPU process. Request times had a 137.6 ms median and a 300.6 ms 95th percentile. Source-complete candidates shared across strategies received the same exact vote. Independent review produced 23 threshold disagreements, and the agreement audit found one contradiction among 40 checks. The 250 texts are a historical diagnostic; the actual blind 1% has not been used to select strategies.
