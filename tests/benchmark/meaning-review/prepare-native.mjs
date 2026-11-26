@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url'
 import {resolve, join} from 'node:path'
 import {gunzipSync, gzipSync} from 'node:zlib'
 import {createAnalysisValidator} from '../../../lib/index.mjs'
+import {hasCompleteSource} from '../../../lib/check-analysis.mjs'
 
 const [run, output, installation] = process.argv.slice(2)
 if (!run || !output || !installation) {
@@ -38,23 +39,49 @@ const stores = engineNames.map(engine => {
 
 const packets = rows.map(({id, text}, rowIndex) => {
   const proposals = stores.map(({predictions}) => predictions.get(id))
-  const circuits = [...new Set(proposals.flatMap(row => row.candidates.map(normalized)))].sort()
+  const saved = proposals.map(row => [...row.candidates, ...(row.rejected ?? []).map(candidate => candidate.sop)])
+  const circuits = [...new Set(saved.flatMap(candidates => candidates.map(normalized)))].sort()
   const indices = new Map(circuits.map((sop, index) => [sop, index]))
   const checks = circuits.map(sop => validator(text, sop))
   const groups = {}
+  const staticJudgments = {}
+  const groupKeys = new Map()
   const memberships = {}
   for (const [i, engine] of engineNames.entries()) {
     const row = proposals[i]
-    const original = row.candidates.map(sop => indices.get(normalized(sop)))
-    const eligible = [...new Set(original.filter(index => checks[index].valid))].sort((a,b) => a-b)
-    const key = Object.keys(groups).find(key => String(groups[key]) === String(eligible)) ?? String(Object.keys(groups).length)
-    groups[key] = eligible
-    memberships[engine] = {key, original, error: row.error ?? null,
+    const original = saved[i].map(sop => indices.get(normalized(sop)))
+    const valid = [...new Set(original.filter(index => checks[index].valid))].sort((a,b) => a-b)
+    const eligible = valid.filter(index => hasCompleteSource(checks[index]))
+    let staticGrade
+    let witness = null
+    if (!eligible.length) {
+      staticGrade = valid.length ? 2 : 0
+      if (valid.length) {
+        const gap = index => checks[index].sourceGaps.materialUncovered + checks[index].sourceGaps.materialUnresolved
+        witness = valid.reduce((best, index) => gap(index) < gap(best) ? index : best)
+      }
+    }
+    const signature = eligible.length ? 'review:' + eligible.join(',') : 'static:' + staticGrade + ':' + witness
+    let key = groupKeys.get(signature)
+    if (key === undefined) {
+      key = String(groupKeys.size)
+      groupKeys.set(signature, key)
+      groups[key] = eligible
+      if (staticGrade !== undefined) {
+        const coverage = witness === null ? null : checks[witness].sourceGaps
+        const reason = coverage
+          ? 'All schema-valid, source-grounded proposals have source gaps. The closest has ' +
+            coverage.materialUncovered + ' material uncovered and ' + coverage.materialUnresolved + ' material unresolved occurrence(s).'
+          : 'No schema-valid, source-grounded native reading was emitted.'
+        staticJudgments[key] = {rowIndex, group: key, grade: staticGrade, candidate: witness, reason}
+      }
+    }
+    memberships[engine] = {key, original, returned: row.candidates.length, valid, error: row.error ?? null,
       rejected: (row.rejected ?? []).map(candidate => ({sop: candidate.sop, findings: candidate.check?.findings ?? []}))}
   }
   const allLines = [...new Set(circuits.flatMap(sop => sop.split('\n')))]
   const lineIndices = new Map(allLines.map((line, index) => [line, index]))
-  return {id, rowIndex, text, references: [], groups, memberships, checks, lines: allLines,
+  return {id, rowIndex, text, references: [], groups, staticJudgments, memberships, checks, lines: allLines,
     circuits: circuits.map(sop => sop.split('\n').map(line => lineIndices.get(line)))}
 })
 
@@ -62,13 +89,17 @@ mkdirSync(output, {recursive: true})
 const packed = gzipSync(JSON.stringify(packets))
 writeFileSync(join(output, 'packets.json.gz'), packed, {flag: 'wx'})
 const schema = readFileSync(fileURLToPath(new URL('../../../schemas/nlu/schema.sop', import.meta.url)))
+const checker = readFileSync(fileURLToPath(new URL('../../../lib/check-analysis.mjs', import.meta.url)))
 const manifest = {
-  profile: 'nlu-source-first-v1', source: resolve(run), sample: rows.length,
+  profile: 'nlu-source-first-v2', source: resolve(run), sample: rows.length,
+  coverageGate: 'all source accounted and no material gaps, allowing incidental unresolved punctuation',
   datasetRevision: environment.revision, libraryRevision: environment.libraryRevision,
-  sampleSha256: sha(sampleBytes), packetsSha256: sha(packed), schemaSha256: sha(schema),
+  sampleSha256: sha(sampleBytes), packetsSha256: sha(packed), schemaSha256: sha(schema), checkerSha256: sha(checker),
   predictions: Object.fromEntries(engineNames.map((name,i) => [name, stores[i].sha256])),
   groups: packets.reduce((sum, packet) => sum + Object.keys(packet.groups).length, 0),
-  nonemptyGroups: packets.reduce((sum, packet) => sum + Object.values(packet.groups).filter(group => group.length).length, 0)
+  nonemptyGroups: packets.reduce((sum, packet) => sum + Object.values(packet.groups).filter(group => group.length).length, 0),
+  staticGroups: Object.fromEntries([0, 2].map(grade => [grade, packets.reduce((sum, packet) => sum +
+    Object.values(packet.staticJudgments).filter(entry => entry.grade === grade).length, 0)]))
 }
 writeFileSync(join(output, 'manifest.json'), JSON.stringify(manifest,null,2)+'\n', {flag: 'wx'})
 console.log(JSON.stringify(manifest))

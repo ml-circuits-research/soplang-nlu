@@ -1,0 +1,663 @@
+{
+  "profile": "nlu-source-first-v2",
+  "sample": 1861,
+  "reviewedGroups": 3907,
+  "auditGroups": 280,
+  "primarySha256": "8cf28d648b55b1311a11d8059205853e75db5b7edc7a825a2cea15a8150db65c",
+  "auditSha256": "60a3b7bf3d0f1aaf291ae669014ac781ffddd5747095ddcaa321e97186b85c8b",
+  "sharedWitnessGroups": 0,
+  "conflictingWitnesses": [],
+  "engines": {
+    "z3": {
+      "rows": 1861,
+      "accepted": 193,
+      "engineErrors": 0,
+      "noEligibleCandidates": 1472,
+      "sharedWitnessPromotions": 0,
+      "staticInvalid": 70,
+      "staticIncomplete": 1402,
+      "modelReviewed": 389,
+      "counts": {
+        "L0": 72,
+        "L1": 114,
+        "L2": 1402,
+        "L3": 53,
+        "L4": 12,
+        "L5": 2,
+        "L6": 3,
+        "L7": 10,
+        "L8": 193,
+        "L9": 0,
+        "L10": 0
+      },
+      "examples": {
+        "L3": [
+          {
+            "id": "drawing/scenes-07.csv#944",
+            "text": "get the woman with the yellow hat to the right by one spot",
+            "reason": "Identifies the woman with the yellow hat and the rightward destination, but treats “by one spot” as a nearby spot rather than a one-spot displacement.",
+            "sop": "@e1 nlu.entity determiner=\"the\" head=\"woman\"\n@e2 nlu.entity determiner=\"the\" modifier=\"yellow\" color=yellow head=\"hat\"\n@e3 nlu.entity determiner=\"the\" head=\"right\"\n@e4 nlu.entity determiner=\"one\" head=\"spot\" kind=dot\n@rel1 nlu.relation kind=with from=$e1 to=$e2 cue=\"with\"\n@rel2 nlu.relation kind=to from=$c1 to=$e3 cue=\"to\"\n@rel3 nlu.relation kind=near from=$c1 to=$e4 cue=\"by\"\n@c1 nlu.clause form=imperative predicate=\"get\" act=place polarity=positive direct_object=$e1"
+          },
+          {
+            "id": "diagram/charts-03.csv#3583",
+            "text": "how much is the average of the revenue?",
+            "reason": "It treats “much” as the subject and the average as an object, rather than asking for the amount of the average of revenue.",
+            "sop": "@e1 nlu.entity head=\"much\"\n@e2 nlu.entity determiner=\"the\" head=\"average\"\n@e3 nlu.entity determiner=\"the\" head=\"revenue\"\n@rel1 nlu.relation kind=of from=$e2 to=$e3 cue=\"of\"\n@c1 nlu.clause form=interrogative predicate=\"is\" polarity=positive question=\"how\" terminator=\"?\" subject=$e1 direct_object=$e2"
+          },
+          {
+            "id": "drawing/scenes-13.csv#3793",
+            "text": "slide both clouds over, the top",
+            "reason": "It makes “the top” a second object coordinated with both clouds, instead of the location for sliding them over.",
+            "sop": "@e1 nlu.entity determiner=\"both\" head=\"clouds\"\n@e2 nlu.entity determiner=\"the\" head=\"top\"\n@coord1 nlu.coordination kind=additive member=$e1 member=$e2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"slide\" act=place polarity=positive direct_object=$coord1 result_complement=\"over\""
+          }
+        ],
+        "L2": [
+          {
+            "id": "drawing/objects-01.csv#582",
+            "text": "Make the avatar younger than it is now, and keep that age for the next time I open the app.",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 4 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity determiner=\"the\" head=\"avatar\"\n@e2 nlu.entity pronoun=\"it\"\n@rel1 nlu.relation kind=comparison from=$c1 to=$e2 cue=\"than\"\n@e3 nlu.entity determiner=\"that\" head=\"age\"\n@e4 nlu.entity determiner=\"the\" modifier=\"next\" head=\"time\"\n@rel2 nlu.relation kind=for from=$c2 to=$e4 cue=\"for\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"Make\" act=change polarity=positive direct_object=$e1 result_complement=\"younger\" unresolved=\"is\" adverb=\"now\" unresolved=\",\"\n@c2 nlu.clause form=imperative predicate=\"keep\" act=change polarity=positive terminator=\".\" direct_object=$e3 result_complement=\"open\" unresolved=\"I\" unresolved=\"the\" unresolved=\"app\""
+          },
+          {
+            "id": "drawing/placement-02.csv#1826",
+            "text": "we need an old dog right in front of the big house, with the low wall and the hedge behind it.",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 3 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"an\" modifier=\"old\" head=\"dog\"\n@e3 nlu.entity determiner=\"the\" modifier=\"big\" head=\"house\"\n@e4 nlu.entity determiner=\"the\" modifier=\"low\" head=\"wall\"\n@e5 nlu.entity pronoun=\"it\"\n@rel1 nlu.relation kind=in_front_of from=$c1 to=$e3 cue=\"in front of\"\n@rel2 nlu.relation kind=with from=$c1 to=$e4 cue=\"with\"\n@rel3 nlu.relation kind=behind from=$c1 to=$e5 cue=\"behind\"\n@c1 nlu.clause form=declarative predicate=\"need\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 result_complement=\"right\" unresolved=\",\" unresolved=\"and\" unresolved=\"the\" unresolved=\"hedge\""
+          },
+          {
+            "id": "drawing/scenes-03.csv#4022",
+            "text": "put a blue scarf on the girl, and make sure the girl faces right beside the tree — keeping the rest of the scene as it is",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 7 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"blue\" color=blue head=\"scarf\"\n@e2 nlu.entity determiner=\"the\" head=\"girl\"\n@rel1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@e3 nlu.entity determiner=\"the\" head=\"girl\"\n@e4 nlu.entity determiner=\"the\" head=\"tree\"\n@e5 nlu.entity determiner=\"the\" head=\"scene\"\n@e6 nlu.entity pronoun=\"it\"\n@rel2 nlu.relation kind=near from=$c2 to=$e4 cue=\"beside\"\n@rel3 nlu.relation kind=of from=$c2 to=$e5 cue=\"of\"\n@rel4 nlu.relation kind=as from=$c2 to=$e6 cue=\"as\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"put\" act=place polarity=positive direct_object=$e1 unresolved=\",\"\n@c2 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive direct_object=$e3 result_complement=\"right\" unresolved=\"sure\" unresolved=\"faces\" unresolved=\"—\" unresolved=\"keeping\" unresolved=\"the\" unresolved=\"rest\" unresolved=\"is\""
+          }
+        ],
+        "L8": [
+          {
+            "id": "drawing/placement-06.csv#2372",
+            "text": "Give me a cockerel under the tree.",
+            "reason": "Imperative “Give” has the cockerel as object, “me” as recipient, and the tree as the under-location.",
+            "sop": "@e1 nlu.entity pronoun=\"me\"\n@e2 nlu.entity determiner=\"a\" head=\"cockerel\"\n@e3 nlu.entity determiner=\"the\" head=\"tree\"\n@rel1 nlu.relation kind=below from=$c1 to=$e3 cue=\"under\"\n@c1 nlu.clause form=imperative predicate=\"Give\" polarity=positive terminator=\".\" direct_object=$e2 indirect_object=$e1"
+          },
+          {
+            "id": "drawing/placement-06.csv#781",
+            "text": "Draw a small lynx to the left of the road.",
+            "reason": "Draws a small lynx positioned left of the road.",
+            "sop": "@e1 nlu.entity determiner=\"a\" modifier=\"small\" head=\"lynx\"\n@e2 nlu.entity determiner=\"the\" head=\"road\"\n@rel1 nlu.relation kind=left_of from=$e1 to=$e2 cue=\"to the left of\"\n@c1 nlu.clause form=imperative predicate=\"Draw\" act=make polarity=positive terminator=\".\" direct_object=$e1"
+          },
+          {
+            "id": "diagram/nodes-01.csv#1070",
+            "text": "place a star beside the title",
+            "reason": "Places a star beside the title.",
+            "sop": "@e1 nlu.entity determiner=\"a\" head=\"star\" kind=star\n@e2 nlu.entity determiner=\"the\" head=\"title\"\n@rel1 nlu.relation kind=near from=$c1 to=$e2 cue=\"beside\"\n@c1 nlu.clause form=imperative predicate=\"place\" act=place polarity=positive direct_object=$e1"
+          }
+        ],
+        "L0": [
+          {
+            "id": "diagram/charts-04.csv#3280",
+            "text": "Now put the legend on the right of the revenue trend chart",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#996",
+            "text": "Hey, book Room 12 for Planning on 2026-12-09 from 13:00 UTC for 15 minutes.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#918",
+            "text": "Could you book Room 1 for Planning on 2026-12-13 from 13:00 UTC for 15 minutes. I appreciate it.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          }
+        ],
+        "L1": [
+          {
+            "id": "diagram/charts-07.csv#967",
+            "text": "stacked",
+            "reason": "“Stacked” is a standalone participial fragment, not an imperative predicate.",
+            "sop": "@c1 nlu.clause form=imperative predicate=\"stacked\" polarity=positive"
+          },
+          {
+            "id": "diagram/charts-07.csv#1141",
+            "text": "would you show the values on the graph",
+            "reason": "“Would you show” has inverted question form, but the circuit marks it declarative.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity determiner=\"the\" head=\"values\"\n@e3 nlu.entity determiner=\"the\" head=\"graph\"\n@rel1 nlu.relation kind=on from=$c1 to=$e3 cue=\"on\"\n@c1 nlu.clause form=declarative predicate=\"show\" auxiliary=\"would\" polarity=positive subject=$e1 direct_object=$e2"
+          },
+          {
+            "id": "drawing/scenes-05.csv#410",
+            "text": "redraw the backdrop as the inside of a library",
+            "reason": "The backdrop is linked to the inside of a library, but act=place misclassifies the requested redrawing.",
+            "sop": "@e1 nlu.entity determiner=\"the\" head=\"backdrop\"\n@e2 nlu.entity determiner=\"the\" head=\"inside\"\n@e3 nlu.entity determiner=\"a\" head=\"library\"\n@rel1 nlu.relation kind=as from=$e1 to=$e2 cue=\"as\"\n@rel2 nlu.relation kind=of from=$e2 to=$e3 cue=\"of\"\n@c1 nlu.clause form=imperative predicate=\"redraw\" act=place polarity=positive direct_object=$e1"
+          }
+        ],
+        "L4": [
+          {
+            "id": "diagram/charts-06.csv#28",
+            "text": "go ahead and show every point and sort them",
+            "reason": "It preserves showing every point and sorting them, but kind=dot adds an unsupported classification of “point.”",
+            "sop": "@e1 nlu.entity determiner=\"every\" head=\"point\" kind=dot\n@e2 nlu.entity pronoun=\"them\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 member=$c3 cue=\"and\" cue=\"and\"\n@c1 nlu.clause form=imperative predicate=\"go\" polarity=positive result_complement=\"ahead\"\n@c2 nlu.clause form=imperative predicate=\"show\" polarity=positive direct_object=$e1\n@c3 nlu.clause form=imperative predicate=\"sort\" polarity=positive direct_object=$e2"
+          },
+          {
+            "id": "drawing/scenes-17.csv#3222",
+            "text": "Hey, remove portrait, but leave glasses alone.",
+            "reason": "It captures removing the portrait and leaving the glasses alone, but labels “leave glasses alone” as an act of change.",
+            "sop": "@e1 nlu.entity head=\"portrait\"\n@e2 nlu.entity head=\"glasses\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\"but\"\n@c1 nlu.clause form=imperative predicate=\"remove\" act=remove polarity=positive direct_object=$e1 filler=\"Hey\" unresolved=\",\" unresolved=\",\"\n@c2 nlu.clause form=imperative predicate=\"leave\" act=change polarity=positive terminator=\".\" direct_object=$e2 result_complement=\"alone\""
+          },
+          {
+            "id": "drawing/scenes-17.csv#934",
+            "text": "Please, make Balloon blue. Thanks!",
+            "reason": "Preserves making Balloon blue but adds a separate imperative with “Please” as its predicate.",
+            "sop": "@e1 nlu.entity name=\"Balloon\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"Please\" polarity=positive\n@c2 nlu.clause form=imperative predicate=\"make\" act=change polarity=positive terminator=\".\" direct_object=$e1 result_complement=\"blue\" result_color=blue\n@c3 nlu.clause form=imperative predicate=\"Thanks\" act=thank polarity=positive terminator=\"!\""
+          }
+        ],
+        "L7": [
+          {
+            "id": "drawing/scenes-20.csv#436",
+            "text": "like a child drew it, change this dotted",
+            "reason": "Captures the change directive and “a child drew it,” but treats “like” as filler and loses the requested comparison.",
+            "sop": "@e1 nlu.entity determiner=\"a\" head=\"child\"\n@e2 nlu.entity pronoun=\"it\"\n@e3 nlu.entity determiner=\"this\" head=\"dotted\" kind=dot\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"drew\" act=make polarity=positive subject=$e1 direct_object=$e2 filler=\"like\"\n@c2 nlu.clause form=imperative predicate=\"change\" act=change polarity=positive direct_object=$e3"
+          },
+          {
+            "id": "drawing/placement-06.csv#4918",
+            "text": "Could you draw a honeybee high above that house.",
+            "reason": "The honeybee is the object of draw, but “high” is treated as a result complement instead of height in the above-house placement.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity determiner=\"a\" head=\"honeybee\"\n@e3 nlu.entity determiner=\"that\" head=\"house\"\n@rel1 nlu.relation kind=above from=$c1 to=$e3 cue=\"above\"\n@c1 nlu.clause form=declarative predicate=\"draw\" act=make auxiliary=\"Could\" polarity=positive terminator=\".\" subject=$e1 direct_object=$e2 result_complement=\"high\""
+          },
+          {
+            "id": "diagram/charts-07.csv#1427",
+            "text": "we closed that store, so delete Email",
+            "reason": "Preserves the store closure and deletion of Email but loses the causal link expressed by “so.”",
+            "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity determiner=\"that\" head=\"store\"\n@e3 nlu.entity name=\"Email\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 cue=\",\"\n@c1 nlu.clause form=declarative predicate=\"closed\" act=change polarity=positive subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"delete\" act=remove polarity=positive direct_object=$e3 filler=\"so\""
+          }
+        ],
+        "L6": [
+          {
+            "id": "drawing/scenes-06.csv#1763",
+            "text": "please set a river behind the house, then drop a boat on the river, then bring in a bridge over the river.",
+            "reason": "Captures setting the river behind the house and dropping the boat on the river, but omits the bridge as the object of “bring.”",
+            "sop": "@e1 nlu.entity determiner=\"a\" head=\"river\"\n@e2 nlu.entity determiner=\"the\" head=\"house\"\n@rel1 nlu.relation kind=behind from=$c1 to=$e2 cue=\"behind\"\n@e3 nlu.entity determiner=\"a\" head=\"boat\"\n@e4 nlu.entity determiner=\"the\" head=\"river\"\n@rel2 nlu.relation kind=on from=$c2 to=$e4 cue=\"on\"\n@e5 nlu.entity determiner=\"a\" head=\"bridge\"\n@e6 nlu.entity determiner=\"the\" head=\"river\"\n@rel3 nlu.relation kind=in from=$c3 to=$e5 cue=\"in\"\n@rel4 nlu.relation kind=above from=$e5 to=$e6 cue=\"over\"\n@coord1 nlu.coordination kind=additive member=$c1 member=$c2 member=$c3 cue=\",\" cue=\",\"\n@c1 nlu.clause form=imperative predicate=\"set\" act=place polarity=positive direct_object=$e1 filler=\"please\"\n@c2 nlu.clause form=imperative predicate=\"drop\" act=place polarity=positive direct_object=$e3 filler=\"then\"\n@c3 nlu.clause form=imperative predicate=\"bring\" act=place polarity=positive terminator=\".\" filler=\"then\""
+          },
+          {
+            "id": "drawing/people-07.csv#231",
+            "text": "I don't like the short cut on her; give her long hair instead",
+            "reason": "Captures dislike of the short cut on her and the request for long hair instead, but omits “her” as the recipient of “give.”",
+            "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity determiner=\"the\" modifier=\"short\" head=\"cut\"\n@e3 nlu.entity pronoun=\"her\"\n@rel1 nlu.relation kind=on from=$e2 to=$e3 cue=\"on\"\n@e4 nlu.entity determiner=\"her\" modifier=\"long\" head=\"hair\"\n@c1 nlu.clause form=declarative predicate=\"like\" negation=\"don't\" polarity=negative terminator=\";\" subject=$e1 direct_object=$e2\n@c2 nlu.clause form=imperative predicate=\"give\" act=change polarity=positive direct_object=$e4 result_complement=\"instead\""
+          },
+          {
+            "id": "diagram/nodes-12.csv#4842",
+            "text": "stick in output",
+            "reason": "It places the sticking action in the output but omits what is to be stuck there.",
+            "sop": "@e1 nlu.entity head=\"output\"\n@rel1 nlu.relation kind=in from=$c1 to=$e1 cue=\"in\"\n@c1 nlu.clause form=imperative predicate=\"stick\" act=place polarity=positive"
+          }
+        ],
+        "L5": [
+          {
+            "id": "diagram/nodes-13.csv#480",
+            "text": "I want to know what is in this diagram",
+            "reason": "The reading captures wanting and the diagram, but omits know as the predicate governing the embedded question.",
+            "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity head=\"know\"\n@rel1 nlu.relation kind=to from=$c1 to=$e2 cue=\"to\"\n@e4 nlu.entity determiner=\"this\" head=\"diagram\" kind=diagram\n@rel2 nlu.relation kind=in from=$c2 to=$e4 cue=\"in\"\n@c1 nlu.clause form=declarative predicate=\"want\" polarity=positive clausal_complement=$c2 subject=$e1\n@c2 nlu.clause form=interrogative predicate=\"is\" polarity=positive question=\"what\""
+          },
+          {
+            "id": "drawing/scenes-06.csv#316",
+            "text": "missing: one duck in the middle",
+            "reason": "It identifies one duck in the middle but treats “missing” as a topic, losing the assertion that the duck is missing.",
+            "sop": "@e1 nlu.entity head=\"missing\"\n@e2 nlu.entity determiner=\"one\" head=\"duck\"\n@e3 nlu.entity determiner=\"the\" head=\"middle\"\n@rel1 nlu.relation kind=in from=$e2 to=$e3 cue=\"in\"\n@c1 nlu.clause form=fragment terminator=\":\" topic=$e1\n@c2 nlu.clause form=fragment topic=$e2"
+          }
+        ]
+      },
+      "acceptedPercent": 10.370768404083826,
+      "percent": {
+        "L0": 3.8688876947877486,
+        "L1": 6.125738850080602,
+        "L2": 75.33584094572811,
+        "L3": 2.8479312197743147,
+        "L4": 0.6448146157979581,
+        "L5": 0.10746910263299302,
+        "L6": 0.16120365394948952,
+        "L7": 0.537345513164965,
+        "L8": 10.370768404083826,
+        "L9": 0,
+        "L10": 0
+      }
+    },
+    "prolog-worlds": {
+      "rows": 1861,
+      "accepted": 181,
+      "engineErrors": 0,
+      "noEligibleCandidates": 1523,
+      "sharedWitnessPromotions": 0,
+      "staticInvalid": 56,
+      "staticIncomplete": 1467,
+      "modelReviewed": 338,
+      "counts": {
+        "L0": 56,
+        "L1": 77,
+        "L2": 1467,
+        "L3": 44,
+        "L4": 14,
+        "L5": 10,
+        "L6": 4,
+        "L7": 8,
+        "L8": 181,
+        "L9": 0,
+        "L10": 0
+      },
+      "examples": {
+        "L2": [
+          {
+            "id": "drawing/scenes-07.csv#944",
+            "text": "get the woman with the yellow hat to the right by one spot",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 2 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"woman\" determiner=\"the\" kind=person\n@e2 nlu.entity head=\"hat\" determiner=\"the\" modifier=\"yellow\" kind=hat color=yellow\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@e3 nlu.entity head=\"spot\" quantity=\"one\"\n@r2 nlu.relation kind=near from=$c1 to=$e3 cue=\"right by\"\n@c1 nlu.clause form=imperative predicate=\"get\" direct_object=$e1 unresolved=\"to the\""
+          },
+          {
+            "id": "drawing/objects-01.csv#582",
+            "text": "Make the avatar younger than it is now, and keep that age for the next time I open the app.",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 11 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"avatar\" determiner=\"the\" kind=face\n@c1 nlu.clause form=imperative predicate=\"Make\" direct_object=$e1 result_complement=\"younger\" adverb=\"now\" unresolved=\"than it is\"\n@e2 nlu.entity head=\"age\" determiner=\"that\"\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\", and\"\n@c2 nlu.clause form=imperative predicate=\"keep\" direct_object=$e2 terminator=\".\" act=save unresolved=\"for the next time I open the app\""
+          },
+          {
+            "id": "drawing/scenes-03.csv#4022",
+            "text": "put a blue scarf on the girl, and make sure the girl faces right beside the tree — keeping the rest of the scene as it is",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 14 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"scarf\" determiner=\"a\" modifier=\"blue\" color=blue\n@e2 nlu.entity head=\"girl\" determiner=\"the\"\n@r1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"put\" direct_object=$e1 act=place\n@e3 nlu.entity head=\"scene\" determiner=\"the\"\n@r2 nlu.relation kind=of from=$c2 to=$e3 cue=\"of\"\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\", and\"\n@c2 nlu.clause form=imperative predicate=\"make\" unresolved=\"sure the girl faces right beside the tree\" filler=\"—\" unresolved=\"keeping the rest\" unresolved=\"as it is\""
+          }
+        ],
+        "L3": [
+          {
+            "id": "drawing/placement-02.csv#1826",
+            "text": "we need an old dog right in front of the big house, with the low wall and the hedge behind it.",
+            "reason": "The old dog, house, wall, and hedge are present, but the front-of-house and behind-it relations attach to the wrong elements.",
+            "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity head=\"dog\" determiner=\"an\" modifier=\"old\" kind=dog\n@e3 nlu.entity head=\"front\" modifier=\"in\"\n@r1 nlu.relation kind=direction from=$c1 to=$e3 cue=\"right\"\n@e4 nlu.entity head=\"house\" determiner=\"the\" modifier=\"big\" kind=house\n@r2 nlu.relation kind=of from=$c1 to=$e4 cue=\"of\"\n@e5 nlu.entity head=\"wall\" determiner=\"the\" modifier=\"low\" kind=wall\n@e6 nlu.entity head=\"hedge\" determiner=\"the\" kind=hedge\n@g1 nlu.coordination kind=conjunctive member=$e5 member=$e6 cue=\"and\"\n@r3 nlu.relation kind=with from=$e2 to=$g1 cue=\"with\"\n@e7 nlu.entity pronoun=\"it\"\n@r4 nlu.relation kind=behind from=$c1 to=$e7 cue=\"behind\"\n@c1 nlu.clause form=declarative predicate=\"need\" subject=$e1 direct_object=$e2 terminator=\".\" filler=\",\""
+          },
+          {
+            "id": "drawing/scenes-03.csv#507",
+            "text": "hey, leave the words on the top half of the page",
+            "reason": "The words are on the top half, but “of the page” attaches to the leave clause instead of the half.",
+            "sop": "@e1 nlu.entity head=\"words\" determiner=\"the\"\n@e2 nlu.entity head=\"half\" determiner=\"the\" modifier=\"top\"\n@r1 nlu.relation kind=on from=$e1 to=$e2 cue=\"on\"\n@e3 nlu.entity head=\"page\" determiner=\"the\"\n@r2 nlu.relation kind=of from=$c1 to=$e3 cue=\"of\"\n@c1 nlu.clause form=imperative predicate=\"leave\" direct_object=$e1 filler=\"hey\" filler=\",\""
+          },
+          {
+            "id": "diagram/diagrams-01.csv#3754",
+            "text": "chart the products by name as a bar chart",
+            "reason": "It preserves the charting directive and bar chart format, but treats “by name” as proximity rather than the charting criterion.",
+            "sop": "@e1 nlu.entity head=\"products\" determiner=\"the\"\n@e2 nlu.entity head=\"name\"\n@r1 nlu.relation kind=near from=$c1 to=$e2 cue=\"by\"\n@e3 nlu.entity head=\"bar chart\" determiner=\"a\"\n@r2 nlu.relation kind=as from=$c1 to=$e3 cue=\"as\"\n@c1 nlu.clause form=imperative predicate=\"chart\" direct_object=$e1"
+          }
+        ],
+        "L8": [
+          {
+            "id": "drawing/placement-06.csv#2372",
+            "text": "Give me a cockerel under the tree.",
+            "reason": "Imperative giving of a cockerel to me, with the tree as the under-location.",
+            "sop": "@e1 nlu.entity head=\"cockerel\" determiner=\"a\" kind=cockerel\n@e2 nlu.entity pronoun=\"me\"\n@e3 nlu.entity head=\"tree\" determiner=\"the\" kind=tree\n@r1 nlu.relation kind=below from=$c1 to=$e3 cue=\"under\"\n@c1 nlu.clause form=imperative predicate=\"Give\" direct_object=$e1 indirect_object=$e2 terminator=\".\" act=send"
+          },
+          {
+            "id": "drawing/placement-06.csv#781",
+            "text": "Draw a small lynx to the left of the road.",
+            "reason": "Preserves the drawing directive, the small lynx, and its placement left of the road.",
+            "sop": "@e1 nlu.entity head=\"lynx\" determiner=\"a\" modifier=\"small\"\n@e2 nlu.entity head=\"road\" determiner=\"the\" kind=road\n@r1 nlu.relation kind=left_of from=$c1 to=$e2 cue=\"to the left of\"\n@c1 nlu.clause form=imperative predicate=\"Draw\" direct_object=$e1 terminator=\".\" act=make"
+          },
+          {
+            "id": "diagram/nodes-01.csv#1070",
+            "text": "place a star beside the title",
+            "reason": "The imperative places a star beside the title, with the relation attached to the star.",
+            "sop": "@e1 nlu.entity head=\"star\" determiner=\"a\" kind=star\n@e2 nlu.entity head=\"title\" determiner=\"the\"\n@r1 nlu.relation kind=near from=$e1 to=$e2 cue=\"beside\"\n@c1 nlu.clause form=imperative predicate=\"place\" direct_object=$e1 act=place"
+          }
+        ],
+        "L1": [
+          {
+            "id": "document/text-01.csv#2485",
+            "text": "Could you replace Textbook chapter with \"Everyone can read the new summary.\". I appreciate it.",
+            "reason": "The inverted “Could you” request is marked declarative, and “I appreciate it” is reduced to filler rather than a clause.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity name=\"Textbook chapter\"\n@e3 nlu.entity name=\"Everyone can read the new summary.\"\n@r1 nlu.relation kind=with from=$c1 to=$e3 cue=\"with\"\n@c1 nlu.clause form=declarative predicate=\"replace\" subject=$e1 direct_object=$e2 auxiliary=\"Could\" terminator=\".\" act=change filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"I appreciate it\""
+          },
+          {
+            "id": "diagram/charts-07.csv#967",
+            "text": "stacked",
+            "reason": "“Stacked” is a standalone participial fragment, not an imperative predicate.",
+            "sop": "@c1 nlu.clause form=imperative predicate=\"stacked\""
+          },
+          {
+            "id": "diagram/charts-07.csv#1141",
+            "text": "would you show the values on the graph",
+            "reason": "“Would you show” is marked declarative despite auxiliary inversion; the emitted change action is also unsupported.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity head=\"values\" determiner=\"the\" kind=chart\n@e3 nlu.entity head=\"graph\" determiner=\"the\" kind=chart\n@r1 nlu.relation kind=on from=$c1 to=$e3 cue=\"on\"\n@c1 nlu.clause form=declarative predicate=\"show\" subject=$e1 direct_object=$e2 auxiliary=\"would\" act=change"
+          }
+        ],
+        "L0": [
+          {
+            "id": "calendar/meetings-01.csv#996",
+            "text": "Hey, book Room 12 for Planning on 2026-12-09 from 13:00 UTC for 15 minutes.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#918",
+            "text": "Could you book Room 1 for Planning on 2026-12-13 from 13:00 UTC for 15 minutes. I appreciate it.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#2717",
+            "text": "Let us place Review to 2026-12-04 at 16:00 UTC. That would help.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          }
+        ],
+        "L4": [
+          {
+            "id": "diagram/charts-06.csv#28",
+            "text": "go ahead and show every point and sort them",
+            "reason": "It preserves the three imperatives, but classifies “point” as a chart and assigns unsupported change and group actions.",
+            "sop": "@c1 nlu.clause form=imperative predicate=\"go\" result_complement=\"ahead\"\n@e1 nlu.entity head=\"point\" determiner=\"every\" kind=chart\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\"and\"\n@c2 nlu.clause form=imperative predicate=\"show\" direct_object=$e1 act=change\n@e2 nlu.entity pronoun=\"them\"\n@g2 nlu.coordination kind=conjunctive member=$c2 member=$c3 cue=\"and\"\n@c3 nlu.clause form=imperative predicate=\"sort\" direct_object=$e2 act=group"
+          },
+          {
+            "id": "drawing/objects-01.csv#685",
+            "text": "Actually a shorter crop, then put a scarf on the avatar.",
+            "reason": "The crop fragment and scarf placement are captured, but the avatar is incorrectly classified as a face.",
+            "sop": "@e1 nlu.entity head=\"crop\" determiner=\"a\" modifier=\"shorter\"\n@c1 nlu.clause form=fragment topic=$e1 filler=\"Actually\"\n@e2 nlu.entity head=\"scarf\" determiner=\"a\"\n@e3 nlu.entity head=\"avatar\" determiner=\"the\" kind=face\n@r1 nlu.relation kind=on from=$c2 to=$e3 cue=\"on\"\n@g1 nlu.coordination kind=sequence member=$c1 member=$c2 cue=\", then\"\n@c2 nlu.clause form=imperative predicate=\"put\" direct_object=$e2 terminator=\".\" act=place"
+          },
+          {
+            "id": "drawing/people-05.csv#3274",
+            "text": "just give me a walrus moustache default",
+            "reason": "The directive and recipient are present, but the object is assigned an unsupported preference kind.",
+            "sop": "@e1 nlu.entity head=\"default\" determiner=\"a\" modifier=\"walrus\" modifier=\"moustache\" kind=preference\n@e2 nlu.entity pronoun=\"me\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2 adverb=\"just\" act=send"
+          }
+        ],
+        "L7": [
+          {
+            "id": "drawing/scenes-13.csv#3607",
+            "text": "hey — give the man a long coat, and a black hat on top of his coat",
+            "reason": "It gives the man a long coat and identifies a black hat and his coat, but does not attach the hat itself to the stated position on top of his coat.",
+            "sop": "@e1 nlu.entity head=\"coat\" determiner=\"a\" modifier=\"long\" kind=coat\n@e2 nlu.entity head=\"man\" determiner=\"the\" kind=person\n@e3 nlu.entity head=\"hat\" determiner=\"a\" modifier=\"black\" kind=hat color=black\n@r1 nlu.relation kind=target from=$c1 to=$e3 cue=\"and\"\n@e4 nlu.entity head=\"coat\" determiner=\"his\" kind=coat\n@r2 nlu.relation kind=on from=$c1 to=$e4 cue=\"on top of\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2 act=send filler=\"hey\" filler=\"—\" filler=\",\""
+          },
+          {
+            "id": "diagram/ui-coverage.csv#194",
+            "text": "move Publish 300 px from the left",
+            "reason": "The 300 px distance is folded into the object name instead of specifying how far to move Publish from the left.",
+            "sop": "@e1 nlu.entity name=\"Publish 300 px\"\n@e2 nlu.entity head=\"left\" determiner=\"the\"\n@r1 nlu.relation kind=source from=$c1 to=$e2 cue=\"from\"\n@c1 nlu.clause form=imperative predicate=\"move\" direct_object=$e1 act=place"
+          },
+          {
+            "id": "diagram/diagrams-03.csv#1213",
+            "text": "just turn the tree on its side",
+            "reason": "The tree and turning action are present, but “its” is not linked to “side” as a possessive.",
+            "sop": "@e1 nlu.entity head=\"tree\" determiner=\"the\" kind=tree\n@e2 nlu.entity head=\"its\"\n@r1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"turn\" direct_object=$e1 result_complement=\"side\" adverb=\"just\" act=change"
+          }
+        ],
+        "L5": [
+          {
+            "id": "diagram/diagrams-04.csv#1930",
+            "text": "I need you to link Customer to Support. I appreciate it.",
+            "reason": "It recognizes “I need you,” but omits the requested link from Customer to Support and leaves the appreciation as filler.",
+            "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity head=\"Customer\" modifier=\"link\"\n@r1 nlu.relation kind=to from=$c1 to=$e3 cue=\"to\"\n@e4 nlu.entity name=\"Support\"\n@r2 nlu.relation kind=to from=$c1 to=$e4 cue=\"to\"\n@c1 nlu.clause form=declarative predicate=\"need\" subject=$e1 direct_object=$e2 terminator=\".\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"I appreciate it\""
+          },
+          {
+            "id": "document/text-01.csv#1011",
+            "text": "Hey, replace Bin collection update with \"Please confirm these updated details.\". That would help.",
+            "reason": "The replacement is represented, but the substantive follow-up clause “That would help” is only filler.",
+            "sop": "@e1 nlu.entity name=\"Bin collection update\"\n@e2 nlu.entity name=\"Please confirm these updated details.\"\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@c1 nlu.clause form=imperative predicate=\"replace\" direct_object=$e1 terminator=\".\" act=change filler=\"Hey\" filler=\",\" filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"That would help\""
+          },
+          {
+            "id": "document/text-01.csv#396",
+            "text": "Hey, replace Merger news with \"The delivery arrived this morning.\". That would help.",
+            "reason": "The replacement target and new text are represented, but “That would help” is only filler.",
+            "sop": "@e1 nlu.entity name=\"Merger news\"\n@e2 nlu.entity name=\"The delivery arrived this morning.\"\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@c1 nlu.clause form=imperative predicate=\"replace\" direct_object=$e1 terminator=\".\" act=change filler=\"Hey\" filler=\",\" filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"That would help\""
+          }
+        ],
+        "L6": [
+          {
+            "id": "drawing/scenes-05.csv#1978",
+            "text": "what does the sun shine on?",
+            "reason": "Captures the sun shining but leaves “what” unattached as the object of “on.”",
+            "sop": "@e1 nlu.entity head=\"sun\" determiner=\"the\" kind=sun\n@c1 nlu.clause form=interrogative predicate=\"shine\" subject=$e1 result_complement=\"on\" auxiliary=\"does\" question=\"what\" terminator=\"?\""
+          },
+          {
+            "id": "drawing/scenes-06.csv#1763",
+            "text": "please set a river behind the house, then drop a boat on the river, then bring in a bridge over the river.",
+            "reason": "Captures the three ordered imperatives and their locations, but omits the bridge as the object of “bring.”",
+            "sop": "@e1 nlu.entity head=\"river\" determiner=\"a\" kind=river\n@e2 nlu.entity head=\"house\" determiner=\"the\" kind=house\n@r1 nlu.relation kind=behind from=$c1 to=$e2 cue=\"behind\"\n@c1 nlu.clause form=imperative predicate=\"set\" direct_object=$e1 filler=\"please\"\n@e3 nlu.entity head=\"boat\" determiner=\"a\" kind=boat\n@e4 nlu.entity head=\"river\" determiner=\"the\" kind=river\n@r2 nlu.relation kind=on from=$e3 to=$e4 cue=\"on\"\n@g1 nlu.coordination kind=sequence member=$c1 member=$c2 cue=\", then\"\n@c2 nlu.clause form=imperative predicate=\"drop\" direct_object=$e3\n@e5 nlu.entity head=\"bridge\" determiner=\"a\" kind=bridge\n@r3 nlu.relation kind=in from=$c3 to=$e5 cue=\"in\"\n@e6 nlu.entity head=\"river\" kind=river\n@r4 nlu.relation kind=above from=$c3 to=$e6 cue=\"over the\"\n@g2 nlu.coordination kind=sequence member=$c2 member=$c3 cue=\", then\"\n@c3 nlu.clause form=imperative predicate=\"bring\" terminator=\".\" act=place"
+          },
+          {
+            "id": "drawing/scenes-13.csv#423",
+            "text": "make the lamp glow",
+            "reason": "Does not identify the lamp as the participant made to glow.",
+            "sop": "@e1 nlu.entity head=\"glow\" determiner=\"the\" modifier=\"lamp\"\n@c1 nlu.clause form=imperative predicate=\"make\" direct_object=$e1"
+          }
+        ]
+      },
+      "acceptedPercent": 9.725953788285867,
+      "percent": {
+        "L0": 3.0091348737238044,
+        "L1": 4.137560451370231,
+        "L2": 78.82858678130037,
+        "L3": 2.364320257925846,
+        "L4": 0.7522837184309511,
+        "L5": 0.537345513164965,
+        "L6": 0.21493820526598603,
+        "L7": 0.42987641053197206,
+        "L8": 9.725953788285867,
+        "L9": 0,
+        "L10": 0
+      }
+    },
+    "prolog-example-transfer": {
+      "rows": 1861,
+      "accepted": 182,
+      "engineErrors": 0,
+      "noEligibleCandidates": 1523,
+      "sharedWitnessPromotions": 0,
+      "staticInvalid": 56,
+      "staticIncomplete": 1467,
+      "modelReviewed": 338,
+      "counts": {
+        "L0": 56,
+        "L1": 77,
+        "L2": 1467,
+        "L3": 44,
+        "L4": 13,
+        "L5": 10,
+        "L6": 4,
+        "L7": 8,
+        "L8": 182,
+        "L9": 0,
+        "L10": 0
+      },
+      "examples": {
+        "L2": [
+          {
+            "id": "drawing/scenes-07.csv#944",
+            "text": "get the woman with the yellow hat to the right by one spot",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 2 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"woman\" determiner=\"the\" kind=person\n@e2 nlu.entity head=\"hat\" determiner=\"the\" modifier=\"yellow\" kind=hat color=yellow\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@e3 nlu.entity head=\"spot\" quantity=\"one\"\n@r2 nlu.relation kind=near from=$c1 to=$e3 cue=\"right by\"\n@c1 nlu.clause form=imperative predicate=\"get\" direct_object=$e1 unresolved=\"to the\""
+          },
+          {
+            "id": "drawing/objects-01.csv#582",
+            "text": "Make the avatar younger than it is now, and keep that age for the next time I open the app.",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 11 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"avatar\" determiner=\"the\" kind=face\n@c1 nlu.clause form=imperative predicate=\"Make\" direct_object=$e1 result_complement=\"younger\" adverb=\"now\" act=change unresolved=\"than it is\"\n@e2 nlu.entity head=\"age\" determiner=\"that\"\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\", and\"\n@c2 nlu.clause form=imperative predicate=\"keep\" direct_object=$e2 terminator=\".\" act=save unresolved=\"for the next time I open the app\""
+          },
+          {
+            "id": "drawing/scenes-03.csv#4022",
+            "text": "put a blue scarf on the girl, and make sure the girl faces right beside the tree — keeping the rest of the scene as it is",
+            "reason": "All schema-valid, source-grounded proposals have source gaps. The closest has 0 material uncovered and 14 material unresolved occurrence(s).",
+            "sop": "@e1 nlu.entity head=\"scarf\" determiner=\"a\" modifier=\"blue\" color=blue\n@e2 nlu.entity head=\"girl\" determiner=\"the\"\n@r1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"put\" direct_object=$e1 act=place\n@e3 nlu.entity head=\"scene\" determiner=\"the\"\n@r2 nlu.relation kind=of from=$c2 to=$e3 cue=\"of\"\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\", and\"\n@c2 nlu.clause form=imperative predicate=\"make\" act=change unresolved=\"sure the girl faces right beside the tree\" filler=\"—\" unresolved=\"keeping the rest\" unresolved=\"as it is\""
+          }
+        ],
+        "L3": [
+          {
+            "id": "drawing/placement-02.csv#1826",
+            "text": "we need an old dog right in front of the big house, with the low wall and the hedge behind it.",
+            "reason": "The old dog, house, wall, and hedge are present, but the front-of-house and behind-it relations attach to the wrong elements.",
+            "sop": "@e1 nlu.entity pronoun=\"we\"\n@e2 nlu.entity head=\"dog\" determiner=\"an\" modifier=\"old\" kind=dog\n@e3 nlu.entity head=\"front\" modifier=\"in\"\n@r1 nlu.relation kind=direction from=$c1 to=$e3 cue=\"right\"\n@e4 nlu.entity head=\"house\" determiner=\"the\" modifier=\"big\" kind=house\n@r2 nlu.relation kind=of from=$c1 to=$e4 cue=\"of\"\n@e5 nlu.entity head=\"wall\" determiner=\"the\" modifier=\"low\" kind=wall\n@e6 nlu.entity head=\"hedge\" determiner=\"the\" kind=hedge\n@g1 nlu.coordination kind=conjunctive member=$e5 member=$e6 cue=\"and\"\n@r3 nlu.relation kind=with from=$e2 to=$g1 cue=\"with\"\n@e7 nlu.entity pronoun=\"it\"\n@r4 nlu.relation kind=behind from=$c1 to=$e7 cue=\"behind\"\n@c1 nlu.clause form=declarative predicate=\"need\" subject=$e1 direct_object=$e2 terminator=\".\" filler=\",\""
+          },
+          {
+            "id": "drawing/scenes-03.csv#507",
+            "text": "hey, leave the words on the top half of the page",
+            "reason": "The words are on the top half, but “of the page” attaches to the leave clause instead of the half.",
+            "sop": "@e1 nlu.entity head=\"words\" determiner=\"the\"\n@e2 nlu.entity head=\"half\" determiner=\"the\" modifier=\"top\"\n@r1 nlu.relation kind=on from=$e1 to=$e2 cue=\"on\"\n@e3 nlu.entity head=\"page\" determiner=\"the\"\n@r2 nlu.relation kind=of from=$c1 to=$e3 cue=\"of\"\n@c1 nlu.clause form=imperative predicate=\"leave\" direct_object=$e1 filler=\"hey\" filler=\",\""
+          },
+          {
+            "id": "diagram/diagrams-01.csv#3754",
+            "text": "chart the products by name as a bar chart",
+            "reason": "It preserves the charting directive and bar chart format, but treats “by name” as proximity rather than the charting criterion.",
+            "sop": "@e1 nlu.entity head=\"products\" determiner=\"the\"\n@e2 nlu.entity head=\"name\"\n@r1 nlu.relation kind=near from=$c1 to=$e2 cue=\"by\"\n@e3 nlu.entity head=\"bar chart\" determiner=\"a\"\n@r2 nlu.relation kind=as from=$c1 to=$e3 cue=\"as\"\n@c1 nlu.clause form=imperative predicate=\"chart\" direct_object=$e1"
+          }
+        ],
+        "L8": [
+          {
+            "id": "drawing/placement-06.csv#2372",
+            "text": "Give me a cockerel under the tree.",
+            "reason": "Imperative giving of a cockerel to me, with the tree as the under-location.",
+            "sop": "@e1 nlu.entity head=\"cockerel\" determiner=\"a\" kind=cockerel\n@e2 nlu.entity pronoun=\"me\"\n@e3 nlu.entity head=\"tree\" determiner=\"the\" kind=tree\n@r1 nlu.relation kind=below from=$c1 to=$e3 cue=\"under\"\n@c1 nlu.clause form=imperative predicate=\"Give\" direct_object=$e1 indirect_object=$e2 terminator=\".\" act=send"
+          },
+          {
+            "id": "drawing/placement-06.csv#781",
+            "text": "Draw a small lynx to the left of the road.",
+            "reason": "Preserves the drawing directive, the small lynx, and its placement left of the road.",
+            "sop": "@e1 nlu.entity head=\"lynx\" determiner=\"a\" modifier=\"small\"\n@e2 nlu.entity head=\"road\" determiner=\"the\" kind=road\n@r1 nlu.relation kind=left_of from=$c1 to=$e2 cue=\"to the left of\"\n@c1 nlu.clause form=imperative predicate=\"Draw\" direct_object=$e1 terminator=\".\" act=make"
+          },
+          {
+            "id": "diagram/nodes-01.csv#1070",
+            "text": "place a star beside the title",
+            "reason": "The imperative places a star beside the title, with the relation attached to the star.",
+            "sop": "@e1 nlu.entity head=\"star\" determiner=\"a\" kind=star\n@e2 nlu.entity head=\"title\" determiner=\"the\"\n@r1 nlu.relation kind=near from=$e1 to=$e2 cue=\"beside\"\n@c1 nlu.clause form=imperative predicate=\"place\" direct_object=$e1 act=place"
+          }
+        ],
+        "L1": [
+          {
+            "id": "document/text-01.csv#2485",
+            "text": "Could you replace Textbook chapter with \"Everyone can read the new summary.\". I appreciate it.",
+            "reason": "The inverted “Could you” request is marked declarative, and “I appreciate it” is reduced to filler rather than a clause.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity name=\"Textbook chapter\"\n@e3 nlu.entity name=\"Everyone can read the new summary.\"\n@r1 nlu.relation kind=with from=$c1 to=$e3 cue=\"with\"\n@c1 nlu.clause form=declarative predicate=\"replace\" subject=$e1 direct_object=$e2 auxiliary=\"Could\" terminator=\".\" act=change filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"I appreciate it\""
+          },
+          {
+            "id": "diagram/charts-07.csv#967",
+            "text": "stacked",
+            "reason": "“Stacked” is a standalone participial fragment, not an imperative predicate.",
+            "sop": "@c1 nlu.clause form=imperative predicate=\"stacked\""
+          },
+          {
+            "id": "diagram/charts-07.csv#1141",
+            "text": "would you show the values on the graph",
+            "reason": "“Would you show” is marked declarative despite auxiliary inversion; the emitted change action is also unsupported.",
+            "sop": "@e1 nlu.entity pronoun=\"you\"\n@e2 nlu.entity head=\"values\" determiner=\"the\" kind=chart\n@e3 nlu.entity head=\"graph\" determiner=\"the\" kind=chart\n@r1 nlu.relation kind=on from=$c1 to=$e3 cue=\"on\"\n@c1 nlu.clause form=declarative predicate=\"show\" subject=$e1 direct_object=$e2 auxiliary=\"would\" act=change"
+          }
+        ],
+        "L0": [
+          {
+            "id": "calendar/meetings-01.csv#996",
+            "text": "Hey, book Room 12 for Planning on 2026-12-09 from 13:00 UTC for 15 minutes.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#918",
+            "text": "Could you book Room 1 for Planning on 2026-12-13 from 13:00 UTC for 15 minutes. I appreciate it.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          },
+          {
+            "id": "calendar/meetings-01.csv#2717",
+            "text": "Let us place Review to 2026-12-04 at 16:00 UTC. That would help.",
+            "reason": "No schema-valid, source-grounded native reading was emitted.",
+            "sop": null
+          }
+        ],
+        "L4": [
+          {
+            "id": "diagram/charts-06.csv#28",
+            "text": "go ahead and show every point and sort them",
+            "reason": "It preserves the three imperatives, but classifies “point” as a chart and assigns unsupported change and group actions.",
+            "sop": "@c1 nlu.clause form=imperative predicate=\"go\" result_complement=\"ahead\"\n@e1 nlu.entity head=\"point\" determiner=\"every\" kind=chart\n@g1 nlu.coordination kind=conjunctive member=$c1 member=$c2 cue=\"and\"\n@c2 nlu.clause form=imperative predicate=\"show\" direct_object=$e1 act=change\n@e2 nlu.entity pronoun=\"them\"\n@g2 nlu.coordination kind=conjunctive member=$c2 member=$c3 cue=\"and\"\n@c3 nlu.clause form=imperative predicate=\"sort\" direct_object=$e2 act=group"
+          },
+          {
+            "id": "drawing/objects-01.csv#685",
+            "text": "Actually a shorter crop, then put a scarf on the avatar.",
+            "reason": "The crop fragment and scarf placement are captured, but the avatar is incorrectly classified as a face.",
+            "sop": "@e1 nlu.entity head=\"crop\" determiner=\"a\" modifier=\"shorter\"\n@c1 nlu.clause form=fragment topic=$e1 filler=\"Actually\"\n@e2 nlu.entity head=\"scarf\" determiner=\"a\"\n@e3 nlu.entity head=\"avatar\" determiner=\"the\" kind=face\n@r1 nlu.relation kind=on from=$c2 to=$e3 cue=\"on\"\n@g1 nlu.coordination kind=sequence member=$c1 member=$c2 cue=\", then\"\n@c2 nlu.clause form=imperative predicate=\"put\" direct_object=$e2 terminator=\".\" act=place"
+          },
+          {
+            "id": "drawing/people-05.csv#3274",
+            "text": "just give me a walrus moustache default",
+            "reason": "The directive and recipient are present, but the object is assigned an unsupported preference kind.",
+            "sop": "@e1 nlu.entity head=\"default\" determiner=\"a\" modifier=\"walrus\" modifier=\"moustache\" kind=preference\n@e2 nlu.entity pronoun=\"me\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2 adverb=\"just\" act=send"
+          }
+        ],
+        "L7": [
+          {
+            "id": "drawing/scenes-13.csv#3607",
+            "text": "hey — give the man a long coat, and a black hat on top of his coat",
+            "reason": "It gives the man a long coat and identifies a black hat and his coat, but does not attach the hat itself to the stated position on top of his coat.",
+            "sop": "@e1 nlu.entity head=\"coat\" determiner=\"a\" modifier=\"long\" kind=coat\n@e2 nlu.entity head=\"man\" determiner=\"the\" kind=person\n@e3 nlu.entity head=\"hat\" determiner=\"a\" modifier=\"black\" kind=hat color=black\n@r1 nlu.relation kind=target from=$c1 to=$e3 cue=\"and\"\n@e4 nlu.entity head=\"coat\" determiner=\"his\" kind=coat\n@r2 nlu.relation kind=on from=$c1 to=$e4 cue=\"on top of\"\n@c1 nlu.clause form=imperative predicate=\"give\" direct_object=$e1 indirect_object=$e2 act=send filler=\"hey\" filler=\"—\" filler=\",\""
+          },
+          {
+            "id": "diagram/ui-coverage.csv#194",
+            "text": "move Publish 300 px from the left",
+            "reason": "The 300 px distance is folded into the object name instead of specifying how far to move Publish from the left.",
+            "sop": "@e1 nlu.entity name=\"Publish 300 px\"\n@e2 nlu.entity head=\"left\" determiner=\"the\"\n@r1 nlu.relation kind=source from=$c1 to=$e2 cue=\"from\"\n@c1 nlu.clause form=imperative predicate=\"move\" direct_object=$e1 act=place"
+          },
+          {
+            "id": "diagram/diagrams-03.csv#1213",
+            "text": "just turn the tree on its side",
+            "reason": "The tree and turning action are present, but “its” is not linked to “side” as a possessive.",
+            "sop": "@e1 nlu.entity head=\"tree\" determiner=\"the\" kind=tree\n@e2 nlu.entity head=\"its\"\n@r1 nlu.relation kind=on from=$c1 to=$e2 cue=\"on\"\n@c1 nlu.clause form=imperative predicate=\"turn\" direct_object=$e1 result_complement=\"side\" adverb=\"just\" act=change"
+          }
+        ],
+        "L5": [
+          {
+            "id": "diagram/diagrams-04.csv#1930",
+            "text": "I need you to link Customer to Support. I appreciate it.",
+            "reason": "It recognizes “I need you,” but omits the requested link from Customer to Support and leaves the appreciation as filler.",
+            "sop": "@e1 nlu.entity pronoun=\"I\"\n@e2 nlu.entity pronoun=\"you\"\n@e3 nlu.entity head=\"Customer\" modifier=\"link\"\n@r1 nlu.relation kind=to from=$c1 to=$e3 cue=\"to\"\n@e4 nlu.entity name=\"Support\"\n@r2 nlu.relation kind=to from=$c1 to=$e4 cue=\"to\"\n@c1 nlu.clause form=declarative predicate=\"need\" subject=$e1 direct_object=$e2 terminator=\".\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"I appreciate it\""
+          },
+          {
+            "id": "document/text-01.csv#1011",
+            "text": "Hey, replace Bin collection update with \"Please confirm these updated details.\". That would help.",
+            "reason": "The replacement is represented, but the substantive follow-up clause “That would help” is only filler.",
+            "sop": "@e1 nlu.entity name=\"Bin collection update\"\n@e2 nlu.entity name=\"Please confirm these updated details.\"\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@c1 nlu.clause form=imperative predicate=\"replace\" direct_object=$e1 terminator=\".\" act=change filler=\"Hey\" filler=\",\" filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"That would help\""
+          },
+          {
+            "id": "document/text-01.csv#396",
+            "text": "Hey, replace Merger news with \"The delivery arrived this morning.\". That would help.",
+            "reason": "The replacement target and new text are represented, but “That would help” is only filler.",
+            "sop": "@e1 nlu.entity name=\"Merger news\"\n@e2 nlu.entity name=\"The delivery arrived this morning.\"\n@r1 nlu.relation kind=with from=$c1 to=$e2 cue=\"with\"\n@c1 nlu.clause form=imperative predicate=\"replace\" direct_object=$e1 terminator=\".\" act=change filler=\"Hey\" filler=\",\" filler=\"\\\"\" filler=\"\\\"\"\n@c2 nlu.clause form=fragment terminator=\".\" filler=\"That would help\""
+          }
+        ],
+        "L6": [
+          {
+            "id": "drawing/scenes-05.csv#1978",
+            "text": "what does the sun shine on?",
+            "reason": "Captures the sun shining but leaves “what” unattached as the object of “on.”",
+            "sop": "@e1 nlu.entity head=\"sun\" determiner=\"the\" kind=sun\n@c1 nlu.clause form=interrogative predicate=\"shine\" subject=$e1 result_complement=\"on\" auxiliary=\"does\" question=\"what\" terminator=\"?\""
+          },
+          {
+            "id": "drawing/scenes-06.csv#1763",
+            "text": "please set a river behind the house, then drop a boat on the river, then bring in a bridge over the river.",
+            "reason": "Captures the three ordered imperatives and their locations, but omits the bridge as the object of “bring.”",
+            "sop": "@e1 nlu.entity head=\"river\" determiner=\"a\" kind=river\n@e2 nlu.entity head=\"house\" determiner=\"the\" kind=house\n@r1 nlu.relation kind=behind from=$c1 to=$e2 cue=\"behind\"\n@c1 nlu.clause form=imperative predicate=\"set\" direct_object=$e1 filler=\"please\"\n@e3 nlu.entity head=\"boat\" determiner=\"a\" kind=boat\n@e4 nlu.entity head=\"river\" determiner=\"the\" kind=river\n@r2 nlu.relation kind=on from=$e3 to=$e4 cue=\"on\"\n@g1 nlu.coordination kind=sequence member=$c1 member=$c2 cue=\", then\"\n@c2 nlu.clause form=imperative predicate=\"drop\" direct_object=$e3\n@e5 nlu.entity head=\"bridge\" determiner=\"a\" kind=bridge\n@r3 nlu.relation kind=in from=$c3 to=$e5 cue=\"in\"\n@e6 nlu.entity head=\"river\" kind=river\n@r4 nlu.relation kind=above from=$c3 to=$e6 cue=\"over the\"\n@g2 nlu.coordination kind=sequence member=$c2 member=$c3 cue=\", then\"\n@c3 nlu.clause form=imperative predicate=\"bring\" terminator=\".\" act=place"
+          },
+          {
+            "id": "drawing/scenes-13.csv#423",
+            "text": "make the lamp glow",
+            "reason": "Does not identify the lamp as the participant made to glow.",
+            "sop": "@e1 nlu.entity head=\"glow\" determiner=\"the\" modifier=\"lamp\"\n@c1 nlu.clause form=imperative predicate=\"make\" direct_object=$e1 act=change"
+          }
+        ]
+      },
+      "acceptedPercent": 9.779688339602364,
+      "percent": {
+        "L0": 3.0091348737238044,
+        "L1": 4.137560451370231,
+        "L2": 78.82858678130037,
+        "L3": 2.364320257925846,
+        "L4": 0.6985491671144546,
+        "L5": 0.537345513164965,
+        "L6": 0.21493820526598603,
+        "L7": 0.42987641053197206,
+        "L8": 9.779688339602364,
+        "L9": 0,
+        "L10": 0
+      }
+    }
+  }
+}

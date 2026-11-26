@@ -131,8 +131,8 @@ def validation_error(item, packet, group):
     issue = item.get('referenceIssue')
     if type(grade) is not int or not 0 <= grade <= 10:
         return 'grade must be an integer from 0 to 10'
-    if packet.get('nativeReview') and (grade > 8 or issue is not None):
-        return 'native source-only grading uses L0–L8 and no referenceIssue'
+    if packet.get('nativeReview') and (grade > 8 or grade == 2 or issue is not None):
+        return 'native model grading uses L0–L8 except static L2, with no referenceIssue'
     if grade != 0 and (
         type(candidate) is not int or candidate not in packet['groups'][group]
     ):
@@ -222,7 +222,7 @@ def native_typed_omission(packet, judgment):
     return coverage['allAccountedFor'] and coverage['unresolved'] == 0
 
 
-def strict_packets(packets, previous, *, native=False, extra=()):
+def strict_packets(packets, previous, *, native=False, extra=(), corroborated=False):
     packet_by_row = {packet['rowIndex']: packet for packet in packets}
     selected = {}
     with previous.open() as source:
@@ -232,10 +232,12 @@ def strict_packets(packets, previous, *, native=False, extra=()):
             judgment = json.loads(line)
             index, group = judgment['rowIndex'], judgment['group']
             original = packet_by_row[index]
+            if native and not original['groups'][group]:
+                continue
             trigger = None
             if (index, group) in extra:
                 trigger = 'This group was selected by an independent disagreement or calibration audit.'
-            elif native and native_typed_omission(original, judgment):
+            elif native and not corroborated and native_typed_omission(original, judgment):
                 trigger = 'The previous review reports missing meaning, but the selected circuit accounts for every occurrence without unresolved text. Check what the emitted roles actually express.'
             elif judgment['grade'] >= 8:
                 if POSSIBLE_OMISSION.search(judgment['reason']):
@@ -334,6 +336,8 @@ def main():
                         help='select potential omission contradictions from a complete prior review JSONL')
     parser.add_argument('--strict-select', type=Path,
                         help='add independent audit groups from a JSON array of rowIndex/group objects')
+    parser.add_argument('--strict-corroborated', action='store_true',
+                        help='skip generic typed-omission flags after two full independent reviews')
     parser.add_argument('--salvage', type=Path, action='append', default=[],
                         help='reuse valid judgments from an earlier run directory (repeatable)')
     args = parser.parse_args()
@@ -351,6 +355,8 @@ def main():
         fingerprint.update(args.strict_from.read_bytes())
     if args.strict_select:
         fingerprint.update(args.strict_select.read_bytes())
+    if args.strict_corroborated:
+        fingerprint.update(b'corroborated')
     fingerprint = fingerprint.hexdigest()
     manifest = work / 'packet-sha256.txt'
     if manifest.exists() and manifest.read_text().strip() != fingerprint:
@@ -360,7 +366,7 @@ def main():
     review_schema = deepcopy(SCHEMA)
     if args.profile == 'native':
         fields = review_schema['properties']['results']['items']['properties']
-        fields['grade']['enum'] = list(range(9))
+        fields['grade']['enum'] = [level for level in range(9) if level != 2]
         fields['referenceIssue'] = {'type': 'null'}
         prompt = (HERE / 'native-reviewer-prompt.md').read_text() + '\n' + (HERE / 'native-legend.md').read_text()
     else:
@@ -391,18 +397,24 @@ def main():
     if args.strict_from:
         extra = {(row['rowIndex'], row['group']) for row in json.loads(args.strict_select.read_text())} \
             if args.strict_select else set()
-        packets = strict_packets(packets, args.strict_from, native=args.profile == 'native', extra=extra)
+        packets = strict_packets(packets, args.strict_from, native=args.profile == 'native', extra=extra,
+                                 corroborated=args.strict_corroborated)
     pending = []
     all_results = {}
     for packet in packets:
         if args.profile == 'native':
-            if packet['references']:
-                parser.error('native source-first review must not contain reference circuits')
+            if packet['references'] or 'staticJudgments' not in packet:
+                parser.error('native source-first v2 packets require static judgments and no reference circuits')
             packet = {**packet, 'nativeReview': True}
         groups = {}
         for key, group in packet['groups'].items():
             if group:
                 groups[key] = group
+            elif args.profile == 'native':
+                static = packet['staticJudgments'].get(key)
+                if not static or static['grade'] not in (0, 2):
+                    parser.error(f'missing static native judgment for row {packet["rowIndex"]} group {key}')
+                all_results[packet['rowIndex'], key] = {**static, 'referenceIssue': None}
             else:
                 all_results[packet['rowIndex'], key] = dict(
                     rowIndex=packet['rowIndex'], group=key, grade=0, candidate=None,

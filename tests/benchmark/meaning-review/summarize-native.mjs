@@ -11,7 +11,7 @@ const engines = ['z3', 'prolog-worlds', 'prolog-example-transfer']
 const manifest = JSON.parse(readFileSync(join(directory, 'manifest.json'), 'utf8'))
 const packed = readFileSync(join(directory, 'packets.json.gz'))
 const sha = value => createHash('sha256').update(value).digest('hex')
-if (manifest.profile !== 'nlu-source-first-v1' || manifest.packetsSha256 !== sha(packed)) {
+if (manifest.profile !== 'nlu-source-first-v2' || manifest.packetsSha256 !== sha(packed)) {
   throw Error('Unexpected native review profile or incomplete packet file.')
 }
 const packets = JSON.parse(gunzipSync(packed))
@@ -19,10 +19,15 @@ const byRow = new Map(packets.map(packet => [packet.rowIndex, packet]))
 const keyFor = ({rowIndex, group}) => rowIndex + ':' + group
 const validEntry = entry => {
   const {rowIndex, group, grade, reason, candidate} = entry
-  const allowed = byRow.get(rowIndex)?.groups[group]
+  const packet = byRow.get(rowIndex)
+  const allowed = packet?.groups[group]
+  if (!Array.isArray(allowed) || typeof reason !== 'string' || !reason.trim() || entry.referenceIssue) return false
+  if (!allowed.length) {
+    const mechanical = packet.staticJudgments[group]
+    return mechanical?.grade === grade && mechanical.candidate === candidate && mechanical.reason === reason
+  }
   return Number.isSafeInteger(grade) && grade >= 0 && grade <= 8 &&
-    typeof reason === 'string' && reason.trim().length > 0 && !entry.referenceIssue &&
-    Array.isArray(allowed) &&
+    grade !== 2 &&
     (grade === 0 ? candidate === null : Number.isSafeInteger(candidate) && allowed.includes(candidate))
 }
 function readJudgments(path) {
@@ -77,20 +82,23 @@ for (const packet of packets) {
 
 const engineSummary = Object.fromEntries(engines.map(engine => [engine, {
   rows: 0, accepted: 0, engineErrors: 0, noEligibleCandidates: 0, sharedWitnessPromotions: 0,
+  staticInvalid: 0, staticIncomplete: 0, modelReviewed: 0,
   counts: Object.fromEntries(Array.from({length: 11}, (_, grade) => ['L' + grade, 0])),
   examples: {}
 }]))
 const rows = []
 for (const packet of packets) {
   for (const engine of engines) {
-    const {key, original, error, rejected} = packet.memberships[engine]
+    const {key, original, returned = original.length, error, rejected} = packet.memberships[engine]
     const groupKey = keyFor({rowIndex: packet.rowIndex, group: key})
     const promoted = promotions.get(groupKey)
     const judgment = promoted ?? judgments.get(groupKey)
     if (!judgment) throw Error('Missing native review judgment: ' + packet.rowIndex + ':' + key)
     const {grade, candidate, reason} = judgment
-    const emittedIndex = candidate === null ? null : original.indexOf(candidate)
-    if (emittedIndex === -1) throw Error('Selected native witness was not emitted by ' + engine)
+    const recordedIndex = candidate === null ? null : original.indexOf(candidate)
+    if (recordedIndex === -1) throw Error('Selected native witness was not recorded for ' + engine)
+    const originallyRejected = recordedIndex !== null && recordedIndex >= returned
+    const emittedIndex = originallyRejected ? null : recordedIndex
     const sop = candidate === null ? null : packet.circuits[candidate].map(index => packet.lines[index]).join('\n')
     const label = 'L' + grade
     const summary = engineSummary[engine]
@@ -100,9 +108,15 @@ for (const packet of packets) {
     if (promoted) summary.sharedWitnessPromotions++
     if (error) summary.engineErrors++
     if (!packet.groups[key].length) summary.noEligibleCandidates++
+    if (packet.staticJudgments[key]?.grade === 0) summary.staticInvalid++
+    else if (packet.staticJudgments[key]?.grade === 2) summary.staticIncomplete++
+    else summary.modelReviewed++
     const detail = {id: packet.id, rowIndex: packet.rowIndex, engine, grade, text: packet.text,
       reason, emittedIndex, candidate, sop, check: candidate === null ? null : packet.checks[candidate],
       engineError: error, rejected, eligibleCandidates: packet.groups[key].length,
+      origin: recordedIndex === null ? null : originallyRejected ? 'recordedRejected' : 'emitted',
+      ...(originallyRejected ? {recordedRejectedIndex: recordedIndex - returned} : {}),
+      staticJudgment: Object.hasOwn(packet.staticJudgments, key),
       ...(promoted ? {sharedWitnessFromGroup: promoted.group} : {})}
     rows.push(detail)
     const examples = summary.examples[label] ?? []
