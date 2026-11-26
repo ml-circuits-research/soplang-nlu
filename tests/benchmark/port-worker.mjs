@@ -1,14 +1,11 @@
+import {strategyModules as strategies} from './strategies.mjs'
 import {createRecordWriter} from './record.mjs'
 import {parentPort, workerData} from 'node:worker_threads'
 import {createReader} from '../../lib/reader.mjs'
 import {measureStrategy} from '../../lib/measure-strategy.mjs'
 
 const {name, options, rows, progressEvery} = workerData
-const strategies = {
-  z3: ['../../strategies/z3/index.mjs', 'z3'],
-  'prolog-worlds': ['../../strategies/prolog/index.mjs', 'prolog'],
-  'prolog-example-transfer': ['../../strategies/prolog-example-transfer/index.mjs', 'prologExampleTransfer']
-}
+
 const [strategyEntry, exportedName] = strategies[name]
 let modelLoadMs
 

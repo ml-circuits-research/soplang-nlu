@@ -1,5 +1,6 @@
+import {strategyModules} from '../strategies.mjs'
 import {createHash} from 'node:crypto'
-import {mkdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {fileURLToPath} from 'node:url'
 import {resolve, join} from 'node:path'
 import {gunzipSync, gzipSync} from 'node:zlib'
@@ -10,9 +11,9 @@ const [run, output, installation, subset] = process.argv.slice(2)
 if (!run || !output || !installation) {
   throw Error('Usage: node prepare-native.mjs RUN OUTPUT KNOWLEDGE_DIR [STRATEGIES]')
 }
-const knownEngines = ['z3', 'prolog-worlds', 'prolog-example-transfer']
-const engineNames = subset === undefined ? knownEngines : subset.split(',')
-if (engineNames.some(engine => !knownEngines.includes(engine)) ||
+const knownEngines = Object.keys(strategyModules)
+const engineNames = subset === undefined ? knownEngines.filter(engine => existsSync(join(run,engine + '.jsonl.gz'))) : subset.split(',')
+if (!engineNames.length || engineNames.some(engine => !knownEngines.includes(engine)) ||
     new Set(engineNames).size !== engineNames.length) {
   throw Error('Invalid native benchmark strategies.')
 }

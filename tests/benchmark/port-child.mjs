@@ -1,11 +1,8 @@
+import {strategyModules as strategies} from './strategies.mjs'
 import {createRecordWriter} from './record.mjs'
 import {createReader} from '../../lib/reader.mjs'
 
-const strategies = {
-  z3: ['../../strategies/z3/index.mjs', 'z3'],
-  'prolog-worlds': ['../../strategies/prolog/index.mjs', 'prolog'],
-  'prolog-example-transfer': ['../../strategies/prolog-example-transfer/index.mjs', 'prologExampleTransfer']
-}
+
 let reader, recordResult
 
 const send = message => new Promise((resolve, reject) => {
