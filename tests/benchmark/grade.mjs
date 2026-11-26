@@ -10,6 +10,9 @@ import {createVerifier} from '../../strategies/z3/src/verify/check.mjs'
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const workspace = resolve(process.env.SOP_WORKSPACE ?? join(root, '..'))
 const dir = resolve(process.argv[2])
+if (JSON.parse(readFileSync(join(dir,'environment.json'),'utf8')).evaluatedSchema === 'nlu') {
+  throw Error('The WebMeet reference comparator expects w.request predictions. Native NLU checks are saved by port-run.')
+}
 const verifier = await createVerifier({knowledgeDir: process.env.KNOWLEDGE_DIR ?? join(workspace, 'sop-knowledge-worlds')})
 const unpack = name => gunzipSync(readFileSync(join(dir, name))).toString()
 const sample = JSON.parse(unpack('sample.json.gz'))

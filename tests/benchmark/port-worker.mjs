@@ -22,7 +22,8 @@ const run = await measureStrategy(async () => {
       async open(configuration) {
         const engine = await strategy.open(configuration)
         modelLoadMs = engine.modelLoadMs
-        return engine
+        return process.env.EVAL_SCHEMA === 'w.request'
+            ? {propose: text => engine.propose(text), close: () => engine.close()} : engine
       }
     }
   })

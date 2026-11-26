@@ -12,12 +12,14 @@ const reader = await createReader({
   swipl: process.env.SWIPL
 })
 try {
-  const {candidates, syntax, unresolved} = await reader.propose('Move it to the left')
-  console.log({candidates, syntax, unresolved})
+  const {candidates} = await reader.propose('Move it to the left')
+  for (const {sop, check} of candidates) console.log(sop, check)
 } finally {
   await reader.close()
 }
 ```
+
+The strategy proposes the syntactic roles, links and optional semantic values for each complete candidate. The adapter attaches source coverage and schema diagnostics to its circuit. The benchmark can evaluate the separate historical `w.request` proposal method with `EVAL_SCHEMA=w.request`.
 
 The Node.js core uses built-in modules. The [Prolog](docs/strategies/prolog.md) strategy requires a SWI-Prolog executable. The [Z3](docs/strategies/z3.md) strategy requires z3-solver. Both use a SOP installation with the native runtime and the configured knowledge worlds. See the [design and evaluation protocol](docs/README.md) for wire evidence, source offsets, timings and grading. Run `npm test` for the library tests.
 

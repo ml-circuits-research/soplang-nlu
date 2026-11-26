@@ -24,3 +24,25 @@ test('symbolic Prolog refuses model options before opening the engine', async ()
     await assert.rejects(createReader({strategy:prolog,...option}), /Unsupported symbolic Prolog options/)
   }
 })
+
+test('dispatches to the native analysis path and never synthesizes a fallback reading', async () => {
+  const source = 'Echo!'
+  const sop = '@c nlu.clause form=fragment unresolved="Echo" terminator="!"'
+  let called = false
+  const strategy = {name: 'native', open: async () => ({
+    analyse(text) {
+      assert.equal(text, source)
+      called = true
+      return {analyses: [{sop}], analysisDiagnostics: {solver: 'fixture'}}
+    },
+    propose() { throw Error('Legacy generator invoked during native inference') },
+    close() {}
+  })}
+  const reader = await createReader({strategy})
+  try {
+    const result = await reader.propose(source)
+    assert.ok(called)
+    assert.deepEqual(result.candidates, [{sop}])
+    assert.equal(result.legacy, undefined)
+  } finally { await reader.close() }
+})

@@ -23,6 +23,8 @@ if (extraArgs.length || sourceArg === '--help') {
   process.exit(extraArgs.length ? 1 : 0)
 }
 
+const evaluatedSchema = process.env.EVAL_SCHEMA ?? 'nlu'
+if (!['nlu','w.request'].includes(evaluatedSchema)) throw Error('Expected EVAL_SCHEMA=nlu or w.request.')
 const workers = Number(process.env.WORKERS ?? 8)
 const progressEvery = Number(process.env.PROGRESS_EVERY ?? 25)
 const workerTimeoutMs = Number(process.env.WORKER_TIMEOUT_MS ?? 300000)
@@ -247,6 +249,7 @@ if (append) {
   if (!readFileSync(join(dir, 'sample.json.gz')).equals(sample) || prior.revision !== sampleMetadata.revision) {
     throw Error('Append requires the same frozen evaluation sample and dataset revision.')
   }
+  if ((prior.evaluatedSchema ?? 'w.request') !== evaluatedSchema) throw Error('Append requires the original output schema.')
   if (prior.workers !== workers) throw Error('Append requires the original worker count.')
 } else {
   mkdirSync(dirname(dir), {recursive: true})
@@ -265,7 +268,7 @@ for (const name of selected) {
 }
 const activeWorkers = Math.min(workers, rows.length)
 const environment = {
-  ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
+  evaluatedSchema, ...sampleMetadata, sample: rows.length, source, sampleSha256: hash(sample),
   workers, activeWorkers, workerTimeoutMs, node: process.version, cpu: cpus()[0]?.model, platform: platform(), arch: arch(),
   libraryRevision: execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   knowledgeRevision: (() => {
@@ -308,7 +311,7 @@ for (const name of selected) {
   const records = rows.flatMap(({id, references}) => {
     const record = predictions.get(id)
     if (!record) return []
-    return [{...record, comparison: compareAlternatives(references, record.candidates)}]
+    return [evaluatedSchema === 'nlu' ? record : {...record, comparison: compareAlternatives(references, record.candidates)}]
   })
   const latencies = records.map(record => record.latencyMs).filter(Number.isFinite).sort((a, b) => a - b)
   const summary = {
@@ -317,7 +320,11 @@ for (const name of selected) {
     medianMs: percentile(latencies, 0.5),
     p95Ms: percentile(latencies, 0.95),
     errors: records.filter(record => record.error).length,
-    withExactMatch: records.filter(record => record.comparison.matched).length,
+    ...(evaluatedSchema === 'nlu' ? {
+      withSchemaValidReading: records.filter(r=>r.checks?.some(c=>c.schemaValid)).length,
+      withFullyAccountedReading: records.filter(r=>r.checks?.some(c=>c.valid && c.coverage.allAccountedFor)).length,
+      withAllWordsAssignedRoles: records.filter(r=>r.checks?.some(c=>c.valid && c.coverage.allAccountedFor && !c.coverage.unresolved)).length
+    } : {withExactMatch: records.filter(record => record.comparison.matched).length}),
     workerTiming: completed.map(batch => batch.timing),
     failures
   }
@@ -336,6 +343,6 @@ const readyToGrade = Object.keys(strategies).every(name => {
   const summary = JSON.parse(readFileSync(summaryPath,'utf8'))
   return summary.requests === rows.length && (summary.attemptedRequests ?? summary.requests) > 0
 })
-if (readyToGrade) {
+if (readyToGrade && evaluatedSchema === 'w.request') {
   execFileSync(process.execPath,[fileURLToPath(new URL('./grade.mjs',import.meta.url)),dir],{stdio:'inherit'})
 }
