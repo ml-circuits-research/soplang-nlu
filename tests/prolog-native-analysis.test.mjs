@@ -130,7 +130,7 @@ test('Prolog keeps clock and decimal evidence indivisible', {skip}, async () => 
         /head="11:00" modifier="UTC"/u, /kind=start_time .*cue="from"/u,
         /expression="Thanks" speech_act=gratitude/u
       ]],
-      ['1.2', [/form=fragment unresolved="1\.2"/u]],
+      ['1.2', [/head="1\.2"/u, /form=fragment topic=/u]],
       ['Set width to -1.2. Thanks!', [/head="-1\.2"/u, /cue="to"/u, /expression="Thanks" speech_act=gratitude/u]],
       ['Draw 1.2 circles.', [/head="circles" quantity="1\.2"/u]]
     ]
@@ -256,6 +256,31 @@ test('Prolog grounds wh slots, inversion without punctuation and passive auxilia
       ]],
       ['Would you move the cat', [/form=interrogative predicate="move" subject=\$e1/u]],
       ["Let's finish the chart.", [/form=imperative predicate="finish" direct_object=\$e1 auxiliary="Let's"/u]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})
+
+test('Prolog grounds nominal results and degrees without folding them into the object', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['Make it a decision.', [/head="decision"/u,
+        /predicate="Make" direct_object=\$e1 predicative_entity=\$e2/u]],
+      ['Set the error bar caps thin.', [/head="caps"/u, /result_complement="thin"/u]],
+      ['Make the box slightly narrower.', [/head="box"/u, /result_complement="narrower" degree="slightly"/u]],
+      ['Turn it into a circle.', [/kind=result from=\$e1 to=\$e2 cue="into"/u,
+        /predicate="Turn" direct_object=\$e1 predicative_entity=\$e2/u]],
+      ['Call it Home.', [/name="Home"/u, /predicate="Call" direct_object=\$e1 predicative_entity=\$e2/u]]
     ]
     for (const [text, expected] of cases) {
       const result=await reader.propose(text)

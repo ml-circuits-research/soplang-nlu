@@ -192,6 +192,14 @@ main_predicate(Q,At,End,Start,After,Acts) :-
       Options),
     keysort(Options,Ascending), last(Ascending,_-[Start,After,Acts]).
 
+lexical_predicate(Q,F,At,First,End,62) :-
+    F.copula==true, At>First, F.end<End,
+    wh_front(Q,First,At,At,_,_), noun_phrase(Q,F.end,End,_),
+    !.
+lexical_predicate(Q,F,At,First,_,55) :-
+    F.participle==true, At>First, subject_before(Q,First,At),
+    Last is At-1, between(First,Last,Auxiliary), token_flag(Q,Auxiliary,copula), !.
+
 % The overt subject and predicative operand license copula before lexical ambiguity.
 lexical_predicate(Q,F,At,First,End,49) :-
     F.copula==true, At>First, F.end<End,
@@ -263,38 +271,45 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
         prefix_items(Q,At,P,Aux,BeforeNegation),
         post_negations(Q,A,End,NegEnd,AfterNegation),
         append(BeforeNegation,AfterNegation,Negation),
-        subject_arguments(Q,First,P,Subjects0,SubjectRelations,SubjectJoins0),
+        wh_front(Q,First,P,SubjectStart,WhPhrase,WhRange),
+        subject_arguments(Q,SubjectStart,P,Subjects0,SubjectRelations,SubjectJoins0),
         ( Subjects0=[Subject0|_] -> true ; Subject0=none ),
         clause_adverbs(Q,At,P,PrefixAdverbs),
         edge_adverbs(Q,NegEnd,End,AfterAdverbs,BeforeAdverbs,BodyAdverbs),
         append(PrefixAdverbs,BodyAdverbs,Adverbs),
         particle(Q,P,AfterAdverbs,BeforeAdverbs,PlainActs,OperandStart,OperandEnd,Particle,OperandActs),
         evidenced_acts(Q,P,OperandActs,Acts),
-        ( form_at(Q,P,PredicateForm), PredicateForm.end=:=A,
-          frame_complement(Q,PredicateForm.frames,OperandStart,OperandEnd,ChildStart,Marker,ChildForm,Controller),
+        form_at(Q,P,PredicateForm), PredicateForm.end=:=A,
+        ( frame_complement(Q,PredicateForm.frames,OperandStart,OperandEnd,ChildStart,Marker,ChildForm,Controller),
           analyse_complement(Q,ChildStart,OperandEnd,Term,Marker,ChildForm,Child) ->
             ( Marker=[VisibleEnd,_] -> true ; VisibleEnd=ChildStart ),
-            Embedded=[Child], VisibleTerm=[], Complement=[], Indirect=[],
+            Embedded=[Child], VisibleTerm=[], Complement0=[], Degree=[], Predicative=[], Indirect=[],
             Objects0=Controller, Relations0=SubjectRelations, Coordinations=[]
         ; Subject0\==none, token_flag(Q,P,clauseTaker), embedded_clause(Q,OperandStart,OperandEnd,Term,Child) ->
-            Embedded=[Child], VisibleEnd=OperandStart, VisibleTerm=[], Complement=[], Indirect=[],
+            Embedded=[Child], VisibleEnd=OperandStart, VisibleTerm=[], Complement0=[], Degree=[], Predicative=[], Indirect=[],
             Objects0=[], Relations0=SubjectRelations, Coordinations=[]
         ; Embedded=[], VisibleEnd=End, VisibleTerm=Term,
-          complement(Q,OperandStart,OperandEnd,Acts,BodyEnd,Complement),
+          predicate_complement(Q,PredicateForm.frames,P,OperandStart,OperandEnd,Acts,
+            BodyEnd,Complement0,Degree,Predicative,ResultRelations),
           operands(Q,OperandStart,BodyEnd,OperandActs,Indirect,Objects0,BodyRelations,Coordinations),
-          complement_relations(Q,Complement,OperandEnd,ComplementRelations),
+          complement_relations(Q,Complement0,OperandEnd,ComplementRelations),
           nominal_attachments(Q,BodyRelations,Objects0,AttachedBody),
-          append([SubjectRelations,AttachedBody,ComplementRelations],Relations0) ),
+          append([SubjectRelations,AttachedBody,ComplementRelations,ResultRelations],Relations0) ),
         ( Subject0==none, token_flag(Q,P,copula), Objects0=[Inverted|Others],
-          (Question\=[] ; question_term(Q,Term)) -> Subject=Inverted, Objects=Others
-        ; Subject=Subject0, Objects=Objects0 ),
+          (Question\=[] ; question_term(Q,Term)) ->
+            Subject=Inverted, Objects=Others,
+            ( WhRange\=[], Complement0=[] -> Complement=WhRange ; Complement=Complement0 )
+        ; Subject0==none, WhPhrase\==none ->
+            Subject=WhPhrase, Objects=Objects0, Complement=Complement0
+        ; Subject=Subject0, Complement=Complement0,
+          ( WhPhrase\==none, Objects0=[] -> Objects=[WhPhrase] ; Objects=Objects0 ) ),
         ( Subject\==none, token_flag(Q,P,participle), auxiliary_copula(Q,Aux) ->
           maplist(passive_relation(Q),Relations0,Relations)
         ; Relations=Relations0 ),
         ( Subject0==none -> none_as_list(Subject,Subjects), SubjectCoordinations=[]
         ; Subjects=Subjects0, SubjectCoordinations=SubjectJoins0 ),
-        clause_type(Subject,Question,Term,Q,Kind)
-    ; P=End, A=End, Acts=[], Aux=[], Negation=[], Complement=[], Adverbs=[], Particle=[], Indirect=[],
+        clause_type(Subject,Question,Term,Q,First,Aux,Kind)
+    ; P=End, A=End, Acts=[], Aux=[], Negation=[], Complement=[], Degree=[], Predicative=[], Adverbs=[], Particle=[], Indirect=[],
       Embedded=[], VisibleEnd=End, VisibleTerm=Term,
       wh_marker(Q,First,End,Question),
       ( Question=[_,TopicAt] -> Kind="interrogative" ; Kind="fragment", TopicAt=First ),
@@ -306,7 +321,7 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
     Clause=_{from:At,to:VisibleEnd,predicate:[P,A],acts:Acts,form:Kind,question:Question,
       auxiliary:Aux,negation:Negation,terminator:VisibleTerm,subjects:Subjects,subjectCoordinations:SubjectCoordinations,
       objects:Objects,indirect:Indirect,
-      relations:Relations,coordinations:Coordinations,complement:Complement,join:Cue,
+      relations:Relations,coordinations:Coordinations,complement:Complement,degree:Degree,predicative:Predicative,join:Cue,
       adverb:Adverbs,particle:Particle,embedded:Embedded}.
 
 % The send alias licenses a recipient frame for give. It does not establish dispatch.
@@ -406,6 +421,14 @@ wh_marker(Q,At,End,[At,E]) :-
     At<End, form_at(Q,At,F), F.end=<End, F.question==true, E=F.end, !.
 wh_marker(_,_,_,[]).
 
+wh_front(Q,At,Predicate,After,Phrase,[Start,After]) :-
+    unquoted_word(Q,At,Wh), memberchk(Wh,["which","what","whose"]),
+    wh_marker(Q,At,Predicate,[At,Start]),
+    between(Start,Predicate,After), After>Start,
+    ( After=:=Predicate ; token_flag(Q,After,auxiliary) ),
+    noun_phrase(Q,Start,After,Phrase), !.
+wh_front(_,At,_,At,none,[]).
+
 prefix_items(_,At,End,[],[]) :- At>=End, !.
 prefix_items(Q,At,End,Aux,Negation) :-
     Next is At+1,
@@ -461,24 +484,63 @@ auxiliary_tail(Q,At,End) :-
     ( token_flag(Q,At,auxiliary) ; token_flag(Q,At,negation) ; token_flag(Q,At,adverb) ),
     Next is At+1, auxiliary_tail(Q,Next,End).
 
-clause_type(_,Q,_,_,"interrogative") :- Q\=[], !.
-clause_type(Subject,_,Term,Q,"interrogative") :- Subject\==none, question_term(Q,Term), !.
-clause_type(none,_,_,_,"imperative") :- !.
-clause_type(_,_,_,_,"declarative").
+clause_type(_,Q,_,_,_,_,"interrogative") :- Q\=[], !.
+clause_type(Subject,_,_,_,First,[[First,_]|_],"interrogative") :-
+    Subject\==none, Subject.from>First, !.
+clause_type(Subject,_,Term,Q,_,_,"interrogative") :- Subject\==none, question_term(Q,Term), !.
+clause_type(none,_,_,_,_,_,"imperative") :- !.
+clause_type(_,_,_,_,_,_,"declarative").
 
 question_term(Q,[At,End]) :-
     Last is End-1, between(At,Last,Mark), word_at(Q,Mark,"?"), !.
 
-complement(Q,At,End,_,End,[]) :-
+predicate_complement(Q,Frames,P,At,End,Acts,Body,Complement,Degree,Predicative,Relations) :-
+    ( nominal_result(Q,Frames,P,At,End,Body,Predicative,Relations) ->
+        Complement=[], Degree=[]
+    ; Predicative=[], Relations=[],
+      complement(Q,At,End,Frames,Acts,Boundary,Complement),
+      degree_before(Q,At,Boundary,Complement,Body,Degree) ).
+
+nominal_result(Q,Frames,P,At,End,Body,Predicative,Relations) :-
+    Last is End-1, between(At,Last,Body), Body>At,
+    noun_phrase(Q,At,Body,Object),
+    ( memberchk("object_predicative",Frames),
+      token_pos(Q,Body,"determiner"),
+      noun_phrase(Q,Body,End,Predicative) -> Relations=[]
+    ; unquoted_word(Q,P,Verb), memberchk(Verb,["call","name","rename","label"]),
+      annotation_target(Q,"label",Body,End,End,Target) ->
+        Predicative=Target.put(_{head:[],determiner:[],modifiers:[],pronoun:[],kinds:[],colors:[],from:Body,to:End}),
+        Relations=[]
+    ; memberchk("object_predicative",Frames), Start is Body+1, Start<End,
+      predicative_cue(Q,P,Body,Start), noun_phrase(Q,Start,End,Predicative),
+      Relations=[_{cue:[Body,Start],kinds:["result"],markers:[],entities:[],coordinations:[],
+        attachment:"object",owner:Object.from,predicative:true,end:End}] ), !.
+
+predicative_cue(Q,_,At,_) :- unquoted_word(Q,At,"into").
+predicative_cue(Q,P,At,Start) :-
+    unquoted_word(Q,P,"set"), unquoted_word(Q,At,"to"), token_flag(Q,Start,decimalValue).
+
+degree_before(Q,At,Boundary,[Boundary,_],Start,[[Start,Boundary]]) :-
+    Last is Boundary-1, Last>=At, Last>0,
+    ( unquoted_word(Q,Last,Word),
+      memberchk(Word,["slightly","much","far","somewhat","rather","very","quite","significantly","substantially"]) ->
+        Start=Last
+    ; Start is Boundary-2, Start>=At,
+      unquoted_word(Q,Start,Lead), unquoted_word(Q,Last,Tail),
+      memberchk([Lead,Tail],[["a","little"],["a","bit"],["a","lot"],["one","size"]]) ), !.
+degree_before(_,_,End,_,End,[]).
+
+complement(Q,At,End,_,_,End,[]) :-
     nominal_slice(Q,At,End,Phrase,End), get_dict(annotations,Phrase,_), !.
-complement(Q,At,End,_,Start,[Start,Than]) :-
+complement(Q,At,End,_,_,Start,[Start,Than]) :-
     Last is End-1, between(At,Last,Start), token_flag(Q,Start,comparative),
     Than is Start+1, Than<End, has_form(Q,Than,preposition,"than"), !.
-complement(Q,At,End,Acts,Last,[Last,End]) :-
+complement(Q,At,End,Frames,Acts,Last,[Last,End]) :-
     Last is End-1, Last>=At,
     token_pos(Q,Last,"adjective"),
-    ( Last=:=At ; memberchk("change",Acts) ; has_color(Q,Last) ), !.
-complement(_,_,End,_,End,[]).
+    ( Last=:=At ; memberchk("change",Acts) ; has_color(Q,Last)
+    ; memberchk("object_predicative",Frames), nominal_slice(Q,At,Last,_,Last) ), !.
+complement(_,_,End,_,_,End,[]).
 
 has_color(Q,At) :- form_at(Q,At,F), F.end=:=At+1, F.colors\=[].
 
@@ -607,6 +669,8 @@ temporal_role("until","end_time").
 preposition(Q,At,End,After,Form) :-
     form_at(Q,At,Form), Form.end<End, Form.preposition\=[], After=Form.end.
 
+noun_phrase(Q,At,End,_{from:At,to:End,head:[At,End],determiner:[],modifiers:[],pronoun:[],name:[],kinds:[],colors:[]}) :-
+    End=:=At+1, token_flag(Q,At,decimalValue), !.
 noun_phrase(Q,At,End,_{from:At,to:End,head:[At,After],determiner:[],modifiers:Modifiers,pronoun:[],name:[],kinds:[],colors:[]}) :-
     After is At+1, token_flag(Q,At,temporalValue),
     ( After=:=End -> Modifiers=[]
@@ -665,7 +729,12 @@ noun_head(Q,First,End,Start,Kinds) :-
     Last is End-1,
     between(First,Last,Start), form_at(Q,Start,F), F.end=:=End,
     ( F.kinds\=[] ; memberchk("noun",F.pos)
-    ; directional_head(Q,First,End,Start) ), Kinds=F.kinds.
+    ; directional_head(Q,First,End,Start) ; interrogative_head(Q,First,End,Start) ), Kinds=F.kinds.
+
+interrogative_head(Q,Start,End,Start) :-
+    End=:=Start+1, Prior is Start-1, token_flag(Q,Prior,question),
+    unquoted_word(Q,Start,Dimension),
+    memberchk(Dimension,["color","colour","size","shape","name","number","height","width","length","type","kind"]).
 
 directional_head(Q,Start,End,Start) :-
     End=:=Start+1, Prior is Start-1,

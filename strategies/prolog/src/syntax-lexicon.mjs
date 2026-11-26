@@ -28,6 +28,8 @@ export function syntaxLexicon(facts,senses,verbFrames) {
   words('w.lang.en.pron','pos',()=>['pronoun']);
   words('w.lang.en.pron','pronoun',wire=>values(wire,'case'));
   words('w.lang.en.aux','auxiliary',()=>['auxiliary']);
+  add("let's",'auxiliary','hortative');
+  add('let’s','auxiliary','hortative');
   words('w.lang.en.copula','copula',()=>['copula']);
   words('w.lang.en.wh','question',wire=>values(wire,'asks'));
   for (const wire of facts('w.lang.en.neg')) for (const surface of values(wire,'text')) {

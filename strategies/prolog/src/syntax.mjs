@@ -10,6 +10,7 @@ const field = (wire,key) => {
 const uniq = values => [...new Set(values.filter(Boolean))];
 const lexicalWord = /[\p{L}\p{M}\p{N}_]/u;
 const numerals = /^(?:\p{N}+|[+-]?[0-9]*\.[0-9]+)$/u;
+const decimalValue = /^[+-]?[0-9]*\.[0-9]+$/u;
 const clockValue = /^[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?$/u;
 const dateValue = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
 const discourse = new Set(['filler','politeness','interjection']);
@@ -69,7 +70,7 @@ function nativeInput(text, worlds) {
       copula:Boolean(facts.copula), question:Boolean(facts.question),
       adverb:Boolean(facts.adverb || facts.pos?.length===1 && facts.pos.includes('adverb') ||
         facts.pos?.includes('adverb') && /ly$/u.test(surface)),
-      clockValue:clockValue.test(surface), temporalValue:clockValue.test(surface) || dateValue.test(surface),
+      decimalValue:decimalValue.test(surface), clockValue:clockValue.test(surface), temporalValue:clockValue.test(surface) || dateValue.test(surface),
       comparative:Boolean(facts.comparative), participle:Boolean(facts.participle),
       clauseTaker:Boolean(facts.clauseTaker),
       negation:Boolean(facts.negation || worlds.scopeGrammar.predicateNegators.has(surface)),
@@ -229,10 +230,12 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
     const subject=group(subjects,clause.subjectCoordinations);
     const objects=clause.objects.map(phrase=>remember(phrase,targets));
     let indirectObject=clause.indirect[0] && entity(clause.indirect[0]);
+    const predicative=clause.predicative?.head && entity(clause.predicative);
     for (const item of clause.relations) {
       const selectedOwner=item.cue[0]===attachment?.cue ? attachment.owner : item.owner;
       const ownerWire=entitiesBySource.get(selectedOwner);
-      const target=group(item.entities.map(phrase=>remember(phrase)),item.coordinations);
+      const target=item.predicative ? predicative :
+        group(item.entities.map(phrase=>remember(phrase)),item.coordinations);
       const relation='r'+nextRelation++;
       const relationKind = ()=>semanticEvidence.push({wire:relation,key:'kind',sourceSlot:'cue',source:span(item.cue)});
       const licensed = item.markers.filter(([license])=>license==='*' || act===license);
@@ -283,7 +286,9 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
       atom('speech_act',clause.speechAct)+
       (clause.separators ?? []).map(range=>raw('separator',range)).join('');
     const fields=discourseFields+raw('predicate',clause.predicate)+ref(role,subject)+
-      ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+raw('result_complement',clause.complement)+
+      ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+
+      ref('predicative_entity',predicative)+raw('result_complement',clause.complement)+
+      (clause.degree ?? []).map(range=>raw('degree',range)).join('')+
       clause.auxiliary.map(range=>raw('auxiliary',range)).join('')+
       clause.negation.map(range=>raw('negation',range)).join('')+raw('particle',clause.particle)+
       (clause.marker ? raw('marker',clause.marker) : '')+raw('question',clause.question)+raw('terminator',clause.terminator)+
