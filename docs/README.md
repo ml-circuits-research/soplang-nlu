@@ -4,14 +4,16 @@ A reader proposes zero or more independent SOP Lang circuits for a single uttera
 
 ## Reading a circuit
 
-WebMeet's first charts-01 example asks to “make a bar chart of the stadiums by country”. Its first two wires are:
+The source is `put a beanie on the avatar`. Z3 emitted this circuit on the paired sample.
 
 ```sop
-@r1 w.request.request act=make mood=do predicate=make
-@r1.t w.request.target request=$r1 family=chart mode=new determiner=indefinite
+@e1 nlu.entity determiner="a" head="beanie"
+@e2 nlu.entity determiner="the" head="avatar"
+@rel1 nlu.relation kind=on from=$c1 to=$e2 cue="on"
+@c1 nlu.clause form=imperative predicate="put" act=place polarity=positive direct_object=$e1
 ```
 
-The first token declares a local wire ID. The qualified name selects the wire schema. The remaining fields are keyed values. The target's request field links back to the first wire. Three constraint wires link to that request and give the chart type (bar), dimension (country) and measure (stadiums). The reference quotes “by country” on the dimension wire. It gives the measure value without a words field. A reader can make that last claim auditable by identifying the precise occurrence of “stadiums”.
+The clause points to the beanie through its direct object. The relation points from that clause to the avatar, preserving the written preposition. Each quoted field supplies evidence for a grammatical role. The inferred act is optional. The [analysis schema](../schemas/nlu/schema.sop) defines the wire types and slots.
 
 ## Evidence in an analysis
 
@@ -23,7 +25,7 @@ Use lib/ for the shared reader and configurable world loading, strategies/ for i
 
 Each one-percent run should save a new directory with the sample IDs, seed, input hashes, revisions, world configuration, proposal budget, per-row results and summary for every available strategy. Support smaller and larger samples. Give every strategy the same ordered texts. Reference circuits are evaluator inputs only. Record static, schema, syntactic and semantic findings separately. Export failures in batches for optional review, retaining judgments and model provenance.
 
-WebMeet legend v1.2 grades the whole candidate set once per message. L0 means no usable reading, L1 wrong meaning, L2 incomplete meaning, L3 a reasonable exact match and L4 a reasonable alternative. Both L3 and L4 count as success. A lost negation that reverses intent is L1a; an omitted essential condition is L2c. Keep syntax diagnostics alongside these grades. A future grading scale needs its own version and explicit criteria.
+Historical w.request runs used the WebMeet v1.2 legend. It grades the whole candidate set once per message. L0 means no usable reading, L1 wrong meaning, L2 incomplete meaning, L3 a reasonable exact match and L4 a reasonable alternative. Both L3 and L4 count as success. A lost negation that reverses intent is L1a; an omitted essential condition is L2c. Keep syntax diagnostics alongside these grades. A future grading scale needs its own version and explicit criteria.
 
 When many cases receive the same grade, examine a sample early and split recurring failure modes that can be distinguished by a reproducible check. Keep parent-grade totals and record the rubric version. A shared symptom such as a wrong attachment can have a strategy-specific cause; record the symptom on the candidate and the cause in the strategy diagnostic. Add levels up to L10 if the observed distinctions justify them. Preserve the original grades in historical runs.
 
@@ -49,7 +51,7 @@ The third benchmark strategy, prolog-example-transfer, uses the complementary tr
 
 ## Reviewing disagreements with the annotation
 
-The mechanical WebMeet v1.2 comparator is a screening step. Publish final semantic grades with the [NLU review legend](../tests/benchmark/meaning-review/legend.md). The unit is one message and one strategy. Read the original source before deciding whether a candidate is complete. Evaluate candidates even when a reference fails static validation. L8–L10 are acceptable; L10 needs independent confirmation of a material correction to the dataset. Recheck candidate annotations against the current dataset before applying corrections.
+Native results use the [source-first NLU legend](../tests/benchmark/meaning-review/native-legend.md). The reviewer checks each complete candidate against the utterance. The mechanical WebMeet v1.2 comparator is a screening step for legacy w.request predictions. Publish final semantic grades with the [NLU review legend](../tests/benchmark/meaning-review/legend.md). The unit is one message and one strategy. Read the original source before deciding whether a candidate is complete. Evaluate candidates even when a reference fails static validation. L8–L10 are acceptable; L10 needs independent confirmation of a material correction to the dataset. Recheck candidate annotations against the current dataset before applying corrections.
 
 A confirmed L10 triggers an automatic correction review. A reasonable L8 can supply a missing alternative. Record the frozen dataset revision, original message, prior references, candidate and confirmation. Locate the message by its exact original text when row numbers have changed. Before applying the edit, compare all current reference cells against the audited revision and preserve every defensible alternative. Validate the proposed circuit against the current schemas. A subsequent benchmark can award L9 when the reasonable prediction exactly matches the new reference. Retain the historical L10 and the revision of each benchmark so improvements to annotation and improvements to inference can be distinguished.
 
