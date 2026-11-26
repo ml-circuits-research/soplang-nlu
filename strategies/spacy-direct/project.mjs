@@ -1,3 +1,4 @@
+import {repairClauseBoundaries} from './clause-boundaries.mjs'
 import {repairNominalRoles} from './nominal-roles.mjs'
 
 const evidencePattern = /"(?:[^"\\]|\\.)*"|“[^”]*”|(?<![\p{L}\p{N}])‘[^’\n]*’(?![\p{L}\p{N}])|(?<![\p{L}\p{N}])'(?:\\.|[^'\\\n])+'(?![\p{L}\p{N}])|\d{4}-\d{2}-\d{2}(?![\p{L}\p{M}\p{N}_])|\d{1,2}:\d{2}(?::\d{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:\d+\.\d+|\.\d+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}]+(?:[-‐‑][\p{L}\p{M}\p{N}]+)+|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu
@@ -41,6 +42,12 @@ const clauseMarkers = new Set(['if', 'whether', 'that'])
 const reportingVerbs = new Set(['call', 'contain', 'label', 'name', 'print', 'quote', 'read', 'rename', 'say', 'type', 'write'])
 const greeting = new Set(['hey', 'hello', 'hi', 'please'])
 const gratitude = new Set(['thanks', 'thx'])
+const discourseActs = new Map([
+  ['hey','greeting'], ['hello','greeting'], ['hi','greeting'], ['ok','acknowledgment'],
+  ['okay','acknowledgment'], ['fine','acknowledgment'], ['sure','assent'], ['yes','affirmation'],
+  ['no','rejection'], ['hmm','hesitation'], ['uh','hesitation'], ['um','hesitation'],
+  ['sorry','apology'], ['right','acknowledgment']
+])
 const relationalModifiers = new Set(['back', 'directly', 'immediately', 'just', 'only', 'over', 'right', 'smack'])
 const resultHeads = new Set(['adjust', 'change', 'color', 'colour', 'keep', 'leave', 'make', 'paint', 'set', 'want'])
 const possessiveDeterminers = new Set(['my', 'your', 'its', 'his', 'her', 'our', 'their'])
@@ -109,6 +116,7 @@ function align(text, dependencies) {
 export function projectDependencies(text, dependencies) {
   const tokens = align(text, dependencies)
   repairNominalRoles(tokens)
+  repairClauseBoundaries(tokens)
   const children = Map.groupBy(tokens.filter((token) => token.head !== token.index), (token) => token.head)
   const under = (token) => children.get(token.index) ?? []
   // Generic dependency arcs often connect consecutive imperatives in
@@ -151,6 +159,7 @@ export function projectDependencies(text, dependencies) {
   const deferredModifiers = new Set()
   const resultDependents = new Map()
   const courtesy = new Map()
+  const speechActs = new Map()
   function make(type, token, fields = []) {
     const node = {id: 'n' + (nodes.length + 1), type, token, fields, slots: new Set()}
     nodes.push(node)
@@ -174,7 +183,14 @@ export function projectDependencies(text, dependencies) {
 
   for (const token of tokens) {
     const next = tokens[token.index + 1]
-    const phrase = gratitude.has(token.lower) ? [token] : token.lower === 'thank' && next?.lower === 'you' ? [token, next] : []
+    const label = discourseActs.get(token.lower)
+    // Punctuation and dependency function distinguish an independent "right,"
+    // or "no!" from a direction or a negative determiner inside a clause.
+    const before = tokens[token.index - 1]
+    const isolated = (!before || before.pos === 'PUNCT') && (!next || next.pos === 'PUNCT')
+    const interjection = label && isolated && ['intj','discourse','ROOT','parataxis'].includes(token.dep)
+    const phrase = gratitude.has(token.lower) || interjection ? [token] :
+      token.lower === 'thank' && next?.lower === 'you' ? [token, next] : []
     if (!phrase.length || token.quoted || under(token).some((part) => subject.has(part.dep) || possessiveDeterminers.has(part.lower))) continue
     const after = tokens[phrase.at(-1).index + 1]
     const tail = !after || ending.has(after.value) || after.value === ','
@@ -182,7 +198,10 @@ export function projectDependencies(text, dependencies) {
     const hasPriorObject = head && under(head).some((part) => roles.has(part.dep) && part.index < token.index)
     const marked = ['ROOT', 'intj', 'discourse', 'parataxis'].includes(token.dep) ||
       tail && (tokens[token.index - 1]?.value === ',' || token.dep === 'npadvmod' && hasPriorObject)
-    if (marked) courtesy.set(token.index, phrase)
+    if (marked) {
+      courtesy.set(token.index, phrase)
+      speechActs.set(token.index, interjection ? label : 'gratitude')
+    }
   }
 
   const boundaries = new Map()
@@ -211,8 +230,11 @@ export function projectDependencies(text, dependencies) {
   }
   const boundaryMarks = new Set(boundaries.values())
   const courtesyTerminators = new Set([...courtesy.values()].map((phrase) => phrase.at(-1).index + 1))
+  const reducedPredicates = new Set(tokens.filter(token => token.pos === 'ADJ' &&
+    (token.dep === 'advcl' || ['ccomp','xcomp'].includes(token.dep) &&
+      under(token).some(t => verbs.has(t.pos) && ['ccomp','xcomp'].includes(t.dep)))).map(t => t.index))
   for (const token of tokens) {
-    if (token.dep === 'ROOT' || courtesy.has(token.index) || prefixTopics.has(token.index) ||
+    if (reducedPredicates.has(token.index) || token.dep === 'ROOT' || courtesy.has(token.index) || prefixTopics.has(token.index) ||
         token.dep === 'dep' && verbs.has(token.pos) && boundaries.get(token.head)?.index < token.index ||
         verbs.has(token.pos) && adjuncts.has(token.dep)) {
       clauses.set(token.index, make('clause', token))
@@ -326,7 +348,7 @@ export function projectDependencies(text, dependencies) {
     }
   }
   const joiningAdverbs = new Set(sequenced.values())
-  const primary = [...clauses.values()].filter(({token}) => token.dep === 'ROOT' || courtesy.has(token.index))
+  const groupHeads = [...clauses.values()].filter(({token}) => token.dep !== 'conj')
   const clauseOf = (token) => clauses.get(token.index)
   function questionPhrase(head, parts, {proposal = false} = {}) {
     const candidates = [...parts]
@@ -384,38 +406,47 @@ export function projectDependencies(text, dependencies) {
     const parts = under(token)
     const expression = courtesy.get(token.index)
     if (expression) {
-      node.fields.push('form=fragment', 'speech_act=gratitude')
+      node.fields.push('form=fragment', 'speech_act='+speechActs.get(token.index))
       literal(node, 'expression', expression)
       const before = tokens[token.index - 1]
       if (before?.value === ',') literal(node, 'separator', [before])
       const after = tokens[expression.at(-1).index + 1]
-      if (after && ending.has(after.value)) literal(node, 'terminator', [after])
+      if (after && ['.', '!', '?'].includes(after.value)) literal(node, 'terminator', [after])
+      else if (after && [',', ';', '—', ':'].includes(after.value)) literal(node, 'separator', [after], true)
       continue
     }
     const final = boundaries.get(token.index) ?? parts.findLast((part) => part.dep === 'punct' && ending.has(part.value) && !courtesyTerminators.has(part.index) && !boundaryMarks.has(part))
+    const endingSpan = final ? [final] : []
+    if (final && /^[.?!]$/u.test(final.value)) {
+      for (let i = final.index - 1; i >= 0 && /^[.?!]$/u.test(tokens[i].value) &&
+           tokens[i].end === tokens[i+1].start && tokens[i].head === final.head; --i) endingSpan.unshift(tokens[i])
+    }
+    const questionEnding = endingSpan.some(t => t.value === '?')
     const marker = parts.find((part) => ['mark', 'aux'].includes(part.dep) && part.lower === 'to')
     const relative = token.dep === 'relcl'
     const relativizer = relative && (parts.find((part) => questions.has(part.lower) || part.lower === 'that') ??
       parts.flatMap(under).find((part) => part.lower === 'whose' && ['poss', 'det'].includes(part.dep)))
-    const interrogativeContext = ['ROOT', 'parataxis', 'ccomp', 'xcomp', 'pcomp'].includes(token.dep) || final?.value === '?'
+    const interrogativeContext = ['ROOT', 'parataxis', 'ccomp', 'xcomp', 'pcomp'].includes(token.dep) || questionEnding
     const polar = token.dep === 'ccomp' && polarQuestionVerbs.has(tokens[token.head]?.lemma) &&
       parts.find((part) => part.dep === 'mark' && ['if', 'whether'].includes(part.lower))
     const locationCue = locativeComplement(token)
+    const fusedRelative = token.dep === 'ccomp' && tokens[token.head].lemma === 'be' &&
+      parts.some(t => ['what','whoever','whatever'].includes(t.lower) && (roles.has(t.dep) || subject.has(t.dep)))
     const question = !verbs.has(token.pos) ? questionPhrase(token, parts, {proposal: true})
-      : relative || locationCue || !interrogativeContext ? [] : polar ? [polar] : questionPhrase(token, parts)
+      : relative || fusedRelative || locationCue || !interrogativeContext ? [] : polar ? [polar] : questionPhrase(token, parts)
     const grammaticalSubject = parts.find((part) => subject.has(part.dep))
     const inversion = grammaticalSubject && [token, ...parts.filter((part) => part.dep === 'aux')]
       .some((part) => part.pos === 'AUX' && part.index < grammaticalSubject.index)
     const independent = boundaries.has(token.index) && token.head > boundaries.get(token.index).index
-    const form = !verbs.has(token.pos) ? 'fragment' : relative ? 'declarative'
+    const form = reducedPredicates.has(token.index) ? 'nonfinite' : !verbs.has(token.pos) ? 'fragment' : relative ? 'declarative'
       : marker || !independent && !grammaticalSubject &&
         ['acl', 'advcl', 'xcomp', 'pcomp'].includes(token.dep) && ['VB', 'VBG', 'VBN'].includes(token.tag) ? 'nonfinite'
-      : final?.value === '?' || question.length || inversion ? 'interrogative'
+      : questionEnding || question.length || inversion ? 'interrogative'
       : grammaticalSubject || !['VB', 'VBP'].includes(token.tag) ? 'declarative' : 'imperative'
     node.fields.push('form=' + form)
     if (final) {
       const interior = ['—',':'].includes(final.value) && final.index + 1 < tokens.length && !boundaryMarks.has(final)
-      literal(node, interior ? 'separator' : 'terminator', [final], interior)
+      literal(node, interior ? 'separator' : 'terminator', endingSpan, interior)
     }
     literal(node, 'question', question)
     if (form === 'fragment') {
@@ -515,7 +546,7 @@ export function projectDependencies(text, dependencies) {
       }
     }
   }
-  for (const node of primary) coordinate(node.token, node, clauseOf)
+  for (const node of groupHeads) coordinate(node.token, node, clauseOf)
 
   for (const from of nodes) {
     if (!['clause', 'entity'].includes(from.type)) continue
@@ -600,6 +631,10 @@ export function projectDependencies(text, dependencies) {
   for (const token of tokens) {
     if (used.has(token.index)) continue
     const owner = outputClauses.findLast((node) => node.token.index <= token.index) ?? outputClauses[0]
+    if (token.dep === 'mark' && clauses.has(token.head) &&
+        ['SCONJ','ADP','PART'].includes(token.pos) && literal(clauseOf(tokens[token.head]), 'marker', [token])) continue
+    if (token.dep === 'punct' && ['.','!','?'].includes(token.value) && owner.token.index < token.index &&
+        literal(owner, 'terminator', [token])) continue
     if (token.dep === 'punct' && [',',';',':','—','–'].includes(token.value)) {
       literal(owner, 'separator', [token], true)
       continue

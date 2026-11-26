@@ -39,3 +39,23 @@ test('a hyphenated distance retains the full surface unit on its quantified rela
   assert.ok(measure,sop)
   assert.ok(sop.split('\n').some(line => line.includes('kind=from') && line.endsWith('measure=$'+measure)),sop)
 })
+
+test('an independent interjection and a question retain their separate clause boundaries', () => {
+  const sop = circuit('Hmm, is it blue?.',[
+    ['Hmm','INTJ','UH','intj',2], [',','PUNCT',',','punct',2],
+    ['is','AUX','VBZ','ROOT',2], ['it','PRON','PRP','nsubj',2],
+    ['blue','ADJ','JJ','acomp',2], ['?','PUNCT','.','punct',2], ['.','PUNCT','.','punct',2]
+  ])
+  assert.match(sop,/form=fragment speech_act=hesitation expression="Hmm" separator=","/)
+  assert.match(sop,/form=interrogative terminator="\?\."/u)
+})
+
+test('a fronted prepositional object remains connected to its stranded preposition', () => {
+  const sop = circuit('What did it land on?',[
+    ['What','PRON','WP','pobj',3], ['did','AUX','VBD','aux',3],
+    ['it','PRON','PRP','nsubj',3], ['land','VERB','VB','ROOT',3],
+    ['on','ADP','IN','prt',3], ['?','PUNCT','.','punct',3]
+  ])
+  assert.match(sop,/pronoun="What"/)
+  assert.match(sop,/kind=on from=\$n1 to=\$n\d+ cue="on"/)
+})
