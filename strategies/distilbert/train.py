@@ -30,6 +30,7 @@ def arguments():
     parser.add_argument("--batch", type=int, default=24)
     parser.add_argument("--seed", type=int, default=74113)
     parser.add_argument("--disable-triton", action="store_true")
+    parser.add_argument("--ownership", action="store_true")
     return parser.parse_args()
 
 
@@ -71,6 +72,8 @@ def graph_keys(graph):
 
 def characterize(model, tokenizer, rows, device, batch_size):
     thresholds = [(.45, .45), (.55, .55), (.65, .65), (.60, .45), (.70, .50)]
+    thresholds = [(*pair, owner) for pair in thresholds
+                  for owner in ((.5, .65, .8) if model.ownership else (.65,))]
     totals = {threshold: Counter() for threshold in thresholds}
     model.eval()
     with torch.inference_mode():
@@ -82,7 +85,8 @@ def characterize(model, tokenizer, rows, device, batch_size):
             for thresholds_pair in thresholds:
                 metrics = totals[thresholds_pair]
                 for words, scores, valid, gold in zip(features, logits, mask, expected):
-                    predicted = graph_keys(model.decode_one(words[valid], scores[valid], *thresholds_pair, 64))
+                    node_at, slot_at, owner_at = thresholds_pair
+                    predicted = graph_keys(model.decode_one(words[valid], scores[valid], node_at, slot_at, 64, owner_at))
                     intersection = predicted & gold
                     metrics["tp"] += sum(intersection.values())
                     metrics["predicted"] += sum(predicted.values())
@@ -90,13 +94,13 @@ def characterize(model, tokenizer, rows, device, batch_size):
                     metrics["exact"] += int(predicted == gold)
                     metrics["nonempty"] += int(bool(predicted))
     results = []
-    for (node_at, slot_at), values in totals.items():
+    for (node_at, slot_at, owner_at), values in totals.items():
         recall = values["tp"] / max(1, values["gold"])
         precision = values["tp"] / max(1, values["predicted"])
         results.append(dict(values, graphExact=values["exact"] / len(rows),
                             precision=precision, recall=recall,
                             f1=2 * precision * recall / max(1e-8, precision + recall),
-                            nodeThreshold=node_at, attributeThreshold=slot_at))
+                            nodeThreshold=node_at, attributeThreshold=slot_at, ownershipThreshold=owner_at))
     return sorted(results, key=lambda result: (-result["f1"], -result["graphExact"]))
 
 
@@ -140,7 +144,7 @@ def main():
     if encoder.config.model_type != "distilbert":
         raise ValueError("Expected the official DistilBERT architecture")
     vocabulary = Vocabulary.build(train)
-    model = NativeDistilBert(encoder, vocabulary).to(device)
+    model = NativeDistilBert(encoder, vocabulary, ownership=args.ownership).to(device)
     groups = [
         {"params": model.encoder.parameters(), "lr": 3e-5},
         {"params": [parameter for name, parameter in model.named_parameters() if not name.startswith("encoder.")],
@@ -153,7 +157,7 @@ def main():
         "torchVersion": torch.__version__, "seed": args.seed,
         "trainRows": len(train), "devRows": len(dev), "trainSha256": file_sha(args.train),
         "devSha256": file_sha(args.dev), "exactTrainDevTextOverlap": 0,
-        "tritonOverridesDisabled": args.disable_triton, "maximumEpochs": args.epochs, "patience": args.patience, "batchSize": args.batch,
+        "ownership": args.ownership, "tritonOverridesDisabled": args.disable_triton, "maximumEpochs": args.epochs, "patience": args.patience, "batchSize": args.batch,
         "vocabularyCounts": {"nodeSlots": len(vocabulary.nodes), "attributeSlots": len(vocabulary.attributes),
                              "atoms": len(vocabulary.atoms)},
     }

@@ -87,8 +87,13 @@ class Vocabulary:
         self.attribute_ids = {item: i for i, item in enumerate(self.attributes)}
         self.atom_ids = {item: i for i, item in enumerate(self.atoms)}
         self.by_node = defaultdict(list)
+        self.span_slots = defaultdict(list)
+        self.span_limits = Counter()
         for i, (owner, key, kind, ordinal) in enumerate(self.attributes):
             self.by_node[owner].append(i)
+            if kind == "span":
+                self.span_slots[owner].append(i)
+                self.span_limits[owner, key] = max(self.span_limits[owner, key], ordinal + 1)
 
     @classmethod
     def build(cls, rows):
@@ -138,7 +143,7 @@ def tokenize_batch(tokenizer, rows, device, window=512):
 
 
 class NativeDistilBert(nn.Module):
-    def __init__(self, encoder, vocabulary, hidden=192):
+    def __init__(self, encoder, vocabulary, hidden=192, ownership=False):
         super().__init__()
         self.encoder = encoder
         self.vocab = vocabulary
@@ -154,6 +159,12 @@ class NativeDistilBert(nn.Module):
         self.reference = nn.Linear(hidden, hidden, bias=False)
         self.atom = nn.Linear(hidden, max(1, len(vocabulary.atoms)))
         self.scale = hidden ** -.5
+        self.ownership = ownership
+        if ownership:
+            self.owner_words = nn.Linear(hidden, hidden, bias=False)
+            self.owner_begin = nn.Linear(hidden, hidden, bias=False)
+            self.owner_inside = nn.Linear(hidden, hidden, bias=False)
+            self.unassigned = nn.Linear(hidden, 1)
 
     def encode(self, batch):
         ids, attention, index, valid = batch
@@ -180,6 +191,7 @@ class NativeDistilBert(nn.Module):
         span_queries, span_batch, span_gold = [], [], []
         atom_queries, atom_slots, atom_gold = [], [], []
         ref_logits, ref_gold = [], []
+        ownership_losses = []
         device = words.device
         for i, row in enumerate(rows):
             if not row["nodes"]:
@@ -190,6 +202,8 @@ class NativeDistilBert(nn.Module):
             gold_detection[i, positions, slots] = 1
             nodes = self.node_features(words[i], positions, slots)
             output = self.attributes(nodes)
+            if self.ownership:
+                ownership_losses.append(self.ownership_loss(words[i, valid[i]], nodes, ordered))
             gold = torch.zeros_like(output)
             mask = torch.zeros_like(output, dtype=torch.bool)
             for j, (node, _) in enumerate(ordered):
@@ -242,14 +256,46 @@ class NativeDistilBert(nn.Module):
         if ref_logits:
             losses = [-scores.log_softmax(-1)[target] for scores, target in zip(ref_logits, ref_gold)]
             loss = loss + torch.stack(losses).mean()
+        if ownership_losses:
+            loss = loss + .6 * torch.stack(ownership_losses).mean()
         return loss
 
-    def decode(self, batch, node_threshold=.55, attribute_threshold=.55, max_nodes=64):
+    def owner_logits(self, words, nodes, pairs):
+        device = words.device
+        owners, slots = zip(*pairs) if pairs else ((), ())
+        queries = self.attr_features(nodes[torch.tensor(owners, dtype=torch.long, device=device)],
+                                     torch.tensor(slots, dtype=torch.long, device=device))
+        keys = self.owner_words(words)
+        start = (keys @ self.owner_begin(queries).T) * self.scale
+        inside = (keys @ self.owner_inside(queries).T) * self.scale
+        roles = torch.stack((start, inside), dim=-1).flatten(1)
+        return torch.cat((self.unassigned(words), roles), dim=1)
+
+    def ownership_loss(self, words, nodes, ordered):
+        pairs = [(i, slot) for i, (node, _) in enumerate(ordered)
+                 for slot in self.vocab.span_slots[node["type"]]]
+        labels = [0] * len(words)
+        pair_ids = {pair: i for i, pair in enumerate(pairs)}
+        conflicts = set()
+        for i, (node, _) in enumerate(ordered):
+            for attr, key in keyed_attributes(node):
+                if key[2] != "span":
+                    continue
+                pair_idx = pair_ids[i, self.vocab.attribute_ids[key]]
+                for token in range(attr["start"], attr["end"]):
+                    if labels[token]:
+                        conflicts.add(token)
+                    labels[token] = 1 + 2 * pair_idx + int(token != attr["start"])
+        for token in conflicts:
+            labels[token] = -100
+        return F.cross_entropy(self.owner_logits(words, nodes, pairs), torch.tensor(labels, device=words.device))
+
+    def decode(self, batch, node_threshold=.55, attribute_threshold=.55, max_nodes=64, ownership_threshold=.65):
         words, logits, valid = self.encode(batch)
-        return [self.decode_one(w[m], l[m], node_threshold, attribute_threshold, max_nodes)
+        return [self.decode_one(w[m], l[m], node_threshold, attribute_threshold, max_nodes, ownership_threshold)
                 for w, l, m in zip(words, logits, valid)]
 
-    def decode_one(self, words, logits, node_threshold, attribute_threshold, max_nodes):
+    def decode_one(self, words, logits, node_threshold, attribute_threshold, max_nodes, ownership_threshold=.65):
         device = words.device
         scores = logits.sigmoid()
         detected = [(a, s) for a, s in (scores >= node_threshold).nonzero().tolist()]
@@ -295,7 +341,49 @@ class NativeDistilBert(nn.Module):
                         used_refs[key].add(target)
         if span_requests:
             self.assign_spans(words, nodes, span_requests)
+        if self.ownership:
+            self.recover_spans(words, features, nodes, ownership_threshold)
         return prune(nodes)
+
+    def recover_spans(self, words, features, nodes, threshold):
+        pairs = [(i, slot) for i, node in enumerate(nodes)
+                 for slot in self.vocab.span_slots[node["type"]]]
+        if not pairs:
+            return
+        labels = self.owner_logits(words, features, pairs).softmax(-1).max(-1)
+        confidences = labels.values.tolist()
+        winners = labels.indices.tolist()
+        allowed = []
+        covered = set()
+        counts = Counter()
+        for i, node in enumerate(nodes):
+            for attr in node["attrs"]:
+                if "start" in attr:
+                    covered.update(range(attr["start"], attr["end"]))
+                    counts[i, attr["key"]] += 1
+        for start, (label, confidence) in enumerate(zip(winners, confidences)):
+            if not label or (label - 1) % 2 or confidence < threshold or start in covered:
+                continue
+            i, slot = pairs[(label - 1) // 2]
+            owner, key, _, _ = self.vocab.attributes[slot]
+            if key in ("filler", "unresolved"):
+                continue
+            end = start + 1
+            while (end < len(words) and end - start < self.vocab.spec["max_span"] and
+                   winners[end] == label + 1 and end not in covered):
+                if confidences[end] < threshold * .7:
+                    break
+                end += 1
+            if end < len(words) and winners[end] == label + 1:
+                continue  # The boundary ended inside a single uncertain or conflicting span.
+            allowed.append((min(confidences[start:end]), start, end, i, owner, key))
+        for _, start, end, i, owner, key in sorted(allowed, key=lambda item: (-item[0], item[1])):
+            if counts[i, key] >= self.vocab.span_limits[owner, key] or any(
+                    position in covered for position in range(start, end)):
+                continue
+            counts[i, key] += 1
+            covered.update(range(start, end))
+            nodes[i]["attrs"].append({"key": key, "start": start, "end": end})
 
     def assign_spans(self, words, nodes, requests):
         requests.sort(key=lambda entry: (-entry[0], entry[1], entry[2], entry[3]))
@@ -358,7 +446,7 @@ def save_checkpoint(model, tokenizer, output, metadata):
     tokenizer.save_pretrained(output / "tokenizer")
     torch.save({key: value.detach().cpu() for key, value in model.state_dict().items()
                 if not key.startswith("encoder.")}, output / "heads.pt")
-    package = {"format": "native-distilbert-v1", "hidden": model.hidden,
+    package = {"format": "native-distilbert-v2" if model.ownership else "native-distilbert-v1", "hidden": model.hidden,
                "vocabulary": model.vocab.spec, **metadata}
     (output / "manifest.json").write_text(json.dumps(package, indent=2) + "\n")
 
@@ -366,11 +454,12 @@ def save_checkpoint(model, tokenizer, output, metadata):
 def load_checkpoint(path, device):
     path = Path(path)
     metadata = json.loads((path / "manifest.json").read_text())
-    if metadata["format"] != "native-distilbert-v1":
+    if metadata["format"] not in ("native-distilbert-v1", "native-distilbert-v2"):
         raise ValueError("Unsupported native DistilBERT checkpoint")
     tokenizer = AutoTokenizer.from_pretrained(path / "tokenizer", local_files_only=True)
     encoder = AutoModel.from_pretrained(path / "encoder", local_files_only=True)
-    model = NativeDistilBert(encoder, Vocabulary(metadata["vocabulary"]), hidden=metadata["hidden"])
+    model = NativeDistilBert(encoder, Vocabulary(metadata["vocabulary"]), hidden=metadata["hidden"],
+                             ownership=metadata["format"] == "native-distilbert-v2")
     heads = torch.load(path / "heads.pt", map_location="cpu", weights_only=True)
     missing, extra = model.load_state_dict(heads, strict=False)
     if extra or set(missing) != {key for key in model.state_dict() if key.startswith("encoder.")}:

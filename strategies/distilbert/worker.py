@@ -46,7 +46,8 @@ def main():
             with torch.inference_mode():
                 batch = tokenize_batch(tokenizer, [request], device)
                 nodes, = model.decode(batch, settings.get("nodeThreshold", .55),
-                                      settings.get("attributeThreshold", .55))
+                                      settings.get("attributeThreshold", .55),
+                                      ownership_threshold=settings.get("ownershipThreshold", .65))
             emit({"id": request_id, "nodes": nodes})
         except ValueError as error:
             if str(error).startswith("Source needs more than "):
