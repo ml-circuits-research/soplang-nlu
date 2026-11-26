@@ -1,0 +1,21 @@
+@w.syntax core.module name=w.syntax version=1 exports=token exports=expression exports=phrase
+@w.syntax.token core.type of=w.syntax.token closed=true
+@w.syntax.token.start core.slot of=w.syntax.token key=start kind=integer min=0 required=true
+@w.syntax.token.end core.slot of=w.syntax.token key=end kind=integer min=1 required=true
+@w.syntax.token.text core.slot of=w.syntax.token key=text kind=string required=true
+@w.syntax.token.pos core.slot of=w.syntax.token key=pos kind=string many=true
+@w.syntax.token.cue core.slot of=w.syntax.token key=cue kind=string many=true
+@w.syntax.expression core.type of=w.syntax.expression closed=true
+@w.syntax.expression.start core.slot of=w.syntax.expression key=start kind=integer min=0 required=true
+@w.syntax.expression.end core.slot of=w.syntax.expression key=end kind=integer min=1 required=true
+@w.syntax.expression.text core.slot of=w.syntax.expression key=text kind=string required=true
+@w.syntax.expression.pos core.slot of=w.syntax.expression key=pos kind=string many=true
+@w.syntax.expression.cue core.slot of=w.syntax.expression key=cue kind=string many=true
+@w.syntax.phrase core.type of=w.syntax.phrase closed=true
+@w.syntax.phrase.start core.slot of=w.syntax.phrase key=start kind=integer min=0 required=true
+@w.syntax.phrase.end core.slot of=w.syntax.phrase key=end kind=integer min=1 required=true
+@w.syntax.phrase.text core.slot of=w.syntax.phrase key=text kind=string required=true
+@w.syntax.phrase.form core.slot of=w.syntax.phrase key=form enum=nominal required=true
+@w.syntax.phrase.head core.slot of=w.syntax.phrase key=head type=w.syntax.token required=true
+@w.syntax.phrase.determiner core.slot of=w.syntax.phrase key=determiner type=w.syntax.token
+@w.syntax.phrase.modifier core.slot of=w.syntax.phrase key=modifier type=w.syntax.token many=true
