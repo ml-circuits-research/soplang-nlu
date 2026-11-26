@@ -1,5 +1,7 @@
 # Review an integrated NLU cohort
 
+For new sealed benchmark runs, use the [fresh candidate-level workflow](../fresh-eval.md). The steps below reproduce the archived v2 whole-group witness review and its v3 set conversion.
+
 Run from the repository root. Provide a completed native benchmark directory with its frozen sample and all three engine outputs.
 
 ```sh

@@ -17,7 +17,7 @@ const [sourceArg, destinationArg, ...extraArgs] = process.argv.slice(2)
 if (extraArgs.length || sourceArg === '--help') {
   console.log('Usage: node tests/benchmark/port-run.mjs [prior-run-directory|-] [new-output-directory]')
   console.log('Defaults to a fresh 1% sample at dataset HEAD and eight workers per strategy.')
-  console.log('Environment: SOP_WORKSPACE, KNOWLEDGE_DIR, WORKERS, PROGRESS_EVERY, SAMPLE_PERCENT, SAMPLE_SEED, Z3_MODULE, SWIPL')
+  console.log('Environment: SOP_WORKSPACE, KNOWLEDGE_DIR, DATASET_REVISION, WORKERS, PROGRESS_EVERY, SAMPLE_PERCENT, SAMPLE_SEED, Z3_MODULE, SWIPL')
   console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer.')
   console.log('Use APPEND=1 with an existing output directory and select only new strategies.')
   console.log('WORKER_TIMEOUT_MS sets the wall limit per startup, request or shutdown (default 300000).')
@@ -41,7 +41,7 @@ async function freshSample() {
   const percent = Number(process.env.SAMPLE_PERCENT ?? 1)
   if (!(percent > 0 && percent <= 100)) throw Error('SAMPLE_PERCENT must be greater than 0 and at most 100.')
   const seed = process.env.SAMPLE_SEED ?? '42'
-  const revision = datasetRevision(dataset)
+  const revision = datasetRevision(dataset, process.env.DATASET_REVISION ?? 'HEAD')
   const pool = []
   for await (const row of readCommittedRows(dataset, revision)) {
     pool.push({score: hash(seed + '\0' + row.id), row})
@@ -81,7 +81,7 @@ const strategyLabel = name => name === 'prolog-worlds' ? 'prolog' : name
 const workerEntry = fileURLToPath(new URL('./port-child.mjs', import.meta.url))
 const useProcessGroup = platform() !== 'win32'
 const errorRecord = (row, error, latencyMs = null) => ({
-  id: row.id, latencyMs, error, candidates: [], candidateEvidence: [], unresolved: []
+  id: row.id, evaluatedSchema, latencyMs, error, candidates: [], checks: [], candidateEvidence: [], unresolved: []
 })
 
 function runAttempt(name, options, rows, records, label) {

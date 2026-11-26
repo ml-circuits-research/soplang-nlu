@@ -185,15 +185,17 @@ def validate(payload, batch):
     return outputs, {key: issues.get(key, 'missing judgment') for key in expected - outputs.keys()}
 
 
-def plan_batches(packets, characters, rows, *, inline=False):
-    batch, size = [], 0
+def plan_batches(packets, characters, rows, *, inline=False, groups=0):
+    batch, size, count = [], 0, 0
     for packet in packets:
         width = len(dump(label_candidates(expanded(packet) if inline else packet)))
-        if batch and (size + width > characters or len(batch) >= rows):
+        group_size = len(packet['groups'])
+        if batch and (size + width > characters or len(batch) >= rows or (groups and count + group_size > groups)):
             yield batch
-            batch, size = [], 0
+            batch, size, count = [], 0, 0
         batch.append(packet)
         size += width
+        count += group_size
     if batch:
         yield batch
 
@@ -324,6 +326,7 @@ def main():
     parser.add_argument('--jobs', type=int, default=10)
     parser.add_argument('--rows', type=int, default=12, help='maximum utterances per batch')
     parser.add_argument('--characters', type=int, default=42000, help='maximum serialized input characters per batch')
+    parser.add_argument('--groups', type=int, default=0, help='target maximum candidate groups per batch (0 ignores this cap)')
     parser.add_argument('--model', default='gpt-6-luna')
     parser.add_argument('--profile', choices=['historical', 'native'], default='historical')
     parser.add_argument('--codex', default='codex')
@@ -341,7 +344,7 @@ def main():
     parser.add_argument('--salvage', type=Path, action='append', default=[],
                         help='reuse valid judgments from an earlier run directory (repeatable)')
     args = parser.parse_args()
-    if min(args.jobs, args.rows, args.characters, args.timeout) < 1 or args.retries < 0:
+    if min(args.jobs, args.rows, args.characters, args.timeout) < 1 or min(args.retries,args.groups) < 0:
         parser.error('job, row, character and timeout counts must be positive; retries must be nonnegative')
     if args.strict_select and not args.strict_from:
         parser.error('--strict-select requires --strict-from')
@@ -440,7 +443,7 @@ def main():
         pending = [{**packet, 'groups': {key: group for key, group in packet['groups'].items()
                                          if (packet['rowIndex'], key) not in all_results}}
                    for packet in pending if any((packet['rowIndex'], key) not in all_results for key in packet['groups'])]
-    batches = list(plan_batches(pending, args.characters, args.rows, inline=args.expanded))
+    batches = list(plan_batches(pending, args.characters, args.rows, inline=args.expanded, groups=args.groups))
     print(f'{len(packets)} rows, {empty_count} empty groups, {len(all_results) - empty_count} salvaged, '
           f'{len(batches)} jobs ({args.jobs} concurrent)', flush=True)
     start = time.monotonic()
@@ -470,7 +473,7 @@ def main():
     details = {
         'profile': args.profile, 'model': args.model, 'rows': len(packets), 'groups': len(all_results),
         'emptyGroups': empty_count, 'batches': len(batches), 'jobs': args.jobs, 'maxRowsPerBatch': args.rows,
-        'maxCharactersPerBatch': args.characters, 'retries': args.retries, 'timeoutSeconds': args.timeout,
+        'maxCharactersPerBatch': args.characters, 'maxGroupsPerBatch': args.groups, 'retries': args.retries, 'timeoutSeconds': args.timeout,
         'strictRecheck': bool(args.strict_recheck or args.strict_from),
         'promptSha256': hashlib.sha256(prompt.encode()).hexdigest(),
         'packetsSha256': hashlib.sha256(args.packets.read_bytes()).hexdigest(),
