@@ -44,3 +44,7 @@ Use `literal` on an entity for verbatim content, for example the quotation in
 `Insert the words "open the window".` The quoted imperative is text to
 insert. Its lexical content supplies evidence for the literal entity without
 introducing an instruction to open a window.
+
+A nominal complement can identify a class or resulting role. In `Make it a straight line`,
+`direct_object` points to `it` and `predicative_entity` points to the qualified
+lookup with determiner `a`, modifier `straight` and head `line`.
