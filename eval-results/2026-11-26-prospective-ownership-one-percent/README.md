@@ -5,3 +5,7 @@ The primary strategy is selector-distilbert with the 7,040-text ownership checkp
 The benchmark runs in a detached source checkout with one CPU worker and low scheduling and disk priority, sharing two logical CPUs with the remaining background experiments. Durations measure this constrained configuration. The manifest lists the validated weight and tokenizer digests. The pinned dataset contained no native reference for these exact texts, so L9 and L10 are unavailable for this cohort. Source-first plausibility remains evaluable for every input.
 
 The inference and review stages are in progress. The historical diagnostic that motivated this test produced 81.2% ANY on 250 texts.
+
+## Primary strategy inference complete
+
+The frozen selector-distilbert run returned 1,831 records with zero engine errors. Every public list respected the two-circuit budget. At least one circuit passed the complete-source gate on 1,761 texts (96.18%). This is the static eligibility count, so the 80% whole-reading claim still depends on blind judgments. With one low-priority CPU worker, inference took 616.70 seconds. Median request latency was 256.82 ms and the 95th percentile was 671.86 ms.
