@@ -7,7 +7,7 @@ import {matchReviewedReferences, nativeReferenceDigest} from '../native-referenc
 import {strategyModules} from '../strategies.mjs'
 
 export const protocol = 'nlu-public-candidate-review-v1'
-const protocolLock = new URL('../fresh-1pct.lock.json', import.meta.url)
+const protocolLock = process.env.SOP_REVIEW_PROTOCOL ?? new URL('../fresh-1pct.lock.json', import.meta.url)
 const sha = value => createHash('sha256').update(value).digest('hex')
 const archived = (path) => JSON.parse(gunzipSync(readFileSync(path)))
 const write = (path, data) => writeFileSync(path, JSON.stringify(data,null,2)+'\n')
