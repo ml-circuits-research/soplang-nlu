@@ -124,6 +124,16 @@ test('Z3 solves integrated roles independently of archived formalisation', {skip
       assert.deepEqual(bare.unresolved, [])
     })
 
+    await t.test('distinguishes nominal predication from receiving a theme', async () => {
+      const [copula] = await analyse('It is a large circle.')
+      assert.match(copula.sop, /modifier="large" head="circle".*\n@c1.*subject=\$e1 predicative_entity=\$e2/)
+      assert.doesNotMatch(copula.sop, /direct_object=/)
+      const [result] = await analyse('Can you make it a straight shot?')
+      assert.match(result.sop, /form=interrogative predicate="make".*direct_object=\$e2 predicative_entity=\$e3/)
+      const [theme] = await analyse('She made me a sandwich.')
+      assert.match(theme.sop, /direct_object=\$e3 indirect_object=\$e2/)
+    })
+
     await t.test('keeps relative attachments and measured complements compositional', async () => {
       const [relative] = await analyse('The old man saw the girl who carried a bag.')
       assert.match(relative.sop, /kind=subject_relative from=\$e2 to=\$c2 cue="who"/)

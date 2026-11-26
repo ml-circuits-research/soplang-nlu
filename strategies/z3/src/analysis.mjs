@@ -153,6 +153,7 @@ function emitAnalysis(decoded, kb, objective) {
     roleReference('subject', subject)
     roleReference(predicate ? 'direct_object' : 'topic', objects)
     roleReference('indirect_object', roles('indirect'))
+    roleReference('predicative_entity', roles('predicative'))
     const complement = items.find((item) => item.role === 'complement')
     if (complement) {
       if (complement.start < complement.head) fields.push(quote('degree', complement.start, complement.head - 1))
