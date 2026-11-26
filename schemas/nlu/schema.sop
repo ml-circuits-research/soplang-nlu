@@ -15,7 +15,7 @@
 @nlu.entity.unresolved core.slot of=nlu.entity key=unresolved kind=string many=true
 
 @nlu.clause core.type of=nlu.clause closed=true
-@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment required=true
+@nlu.clause.form core.slot of=nlu.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment required=true present=true
 @nlu.clause.predicate core.slot of=nlu.clause key=predicate kind=string
 @nlu.clause.subject core.slot of=nlu.clause key=subject kind=ref type=nlu.entity type=nlu.coordination
 @nlu.clause.direct_object core.slot of=nlu.clause key=direct_object kind=ref type=nlu.entity type=nlu.coordination
@@ -31,12 +31,12 @@
 @nlu.clause.polarity core.slot of=nlu.clause key=polarity enum=positive enum=negative
 
 @nlu.relation core.type of=nlu.relation closed=true
-@nlu.relation.kind core.slot of=nlu.relation key=kind kind=atom required=true
-@nlu.relation.from core.slot of=nlu.relation key=from kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true
-@nlu.relation.to core.slot of=nlu.relation key=to kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true
+@nlu.relation.kind core.slot of=nlu.relation key=kind kind=atom required=true present=true
+@nlu.relation.from core.slot of=nlu.relation key=from kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true present=true
+@nlu.relation.to core.slot of=nlu.relation key=to kind=ref type=nlu.entity type=nlu.clause type=nlu.coordination required=true present=true
 @nlu.relation.cue core.slot of=nlu.relation key=cue kind=string
 
 @nlu.coordination core.type of=nlu.coordination closed=true
-@nlu.coordination.kind core.slot of=nlu.coordination key=kind kind=atom required=true
-@nlu.coordination.member core.slot of=nlu.coordination key=member kind=ref type=nlu.entity type=nlu.clause many=true required=true
+@nlu.coordination.kind core.slot of=nlu.coordination key=kind kind=atom required=true present=true
+@nlu.coordination.member core.slot of=nlu.coordination key=member kind=ref type=nlu.entity type=nlu.clause many=true required=true present=true
 @nlu.coordination.cue core.slot of=nlu.coordination key=cue kind=string many=true

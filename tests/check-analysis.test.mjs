@@ -113,6 +113,7 @@ test('the native SOP runtime loads the schema and accepts typed reference unions
   assert.equal(validate('Put A and B near wall', sop).valid, true)
   const malformed = world.tell('@bad nlu.relation kind=near from=$r to=$place')
   assert.equal(malformed.ok, false)
+  assert.equal(world.tell('@bare nlu.clause').ok, false)
 })
 
 test('checks long unambiguous evidence without exhausting the allocation search', () => {
