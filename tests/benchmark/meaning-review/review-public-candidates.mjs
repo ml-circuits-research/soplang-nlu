@@ -4,6 +4,7 @@ import {join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {gunzipSync, gzipSync} from 'node:zlib'
 import {matchReviewedReferences, nativeReferenceDigest} from '../native-references.mjs'
+import {strategyModules} from '../strategies.mjs'
 
 export const protocol = 'nlu-public-candidate-review-v1'
 const protocolLock = new URL('../fresh-1pct.lock.json', import.meta.url)
@@ -242,7 +243,7 @@ function main() {
     throw Error('The frozen reference snapshot does not match the run environment.')
   }
   const strategies = subset === undefined ? lock.strategyNames : subset.split(',')
-  if (strategies.some(engine => !lock.strategyNames.includes(engine)) ||
+  if (strategies.some(engine => !Object.hasOwn(strategyModules,engine)) ||
       new Set(strategies).size !== strategies.length ||
       (subset !== undefined && (Object.keys(baseline.predictions).length !== strategies.length ||
         strategies.some(engine => !Object.hasOwn(baseline.predictions,engine))))) {
