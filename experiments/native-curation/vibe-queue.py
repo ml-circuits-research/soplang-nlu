@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import time
 
 
 def lines(path):
@@ -74,6 +75,8 @@ def main():
         p.add_argument(name, type=Path)
     p.add_argument("--limit", type=int, default=0, help="Run at most this many unfinished groups; 0 means all")
     p.add_argument("--plan-only", action="store_true")
+    p.add_argument("--jobs", type=int, default=1, choices=range(1, 5),
+                   help="Concurrent Vibe requests within one CSV group")
     p.add_argument("--reserved-only", action="store_true", help="Convert reserved rows after scoring the frozen benchmark")
     a = p.parse_args()
     inventory, dataset, queue = (path.resolve() for path in (a.inventory, a.dataset, a.queue))
@@ -97,7 +100,7 @@ def main():
         print(json.dumps({"groups": len(plan["groups"]), "rows": sum(g["rows"] for g in plan["groups"])}), flush=True)
         if a.plan_only:
             return
-        env = dict(os.environ, SOP_NLU_CURATION_BACKEND="vibe", SOP_NLU_CURATION_JOBS="1",
+        env = dict(os.environ, SOP_NLU_CURATION_BACKEND="vibe", SOP_NLU_CURATION_JOBS=str(a.jobs),
                    SOP_NLU_CURATION_MODEL="deepseek-v4-1-flash-1017")
         for i, group in enumerate(g for g in plan["groups"] if not (queue / (g["key"] + ".done")).exists()):
             if a.limit and i >= a.limit:
@@ -110,9 +113,16 @@ def main():
             work.mkdir(parents=True, exist_ok=True)
             with (work / "run.log").open("a") as log:
                 if not (work / "summary.json").exists():
-                    subprocess.run(["node", root / "experiments/native-teacher/curate.mjs", source, work,
-                                    env["SOP_KNOWLEDGE_DIR"]], cwd=root, env=env, check=True,
-                                   stdout=log, stderr=subprocess.STDOUT)
+                    command = ["node", root / "experiments/native-teacher/curate.mjs", source, work,
+                               env["SOP_KNOWLEDGE_DIR"]]
+                    for attempt in range(3):
+                        result = subprocess.run(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT)
+                        if not result.returncode:
+                            break
+                        if attempt == 2:
+                            result.check_returncode()
+                        print(f"{key}: Vibe process failed; retrying from the last checkpoint", flush=True)
+                        time.sleep(30 * (attempt + 1))
             results = lines(work / "logical-00000/records.jsonl.gz")
             expected = [(r["id"], r["text"]) for r in lines(source)]
             if [(r["id"], r["text"]) for r in results] != expected:
