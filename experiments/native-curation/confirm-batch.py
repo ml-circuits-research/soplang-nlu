@@ -77,4 +77,12 @@ with (work/'confirmation.lock').open('a') as lock:
                 archive/'accepted.jsonl.gz',archive/'candidate-decisions.jsonl.gz',shard,
                 manifest['sourceRevision'],'gpt-6-sol'])
         if (dataset/path).exists():commit(dataset,[path],'Publish reviewed native syntax for Sol batch '+number)
-    (work/'published.json').write_text((verify/'curation-review-summary.json').read_text())
+        committed=[]
+        if (dataset/path).exists():
+            content=subprocess.check_output(['git','-C',dataset,'show','HEAD:'+str(path)])
+            committed=[json.loads(line) for line in content.splitlines() if line]
+        receipt={'batch':number,'sourceRevision':manifest['sourceRevision'],
+                 'confirmed':json.loads((verify/'curation-review-summary.json').read_text()),
+                 'publishedSources':len(committed),'publishedCircuits':sum(len(r['readings']) for r in committed),
+                 'datasetCommit':subprocess.check_output(['git','-C',dataset,'rev-parse','HEAD'],text=True).strip()}
+        (work/'published.json').write_text(json.dumps(receipt,indent=2)+'\n')
