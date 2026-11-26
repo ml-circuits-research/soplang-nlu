@@ -9,6 +9,8 @@ const field = (wire,key) => {
 const uniq = values => [...new Set(values.filter(Boolean))];
 const lexicalWord = /[\p{L}\p{M}\p{N}_]/u;
 const numerals = /^(?:\p{N}+|[+-]?[0-9]*\.[0-9]+)$/u;
+const clockValue = /^[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?$/u;
+const dateValue = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
 const discourse = new Set(['filler','politeness','interjection']);
 const coordinationKind = kind => kind==='coordination' ? 'conjunctive' : kind==='addition' ? 'additive' : kind;
 
@@ -57,7 +59,7 @@ function nativeInput(text, worlds) {
     }
     const markers=lookup.filter(([role])=>role==='marker').map(([,act,slot,relation])=>[act,slot,relation]);
     const result = {
-      pos:uniq(positions), acts:uniq(lookup.filter(([role])=>role==='act').map(([,act])=>act)),
+      frames:facts.frames ?? [], base:Boolean(facts.base), pos:uniq(positions), acts:uniq(lookup.filter(([role])=>role==='act').map(([,act])=>act)),
       kinds:uniq(shapes.length || shapeKinds.has(surface) && positions.includes('noun') ?
         [...shapes, surface] : targets.map(([, , family, , sort])=>sort || family)), colors, markers,
       preposition:uniq([...(facts.preposition ?? []),...markers.map(([,slot,relation])=>relation || slot)]),
@@ -66,6 +68,7 @@ function nativeInput(text, worlds) {
       copula:Boolean(facts.copula), question:Boolean(facts.question),
       adverb:Boolean(facts.adverb || facts.pos?.length===1 && facts.pos.includes('adverb') ||
         facts.pos?.includes('adverb') && /ly$/u.test(surface)),
+      clockValue:clockValue.test(surface), temporalValue:clockValue.test(surface) || dateValue.test(surface),
       comparative:Boolean(facts.comparative), participle:Boolean(facts.participle),
       clauseTaker:Boolean(facts.clauseTaker),
       negation:Boolean(facts.negation || worlds.scopeGrammar.predicateNegators.has(surface)),
@@ -82,7 +85,7 @@ function nativeInput(text, worlds) {
       if (source[end-1].quoted) break;
       const term=source.slice(at,end).map(item=>item.key).join(' ');
       const entry=lexical(term);
-      const useful=entry.pos.length || entry.acts.length || entry.preposition.length ||
+      const useful=entry.pos.length || entry.acts.length || entry.frames.length || entry.preposition.length ||
         entry.joiner.length || entry.question || entry.auxiliary || entry.negation || entry.skip;
       if (end===at+1 || useful) entries.unshift({...entry,end});
     }
@@ -272,7 +275,7 @@ function circuit(text,source,forms,analysis,candidate,attachment) {
       ref('direct_object',object)+ref('indirect_object',indirectObject)+ref('clausal_complement',embedded)+raw('result_complement',clause.complement)+
       clause.auxiliary.map(range=>raw('auxiliary',range)).join('')+
       clause.negation.map(range=>raw('negation',range)).join('')+raw('particle',clause.particle)+
-      raw('question',clause.question)+raw('terminator',clause.terminator)+
+      (clause.marker ? raw('marker',clause.marker) : '')+raw('question',clause.question)+raw('terminator',clause.terminator)+
       clause.adverb.filter(([start,end])=>Array.from({length:end-start},(_,offset)=>start+offset)
         .every(at=>!covered.has(at))).map(range=>raw('adverb',range)).join('')+
       atom('polarity',clause.negation.length?'negative':undefined)+

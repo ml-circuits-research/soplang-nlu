@@ -6,7 +6,7 @@ const clausalClasses = new Set(['verb.cognition','verb.communication','verb.perc
 const decode = raw => raw?.startsWith('"') ? JSON.parse(raw) : raw;
 const values = (wire,slot) => (wire.attrs[slot] ?? []).map(decode);
 
-export function syntaxLexicon(facts,senses) {
+export function syntaxLexicon(facts,senses,verbFrames) {
   const forms = new Map(), cache = new Map();
   function add(surface,slot,value) {
     if (!surface || !value) return;
@@ -40,7 +40,11 @@ export function syntaxLexicon(facts,senses) {
   words('k.values.comparative','comparative',wire=>values(wire,'degree').includes('comparative') ? ['comparative'] : []);
   for (const wire of facts('w.lang.en.irregular_form')) {
     const [form]=values(wire,'form'), [vform]=values(wire,'vform');
-    if (vform) add(form,'pos','verb');
+    if (vform) {
+      add(form,'pos','verb');
+      const [lemma]=values(wire,'lemma');
+      add(form,'lemma',lemma);
+    }
     if (vform==='past_participle') add(form,'participle','participle');
   }
   for (const wire of facts('k.actions.action')) for (const surface of values(wire,'name')) {
@@ -60,6 +64,7 @@ export function syntaxLexicon(facts,senses) {
       form.clauseTaker=['clauseTaker'];
     }
     const combined = new Set([...(form.pos ?? []),...lexical]);
+    const lemmas = new Set([surface,...(form.lemma ?? [])]);
     if (/^\p{L}{3,}$/u.test(surface)) {
       const readStems = (stems, allowed) => [...new Set(stems.filter(Boolean)
         .flatMap(stem=>senses(stem).flatMap(wire=>values(wire,'pos'))))].filter(pos=>allowed.includes(pos));
@@ -68,17 +73,28 @@ export function syntaxLexicon(facts,senses) {
         if (surface.endsWith('es')) stems.push(surface.slice(0,-2));
         if (surface.endsWith('ies')) stems.push(surface.slice(0,-3)+'y');
         for (const pos of readStems(stems,['noun','verb'])) combined.add(pos);
+        for (const stem of stems) lemmas.add(stem);
       }
       if (surface.endsWith('ed') && !form.participle) {
         const stem=surface.slice(0,-2);
         const stems=[stem,surface.slice(0,-1)];
         if (stem.at(-1)===stem.at(-2)) stems.push(stem.slice(0,-1));
+        for (const candidate of stems) lemmas.add(candidate);
         if (readStems(stems,['verb']).length) {
           combined.add('verb');
           form.participle=['participle'];
         }
       }
     }
+    if (surface.endsWith('ing') && surface.length>4) {
+      const stem=surface.slice(0,-3);
+      lemmas.add(stem);
+      lemmas.add(stem+'e');
+      if (stem.at(-1)===stem.at(-2)) lemmas.add(stem.slice(0,-1));
+    }
+    const exact=verbFrames.get(surface);
+    form.frames=exact ? [...exact] : [...new Set([...lemmas].flatMap(lemma=>[...(verbFrames.get(lemma) ?? [])]))];
+    form.base=Boolean(exact);
     if (form.comparative) combined.add('adjective');
     if (combined.size) form.pos = [...combined];
     cache.set(surface,form);

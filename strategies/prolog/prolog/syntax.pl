@@ -198,6 +198,12 @@ lexical_predicate(Q,F,At,First,End,24) :-
     unquoted_word(Q,At,Word), memberchk(Word,["thank","thanks","thanked"]),
     subject_before(Q,First,At), noun_phrase(Q,F.end,End,_), !.
 lexical_predicate(Q,F,At,First,End,Base) :-
+    F.frames\=[], F.auxiliary==false, F.skip==false,
+    frame_complement(Q,F.frames,F.end,End,_,_,_,_),
+    ( At=:=First -> Base=64
+    ; subject_before(Q,First,At) -> Base=59
+    ; fail ), !.
+lexical_predicate(Q,F,At,First,End,Base) :-
     F.skip==false, F.negation==false,
     ( F.acts\=[] -> Evidence=30
     ; memberchk("verb",F.pos) -> Evidence=10
@@ -257,7 +263,13 @@ analyse_clause(Q,segment(At,End0,Term0,Cue),Clause) :-
         append(PrefixAdverbs,BodyAdverbs,Adverbs),
         particle(Q,P,AfterAdverbs,BeforeAdverbs,PlainActs,OperandStart,OperandEnd,Particle,OperandActs),
         evidenced_acts(Q,P,OperandActs,Acts),
-        ( Subject0\==none, token_flag(Q,P,clauseTaker), embedded_clause(Q,OperandStart,OperandEnd,Term,Child) ->
+        ( form_at(Q,P,PredicateForm), PredicateForm.end=:=A,
+          frame_complement(Q,PredicateForm.frames,OperandStart,OperandEnd,ChildStart,Marker,ChildForm,Controller),
+          analyse_complement(Q,ChildStart,OperandEnd,Term,Marker,ChildForm,Child) ->
+            ( Marker=[VisibleEnd,_] -> true ; VisibleEnd=ChildStart ),
+            Embedded=[Child], VisibleTerm=[], Complement=[], Indirect=[],
+            Objects0=Controller, Relations0=SubjectRelations, Coordinations=[]
+        ; Subject0\==none, token_flag(Q,P,clauseTaker), embedded_clause(Q,OperandStart,OperandEnd,Term,Child) ->
             Embedded=[Child], VisibleEnd=OperandStart, VisibleTerm=[], Complement=[], Indirect=[],
             Objects0=[], Relations0=SubjectRelations, Coordinations=[]
         ; Embedded=[], VisibleEnd=End, VisibleTerm=Term,
@@ -295,6 +307,39 @@ evidenced_acts(Q,At,Acts,Evidenced) :-
     unquoted_word(Q,At,Word), memberchk(Word,["give","gives","gave","given","giving"]), !,
     exclude(=("send"),Acts,Evidenced).
 evidenced_acts(_,_,Acts,Acts).
+
+% A valency is positive lexical evidence. Complement shape must also be overt.
+frame_complement(Q,Frames,At,End,Start,[Marker,Start],"nonfinite",[Object]) :-
+    memberchk("object_infinitive",Frames),
+    Last is End-2, between(At,Last,Marker), Marker>At,
+    unquoted_word(Q,Marker,"to"), Start is Marker+1,
+    base_verb_at(Q,Start), noun_phrase(Q,At,Marker,Object), !.
+frame_complement(Q,Frames,At,End,Start,[At,Start],"nonfinite",[]) :-
+    memberchk("infinitive",Frames),
+    At<End, unquoted_word(Q,At,"to"), Start is At+1, Start<End, base_verb_at(Q,Start), !.
+frame_complement(Q,Frames,At,End,Start,[],"nonfinite",[Object]) :-
+    memberchk("object_bare_infinitive",Frames),
+    Last is End-1, between(At,Last,Start), Start>At,
+    base_verb_at(Q,Start), noun_phrase(Q,At,Start,Object), !.
+frame_complement(Q,Frames,At,End,Start,[At,Start],"finite",[]) :-
+    memberchk("finite_clause",Frames),
+    At<End, unquoted_word(Q,At,"that"), Start is At+1,
+    Last is End-1, between(Start,Last,Predicate), Predicate>Start,
+    finite_verb_at(Q,Predicate,End), subject_before(Q,Start,Predicate), !.
+
+base_verb_at(Q,At) :-
+    form_at(Q,At,F),
+    F.auxiliary==false, F.negation==false, F.skip==false,
+    ( F.base==true ; F.acts\=[] ; F.copula==true ), !.
+finite_verb_at(Q,At,End) :-
+    form_at(Q,At,F), F.end=<End,
+    ( F.base==true ; F.acts\=[] ; F.copula==true ; memberchk("verb",F.pos) ), !.
+
+analyse_complement(Q,Start,End,Term,Marker,Type,Clause) :-
+    analyse_clause(Q,segment(Start,End,Term,[]),Parsed),
+    Parsed.predicate=[Before,After], Before<After,
+    ( Type=="finite" -> Parsed.subjects\=[], Clause=Parsed.put(marker,Marker)
+    ; Parsed.subjects=[], Clause=Parsed.put(_{form:"nonfinite",marker:Marker}) ).
 
 embedded_clause(Q,At,End,Term,Clause) :-
     At<End,
@@ -473,14 +518,32 @@ prepositions(Q,At,End,Relations) :-
         ( member(Kind,Form.preposition), memberchk(Kind,["with","near","in","on"]) ->
             Attachment="ambiguous"
         ; Attachment="clause" ),
-        Relations=[_{cue:[At,After],kinds:Form.preposition,markers:Form.markers,entities:Phrases,
+        preposition_roles(Q,At,After,Phrases,Form,Kinds,Markers),
+        Relations=[_{cue:[At,After],kinds:Kinds,markers:Markers,entities:Phrases,
           coordinations:Coordinations,attachment:Attachment,end:Stop}|Rest],
         prepositions(Q,Stop,End,Rest)
     ; Next is At+1, prepositions(Q,Next,End,Relations) ).
 
+preposition_roles(Q,At,After,[Phrase],_,[Kind],[]) :-
+    After=:=At+1, unquoted_word(Q,At,Cue), temporal_role(Cue,Kind),
+    Phrase.head=[Value,_], token_flag(Q,Value,temporalValue), !.
+preposition_roles(_,_,_,_,Form,Form.preposition,Form.markers).
+
+temporal_role("at","time").
+temporal_role("on","time").
+temporal_role("to","time").
+temporal_role("from","start_time").
+temporal_role("until","end_time").
+
 preposition(Q,At,End,After,Form) :-
     form_at(Q,At,Form), Form.end<End, Form.preposition\=[], After=Form.end.
 
+noun_phrase(Q,At,End,_{from:At,to:End,head:[At,After],determiner:[],modifiers:Modifiers,pronoun:[],name:[],kinds:[],colors:[]}) :-
+    After is At+1, token_flag(Q,At,temporalValue),
+    ( After=:=End -> Modifiers=[]
+    ; End=:=After+1, token_flag(Q,At,clockValue),
+      unquoted_word(Q,After,Zone), memberchk(Zone,["utc","gmt","am","pm"]),
+      Modifiers=[[After,End]] ), !.
 noun_phrase(Q,At,End,_{from:At,to:End,head:[],determiner:[],modifiers:[],pronoun:[],name:[First,Last],kinds:[],colors:[]}) :-
     First is At+1, Last is End-1, First<Last,
     nth0(At,Q.tokens,[Open,true]), nth0(Last,Q.tokens,[Close,true]),
@@ -545,6 +608,7 @@ modifier_series(Q,At,End,[[At,Next]|Modifiers],Colors) :-
     At<End, form_at(Q,At,F), Next=F.end, Next=<End,
     \+ memberchk("pronoun",F.pos), \+ memberchk("determiner",F.pos),
     F.auxiliary==false, F.negation==false, F.question==false, F.skip==false,
+    \+ token_pos(Q,At,"preposition"),
     ( memberchk("adjective",F.pos) ; memberchk("numeral",F.pos) ; Next=:=At+1, F.kinds\=[]
     ; memberchk("noun",F.pos), \+ memberchk("verb",F.pos) ),
     modifier_series(Q,Next,End,Modifiers,Rest),

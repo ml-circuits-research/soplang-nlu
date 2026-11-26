@@ -127,7 +127,8 @@ test('Prolog keeps clock and decimal evidence indivisible', {skip}, async () => 
   try {
     const cases = [
       ['Please, book Focus room for Planning on 2026-12-03 from 11:00 UTC for 45 minutes. Thanks!', [
-        /unresolved="[^"]*11:00 UTC"/u, /expression="Thanks" speech_act=gratitude/u
+        /head="11:00" modifier="UTC"/u, /kind=start_time .*cue="from"/u,
+        /expression="Thanks" speech_act=gratitude/u
       ]],
       ['1.2', [/form=fragment unresolved="1\.2"/u]],
       ['Set width to -1.2. Thanks!', [/unresolved="to -1\.2"/u, /expression="Thanks" speech_act=gratitude/u]],
@@ -169,6 +170,40 @@ test('Prolog composes noun phrases, lists and nested prepositional relations', {
       assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
       for (const expression of expected) assert.match(candidate.sop,expression)
       for (const expression of excluded) assert.doesNotMatch(candidate.sop,expression)
+    }
+  } finally {
+    await reader.close()
+  }
+})
+
+test('Prolog uses lexical valency to compose finite and nonfinite clauses', {skip}, async () => {
+  const reader = await createReader({strategy:prolog, knowledgeDir, swipl})
+  try {
+    const cases = [
+      ['I want you to draw a circle.', [
+        /predicate="want" subject=\$e1 direct_object=\$e2 clausal_complement=\$c2/u,
+        /form=nonfinite predicate="draw" direct_object=\$e3 marker="to"/u
+      ]],
+      ['Let us draw a circle.', [/predicate="Let" direct_object=\$e1 clausal_complement=\$c2/u,
+        /form=nonfinite predicate="draw" direct_object=\$e2/u]],
+      ['I think that she moved the box.', [
+        /predicate="think" subject=\$e1 clausal_complement=\$c2/u,
+        /form=declarative predicate="moved" subject=\$e2 direct_object=\$e3 marker="that"/u
+      ]],
+      ['I want you to try to draw it.', [
+        /form=nonfinite predicate="try" clausal_complement=\$c3 marker="to"/u,
+        /form=nonfinite predicate="draw" direct_object=\$e3 marker="to"/u
+      ]],
+      ['Start on 2027-02-19.', [/kind=time from=\$c1 to=\$e1 cue="on"/u, /predicate="Start" terminator=/u]],
+      ['She arrives at 11:00.', [/kind=time from=\$c1 to=\$e2 cue="at"/u]]
+    ]
+    for (const [text, expected] of cases) {
+      const result=await reader.propose(text)
+      assert.equal(result.error,null)
+      const [candidate]=result.candidates
+      assert.ok(candidate?.check.valid, JSON.stringify(candidate?.check?.findings))
+      assert.equal(candidate.check.sourceGaps.materialUnresolved,0,text)
+      for (const expression of expected) assert.match(candidate.sop,expression)
     }
   } finally {
     await reader.close()
