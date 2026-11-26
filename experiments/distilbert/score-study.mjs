@@ -34,17 +34,27 @@ if(votes.size)throw Error('Unexpected votes outside the scored candidate set')
 const n=test=>outcomes.filter(test).length
 const any=candidates=>candidates.some(c=>c.accepted)
 const all=candidates=>candidates.length>0&&candidates.every(c=>c.accepted)
-const summary={rows:outcomes.length,baselineGateChanges,strategies:{},paired:{},
-  distilbertOnlyAcrossBaselines:n(r=>any(r.distilbert)&&baselineFields.every(k=>!any(r[k]))),
-  combinedSelectorDistilbertAny:n(r=>any(r.distilbert)||any(r.selector))}
-for(const field of fields){
-  const passes=n(r=>any(r[field])), uniform=n(r=>all(r[field]))
-  summary.strategies[field]={coverage:n(r=>r[field].some(c=>c.eligible)),none:outcomes.length-passes,some:passes-uniform,all:uniform,any:passes}
+function metrics(cap){
+  const selection=(row,field)=>row[field].slice(0,cap)
+  const pass=(row,field)=>any(selection(row,field))
+  const result={strategies:{},paired:{},
+    distilbertOnlyAcrossBaselines:n(r=>pass(r,'distilbert')&&baselineFields.every(k=>!pass(r,k))),
+    combinedSelectorDistilbertAny:n(r=>pass(r,'distilbert')||pass(r,'selector'))}
+  for(const field of fields){
+    const passes=n(r=>pass(r,field)), uniform=n(r=>all(selection(r,field)))
+    result.strategies[field]={coverage:n(r=>selection(r,field).some(c=>c.eligible)),
+      none:outcomes.length-passes,some:passes-uniform,all:uniform,any:passes,
+      outputs:outcomes.reduce((total,r)=>total+selection(r,field).length,0)}
+  }
+  for(const field of baselineFields){
+    result.paired[field]={both:n(r=>pass(r,'distilbert')&&pass(r,field)),
+      distilbertOnly:n(r=>pass(r,'distilbert')&&!pass(r,field)),
+      baselineOnly:n(r=>!pass(r,'distilbert')&&pass(r,field)),
+      neither:n(r=>!pass(r,'distilbert')&&!pass(r,field))}
+  }
+  return result
 }
-for(const field of baselineFields){
-  summary.paired[field]={both:n(r=>any(r.distilbert)&&any(r[field])),distilbertOnly:n(r=>any(r.distilbert)&&!any(r[field])),
-    baselineOnly:n(r=>!any(r.distilbert)&&any(r[field])),neither:n(r=>!any(r.distilbert)&&!any(r[field]))}
-}
+const summary={rows:outcomes.length,baselineGateChanges,capTwo:metrics(2),unrestricted:metrics(Infinity)}
 writeFileSync(join(work,'comparison.json'),JSON.stringify(summary,null,2)+'\n',{flag:'wx'})
 writeFileSync(join(work,'outcomes.jsonl.gz'),gzipSync(outcomes.map(row=>JSON.stringify(row)).join('\n')+'\n'),{flag:'wx'})
 console.log(JSON.stringify(summary))
