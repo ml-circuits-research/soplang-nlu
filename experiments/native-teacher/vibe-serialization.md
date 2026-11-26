@@ -55,3 +55,9 @@ Utterances sometimes interrupt one construction and start another. Represent the
 @name nlu.entity name="Work 5"
 @r nlu.relation kind=on from=$c2 to=$name cue="on"
 ```
+
+### Repeated mentions and multiword relations
+
+Keep one entity wire per overt occurrence. In "I will call. I will wait.", quote the two written occurrences of "I" on two separate entity wires. Link each subject slot to its own mention. A shared reference is appropriate only when the source supplies one mention for both roles, as with "you" in the nonfinite example above. Check repeated dates, names, punctuation and short words by occurrence count.
+
+Treat a meaningful multiword relation as one semantic direction. In "Put the chair just left of the desk", use a relation with `kind=left_of cue="left of" adverb="just"`, directed from the placed chair to the desk. A generic `kind=of` would lose the placement. Apply the same distinction to `right_of`, `in_front_of`, `next_to` and similar phrases. Attach location and time to the event or entity it actually qualifies. Before retaining a draft, check its role and direction against the words, even when the draft already contains every token.
