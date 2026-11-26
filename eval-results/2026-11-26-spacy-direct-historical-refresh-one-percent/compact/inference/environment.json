@@ -1,0 +1,53 @@
+{
+  "revision": "d25c2645c098f1fe33074086ae2a5e1c0d68ae31",
+  "seed": "42",
+  "sample": 1861,
+  "nativeReferenceTexts": 0,
+  "sampleSha256": "b736ec3a5c6ad121e6be995fb54da8fb1121ae663444e52051a662130134de6c",
+  "evaluatedSchema": "nlu",
+  "workers": 1,
+  "strategies": [
+    "spacy-direct"
+  ],
+  "libraryRevision": "24f248b193a019b8ccd33946e534d602544c71b6",
+  "knowledgeRevision": "3b2deebd85aa6ca070b7dc2ce94ff775fc891658",
+  "model": {
+    "library": "spacy",
+    "version": "3.8.16",
+    "model": "core_web_sm",
+    "modelVersion": "3.8.0",
+    "pipeline": [
+      "tok2vec",
+      "tagger",
+      "parser",
+      "attribute_ruler",
+      "lemmatizer"
+    ],
+    "sources": [
+      {
+        "name": "OntoNotes 5",
+        "url": "https://catalog.ldc.upenn.edu/LDC2013T19",
+        "license": "commercial (licensed by Explosion)",
+        "author": "Ralph Weischedel, Martha Palmer, Mitchell Marcus, Eduard Hovy, Sameer Pradhan, Lance Ramshaw, Nianwen Xue, Ann Taylor, Jeff Kaufman, Michelle Franchini, Mohammed El-Bachouti, Robert Belvin, Ann Houston"
+      },
+      {
+        "name": "ClearNLP Constituent-to-Dependency Conversion",
+        "url": "https://github.com/clir/clearnlp-guidelines/blob/master/md/components/dependency_conversion.md",
+        "license": "Citation provided for reference, no code packaged with model",
+        "author": "Emory University"
+      },
+      {
+        "name": "WordNet 3.0",
+        "url": "https://wordnet.princeton.edu/",
+        "author": "Princeton University",
+        "license": "WordNet 3.0 License"
+      }
+    ]
+  },
+  "modelStartupMs": 398.77338000000003,
+  "modelInference": {
+    "sumMs": 3766.892070999998,
+    "medianMs": 1.9395999999997002,
+    "p95Ms": 3.067568000000392
+  }
+}
