@@ -30,9 +30,9 @@ segments(Q,At,End,Cue,Segments) :-
     ; Segments=[segment(At,End,[],Cue)] ).
 
 boundary(Q,_,Cut,End,Stop,[Cut,After],After,[]) :-
-    nth0(Cut,Q.tokens,[Raw,false]), memberchk(Raw,[".","!","?",";"]),
-    Next is Cut+1, Next<End,
-    \+ decimal_boundary(Q,Raw,Cut), Stop=Cut, After=Next.
+    sentence_mark(Q,Cut,Raw),
+    \+ decimal_boundary(Q,Raw,Cut),
+    terminator_run(Q,Cut,End,After), Stop=Cut, After<End.
 boundary(Q,_,Cut,End,Cut,[],Next,[Cut,Next,"gratitude_boundary"]) :-
     separator_at(Q,Cut), Next is Cut+1,
     gratitude_phrase(Q,Next,Stop), gratitude_body(Q,Stop,End,BodyEnd,_),
@@ -79,9 +79,10 @@ gratitude_complements(Q,At,End,Stop,Relations) :-
     Start is At+1, Start<End, Last is End-1,
     ( once((between(Start,Last,Edge), gratitude_complement_edge(Q,Edge))) -> Limit=Edge
     ; Limit=End ),
-    slice_nominals(Q,Start,Limit,Entities,Limit,Coordinations), Entities\=[],
-    Relations=[_{cue:[At,Start],kinds:[Kind],markers:[],entities:Entities,
-      coordinations:Coordinations,attachment:"clause",end:Limit}|Rest],
+    ( slice_nominals(Q,Start,Limit,Entities,Limit,Coordinations), Entities\=[] ->
+        Relations=[_{cue:[At,Start],kinds:[Kind],markers:[],entities:Entities,
+          coordinations:Coordinations,attachment:"clause",end:Limit}|Rest]
+    ; Relations=Rest ),
     ( gratitude_complements(Q,Limit,End,Stop,Rest) -> true
     ; Stop=Limit, Rest=[] ).
 
@@ -101,9 +102,17 @@ separator_at(Q,At) :-
 gratitude_edge(_,End,End,[],End,[]).
 gratitude_edge(Q,Stop,End,Term,After,Separators) :-
     Stop<End, unquoted_word(Q,Stop,Raw), Next is Stop+1,
-    ( memberchk(Raw,[".","!","?",";"]) -> Term=[Stop,Next], After=Next, Separators=[]
+    ( sentence_mark(Q,Stop,Raw) -> terminator_run(Q,Stop,End,After), Term=[Stop,After], Separators=[]
     ; separator_at(Q,Stop) -> Term=[], After=Next, Separators=[[Stop,Next]]
     ; begins_predicate(Q,Stop,End) -> Term=[], After=Stop, Separators=[] ).
+
+sentence_mark(Q,At,Raw) :-
+    unquoted_word(Q,At,Raw), memberchk(Raw,[".","!","?",";"]).
+
+terminator_run(Q,At,End,After) :-
+    ( At<End, sentence_mark(Q,At,_) ->
+        Next is At+1, terminator_run(Q,Next,End,After)
+    ; After=At ).
 
 decimal_boundary(Q,".",At) :-
     Prior is At-1, After is At+1,
@@ -297,8 +306,9 @@ passive_relation(Q,Relation,Agent) :-
 passive_relation(_,Relation,Relation).
 
 effective_end(Q,At,End0,[],End,[End,End0]) :-
-    End is End0-1, End>=At, nth0(End,Q.tokens,[Raw,false]),
-    memberchk(Raw,[".","!","?",";"]), !.
+    Last is End0-1,
+    between(At,Last,End), sentence_mark(Q,End,_),
+    terminator_run(Q,End,End0,End0), !.
 effective_end(_,_,End,Term,End,Term).
 
 none_as_list(none,[]) :- !.
@@ -356,7 +366,8 @@ clause_type(Subject,_,Term,Q,"interrogative") :- Subject\==none, question_term(Q
 clause_type(none,_,_,_,"imperative") :- !.
 clause_type(_,_,_,_,"declarative").
 
-question_term(Q,[At,_]) :- word_at(Q,At,"?").
+question_term(Q,[At,End]) :-
+    Last is End-1, between(At,Last,Mark), word_at(Q,Mark,"?"), !.
 
 complement(Q,At,End,_,Start,[Start,Than]) :-
     Last is End-1, between(At,Last,Start), token_flag(Q,Start,comparative),

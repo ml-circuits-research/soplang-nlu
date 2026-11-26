@@ -77,6 +77,16 @@ test('Prolog segments detached gratitude and preserves nominal or quoted mention
         /@c1 nlu.clause form=fragment expression="THX" speech_act=gratitude separator=","/u,
         /@c2 nlu.clause form=imperative predicate="move"/u
       ], [/filler=","/u]],
+      ['Can you draw a box?. Thanks!', [
+        /form=interrogative .*terminator="\?\."/u,
+        /@c2 nlu.clause form=fragment expression="Thanks" speech_act=gratitude terminator="!"/u
+      ], [/filler=/u, /@c3 /u]],
+      ['Move it!?! Thanks!!', [
+        /terminator="!\?!"/u, /expression="Thanks" speech_act=gratitude terminator="!!"/u
+      ], [/filler=/u, /@c3 /u]],
+      ['thanks for sorting the calendar!', [
+        /expression="thanks" speech_act=gratitude terminator="!" unresolved="for sorting the calendar"/u
+      ], [/filler=/u]],
       ['Thank-you!', [/form=fragment expression="Thank-you" speech_act=gratitude terminator="!"/u], [/nlu.entity/u]],
       ['Move it — thank you.', [/form=fragment expression="thank you" speech_act=gratitude separator="—" terminator="\."/u], []],
       ['Move it thanks', [/form=imperative predicate="Move"/u, /expression="thanks" speech_act=gratitude/u],
