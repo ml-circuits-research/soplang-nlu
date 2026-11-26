@@ -10,7 +10,8 @@ const offset=Number(startArg), batchCount=Number(batchCountArg)
 if(!knowledgeArg||!Number.isSafeInteger(offset)||offset<0||offset%500||!Number.isSafeInteger(batchCount)||batchCount<1)
   throw Error('Usage: curate.mjs INPUT.jsonl[.gz] OUTPUT KNOWLEDGE_DIR [START_ROW_MULTIPLE_OF_500] [LOGICAL_BATCH_COUNT]')
 const input=resolve(inputArg), output=resolve(outputArg), knowledgeDir=resolve(knowledgeArg)
-const model='gpt-6-sol'
+const model=process.env.SOP_NLU_CURATION_MODEL??'gpt-6-sol'
+if(!['gpt-6-sol','gpt-6.1-terra'].includes(model))throw Error('Unsupported curation model: '+model)
 const logicalSize=500, microRows=10, microBytes=28000
 const jobs=Number(process.env.SOP_NLU_CURATION_JOBS??8)
 if(!Number.isSafeInteger(jobs)||jobs<1||jobs>64)throw Error('SOP_NLU_CURATION_JOBS must be an integer from 1 to 64')
