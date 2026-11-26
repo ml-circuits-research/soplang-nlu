@@ -67,7 +67,7 @@ const replySchema={type:'object',additionalProperties:false,required:['results']
 const serialization=singlePass?await readLocal('./vibe-serialization.md'):''
 const jsonContract=singlePass?
   '\nReturn {"results":[{"index":0,"readings":[{"draftIndex":0,"sop":null}],"ambiguity":null,"reason":null}]}. '+
-  'Use each input index exactly once. Include all four fields per result.\n':''
+  'Use each input index exactly once. Include all four fields per result. Return the whole batch, not a prefix.\n':''
 const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
@@ -176,9 +176,15 @@ async function request(dir,label,rows){
   const began=performance.now()
   const useVibe=backend==='vibe'
   const limit=singlePass?Math.max(150,Math.ceil(rows.length*1.8)+45):165
+  let schemaForRequest=outputSchema
+  if(wideSol){
+    schemaForRequest=base+'.schema.json'
+    await ensure(schemaForRequest,stringify({...replySchema,properties:{results:{...replySchema.properties.results,
+      minItems:rows.length,maxItems:rows.length}}}))
+  }
   const args=useVibe?['--trust','--auto-approve','--enabled-tools','__no_tools__',
     '--model',model,'--max-turns','1','--time-limit',String(limit),'--output','text','--prompt-file',base+'.prompt.txt']:
-    [...callArgs,'-o',raw,'-']
+    [...callArgs.slice(0,-1),schemaForRequest,'-o',raw,'-']
   const child=spawn(useVibe?vibe:codex,args,{cwd:emptyDir,stdio:['pipe','pipe','pipe']})
   let diagnostics='', output=''
   child.stdout.setEncoding('utf8').on('data',chunk=>{if(useVibe)output+=chunk})
@@ -202,7 +208,7 @@ async function request(dir,label,rows){
     const expected=new Set(rows.map(row=>row.index))
     if(!Array.isArray(results)||results.some(row=>!expected.has(row?.index))||
       new Set(results.map(row=>row.index)).size!==results.length)throw Error('Invalid response index set')
-    if(singlePass&&(status!==0||parsed.partial)){
+    if(singlePass&&(status!==0||parsed.partial||results.length!==rows.length)){
       if(!results.length)throw Error('No usable response rows')
       issue='Incomplete model response: '+results.length+' of '+rows.length+' entries (exit '+status+').'
     }
