@@ -2,6 +2,7 @@
 """Run a resumable, schema-validated semantic review of benchmark packets."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from copy import deepcopy
 import gzip
 import hashlib
 import json
@@ -62,6 +63,8 @@ def compact(packet, groups):
     }
     if 'previousJudgments' in packet:
         result['previousJudgments'] = packet['previousJudgments']
+    if 'nativeReview' in packet:
+        result['nativeReview'] = packet['nativeReview']
     return result
 
 
@@ -116,6 +119,8 @@ def validation_error(item, packet, group):
     issue = item.get('referenceIssue')
     if type(grade) is not int or not 0 <= grade <= 10:
         return 'grade must be an integer from 0 to 10'
+    if packet.get('nativeReview') and (grade > 8 or issue is not None):
+        return 'native source-only grading uses L0–L8 and no referenceIssue'
     if grade != 0 and (
         type(candidate) is not int or candidate not in packet['groups'][group]
     ):
@@ -269,6 +274,7 @@ def main():
     parser.add_argument('--rows', type=int, default=12, help='maximum utterances per batch')
     parser.add_argument('--characters', type=int, default=42000, help='maximum serialized input characters per batch')
     parser.add_argument('--model', default='gpt-6-luna')
+    parser.add_argument('--profile', choices=['historical', 'native'], default='historical')
     parser.add_argument('--codex', default='codex')
     parser.add_argument('--retries', type=int, default=2)
     parser.add_argument('--timeout', type=int, default=180)
@@ -286,6 +292,7 @@ def main():
     work = args.output.with_name(args.output.stem + '-batches')
     work.mkdir(parents=True, exist_ok=True)
     fingerprint = hashlib.sha256(args.packets.read_bytes())
+    fingerprint.update(args.profile.encode())
     if args.strict_from:
         fingerprint.update(args.strict_from.read_bytes())
     fingerprint = fingerprint.hexdigest()
@@ -294,8 +301,15 @@ def main():
         parser.error('batch directory was prepared for a different packet file')
     manifest.write_text(fingerprint + '\n')
     schema = work / 'review-schema.json'
-    schema.write_text(dump(SCHEMA))
-    prompt = (HERE / 'reviewer-prompt.md').read_text() + '\n' + (HERE / 'legend.md').read_text()
+    review_schema = deepcopy(SCHEMA)
+    if args.profile == 'native':
+        fields = review_schema['properties']['results']['items']['properties']
+        fields['grade']['enum'] = list(range(9))
+        fields['referenceIssue'] = {'type': 'null'}
+        prompt = (HERE / 'native-reviewer-prompt.md').read_text() + '\n' + (HERE / 'native-legend.md').read_text()
+    else:
+        prompt = (HERE / 'reviewer-prompt.md').read_text() + '\n' + (HERE / 'legend.md').read_text()
+    schema.write_text(dump(review_schema))
     if args.strict_recheck or args.strict_from:
         prompt += (
             '\nA previous review described a possible meaning loss but assigned an accepted grade. '
@@ -314,6 +328,10 @@ def main():
     pending = []
     all_results = {}
     for packet in packets:
+        if args.profile == 'native':
+            if packet['references']:
+                parser.error('native source-first review must not contain reference circuits')
+            packet = {**packet, 'nativeReview': True}
         groups = {}
         for key, group in packet['groups'].items():
             if group:
@@ -370,6 +388,16 @@ def main():
                 record = {field: value for field, value in record.items() if field != 'referenceIssue'}
             sink.write(dump(record) + '\n')
     os.replace(temporary, args.output)
+    details = {
+        'profile': args.profile, 'model': args.model, 'rows': len(packets), 'groups': len(all_results),
+        'emptyGroups': empty_count, 'batches': len(batches), 'jobs': args.jobs, 'maxRowsPerBatch': args.rows,
+        'maxCharactersPerBatch': args.characters, 'retries': args.retries, 'timeoutSeconds': args.timeout,
+        'strictRecheck': bool(args.strict_recheck or args.strict_from),
+        'promptSha256': hashlib.sha256(prompt.encode()).hexdigest(),
+        'packetsSha256': hashlib.sha256(args.packets.read_bytes()).hexdigest(),
+        'timeSeconds': time.monotonic() - start,
+    }
+    (work / 'execution.json').write_text(dump(details) + '\n')
     print(f'Wrote {len(all_results)} validated group judgments to {args.output}', flush=True)
 
 
