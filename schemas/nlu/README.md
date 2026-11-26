@@ -48,3 +48,7 @@ introducing an instruction to open a window.
 A nominal complement can identify a class or resulting role. In `Make it a straight line`,
 `direct_object` points to `it` and `predicative_entity` points to the qualified
 lookup with determiner `a`, modifier `straight` and head `line`.
+
+An adverb can qualify the relation itself. For `Place it directly behind the wall`,
+the relation from the clause to the wall carries `cue="behind" adverb="directly"`.
+When `directly` instead modifies a verb, the corresponding clause owns the adverb.

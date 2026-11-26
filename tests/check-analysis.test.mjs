@@ -240,3 +240,13 @@ test('allows a separately grounded negative clitic while rejecting partial sourc
   assert.equal(hasCompleteSource(validate('Don’t move', sop)), true)
   assert.equal(validate('Don’t move', sop.replace('negation="n’t"', 'negation="’t"')).valid, false)
 })
+
+test('grounds an adverb within its prepositional relation', () => {
+  const report = validate('Place it directly behind the wall', lines(
+    '@c nlu.clause form=imperative predicate="Place" direct_object=$it',
+    '@it nlu.entity pronoun="it"',
+    '@wall nlu.entity determiner="the" head="wall"',
+    '@r nlu.relation kind=behind from=$c to=$wall cue="behind" adverb="directly"'
+  ))
+  assert.equal(hasCompleteSource(report),true)
+})
