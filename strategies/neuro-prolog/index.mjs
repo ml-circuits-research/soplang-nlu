@@ -1,109 +1,107 @@
-import {createAnalysisValidator,hasCompleteSource} from '../../lib/check-analysis.mjs'
+// Neuro-Prolog, in the `syntax` schema.
+// A dependency parser (spaCy by default) gives every word a head, a relation, a part of
+// speech and a tag. Prolog (prolog/syntax_projection.pl) turns that parse into clauses,
+// nominals, relations and coordinations. This file maps the tokens of the parser to the
+// words of `wordsOf(text)` and writes the circuit. No knowledge world is read, and the
+// symbolic Prolog strategy takes no part.
+import {wordsOf, writeCircuit} from '../../lib/syntax.mjs'
 import {openDependencies} from '../neural-dependencies/index.mjs'
-import {prolog} from '../prolog/index.mjs'
+import {findSwipl} from '../prolog/index.mjs'
 import {prologWorker} from '../prolog/src/prolog-worker.mjs'
 
-const program = new URL('./prolog/worker.pl',import.meta.url)
-const evidenceSlots = {
-  clause:{polarity:'negation',speech_act:'expression'},
-  relation:{kind:'cue'},
-  coordination:{kind:'cue'}
-}
+const program = new URL('./prolog/syntax_worker.pl', import.meta.url)
+// When the parser cuts one word of the message into two tokens ("cannot"), the word goes
+// to the value that says more about the build of the sentence.
+const weight = {negation: 9, verb: 8, head: 7, auxiliary: 6, marker: 5, conjunction: 4, dependent: 3, modifier: 2, discourse: 1}
 
-// The projection owns wire types and source intervals. Serialization only reads the source.
-function serialize(text,tokens,wires) {
-  const source=([,,start,end])=>text.slice(tokens[start].start,tokens[end-1].end)
-  const semanticEvidence=[]
-  const lines=wires.map(([id,type,fields])=>{
-    for (const [key,kind] of fields) {
-      if (kind!=='atom') continue
-      const slot=evidenceSlots[type]?.[key]
-      if (!slot) continue
-      for (const field of fields.filter(([name,mode])=>name===slot && mode==='quote')) {
-        semanticEvidence.push({wire:id,key,sourceSlot:slot,source:source(field)})
-      }
+/** The circuit of a projection: token ranges become spans of words. */
+export function circuitOf(text, tokens, wires) {
+  const words = wordsOf(text)
+  const wordsIn = (from, to) => {
+    const start = tokens[from].start, end = tokens[to - 1].end
+    return words.map((_, index) => index).filter(index => words[index].start < end && words[index].end > start)
+  }
+  const claims = []
+  for (const [wire, [, , fields]] of wires.entries()) for (const [field, [key, kind, from, to]] of fields.entries()) {
+    if (kind === 'quote') claims.push({wire, field, key, words: wordsIn(from, to)})
+  }
+  const owner = new Array(words.length).fill(null)
+  for (const claim of claims) for (const index of claim.words) {
+    if (!owner[index] || weight[claim.key] > weight[owner[index].key]) owner[index] = claim
+  }
+  const slotsOf = wires.map(([, , fields]) => fields.map(([key, kind, value]) => kind === 'ref' ? [{key, ref: value}] : kind === 'atom' ? [{key, value}] : []))
+  for (const claim of claims) {
+    const kept = claim.words.filter(index => owner[index] === claim)
+    // the words a value keeps, as runs of neighbours
+    for (let at = 0; at < kept.length;) {
+      let end = at
+      while (end + 1 < kept.length && kept[end + 1] === kept[end] + 1) end++
+      slotsOf[claim.wire][claim.field].push({key: claim.key, span: [kept[at], kept[end]]})
+      at = end + 1
     }
-    const attributes=fields.map(field=>{
-      const [slot,kind,value]=field
-      if (kind==='atom') return slot+'='+value
-      if (kind==='ref') return slot+'=$'+value
-      return slot+'='+JSON.stringify(source(field))
+  }
+  let written = wires.map(([id, type], index) => ({id, type: 'syntax.' + type, slots: slotsOf[index].flat()}))
+  // a nominal whose head went to another value keeps its first dependent as head; a wire
+  // left with nothing is taken out, with whatever pointed to it
+  for (const wire of written) {
+    if (wire.type !== 'syntax.nominal' || wire.slots.some(slot => slot.key === 'head')) continue
+    const first = wire.slots.find(slot => slot.span)
+    if (first) first.key = 'head'
+  }
+  for (let changed = true; changed;) {
+    changed = false
+    const alive = new Set(written.map(wire => wire.id))
+    for (const wire of written) {
+      const before = wire.slots.length
+      wire.slots = wire.slots.filter(slot => slot.ref === undefined || alive.has(slot.ref))
+      if (wire.slots.length !== before) changed = true
+    }
+    const keep = written.filter(wire => {
+      const refs = wire.slots.filter(slot => slot.ref !== undefined)
+      if (wire.type === 'syntax.nominal') return wire.slots.some(slot => slot.key === 'head')
+      if (wire.type === 'syntax.relation') return refs.length === 2
+      if (wire.type === 'syntax.coordination') return refs.length >= 2 || !refs.length && false
+      return true
     })
-    return '@'+id+' nlu.'+type+' '+attributes.join(' ')
-  })
-  return {sop:lines.join('\n'),semanticEvidence,origin:'dependency-prolog'}
-}
-
-function rank(text,validate,neural,symbolic) {
-  const distinct=new Map()
-  for (const candidate of [...symbolic,...neural]) {
-    if (!distinct.has(candidate.sop)) {
-      distinct.set(candidate.sop,{candidate,check:validate(text,candidate.sop)})
-    }
+    if (keep.length !== written.length) { written = keep; changed = true }
   }
-  const valid=[...distinct.values()].filter(({check})=>check.valid)
-  const complete=valid.filter(({check})=>hasCompleteSource(check))
-  const independent=complete.find(({candidate})=>candidate.origin==='dependency-prolog')
-  const completeLeaders=independent ? [...complete.filter(item=>item!==independent).slice(0,2),independent] : complete
-  const ranked=completeLeaders.length ? completeLeaders : valid.sort((a,b)=>
-    a.check.sourceGaps.materialUnresolved+a.check.sourceGaps.materialUncovered-
-    b.check.sourceGaps.materialUnresolved-b.check.sourceGaps.materialUncovered
-  )
-  return {
-    analyses:ranked.slice(0,3).map(({candidate})=>candidate),
-    projectionFindings:[...distinct.values()].filter(({candidate,check})=>
-      candidate.origin==='dependency-prolog' && !check.valid).map(({check})=>check.findings)
+  // a clause has one subject: a second nominal that the parser calls a subject is a complement
+  for (const wire of written) {
+    let subjects = 0
+    for (const slot of wire.slots) if (slot.key === 'subject' && subjects++) slot.key = 'complement'
   }
+  // a clause that holds a verb in a fragment, or none in another form, is written as the words show
+  for (const wire of written) {
+    if (wire.type !== 'syntax.clause') continue
+    const form = wire.slots.find(slot => slot.key === 'form')
+    if (form.value !== 'fragment' && !wire.slots.some(slot => slot.key === 'verb')) form.value = 'fragment'
+  }
+  return writeCircuit(text, written)
 }
 
 export const neuroProlog = {
-  name:'neuro-prolog',
-  async open({
-    knowledgeDir=process.env.SOP_KNOWLEDGE_DIR,
-    swipl=process.env.SWIPL || 'swipl',
-    worldPaths,python,model,syntaxModel,schemaPaths,dependencyOnly=false
-  }={}) {
-    const validate=await createAnalysisValidator({knowledgeDir,schemaPaths})
-    const dependencies=await openDependencies({python,model,syntaxModel})
-    let symbolic=null
-    try {
-      if (!dependencyOnly) symbolic=await prolog.open({knowledgeDir,swipl,worldPaths})
-    } catch (error) {
-      await dependencies.close()
-      throw error
-    }
-    const solver=prologWorker(program,swipl)
-
-    async function analyse(text) {
-      const result=await Promise.allSettled([
-        dependencies.parse(text).then(async tokens=>{
-          const projected=await solver.request({tokens})
-          if (projected.error) throw Error(projected.error)
-          return [serialize(text,tokens,projected.wires)]
-        }),
-        symbolic?.analyse(text) ?? {analyses:[]}
-      ])
-      const [neural,pure]=result
-      const errors=result.filter(part=>part.status==='rejected').map(part=>String(part.reason))
-      if (pure.status==='fulfilled' && pure.value.analysisDiagnostics?.error) {
-        errors.push(pure.value.analysisDiagnostics.error)
-      }
-      const {analyses,projectionFindings}=rank(text,validate,neural.status==='fulfilled'?neural.value:[],
-        pure.status==='fulfilled'?pure.value.analyses:[])
-      return {analyses,analysisDiagnostics:{
-        solver:'swipl',status:errors.length?(analyses.length?'partial':'error'):'ok',
-        model:dependencies.metadata,
-        ...(projectionFindings.length?{projectionFindings}:{}),
-        ...(errors.length?{error:errors.join(' | ')}:{})
-      }}
-    }
-
+  name: 'neuro-prolog',
+  schema: 'syntax',
+  // The other options of the earlier strategy are accepted and not used.
+  async open({swipl, python, model, syntaxModel} = {}) {
+    const dependencies = await openDependencies({python, model, syntaxModel})
+    const solver = prologWorker(program, findSwipl(swipl))
     return {
-      analyse,
-      model:dependencies.metadata,
+      model: dependencies.metadata,
+      async analyse(text) {
+        try {
+          if (typeof text !== 'string') throw new TypeError('Expected a text string')
+          const tokens = await dependencies.parse(text)
+          const answer = await solver.request({tokens})
+          if (answer.error) throw new Error(answer.error)
+          return {analyses: [{sop: circuitOf(text, tokens, answer.wires)}]}
+        } catch (error) {
+          return {analyses: [], error: error instanceof Error ? error.message : String(error)}
+        }
+      },
       async close() {
-        const closed=await Promise.allSettled([dependencies.close(),solver.close(),symbolic?.close()])
-        const failure=closed.find(result=>result.status==='rejected')
+        const closed = await Promise.allSettled([dependencies.close(), solver.close()])
+        const failure = closed.find(result => result.status === 'rejected')
         if (failure) throw failure.reason
       }
     }

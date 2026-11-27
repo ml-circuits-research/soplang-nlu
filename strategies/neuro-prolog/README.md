@@ -1,26 +1,13 @@
 # Neuro-Prolog
 
-Neuro-Prolog accepts dependency tokens from an English spaCy model or a
-caller-supplied `syntaxModel`. The input model supplies token boundaries,
-parts of speech, lemmas and labeled head arcs. The strategy passes that
-evidence to a persistent SWI-Prolog worker. Prolog composes the native clauses,
-arguments, modifiers, coordination and attachments. JavaScript serializes the
-typed graph and uses the ordinary source and schema validator to rank it
-alongside symbolic Prolog's proposals.
+Neuro-Prolog writes one circuit of the `syntax` schema for a message (see `docs/syntax-schema.md`).
 
-Configure the standard spaCy transport with `SOP_NLU_SYNTAX_PYTHON` and
-`SOP_NLU_SYNTAX_MODEL`, or pass `python` and `model` to the strategy. Configure
-SWI-Prolog with `SWIPL` and the knowledge installation with
-`SOP_KNOWLEDGE_DIR`. Set `dependencyOnly: true` when diagnosing the projection
-without symbolic competition.
+A dependency parser gives every word a head, a relation to it, a part of speech and a tag. The default parser is an English spaCy model; a caller can pass another one as `syntaxModel`. A persistent SWI-Prolog worker (`prolog/syntax_projection.pl`) turns each relation of the parse into a place in a clause, a nominal, a relation or a coordination. `index.mjs` maps the tokens of the parser to the words of `wordsOf(text)` and writes the circuit with `writeCircuit`.
 
-Public results contain up to three distinct circuits. Complete, schema-valid
-circuits rank before partial readings. Exact source claims stay anchored to
-the token spans. The worker leaves unrecognized material unresolved. If a
-projection fails validation, `analysisDiagnostics.projectionFindings` records
-the failure. The dependency model's installed version and pipeline appear in
-`analysisDiagnostics.model`.
+No knowledge world is read, and the symbolic Prolog strategy takes no part. The attachment of every phrase is the one the parser chose, so no relation carries `attachment=ambiguous`.
 
-The dependency graph can mislabel an argument, clause boundary or attachment.
-A source-complete circuit still needs independent assessment of the roles it
-assigns.
+Options and environment: `python` and `model` (or `SOP_NLU_SYNTAX_PYTHON` and `SOP_NLU_SYNTAX_MODEL`) name the Python with spaCy and the model; `swipl` (or `SWIPL`) names SWI-Prolog.
+
+The projection rules name word classes, tags and dependency relations only. The only words they name are function words and words said to the listener. A parse can be wrong; the circuit then is wrong in the same place.
+
+Not used any more, kept in place: `prolog/dependencies.pl`, `prolog/normalization.pl` and `prolog/worker.pl`, which wrote the `nlu` schema.

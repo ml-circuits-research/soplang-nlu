@@ -1,86 +1,49 @@
-import { catalogIssues } from './src/catalog.mjs'
-import { evidenceReport } from './src/evidence.mjs'
-import { createFormaliser } from './src/formaliser.mjs'
-import { openKnowledge, withKnowledge } from './src/knowledge.mjs'
-import { parse } from './src/schema.mjs'
-import { loadWorlds } from './src/worlds.mjs'
-import { createNativeSyntax } from './src/syntax.mjs'
+// The symbolic Prolog strategy, in the `syntax` schema.
+// It reads one message and writes one circuit from its own grammar: src/english.mjs gives
+// the classes of each word, prolog/syntax.pl composes clauses, nominals, relations and
+// coordinations, and lib/syntax.mjs writes the circuit. No knowledge world is read.
+import {existsSync} from 'node:fs'
+import {spawnSync} from 'node:child_process'
+import {fileURLToPath} from 'node:url'
+import {prologWorker} from './src/prolog-worker.mjs'
+import {syntaxInput} from './src/syntax-input.mjs'
+import {writeWires} from './src/write-wires.mjs'
 
-const syntaxStatus = error => error ? {solver:'swipl',status:'error',error} : {solver:'swipl',status:'ok'}
+const program = new URL('./prolog/syntax_worker.pl', import.meta.url)
 
-const field = (wire, key) => {
-  const raw = wire.attrs[key]?.[0]
-  return raw?.startsWith('"') ? JSON.parse(raw) : raw
+/** The SWI-Prolog to run: the one asked for, the one on the path, or the workspace copy. */
+export function findSwipl(asked = process.env.SWIPL) {
+  if (asked) return asked
+  if (spawnSync('swipl', ['--version']).status === 0) return 'swipl'
+  const workspace = fileURLToPath(new URL('../../../prolog-formaliser/tools/swipl', import.meta.url))
+  return existsSync(workspace) ? workspace : 'swipl'
+}
+
+/** One grammar worker: analyse(text) -> {analyses: [{sop}]} | {analyses: [], error}. */
+export function openGrammar({swipl} = {}) {
+  const worker = prologWorker(program, findSwipl(swipl))
+  return {
+    async analyse(text) {
+      try {
+        if (typeof text !== 'string') throw new TypeError('Expected a text string')
+        const {tokens, packet} = syntaxInput(text)
+        if (!tokens.some(token => token.word)) throw new Error('The message has no word.')
+        const answer = await worker.request(packet)
+        if (answer.error) throw new Error(answer.error)
+        return {analyses: [{sop: writeWires(text, tokens, answer.wires)}]}
+      } catch (error) {
+        return {analyses: [], error: error instanceof Error ? error.message : String(error)}
+      }
+    },
+    close: () => worker.close()
+  }
 }
 
 export const prolog = {
   name: 'prolog',
-  async open({
-    knowledgeDir = process.env.SOP_KNOWLEDGE_DIR,
-    worldPaths,
-    swipl = process.env.SWIPL || 'swipl',
-    evidence = true,
-    languageFrames = true,
-    ...unknown
-  } = {}) {
-    if (Object.keys(unknown).length) {
-      throw new TypeError('Unsupported symbolic Prolog options: ' + Object.keys(unknown).join(', '))
-    }
-    if (!knowledgeDir) throw new TypeError('Expected a SOP knowledge directory')
-    if (worldPaths !== undefined && !Array.isArray(worldPaths)) {
-      throw new TypeError('Expected an array of SOP world paths')
-    }
-    const installation = await openKnowledge(knowledgeDir)
-    return withKnowledge(installation, () => {
-      const worlds = loadWorlds({paths: worldPaths})
-      const formaliser = createFormaliser(worlds, {languageFrames, swipl})
-      const syntax = createNativeSyntax(worlds, formaliser.analyseSyntax)
-      const decorateAnalyses = (text, candidates) => withKnowledge(installation, () => syntax(text, candidates))
-      return {
-        decorateAnalyses,
-        async analyse(text) {
-          try {
-            if (typeof text !== 'string') throw new TypeError('Expected a text string')
-            const {analyses} = await decorateAnalyses(text)
-            return {analyses, analysisDiagnostics: syntaxStatus()}
-          } catch (error) {
-            return {analyses: [],
-              analysisDiagnostics: syntaxStatus(error instanceof Error ? error.message : String(error))}
-          }
-        },
-        propose: text => withKnowledge(installation, async () => {
-          let analyses = []
-          let syntaxError = null
-          try {
-            if (typeof text !== 'string') throw new TypeError('Expected text to be a string')
-            try { ({analyses} = await syntax(text)) }
-            catch (error) { syntaxError = error instanceof Error ? error.message : String(error) }
-            const result = await formaliser.formalise(text)
-            const unresolved = []
-            const candidates = result.candidates.map((candidate, index) => {
-              const wires = parse(candidate.sop)
-              for (const wire of wires.filter(wire => wire.type === 'w.request.unread')) {
-                unresolved.push({candidate: index, text: field(wire, 'text'), note: field(wire, 'note')})
-              }
-              return evidence ? {...candidate, evidence: evidenceReport(text, wires, worlds.evidenceVocabulary),
-                catalog: {issues: catalogIssues(wires, worlds)}} : candidate
-            })
-            if (!candidates.length && result.unread !== undefined) unresolved.push({text: result.unread})
-            let output = {analyses, candidates}
-            if (!syntaxError) {
-              try { output = await syntax(text, candidates) }
-              catch (error) { syntaxError = error instanceof Error ? error.message : String(error) }
-            }
-            return {...result, ...output, engine: 'prolog', text, unresolved, error: null,
-              analysisDiagnostics: syntaxStatus(syntaxError)}
-          } catch (error) {
-            return {engine: 'prolog', text: typeof text === 'string' ? text : null, candidates: [], analyses,
-              unresolved: [], error: error instanceof Error ? error.message : String(error),
-              analysisDiagnostics: syntaxStatus(syntaxError)}
-          }
-        }),
-        close: formaliser.close
-      }
-    })
+  schema: 'syntax',
+  // The options of the earlier strategy are accepted and not used: no knowledge repository is read.
+  async open({swipl} = {}) {
+    return openGrammar({swipl})
   }
 }
