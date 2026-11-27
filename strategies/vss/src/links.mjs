@@ -285,7 +285,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         clause.start = i - 1
         const teller = list[i - 3]?.type === 'verb' ? tokens[list[i - 3].predicate[0]].word : null
         if (list[i - 2]?.type === 'entity' && teller && (list[i - 2].pronoun || lexicon.directs(teller))) { clause.subject = list[i - 2]; clause.start = i - 2 }
-        else if (list[i - 2]?.type === 'entity') clause.purposeOf = list[i - 2]      // "a button to close the window"
+        // "a button to close the window"; (not the end of a phrase, which only says where: "turn the man by the house to face
+        // left" turns the man, and the clause of "turn" holds what follows "to")
+        else if (list[i - 2]?.type === 'entity' && !(list[i - 3]?.type === 'cue' && list[i - 4]?.type === 'entity')) clause.purposeOf = list[i - 2]
       } else if (context.trial?.('B') && previous?.type === 'cue' && previous.first === previous.last && bare && verb.form === 'progressive') {
         // (rule B) "by removing it": the linking word before an -ing form ties the clause of that form to what stands before it
         clause.marker = previous
@@ -453,8 +455,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         !((context.linkOf(clause.predicate) === 'predicative' || context.tagged(clause.predicate, 'finite')) && list[clause.index + 1]?.type === 'entity')
       const stated = context.open !== false && (Boolean(ownSubject) || embedded) && !verb.inverted
       const asks = Boolean(question && !stated || verb.inverted) || !embedded && last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
+      // (a finite form of "be", "have" or "do" as the verb, with its subject: "make sure the labels are large")
       const finite = verb.auxiliary.some(position => !context.tagged(tokens[position].word, 'bare')) || lexicon.sForm(clause.predicate) ||
-        Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject'
+        Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject' ||
+        Boolean(clause.subject) && context.tagged(clause.predicate, 'finite') && context.linkOf(clause.predicate) === 'predicative'
       // "the chart that is already open", "the month that earned the most revenue": a clause that a relative word opens right
       // after a thing says something of that thing; it states, also with a past form and with no subject of its own
       const relativeClause = context.open !== false && clause.marker?.type === 'marker' && context.linkOf(word(clause.marker)) === 'relative' &&
@@ -761,6 +765,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             j = head - 1
             break
           }
+          // "I think we should place a box", "make sure the labels are large enough": a finite helping verb needs its subject.
+          // A pronoun that can be a subject, or a thing that a determiner opens, right between another verb and a finite
+          // helping verb (or the finite form of "be", "have", "do") is the subject of the second clause, which completes the
+          // first; it is not what the first verb acts on ("give me", "let us": a word that can only be an object stays)
+          const finiteHelp = verb.auxiliary.length ? context.tagged(tokens[verb.auxiliary[0]].word, 'finite') : context.tagged(clause.predicate, 'finite') && context.linkOf(clause.predicate) === 'predicative'
+          if (context.open !== false && before?.type === 'verb' && !chain.length && !verb.inverted && finiteHelp && unit.last + 1 === verb.first &&
+              (unit.pronoun ? context.linkOf(tokens[unit.pronoun[0]].word) !== 'recipient' && !lexicon.canBe(tokens[unit.pronoun[0]].word, 'determiner') : unit.determiner?.length > 0)) {
+            clause.subject = unit
+            j = head - 1
+            break
+          }
           if (before && ['verb', 'cue', 'entity', 'complement'].includes(before.type)) break
           clause.subject = list[head]
           clause.chain = chain
@@ -1008,6 +1023,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           const settled = key && !has(target, key) && (key !== 'predicative_entity' || takesTwo)
           const beside = lastEntity && region[i - 1] === lastEntity && !lastEntity.pronoun && !lastEntity.literal
           const value = Boolean(unit.literal) || Boolean(unit.name) && !unit.head && !unit.determiner?.length
+          // "move the boy in the orange jacket a shade to the right", "scoot the man in the green jacket a single space left": a
+          // measure says how far the verb moves its thing. A counted thing or one that a determiner opens, followed by a
+          // linking word (not "of") or by a word that says where, after the thing that ends a phrase, belongs to the clause, as
+          // it does right after the object ("move the box two inches to the left"); it is no value of the thing before it
+          // (a bare noun before it is a key that the value names: "at height 6 cm in the corner")
+          const ahead = region[i + 1]
+          const measure = acts && !value && !unit.pronoun && lastEntity?.determiner?.length && (unit.quantity?.length || unit.determiner?.length) && (unit.adverb?.length ||
+            ahead?.type === 'cue' && context.linkOf(tokens[ahead.first].word) !== 'belongs' || ahead?.type === 'adverb' && ahead.first === ahead.last && ahead.first === unit.last + 1)
           if (recipient) {
             // "give me a hand": the person comes first, the thing given second
             objects[0].holder[0] = 'indirect_object'
@@ -1027,7 +1050,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             role('subject', unit)
           } else if (settled) role(key, unit)
           // (a thing right after a thing that the verb does not take itself stands with that thing: "with blocks one paragraph")
-          else if (beside && (value || !(objects.includes(lastEntity) || lastEntity.group && objects.some(other => other.group === lastEntity.group)))) {
+          else if (beside && !measure && (value || !(objects.includes(lastEntity) || lastEntity.group && objects.some(other => other.group === lastEntity.group)))) {
             // "x 120", "id Id one": a value right after a thing stands with that thing; no word says how
             const relation = wire('r', 'nlu.relation')
             relation.slots.push(['kind', 'open'], ['from', '$' + entityWire(lastEntity).id], ['to', '$' + made.id])
