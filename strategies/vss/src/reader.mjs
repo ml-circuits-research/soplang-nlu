@@ -157,8 +157,9 @@ export function openModel(model, options = {}) {
     legend, lexicon, meanings, gapping: options.gapping, kinds: options.kinds,
     joinsClauses: word => joiners.has(word),
     // two entities are alike when their heads are used alike and they are introduced alike
-    // how a thing is introduced: its determiner, or that it is a pronoun, a bare name or a bare noun
-    opener: (tokens, unit) => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.name && !unit.head ? '~name' : '~bare',
+    // how a thing is introduced: its determiner, or that it is a pronoun, a count, something written as it stands, a bare name or a bare noun
+    opener: (tokens, unit) => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.quantity?.length ? '~count'
+      : unit.literal && !unit.head ? '~literal' : unit.name && !unit.head ? '~name' : '~bare',
     alike: (tokens, left, right) => {
       opening = unit => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.name && !unit.head ? '~name' : '~bare'
       const mode = options.alike ?? 'structure'
