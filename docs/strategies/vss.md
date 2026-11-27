@@ -6,18 +6,20 @@
 import {createReader} from 'soplang-nlu'
 import {vss} from 'soplang-nlu/strategies/vss'
 
-const reader = await createReader({strategy: vss, knowledgeDir: process.env.SOP_KNOWLEDGE_DIR})
+const reader = await createReader({strategy: vss})
 const {candidates} = await reader.propose('Move the blue box towards the yellow circle.')
 ```
 
 ```sop
-@c1 nlu.clause form=imperative predicate="Move" direct_object=$e1 terminator="."
-@e1 nlu.entity determiner="the" modifier="blue" head="box"
-@e2 nlu.entity determiner="the" modifier="yellow" head="circle"
-@r1 nlu.relation kind=towards from=$c1 to=$e2 cue="towards"
+@c1 syntax.clause form=imperative verb="Move" complement=$n1
+@n1 syntax.nominal dependent="the" dependent="blue" head="box"
+@r1 syntax.relation marker="towards" from=$c1 to=$n2
+@n2 syntax.nominal dependent="the" dependent="yellow" head="circle"
 ```
 
-For use without the adapter, `createVssReader(model).analyse(text)` returns the same circuits from the parsed `model/model.json`.
+The strategy writes one circuit per message in the [`syntax` schema](../syntax-schema.md). The common reader checks it with `lib/syntax.mjs`. No knowledge repository is read and `SOP_KNOWLEDGE_DIR` plays no part. On the fixed 1% sample, all 1,831 messages get a valid circuit, in about 0.5 ms each.
+
+The reader first builds its own structure of clauses, things, relations and joined groups, with the tokens each value covers. `src/emit-syntax.mjs` gives every word its place in the syntax schema and the shared writer serialises the circuit. The sections below describe how that structure is found. They name its parts with the reader's internal words, which are those of the earlier `nlu` schema; the measurements in them were taken in that schema, before the move to `syntax`.
 
 ## What is given and what is learned
 
