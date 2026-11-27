@@ -120,8 +120,10 @@ export function emitSyntax(text, tokens, wires, knows) {
   }
   const nearestClause = span => clauses.filter(clause => firstWord(clause) <= span[0]).at(-1) ?? clauses[0]
 
-  // a word that grades a relation ("right below") is written as a modifier of the relation's clause
-  for (const [wire, span] of relationAdverbs) if (span) add(clauseOf(wire) ?? nearestClause(span), 'modifier', span)
+  // a word that grades a relation ("right below") is written as a modifier of the relation's clause: the clause where the
+  // relation starts, which is not always the clause nearest by position ("draw a boy sitting on the bench, a dog right next
+  // to the bench": "right" grades where the dog is, in the clause of "draw" that holds the dog, not in "sitting")
+  for (const [wire, span] of relationAdverbs) if (span) add(clauseOf(byId.get(wire.slots.find(slot => slot.key === 'from')?.ref)) ?? clauseOf(wire) ?? nearestClause(span), 'modifier', span)
   // a clause that completes another: a relation between the two, marked by "to" when the infinitive has it
   for (const [governor, clause] of completes) {
     const at = pendingMarkers.findIndex(([owner]) => owner === clause)
@@ -205,8 +207,9 @@ export function emitSyntax(text, tokens, wires, knows) {
     else (before?.type === 'syntax.clause' ? before : clause).slots.push({key: 'complement', ref: name.id})
   }
   // "items Plan and Review", "header Name and rows Alpha and Beta": a noun with its name, listed with further bare
-  // names, heads a list of names. The names are the things listed, and the noun is tied to that list.
-  const capital = span => /^\p{Lu}/u.test(words[span[0]].text)
+  // names, heads a list of names. The names are the things listed, and the noun is tied to that list. A number names
+  // as a name does ("pages 2 and 3", "values 6, 19 and 25").
+  const capital = span => /^(?:\p{Lu}|\p{N}+(?:[.,]\p{N}+)*$)/u.test(words[span[0]].text)
   const wireOf = id => [...out.values()].find(wire => wire.id === id)
   const bareName = wire => wire?.type === 'syntax.nominal' && wire.slots.every(slot => slot.span && capital(slot.span))
   const namesOf = wire => {

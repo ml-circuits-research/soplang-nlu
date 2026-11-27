@@ -15,6 +15,9 @@ const quote = JSON.stringify
 // round: items of a list scored 0.6 or more against the things before them, a day or an hour set off after a
 // phrase scored about 0.
 const UNLIKE = 0.3
+// How often the text must have shown a word as a verb, and never as a thing, before it is taken to open a command that
+// has no other verb ("excuse" 121 times, "chose" 38; "warm" 6 and "empty" 10 also say how things are).
+export const SURELY_A_VERB = 20
 
 export function linkUnits(text, tokens, units, context, flips = new Set()) {
   const {lexicon} = context
@@ -49,6 +52,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     return {type: 'entity', first, last, determiner: [], quantity: [], degree: [], compound: [],
       modifier: Array.from({length: last - first}, (_, k) => first + k), head: [last, last]}
   })
+
+  // "keep everything else where it is": a word that modifies the pronoun right before it (the legend marks it) belongs to the
+  // thing that pronoun names
+  for (let i = 1; i < units.length; i++) {
+    const unit = units[i], before = units[i - 1]
+    if (unit.type !== 'adverb' || unit.first !== unit.last || before.type !== 'entity' || !before.pronoun || before.last + 1 !== unit.first ||
+        !context.tagged(tokens[unit.first].word, 'postposed')) continue
+    units[i - 1] = {...before, last: unit.first, adverb: [...before.adverb ?? [], unit.first]}
+    units.splice(i, 1)
+  }
 
   // "by product and region": a bare word listed after a thing is a thing as well
   for (let i = 2; i < units.length; i++) {
@@ -201,7 +214,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (verb.type !== 'verb') continue
       const previous = list[i - 1], bare = !verb.auxiliary.length
       const clause = {verb, index: i, start: i, pre: [], role: 'main', predicate: tokens[verb.predicate[0]].word}
-      if (previous?.type === 'marker' && context.linkOf(word(previous)) === 'infinitive') {
+      // "a girl facing left sitting on the bench": a word that says where or how (an adverb or a particle) stands after its
+      // verb, so between two verb forms it belongs to the first; the second form, with no helping verb, goes on describing
+      // the thing that the first describes
+      let back = i - 1
+      while (bare && verb.form && list[back]?.type === 'adverb' && list[back].first === list[back].last && lexicon.canBe(tokens[list[back].first].word, 'adverb')) back--
+      const earlier = clauses.at(-1)
+      if (context.open !== false && bare && verb.form && list[back]?.type === 'verb' && earlier?.verb === list[back] && earlier.role === 'modifier' && !earlier.modifiesHost && earlier.modifies) {
+        clause.role = 'modifier'
+        clause.modifies = earlier.modifies
+      } else if (previous?.type === 'marker' && context.linkOf(word(previous)) === 'infinitive') {
         clause.role = 'infinitive'
         clause.marker = previous
         clause.start = i - 1
@@ -271,6 +293,19 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       clauses.push(clause)
     }
     clauses.forEach((clause, k) => { if (k && clause.start <= clauses[k - 1].index) clause.start = clauses[k - 1].index + 1 })
+    // "excuse me", "Sign in a signboard": a command needs its verb. The word that opens a sentence with no verb, or that
+    // opens a sentence right before a word that can only be an object ("me", "us", "them"), is the verb when the text
+    // showed it often as a verb and never as a thing
+    if (context.open !== false) {
+      const k = list.findIndex(unit => !['filler', 'expression', 'separator', 'conjunction', 'adverb'].includes(unit.type))
+      const opening = list[k], after = list[k + 1]
+      const object = after?.type === 'entity' && after.pronoun && after.first === after.last && context.linkOf(tokens[after.first].word) === 'recipient' &&
+        !lexicon.canBe(tokens[after.first].word, 'determiner')
+      const at = opening?.type === 'entity' && !opening.pronoun && !opening.determiner?.length && tokens[opening.first].shape !== 'number' &&
+        (opening.last > opening.first || after) && (!clauses.length || object && opening.first === opening.last) ? opening.first : -1
+      const seen = at >= 0 && lexicon.formOf(tokens[at].word) === null ? lexicon.kindsOf(tokens[at].word) : null
+      if (seen && seen.verb >= SURELY_A_VERB && seen.thing === 0) doubts.push({position: at, is: 'verb'})
+    }
 
     // ---- clause wires
     const made = []
@@ -294,7 +329,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       let region = list.slice(clause.index + 1, end).filter(unit => unit !== verb.asked), returned = []
       if (clause.role === 'modifier') {
         // what a participle says about a thing ends at the next separator; the list it stood in goes on
-        const cut = clause.modifiesHost && !context.trial?.('W') ? -1 : region.findIndex(unit => unit.type === 'separator')
+        // (a comma between two numbers lists them; it does not end what the participle says: "a line showing 10, 20 and 30")
+        const number = unit => unit?.type === 'entity' && tokens[unit.last].shape === 'number'
+        const cut = clause.modifiesHost && !context.trial?.('W') ? -1
+          : region.findIndex((unit, at) => unit.type === 'separator' && !(number(region[at - 1]) && number(region[at + 1]) && region[at + 1].first === region[at + 1].last))
         const host = made.findLast(other => other.fragment && !other.gapOf || other.role === 'main')
         if (cut >= 0 && host && region.slice(cut).some(unit => unit.type === 'entity')) { returned = region.slice(cut); region = region.slice(0, cut) }
         clause.returnTo = host
@@ -322,15 +360,22 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       // before the subject.
       const ownSubject = clause.subject && question && list.indexOf(clause.subject) > list.indexOf(question) &&
         (Boolean(clause.subject.pronoun) || clause.subject.determiner?.length > 0 || lexicon.canBe(word(question), 'adverb'))
-      const stated = context.open !== false && Boolean(ownSubject) && !verb.inverted
-      const asks = Boolean(question && !stated || verb.inverted) || last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
+      // ("tell me which events are scheduled", "show what I said": a clause that a question word opens right after the verb of
+      // another clause or after what that verb acts on belongs to that clause and states; only a clause that opens its
+      // sentence with a question word asks, whatever its order)
+      // (not where a form of "be" or a finite helping verb stands before the one it is said of: "what colour is the tree",
+      // "what values does Sales show" ask)
+      const embedded = context.open !== false && Boolean(question) && k > 0 && ['verb', 'entity'].includes(list[list.indexOf(question) - 1]?.type) &&
+        !((context.linkOf(clause.predicate) === 'predicative' || context.tagged(clause.predicate, 'finite')) && list[clause.index + 1]?.type === 'entity')
+      const stated = context.open !== false && (Boolean(ownSubject) || embedded) && !verb.inverted
+      const asks = Boolean(question && !stated || verb.inverted) || !embedded && last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
       const finite = verb.auxiliary.length > 0 || lexicon.sForm(clause.predicate) ||
         Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject'
       const form = clause.role !== 'main' ? (context.open !== false && clause.role === 'complement' && finite ? 'declarative' : 'nonfinite')
         // a bare form in -ing describes; it makes no statement by itself ("a dog lying down")
         : context.open !== false && verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
         : asks ? 'interrogative'
-        : clause.subject ? 'declarative'
+        : clause.subject || embedded ? 'declarative'
         // "is it possible": a form of "be" with the one it is said of right after it asks
         : context.open !== false && !verb.auxiliary.length && context.linkOf(clause.predicate) === 'predicative' && !context.tagged(clause.predicate, 'bare') &&
           list[clause.index + 1]?.type === 'entity' ? 'interrogative'
@@ -338,7 +383,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // a form that says what was done, with no one doing it, is no command ("as drawn so far")
         : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite'
         // a verb in -s is said of something, also when its subject is not in the clause ("a chart that counts users")
-        : context.open !== false && !verb.auxiliary.length && lexicon.sForm(clause.predicate) ? 'declarative' : 'imperative'
+        : context.open !== false && !verb.auxiliary.length && lexicon.sForm(clause.predicate) ? 'declarative'
+        // a finite form of "be", "have" or "do" never gives a command: opening its clause before a thing it asks ("Does the
+        // chart carry a Plan series?"); otherwise it states, also when its subject is not in the clause ("a gantt chart
+        // that has one bar per task")
+        : context.open !== false && !verb.auxiliary.length && context.tagged(clause.predicate, 'finite')
+          ? ((clause.index === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(list[clause.index - 1]?.type)) && list[clause.index + 1]?.type === 'entity' ? 'interrogative' : 'declarative')
+        : 'imperative'
       target.slots.push(['form', form])
       if (clause.marker) {
         // a marker joins two clauses as a relation; otherwise it stays on its own clause
@@ -426,7 +477,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         opener.hung = true
       }
       if (clause.joinedBy && before) {
-        const relation = relate(before.wire, clause.joinedBy, clause.wire)
+        // "add two ducks, keeping everything else where it is": with no comma before its linking word, the clause completes
+        // the nearest verb before it, also when that verb is a participle ("keeping"), not only the main verb ("add"). A
+        // participle that describes the thing right before it ("a lake ringed by glaciers as I said", "the line connecting
+        // Done and Worker if you can") takes the clause only when the linking word follows it at once ("a girl sitting where
+        // the path bends")
+        const at = list.indexOf(clause.joinedBy)
+        const near = made.slice(made.indexOf(before) + 1, k).findLast(other => other.verb && other.wire && list.indexOf(other.verb) < at)
+        const between = near ? list.slice(list.indexOf(near.verb) + 1, at) : []
+        const host = near && between.every(unit => unit.type !== 'separator') &&
+          (near.role !== 'modifier' || near.modifiesHost || between.every(unit => unit.type === 'adverb')) ? near : before
+        const relation = relate(host.wire, clause.joinedBy, clause.wire)
         relation.slots[0][1] = context.kindOf('relation', word(clause.joinedBy)) ?? relation.slots[0][1]
         return
       }
@@ -434,7 +495,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (clause.after?.type === 'entity') {
           const relation = wire('r', 'nlu.relation')
           relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(clause.after).id], ['to', '$' + clause.wire.id])
-        } else if (clause.after?.type === 'verb' && !before.fragment) completes(before.wire, clause.wire)
+        } else if (clause.after?.type === 'verb' && !before.fragment) {
+          // "a girl sitting where the path bends": right after a verb, the clause completes that verb, also a participle
+          const own = made.slice(0, k).findLast(other => other.verb === clause.after && other.wire)
+          completes((own ?? before).wire, clause.wire)
+        }
         return
       }
       if (clause.conjunction && before) {
@@ -463,7 +528,23 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       }
     })
     for (const clause of made) {
-      if (clause.commaOnly && !clause.commaUsed) put(clause.commaHost.wire, 'separator', clause.commaOnly.first, clause.commaOnly.last)
+      if (!clause.commaOnly || clause.commaUsed) continue
+      // "I cannot see it, drag it to the corner", "join them with an arrow, will you": two clauses with their own verbs that
+      // only a comma separates, and that no later conjunction joins, stand side by side in their sentence
+      const host = clause.commaHost
+      // (not a clause that its own linking word ties to the other: "since they belong together, place them side by side")
+      const free = other => !other.marker && !other.fronted && !other.joinedBy && !other.hung
+      if (context.open !== false && host !== clause && !host.fragment && host.role === 'main' && clause.role === 'main' && free(host) && free(clause) &&
+          context.kindOf('coordination', word(clause.commaOnly), true)) {
+        let join = host.commaJoin
+        if (!join) {
+          join = host.commaJoin = wire('k', 'nlu.coordination')
+          join.slots.push(['kind', context.kindOf('coordination', word(clause.commaOnly))], ['member', '$' + host.wire.id])
+        }
+        join.slots.push(['member', '$' + clause.wire.id])
+        put(join, 'cue', clause.commaOnly.first, clause.commaOnly.last)
+        clause.commaJoin = join
+      } else put(host.wire, 'separator', clause.commaOnly.first, clause.commaOnly.last)
     }
 
     // What stands before a verb belongs to its clause: its subject (with what hangs on the
@@ -604,6 +685,20 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (unit.type === 'absorbed') continue
       if (unit.type === 'entity') {
         const made = entityWire(unit)
+        if (pendingCue?.setOff) {
+          // ", next to the crate, a small black cat": the phrase set off by commas says where the new thing after it is. The
+          // relation starts at that new thing, and the joining words before the phrase join the new thing to the list
+          const relation = relate(entityWire(region[i + 2]), pendingCue, made, adverbForCue)
+          unit.phrase = true
+          unit.fronting = true
+          unit.holder = relation.slots.find(slot => slot[0] === 'to')
+          unit.placedBy = region[i + 2]
+          pendingJoin = [...pendingCue.setOff, ...pendingJoin]
+          pendingCue = null
+          adverbForCue = null
+          frontier.push(unit)
+          continue
+        }
         const joinable = pendingJoin.length && lastEntity && !pendingCue &&
           pendingJoin.every(joiner => context.kindOf('coordination', tokens[joiner.last].word, true))
         if (pendingCue) {
@@ -664,7 +759,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
               context.opener(tokens, frontier.at(-1)) === context.opener(tokens, unit)
           }
           const asideW = false
-          if (seriesU) coordinate(frontier.at(-1), unit, pendingJoin)
+          // "a boy with a kite, a dog on the grass, and a girl": after things listed by commas alone, the thing that a comma
+          // and a conjunction introduce is the last of that same list
+          const serial = context.open !== false && !commaOnly && state.listed && pendingJoin.some(joiner => joiner.type === 'separator') &&
+            pendingJoin.some(joiner => joiner.type === 'conjunction')
+          // "on pages 2 and 3", "set them to 10, 20, 30": a number right after the joining words that follow a number is
+          // listed with that number
+          const numbers = unit.first === unit.last && tokens[unit.first].shape === 'number' && region[i - 1 - pendingJoin.length] === lastEntity &&
+            tokens[lastEntity.last].shape === 'number'
+          if (numbers) coordinate(lastEntity, unit, pendingJoin)
+          else if (serial) coordinate(state.listed, unit, pendingJoin)
+          else if (seriesU) coordinate(frontier.at(-1), unit, pendingJoin)
           else if (aside || asideW) {
             const relation = wire('r', 'nlu.relation')
             const before = frontier.at(-1)
@@ -673,7 +778,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             relation.slots.push(['kind', 'open'], ['from', '$' + (names ? entityWire(before).id : target.id)], ['to', '$' + entityWire(unit).id])
             unit.holder = relation.slots[2]
             unit.aside = true
-          } else coordinate(partner(unit, level.length ? level : frontier), unit, pendingJoin)
+          } else {
+            // (the end of a phrase that says where the new thing is, ", next to the crate, a cat", is not listed with it)
+            const candidates = (level.length ? level : frontier).filter(thing => !thing.fronting)
+            if (candidates.length) coordinate(partner(unit, candidates), unit, pendingJoin)
+            else { role(clause.fragment ? (objects.length ? 'participant' : 'topic') : 'participant', unit); objects.push(unit) }
+          }
+          if (unit.group && (commaOnly || serial)) state.listed = unit
           pendingJoin = []
         } else {
           const broke = pendingJoin.find(joiner => joiner.type === 'separator')
@@ -812,6 +923,18 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         }
         pendingJoin.push(unit)
         continue
+      }
+      // ", next to the crate, a small black cat": set off by commas, a phrase whose linking word points at a thing already
+      // known (a pronoun, or a thing that a definite determiner opens: "it", "the crate") right before a new thing (counted,
+      // or opened by another determiner: "two cats", "a cat") says where that new thing is
+      const cueAt = unit.type === 'cue' ? i : unit.type === 'adverb' && unit.first === unit.last && next?.type === 'cue' ? i + 1 : -1
+      const known = thing => Boolean(thing.pronoun) || thing.determiner?.length > 0 && context.tagged(tokens[thing.determiner[0]].word, 'definite')
+      const fresh = thing => !thing.pronoun && (thing.quantity?.length > 0 || Boolean(thing.literal) || thing.determiner?.length > 0 && !known(thing))
+      if (context.open !== false && cueAt >= 0 && !pendingCue && lastEntity && pendingJoin.some(joiner => joiner.type === 'separator') &&
+          region[cueAt + 1]?.type === 'entity' && known(region[cueAt + 1]) && region[cueAt + 2]?.type === 'separator' &&
+          region[cueAt + 3]?.type === 'entity' && fresh(region[cueAt + 3])) {
+        region[cueAt].setOff = pendingJoin
+        pendingJoin = []
       }
       // "near Ben but not behind Jo": a conjunction before a phrase with its own cue joins the two relations
       const cueAhead = unit.type === 'cue' ? i : unit.type === 'negation' && next?.type === 'cue' ? i + 1 : -1

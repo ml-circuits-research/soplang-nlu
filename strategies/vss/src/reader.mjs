@@ -6,7 +6,7 @@ import {listRoutes, readRoutes, symbolOf} from './routes.mjs'
 import {emitSyntax} from './emit-syntax.mjs'
 import {stemsOf} from './forms.mjs'
 import {buildUnits} from './units.mjs'
-import {linkUnits} from './links.mjs'
+import {linkUnits, SURELY_A_VERB} from './links.mjs'
 import {emit} from './emit.mjs'
 import {attachment, headKey} from './habits.mjs'
 import {openMeanings, openMemory} from './meaning.mjs'
@@ -57,7 +57,9 @@ export function openModel(model, options = {}) {
   const kindsOf = word => {
     const own = habits.kinds?.[word] ?? [0, 0, 0]
     let verb = own[0], thing = own[1]
-    for (const stem of stemsOf(word, legend.endings)) verb = Math.max(verb, habits.kinds?.[stem]?.[0] ?? 0)
+    // ("goes", "going": a verb of two letters takes the endings as well; the stems of longer words keep three letters)
+    const short = legend.endings.filter(ending => word.length === ending.length + 2 && word.endsWith(ending)).map(ending => word.slice(0, -ending.length))
+    for (const stem of [...stemsOf(word, legend.endings), ...short]) verb = Math.max(verb, habits.kinds?.[stem]?.[0] ?? 0)
     // the plural of a thing is a thing
     const plural = legend.forms.find(form => form.name === 'plural')?.endings ?? []
     for (const stem of stemsOf(word, plural)) thing = Math.max(thing, habits.kinds?.[stem]?.[1] ?? 0)
@@ -270,9 +272,11 @@ export function createVssReader(model, options = {}) {
     if (!tokens.length) return {analyses: []}
     const tried = new Map()
     // an opener stands on its own: none of its words is the verb of what follows
+    // (a word the text showed often as a verb and never as a thing may still be the verb of the opener itself: "excuse me")
     const cut = tokens.findIndex(token => token.shape === 'mark' && /^[,:;!—–-]$/u.test(token.text))
+    const surelyVerb = word => { const seen = lexicon.kindsOf(word); return seen.verb >= SURELY_A_VERB && seen.thing === 0 }
     if (options.openers !== false && cut >= 1 && cut <= 2 && openers.has(tokens.slice(0, cut).map(token => token.word).join(' '))) {
-      for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word)) tried.set(position, verbStations)
+      for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word) && !surelyVerb(tokens[position].word)) tried.set(position, verbStations)
     }
     // a second opinion on every word from the outside of its occurrence
     let lift = null
