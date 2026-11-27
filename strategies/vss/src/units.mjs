@@ -190,8 +190,15 @@ export function buildUnits(tokens, stations, lexicon) {
     let quoted = -1
     for (; j < n; j++) {
       const station = stations[j]
+      // "the colour bar ten steps": a number after the noun that counts the next noun begins another thing
+      if (lexicon.leans && j > start && at(j + 1) === 'noun' && (station === 'quantity' || lexicon.canBe(tokens[j].word, 'quantity') || tokens[j].shape === 'number')) {
+        const before = lexicon.kindsOf(tokens[j - 1].word)
+        if (['noun', 'modifier'].includes(stations[j - 1]) && lexicon.linkOf(tokens[j - 1].word) !== 'selects' && before.thing >= 3 && before.thing >= 3 * before.quality) break
+      }
       if (station === 'quantity') (core.length ? core : quantity).push(j)
       else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree')) degree.push(j)
+      // a number word that the route took for a description still counts the thing ("the first three bars")
+      else if (station === 'modifier' && !core.length && !quantity.length && lexicon.leans && (lexicon.canBe(tokens[j].word, 'quantity') || tokens[j].shape === 'number')) quantity.push(j)
       else if (station === 'modifier' && !core.length) modifier.push(j)
       else if (station === 'noun' || station === 'name') core.push(j)
       else if (station === 'literal' && quoted < 0 && (determiner.length || modifier.length || core.length)) quoted = j      // the "eyes" part

@@ -68,7 +68,8 @@ const openMarks = sop => (sop.match(/ participant=| attachment=open| kind=open |
 
 if (command === 'prepare') {
   const sample = JSON.parse(gunzipSync(readFileSync(sampleFile)))
-  const reader = createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')))
+  // --options takes reader options as JSON without spaces, to try a variant against the registry
+  const reader = createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')), args.options ? JSON.parse(args.options) : {})
   const registry = loadRegistry()
   const unjudged = loadUnjudged(new Set(sample.map(row => row.text)))
   const rows = [], packet = []

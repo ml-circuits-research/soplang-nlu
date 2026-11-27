@@ -148,6 +148,15 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       }
     }
 
+    // "it is level with the house": after a form of "be", a word never shown to be a verb says how the
+    // subject is; "be" is the verb
+    if (context.open !== false) for (const unit of list) {
+      if (unit.type !== 'verb' || !unit.auxiliary.length || unit.form) continue
+      const helper = tokens[unit.auxiliary.at(-1)].word, said = tokens[unit.predicate[0]].word
+      const seen = lexicon.kindsOf(said)
+      if (context.linkOf(helper) === 'predicative' && (seen.verb === 0 || seen.quality >= 3 * seen.verb) && tokens[unit.predicate[0]].shape === 'lower') doubts.push({position: unit.predicate[0], not: 'verb'})
+    }
+
     // ---- what each verb is to its neighbours, and where its clause starts
     const clauses = []
     for (let i = 0; i < list.length; i++) {
@@ -252,6 +261,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const form = clause.role !== 'main' ? 'nonfinite'
         : asks ? 'interrogative'
         : clause.subject ? 'declarative'
+        // "is it possible": a form of "be" with the one it is said of right after it asks
+        : context.open !== false && !verb.auxiliary.length && context.linkOf(clause.predicate) === 'predicative' && list[clause.index + 1]?.pronoun ? 'interrogative'
         : verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
         // a form that says what was done, with no one doing it, is no command ("as drawn so far")
         : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite' : 'imperative'

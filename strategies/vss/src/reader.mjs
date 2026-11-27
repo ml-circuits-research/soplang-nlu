@@ -193,6 +193,7 @@ export function createVssReader(model, options = {}) {
   // What the routes learned of a word across the whole text: a thing nearly everywhere, a verb
   // nearly everywhere, or neither.
   const size = book.symbols.length, leanings = new Map()
+  lexicon.linkOf = word => legend.links.get(word)
   lexicon.leans = word => {
     if (options.typeVeto === false) return null
     if (!leanings.has(word)) {
@@ -219,11 +220,11 @@ export function createVssReader(model, options = {}) {
       lift = (t, s) => Math.exp(sharp * matches[t][s])
     }
     // one verb per clause, unless the verb before makes its object do something or the word describes
-    const budget = options.budget !== true ? null : {
+    const budget = options.budget === false ? null : {
       makesDo: word => lexicon.takesClause(word) || lexicon.directs(word),
       describes: word => lexicon.formOf(word) !== null,
       doer: word => legend.links.get(word) === 'subject',
-      known: word => lexicon.kindsOf(word).verb >= 3 ? (options.verbLead ?? 1) : 0
+      known: word => lexicon.kindsOf(word).verb >= 3 ? (options.verbLead ?? 0) : 0
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     const read = flips => {
