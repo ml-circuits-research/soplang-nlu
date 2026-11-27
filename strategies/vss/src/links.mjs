@@ -576,6 +576,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (pendingCue) {
           settle()
           const relation = relate(null, pendingCue, made, adverbForCue)
+          unit.phrase = true      // the end of a phrase with its own linking word
           attach(relation, clause, lastEntity, pendingCue, unit)
           if (relationNegation) { put(relation, 'negation', relationNegation.first, relationNegation.last); relationNegation = null }
           if (relationJoin) {
@@ -766,6 +767,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         pendingJoin = []
       }
       settle()
+      // "with only the first item checked": the word that grades the phrase goes to the clause; the linking word still
+      // points at the thing after it
+      if (pendingCue && unit.type === 'adverb' && unit.first === unit.last && next?.type === 'entity' && pendingCue.last + 1 === unit.first) { put(target, 'adverb', unit.first, unit.last); continue }
       if (pendingCue) {
         // a cue with nothing to point at moves with the verb
         put(target, verb ? 'particle' : 'adverb', pendingCue.first, pendingCue.last)
@@ -783,7 +787,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           // the pair was seen with its object between the two words ("turn the legend on")
           (!lexicon.linksThings || !lexicon.linksThings(tokens[unit.first].word) || lexicon.separable(clause.predicate, tokens[unit.first].word))
         if (moves && next?.type === 'entity') put(target, 'particle', unit.first, unit.last)      // "sort out the text size"
-        else if (next?.type === 'entity') pendingCue = unit
+        // ("with only the first item": a lone word between the linking word and its thing grades the phrase)
+        else if (next?.type === 'entity' || next?.type === 'adverb' && next.first === next.last && region[i + 2]?.type === 'entity') pendingCue = unit
         else put(target, verb && (i === 0 || region[i - 1].type === 'entity' && objects.length === 1) ? 'particle' : 'adverb', unit.first, unit.last)
       } else if (unit.type === 'adverb') {
         const moves = verb && context.linkOf(word(unit)) === 'particle' && !has(target, 'particle') &&
@@ -922,15 +927,24 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
 
   // Which earlier entity a new one is listed with: the one most like it, the nearest on a tie.
   function partner(entity, frontier) {
-    let best = frontier.at(-1), bestScore = -Infinity
     // "items Plan and Review": a bare name is listed with the name that stands right before the joining word
-    if (best && entity.name && !entity.head && !entity.determiner?.length && ['capital', 'upper'].includes(tokens[best.last].shape) && best.last < entity.first) return best
-    frontier.forEach((candidate, order) => {
-      if (candidate.group && candidate !== frontier.at(-1) && frontier.slice(order + 1).some(later => later.group === candidate.group)) return
-      const score = context.alike(tokens, candidate, entity) + 0.02 * order / frontier.length
-      if (score > bestScore) { bestScore = score; best = candidate }
-    })
-    return best
+    const last = frontier.at(-1)
+    if (last && entity.name && !entity.head && !entity.determiner?.length && ['capital', 'upper'].includes(tokens[last.last].shape) && last.last < entity.first) return last
+    const candidates = frontier.filter((candidate, order, list) => !(candidate.group && candidate !== list.at(-1) && list.slice(order + 1).some(later => later.group === candidate.group)))
+    const scored = candidates.map((candidate, order) => ({candidate, score: context.alike(tokens, candidate, entity) + 0.02 * order / frontier.length}))
+    const nearest = scored.at(-1), best = scored.reduce((a, b) => b.score >= a.score ? b : a)
+    if (context.open === false) return best.candidate
+    // Things listed together are introduced alike ("with title Plan and participants Ana": two bare nouns). When the
+    // nearest candidate, or the list it stands in, is introduced like the new thing and the one most like it in
+    // meaning is not, the nearest is the partner.
+    const introduced = thing => context.opener(tokens, thing)
+    const opensAlike = ({candidate}) => [candidate, ...frontier.filter(other => candidate.group && other.group === candidate.group)].some(thing => introduced(thing) === introduced(entity))
+    if (best !== nearest && opensAlike(nearest) && !opensAlike(best)) return nearest.candidate
+    // a thing with its own determiner that is unlike everything before it is no further end of a phrase ("at 10:00
+    // and the room to Cedar room"): it is one more of what the clause is about
+    if (best.score < UNLIKE && entity.determiner?.length && nearest.candidate.phrase) return (scored.findLast(({candidate}) => !candidate.phrase) ?? nearest).candidate
+    // otherwise the one most like the new thing in meaning and build, the nearest on a tie
+    return best.candidate
   }
 
   // "a blanket, a basket and a boy": the entities share the role of the first.

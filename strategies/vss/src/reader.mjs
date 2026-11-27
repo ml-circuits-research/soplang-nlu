@@ -85,6 +85,8 @@ export function openModel(model, options = {}) {
     // "sort it out": the pair was seen with what it acts on standing between its two words
     // does the word link things as readily as it follows verbs: "on", "in", unlike "up" or "out"
     linksThings: word => (afterThings[word] ?? 0) >= 3 && afterThings[word] >= 0.4 * (afterThings[word] + (afterVerbs[word] ?? 0)),
+    // does the verb take a thing and what that thing does, with no "to" ("let it go"): the word or the word it is a form of
+    makesDo: word => [word, ...stemsOf(word, legend.endings)].some(form => legend.tags.get(form)?.has('makesdo')),
     // is the word one of those whose places the language fixes
     listed: word => legend.places.has(word),
     separable: (verb, particle) => habits.separable?.[verb]?.includes(particle) ?? false,
@@ -155,6 +157,8 @@ export function openModel(model, options = {}) {
     legend, lexicon, meanings, gapping: options.gapping, kinds: options.kinds,
     joinsClauses: word => joiners.has(word),
     // two entities are alike when their heads are used alike and they are introduced alike
+    // how a thing is introduced: its determiner, or that it is a pronoun, a bare name or a bare noun
+    opener: (tokens, unit) => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.name && !unit.head ? '~name' : '~bare',
     alike: (tokens, left, right) => {
       opening = unit => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.name && !unit.head ? '~name' : '~bare'
       const mode = options.alike ?? 'structure'
@@ -312,7 +316,8 @@ export function createVssReader(model, options = {}) {
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
     if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null,
-      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label', joins: word => lexicon.canBe(word, 'conjunction'), asksWith: word => lexicon.canBe(word, 'question')}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
+      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label', joins: word => lexicon.canBe(word, 'conjunction'), asksWith: word => lexicon.canBe(word, 'question'),
+      result: word => lexicon.takesQuality(word) || [word, ...stemsOf(word, legend.endings)].some(form => legend.links.get(form) === 'predicative')}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way

@@ -267,13 +267,13 @@ export function buildUnits(tokens, stations, lexicon) {
   // "turn italic off": a bare verb form does not follow another verb directly, unless that verb makes something do
   // something ("let it go", "help move it"); the second word says what or how
   for (let t = 1; t < tokens.length; t++) {
-    if (!lexicon.takesClause || !['predicate', 'following'].includes(stations[t]) || !['predicate', 'following'].includes(stations[t - 1])) continue
+    if (!lexicon.makesDo || !['predicate', 'following'].includes(stations[t]) || !['predicate', 'following'].includes(stations[t - 1])) continue
     const first = tokens[t - 1].word, second = tokens[t].word
     if (lexicon.formOf(second) || lexicon.sForm(second) || lexicon.canBe(first, 'auxiliary') || lexicon.kindsOf(first).verb < 3) continue
     // after a verb that says what its object becomes, a word the text showed saying how things are is that, not a second verb
     const seen = lexicon.kindsOf(second)
     if (lexicon.takesQuality(first) && seen.quality >= 3 && seen.quality >= seen.verb) units.doubts.push({position: t, not: 'verb'})
-    else if (!lexicon.takesClause(first) && !lexicon.directs(first)) units.doubts.push({position: t, not: 'verb'})
+    else if (!lexicon.makesDo(first) && !lexicon.directs(first)) units.doubts.push({position: t, not: 'verb'})
   }
   // "describe my calendar entries": after a thing, a lone word in the plural form that the language lists nowhere names the thing
   for (let k = 1; k < units.length; k++) {
@@ -281,6 +281,25 @@ export function buildUnits(tokens, stations, lexicon) {
     if (!lexicon.listed || thing.type !== 'entity' || thing.pronoun || lone.type !== 'complement' || lone.first !== lone.last || lone.degree?.length || lone.first !== thing.last + 1) continue
     const word = tokens[lone.first].word
     if (tokens[lone.first].shape === 'lower' && /[^s]s$/u.test(word) && !lexicon.listed(word) && !lexicon.saysHow(word) && lexicon.kindsOf(word).verb === 0) units.doubts.push({position: lone.first, is: 'head'})
+  }
+  // "undo the last document edit": after a verb that does not make its object do something, a lone bare form right
+  // after a thing opened by a determiner, with nothing after it, is no second verb: it names the thing
+  for (let k = 0; k + 2 < units.length; k++) {
+    const first = units[k], thing = units[k + 1], second = units[k + 2], after = units[k + 3]
+    if (!lexicon.makesDo || first.type !== 'verb' || thing.type !== 'entity' || !thing.determiner?.length || thing.pronoun || second.type !== 'verb') continue
+    if (second.first !== second.last || second.first !== thing.last + 1 || after && !['separator', 'terminator', 'conjunction', 'adverb'].includes(after.type)) continue
+    const lead = tokens[first.predicate[0]].word, word = tokens[second.first].word
+    // (after a verb that says what its object becomes, the word says that: "turn the nose open")
+    if (lexicon.formOf(word) || lexicon.sForm(word) || lexicon.makesDo(lead) || lexicon.directs(lead) || lexicon.takesQuality(lead) || lexicon.canBe(lead, 'auxiliary')) continue
+    units.doubts.push({position: second.first, is: 'head'})
+  }
+  // "level 2", "scale 1.5": a word the text showed as a thing more often than as a verb, right before a number that
+  // no unit follows, is that thing with its number ("set 2023 to 20" keeps its verb)
+  for (let t = 0; t + 1 < tokens.length; t++) {
+    const seen = lexicon.kindsOf(tokens[t].word)
+    if (!lexicon.listed || !['predicate', 'following'].includes(stations[t]) || tokens[t + 1].shape !== 'number' || seen.thing < 3 || seen.thing <= seen.verb) continue
+    if (stations[t + 2] === 'noun' && tokens[t + 2].shape === 'lower') continue
+    units.doubts.push({position: t, not: 'verb'})
   }
   // "so it no longer cuts through the box": a word that stands for a thing, then words that say when or how,
   // then the s-form of a known verb: that form is the verb of the first. The same right after a word that opens a clause.

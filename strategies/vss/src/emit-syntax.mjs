@@ -63,6 +63,7 @@ export function emitSyntax(text, tokens, wires, knows) {
           if (span && grading && grading.span[1] + 1 === span[0]) { grading.span = [grading.span[0], span[1]]; grading.grading = 'run' }
           else if (span) wire.slots.push({key: 'modifier', span, grading: 'run'})
         } else if (key === 'unresolved') { const span = quoted(slot); if (span) wire.slots.push({key: 'modifier', span, grading: 'opener'}) }
+        else if (key === 'result_complement') { const span = quoted(slot); if (span) wire.slots.push({key: 'modifier', span, said: 'how'}) }
         else if (CLAUSE[key]) add(wire, CLAUSE[key], quoted(slot))
         else if (key === 'subject') wire.slots.push({key: 'subject', ref: ref(value).id})
         else if (THINGS.has(key)) wire.slots.push({key: 'complement', ref: ref(value).id})
@@ -215,26 +216,48 @@ export function emitSyntax(text, tokens, wires, knows) {
   }
   for (const join of [...out.values()]) {
     if (join.type !== 'syntax.coordination') continue
-    const conjuncts = join.slots.filter(slot => slot.key === 'conjunct')
-    let at = -1
-    for (let i = conjuncts.length - 2; i >= 0 && bareName(wireOf(conjuncts[i + 1].ref)); i--) if (namesOf(wireOf(conjuncts[i].ref))) { at = i; break }
-    if (at < 0) continue
-    const noun = wireOf(conjuncts[at].ref), named = namesOf(noun)
-    const name = {id: 'm' + ++made, type: 'syntax.nominal', slots: [{key: 'head', span: [named[0].span[0], named.at(-1).span[1]]}]}
-    noun.slots = noun.slots.filter(slot => !named.includes(slot))
-    out.set(name.id, name)
-    if (at === 0) {
-      // the whole list is the list of names: what pointed at it points at the noun
-      conjuncts[0].ref = name.id
-      for (const other of out.values()) if (other !== join) for (const slot of other.slots) if (slot.ref === join.id) slot.ref = noun.id
-      relation(noun, join, null)
-    } else {
-      // the names form a list of their own; the noun stays in the first list
-      const moved = conjuncts.slice(at + 1), joining = join.slots.filter(slot => slot.key === 'conjunction' && slot.span && slot.span[0] > name.slots[0].span[1])
+    for (;;) {
+      const conjuncts = join.slots.filter(slot => slot.key === 'conjunct')
+      // a noun with its name, followed by a run of bare names
+      const at = conjuncts.findIndex((slot, i) => namesOf(wireOf(slot.ref)) && bareName(wireOf(conjuncts[i + 1]?.ref)))
+      if (at < 0) break
+      let until = at + 1
+      while (bareName(wireOf(conjuncts[until + 1]?.ref))) until++
+      const noun = wireOf(conjuncts[at].ref), named = namesOf(noun)
+      const name = {id: 'm' + ++made, type: 'syntax.nominal', slots: [{key: 'head', span: [named[0].span[0], named.at(-1).span[1]]}]}
+      noun.slots = noun.slots.filter(slot => !named.includes(slot))
+      out.set(name.id, name)
+      if (at === 0 && until === conjuncts.length - 1) {
+        // the whole list is the list of names: what pointed at it points at the noun
+        conjuncts[0].ref = name.id
+        for (const other of out.values()) if (other !== join) for (const slot of other.slots) if (slot.ref === join.id) slot.ref = noun.id
+        relation(noun, join, null)
+        break
+      }
+      // the names form a list of their own, with the joining words that stand among them; the noun stays in the first list
+      const moved = conjuncts.slice(at + 1, until + 1), from = name.slots[0].span[1], to = firstWord(wireOf(moved.at(-1).ref))
+      const joining = join.slots.filter(slot => slot.key === 'conjunction' && slot.span && slot.span[0] > from && slot.span[0] < to)
       const inner = {id: 'j' + ++made, type: 'syntax.coordination', slots: [{key: 'conjunct', ref: name.id}, ...moved, ...joining]}
       join.slots = join.slots.filter(slot => !moved.includes(slot) && !joining.includes(slot))
       out.set(inner.id, inner)
       relation(noun, inner, null)
+    }
+  }
+  // "with only the first item checked", "with outline gold": a word that says how a thing is, right after a thing that
+  // ends a phrase with a linking word, describes that thing; it is not what the verb makes of its object
+  for (const clause of [...out.values()]) {
+    if (clause.type !== 'syntax.clause') continue
+    // (not after a verb that says what its object becomes or is: "colour the door of the house brown", "are the bars on it green")
+    const verb = clause.slots.find(one => one.key === 'verb')
+    if (!verb?.span || knows.result?.(words[verb.span[0]].text.toLowerCase())) continue
+    for (const slot of clause.slots.filter(one => one.said === 'how' && one.span[0] === one.span[1])) {
+      const thing = [...out.values()].find(wire => wire.type === 'syntax.nominal' && lastWord(wire) === slot.span[0] - 1)
+      // (set off by a comma, the word is not tied to the thing before it)
+      if (thing && !/^\s+$/u.test(text.slice(words[slot.span[0] - 1].end, words[slot.span[0]].start))) continue
+      if (!thing || [...out.values()].some(wire => wire.type === 'syntax.clause' && wire.slots.some(one => one.ref === thing.id))) continue
+      if (![...out.values()].some(wire => wire.type === 'syntax.relation' && wire.slots.some(one => one.key === 'to' && one.ref === thing.id) && wire.slots.some(one => one.key === 'marker'))) continue
+      clause.slots.splice(clause.slots.indexOf(slot), 1)
+      thing.slots.push({key: 'dependent', span: slot.span})
     }
   }
   // "new calendar named Work": a naming participle right after a thing, with only the name after it, describes the
@@ -284,5 +307,5 @@ export function emitSyntax(text, tokens, wires, knows) {
     if (!home) { home = {id: 'c0', type: 'syntax.clause', slots: [{key: 'form', value: 'fragment'}]}; kept.push(home); live.push(home) }
     home.slots.push({key: 'discourse', span: [index, index]})
   }
-  return writeCircuit(text, kept.map(({id, type, slots}) => ({id, type, slots: slots.map(({grading, ...slot}) => slot)})))
+  return writeCircuit(text, kept.map(({id, type, slots}) => ({id, type, slots: slots.map(({grading, said, ...slot}) => slot)})))
 }
