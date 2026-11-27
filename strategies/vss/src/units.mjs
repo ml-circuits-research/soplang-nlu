@@ -135,7 +135,7 @@ export function buildUnits(tokens, stations, lexicon) {
       const k = units.indexOf(unit), holder = units[k - 1], next = units[k + 1]
       const free = !holder || ['separator', 'conjunction', 'marker', 'filler', 'expression', 'adverb'].includes(holder.type)
       const last = lexicon.kindsOf(tokens[head].word), before = lexicon.kindsOf(tokens[head - 1].word)
-      if (free && next?.type !== 'verb' && next?.type !== 'aux' && last.thing === 0 && before.thing >= 3 && tokens[head].shape === 'lower') units.doubts.push({position: head, not: 'thing'})
+      if (free && next?.type !== 'verb' && next?.type !== 'aux' && last.thing === 0 && before.thing >= 3 && tokens[head].shape === 'lower' && lexicon.leans?.(tokens[head].word) !== 'thing') units.doubts.push({position: head, not: 'thing'})
     }
     // "approximately 73 words": a word that grades, standing as a thing right before a number
     for (let position = unit.first; position <= unit.last; position++) {

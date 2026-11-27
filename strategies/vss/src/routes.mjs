@@ -311,6 +311,69 @@ export function readRoutes(book, legend, index, tokens, banned = new Map(), lift
   return {stations, confidence}
 }
 
+/**
+ * The k most probable station sequences of one message, best first, each with its log weight.
+ * Sequences differ inside one sentence at a time: the other sentences keep their best reading.
+ */
+export function listRoutes(book, legend, index, tokens, banned = new Map(), lift = null, k = 8) {
+  const parts = []
+  for (const [from, to] of sentencesOf(legend, tokens)) {
+    const bans = new Map([...banned].filter(([position]) => position >= from && position < to).map(([position, set]) => [position - from, set]))
+    parts.push({from, paths: listSentence(book, legend, index, tokens.slice(from, to), bans, lift ? (t, s) => lift(from + t, s) : null, k)})
+  }
+  if (parts.some(part => !part.paths.length)) return []
+  const best = parts.flatMap(part => part.paths[0].stations)
+  const routes = [{stations: best, weight: 0}]
+  for (const part of parts) for (const path of part.paths.slice(1)) {
+    const stations = best.slice()
+    path.stations.forEach((station, t) => { stations[part.from + t] = station })
+    routes.push({stations, weight: path.weight - part.paths[0].weight})
+  }
+  return routes.sort((a, b) => b.weight - a.weight).slice(0, k)
+}
+
+function listSentence(book, legend, index, tokens, bans, lift, k) {
+  const n = legend.stations.length, v = book.symbols.length, shapes = SHAPES.length, length = tokens.length
+  if (!length) return [{stations: [], weight: 0}]
+  const symbols = tokens.map(token => symbolOf(index, legend, token))
+  const forms = tokens.map(token => isFormShape(token.shape) ? -1 : shapeIndex(token.shape))
+  const emit = (t, s) => bans.get(t)?.has(s) ? 0 : book.emission[book.base[s] * v + symbols[t]] * (forms[t] < 0 ? 1 : book.shape[book.base[s] * shapes + forms[t]]) * (lift ? lift(t, s) : 1)
+  // per (token, station): the k best ways to arrive, as [weight, station before, its rank]
+  const score = new Float64Array(length * n * k).fill(-Infinity), from = new Int32Array(length * n * k).fill(-1)
+  for (let t = 0; t < length; t++) {
+    for (const j of book.active[symbols[t]]) {
+      const e = Math.log(emit(t, j) + 1e-300), at = (t * n + j) * k
+      if (t === 0) { score[at] = Math.log(book.start[j] + 1e-300) + e; continue }
+      const arrivals = []
+      for (const i of book.active[symbols[t - 1]]) {
+        const move = Math.log(book.transition[i * n + j] + 1e-300)
+        for (let rank = 0; rank < k; rank++) {
+          const before = score[((t - 1) * n + i) * k + rank]
+          if (before === -Infinity) break
+          arrivals.push([before + move, i * k + rank])
+        }
+      }
+      arrivals.sort((a, b) => b[0] - a[0])
+      for (let rank = 0; rank < k && rank < arrivals.length; rank++) { score[at + rank] = arrivals[rank][0] + e; from[at + rank] = arrivals[rank][1] }
+    }
+  }
+  const ends = []
+  for (const i of book.active[symbols[length - 1]]) for (let rank = 0; rank < k; rank++) {
+    const weight = score[((length - 1) * n + i) * k + rank]
+    if (weight === -Infinity) break
+    ends.push([weight + Math.log(book.end[i] + 1e-300), i * k + rank])
+  }
+  ends.sort((a, b) => b[0] - a[0])
+  return ends.slice(0, k).filter(([weight]) => weight > -1e200).map(([weight, state]) => {
+    const stations = new Array(length)
+    for (let t = length - 1; t >= 0; t--) {
+      stations[t] = Math.floor(state / k)
+      state = from[(t * n + stations[t]) * k + state % k]
+    }
+    return {stations, weight}
+  })
+}
+
 // The verb budget. A clause has one verb. A register runs along the sentence:
 //   0 nothing yet in this clause   1 a thing, no verb yet   2 the clause has its verb
 //   3 it has a verb that makes its object do something (one more bare verb may follow)

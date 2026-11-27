@@ -63,4 +63,26 @@ A quantified prepositional relation can point through `measure` to an entity wit
 
 A coordination may group two or more relations of the same syntactic construction. Each relation retains its own endpoints and can carry a written negation. In “near Ben but not behind Jo”, only the second relation has a negation. The member types of a coordination used in a role must be permitted by that role's schema.
 
+### What a reading leaves open
+
+A reading states what the words settle and marks the rest. A later layer with context can then complete the circuit. It never has to undo a guess.
+
+| Mark | What stays open |
+| --- | --- |
+| `form=fragment` with `topic` | The things are named and no word is shown to be the action. |
+| `participant` on a clause | The thing takes part in the clause. The words do not settle its role. |
+| `attachment=open` on a relation | The relation belongs to the clause it starts at. It may place the action or describe one of the clause's things. |
+| `kind=open` on a relation without a cue | Two wires stand together and no word says how. |
+| `unresolved` on a clause or entity | The word belongs here and the reader could not place it. |
+
+For `move the cloud two hand-widths over` the reader knows the action and its object. The words alone do not say what the measure is to the action.
+
+```sop
+@c nlu.clause form=imperative predicate="move" direct_object=$cloud participant=$span adverb="over"
+@cloud nlu.entity determiner="the" head="cloud"
+@span nlu.entity quantity="two" head="hand-widths"
+```
+
+A mark is honest only on the uncertain part. A circuit that leaves a clear action or a clear object open has lost information the text gave.
+
 A clause can carry `completion=interrupted` when a speaker begins a frame and restarts with a separately grounded clause. The model retains the overt auxiliary or marker, its participant, and the following question.

@@ -48,6 +48,10 @@
 @nlu.clause.terminator core.slot of=nlu.clause key=terminator kind=string
 @nlu.clause.filler core.slot of=nlu.clause key=filler kind=string many=true
 @nlu.clause.unresolved core.slot of=nlu.clause key=unresolved kind=string many=true
+# What the words alone leave open. A reading states what the text settles and marks the rest,
+# so that a later layer with context completes the circuit instead of undoing a guess.
+# A thing that takes part in the clause in a role the words do not settle.
+@nlu.clause.participant core.slot of=nlu.clause key=participant kind=ref type=nlu.entity type=nlu.coordination many=true
 @nlu.clause.act core.slot of=nlu.clause key=act kind=atom
 @nlu.clause.polarity core.slot of=nlu.clause key=polarity enum=positive enum=negative
 
@@ -59,6 +63,10 @@
 @nlu.relation.negation core.slot of=nlu.relation key=negation kind=string many=true
 @nlu.relation.measure core.slot of=nlu.relation key=measure kind=ref type=nlu.entity type=nlu.coordination
 @nlu.relation.adverb core.slot of=nlu.relation key=adverb kind=string many=true
+# open: the relation belongs to the clause it starts at; whether it places the action or
+# describes one of the clause's things is not settled. A relation with kind=open and no cue
+# ties two wires that stand together with no word saying how.
+@nlu.relation.attachment core.slot of=nlu.relation key=attachment enum=open
 
 @nlu.coordination core.type of=nlu.coordination closed=true
 @nlu.coordination.kind core.slot of=nlu.coordination key=kind kind=atom required=true present=true

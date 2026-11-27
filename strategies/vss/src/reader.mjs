@@ -2,7 +2,7 @@
 // and nothing else: no file access and no network, so it runs wherever JavaScript runs.
 import {readLegend} from './legend.mjs'
 import {observe} from './observe.mjs'
-import {readRoutes} from './routes.mjs'
+import {listRoutes, readRoutes, symbolOf} from './routes.mjs'
 import {stemsOf} from './forms.mjs'
 import {buildUnits} from './units.mjs'
 import {linkUnits} from './links.mjs'
@@ -153,6 +153,8 @@ export function openModel(model, options = {}) {
       return count + weight * memory.fit((kind === 'verb' ? 'v:' : 'n:') + word, cue, filler)
     },
     hosts: options.hosts,
+    // state what the words settle and mark the rest as open
+    open: options.open !== false, openBelow: options.openBelow ?? 0.5,
     suits: (verb, thing) => memory.fit('v:' + verb, 'said', meanings.vector(thing)),
     // how often the text says this verb form of this thing (per occurrence of the thing)
     describes: (form, head) => (habits.describes?.[form]?.[head] ?? 0) / ((habits.attach?.nounTotal?.[head] ?? 0) + 5)
@@ -178,6 +180,19 @@ export function createVssReader(model, options = {}) {
   const sharp = options.occurrenceWeight ?? 4
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
+  // What the routes learned of a word across the whole text: a thing nearly everywhere, a verb
+  // nearly everywhere, or neither.
+  const size = book.symbols.length, leanings = new Map()
+  lexicon.leans = word => {
+    if (options.typeVeto === false) return null
+    if (!leanings.has(word)) {
+      const id = symbolOf(index, legend, {word, shape: 'lower'})
+      const mass = set => { let top = 0; for (const s of set) top = Math.max(top, book.emission[book.base[s] * size + id]); return top }
+      const verb = mass(verbStations), thing = mass(thingStations), ratio = options.typeRatio ?? 30
+      leanings.set(word, book.symbols[id].startsWith('~') ? null : thing > ratio * verb ? 'thing' : verb > ratio * thing ? 'verb' : null)
+    }
+    return leanings.get(word)
+  }
   function analyse(text) {
     const tokens = observe(text, legend.compounds, legend.variants)
     if (!tokens.length) return {analyses: []}
@@ -207,6 +222,17 @@ export function createVssReader(model, options = {}) {
       return {sop: emit(wires), decisions, doubts: [...units.doubts, ...doubts].filter(doubt => !tried.has(doubt.position))}
     }
     let first = read(new Set())
+    // What the routes learned of a word across the whole text outweighs one doubtful path: a word that
+    // is a thing nearly everywhere and was never shown to be a verb is not read as the action here, and
+    // the other way round.
+    const leaning = () => stations.flatMap((station, t) => {
+      if (tried.has(t) || tokens[t].shape !== 'lower') return []
+      const leans = lexicon.leans(tokens[t].word), seen = lexicon.kindsOf(tokens[t].word)
+      if (verbStations.has(station) && leans === 'thing' && seen.verb === 0) return [{position: t, not: 'verb'}]
+      if (thingStations.has(station) && leans === 'verb' && seen.thing === 0 && seen.quality === 0) return [{position: t, not: 'thing'}]
+      return []
+    })
+    first.doubts.push(...leaning())
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
     for (let again = 0; again < 3 && first.doubts.length; again++) {
@@ -214,6 +240,7 @@ export function createVssReader(model, options = {}) {
       const banned = new Map(tried)
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))
       first = read(new Set())
+      first.doubts.push(...leaning())
     }
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
@@ -223,7 +250,42 @@ export function createVssReader(model, options = {}) {
       const second = read(new Set([doubtful.id]))
       if (second.sop !== first.sop) analyses.push({sop: second.sop, confidence: Math.min(...confidence), alternativeOf: doubtful.cue})
     }
-    return {analyses, tokens, stations: stations.map(station => names[station]), confidence}
+    const result = {analyses, tokens, stations: stations.map(station => names[station]), confidence}
+    // Other whole readings: the least certain words, each kept off the station it was given, with
+    // the rest of the sentence routed again around it. For study; the reader does not choose among them yet.
+    if (options.explore) {
+      const fold = word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()
+      const weigh = values => values.reduce((sum, value) => sum + Math.log(value + 1e-9), 0)
+      result.explored = [{sop: first.sop, flags, weight: weigh(confidence), position: -1}]
+      const order = confidence.map((value, t) => [value, t]).filter(([value]) => value < (options.exploreBelow ?? 0.98)).sort((a, b) => a[0] - b[0]).slice(0, options.explore)
+      const base = stations
+      for (const [, t] of order) {
+        const banned = new Map(tried)
+        banned.set(t, new Set([...(banned.get(t) ?? []), base[t]]))
+        const other = readRoutes(book, legend, index, tokens, banned, lift, budget)
+        if (other.stations.every((station, k) => station === base[k])) continue
+        const units = buildUnits(tokens, other.stations.map(station => names[station]), lexicon)
+        const {wires} = linkUnits(text, tokens, units, context, new Set())
+        const sop = emit(wires)
+        if (result.explored.some(seen => seen.sop === sop)) continue
+        // the weight of the other path under the unconstrained posterior of the first one is not known; use its own
+        result.explored.push({sop, flags: symptomsOf(sop, lexicon, {confidence: other.confidence, fold}), weight: weigh(other.confidence), position: t,
+          word: tokens[t].word, from: names[base[t]], to: names[other.stations[t]]})
+      }
+    }
+    // The k most probable station paths, each read as a whole. For study.
+    if (options.list) {
+      const fold = word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()
+      result.listed = [{sop: first.sop, flags, weight: 0, stations}]
+      for (const route of listRoutes(book, legend, index, tokens, new Map(tried), lift, options.list)) {
+        const units = buildUnits(tokens, route.stations.map(station => names[station]), lexicon)
+        const sop = emit(linkUnits(text, tokens, units, context, new Set()).wires)
+        if (result.listed.some(seen => seen.sop === sop)) continue
+        result.listed.push({sop, flags: symptomsOf(sop, lexicon, {confidence, fold}), weight: route.weight, stations: route.stations,
+          moved: route.stations.map((station, t) => station === stations[t] ? null : `${tokens[t].word}: ${names[stations[t]]} -> ${names[station]}`).filter(Boolean)})
+      }
+    }
+    return result
   }
   return {analyse, ...opened}
 }

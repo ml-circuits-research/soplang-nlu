@@ -4,6 +4,8 @@
 /** Candidate stems of a word, nearest first. */
 export function stemsOf(word, endings) {
   const stems = []
+  const listed = endings.irregular?.get(word)
+  if (listed) stems.push(listed)
   for (const ending of endings) {
     if (!word.endsWith(ending) || word.length - ending.length < 3) continue
     const base = word.slice(0, -ending.length)

@@ -73,6 +73,18 @@ export function readLegend(source) {
     name: wire.id.replace(/^forms\./u, ''), station: need(wire.attrs.station[0]), also: (wire.attrs.also ?? []).map(need), confine: wire.attrs.confine?.[0] === 'true',
     endings: wire.attrs.ending ?? []
   }))
+  // a form that no ending shows is found through its rule's endings, and through the endings as a whole
+  endings.irregular = new Map()
+  for (const wire of wires.filter(wire => wire.type === 'vss.irregular')) {
+    const rule = forms.find(form => form.name === wire.attrs.form[0])
+    if (!rule) throw new Error('The legend names an unknown form: ' + wire.attrs.form[0])
+    rule.endings.irregular ??= new Map()
+    for (const pair of wire.attrs.pair ?? []) {
+      const [base, form] = String(pair).split(' ')
+      rule.endings.irregular.set(form, base)
+      endings.irregular.set(form, base)
+    }
+  }
   const pairs = new Map(wires.filter(wire => wire.type === 'vss.pair').map(wire => [wire.attrs.second[0], wire.attrs.first[0]]))
   return {stations, places, kinds, endings, forms, compounds, links, pairs}
 }

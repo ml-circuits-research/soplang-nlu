@@ -6,7 +6,7 @@ import {pathToFileURL} from 'node:url'
 import {createAnalysisValidator, hasCompleteSource} from '../../lib/check-analysis.mjs'
 import {directedGraph, sameDirectedGraph} from '../../lib/directed-graph.mjs'
 
-const REFS = ['subject', 'direct_object', 'indirect_object', 'predicative_entity', 'topic', 'clausal_complement']
+const REFS = ['subject', 'direct_object', 'indirect_object', 'predicative_entity', 'topic', 'participant', 'clausal_complement']
 
 export async function createComparer(knowledgeDir) {
   const {parse} = await import(pathToFileURL(join(knowledgeDir, 'tools/sopworld/sopworld.mjs')))

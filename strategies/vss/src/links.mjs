@@ -76,8 +76,30 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     sentences.at(-1).push(unit)
     if (unit.type === 'terminator') sentences.push([])
   }
-  for (const sentence of sentences) if (sentence.length) linkSentence(sentence)
+  for (const sentence of sentences) {
+    if (!sentence.length) continue
+    const from = wires.length
+    linkSentence(sentence)
+    if (context.open !== false) tieLoose(wires.slice(from))
+  }
   return {wires, decisions, doubts}
+
+  // A clause without a finite verb that nothing refers to belongs with the clause before it; no
+  // word says how. It is tied to that clause and the tie is left open.
+  function tieLoose(made) {
+    const referred = new Set()
+    for (const other of made) for (const [, value] of other.slots) if (typeof value === 'string' && value.startsWith('$')) referred.add(value.slice(1))
+    let before = null
+    for (const other of made) {
+      if (other.type !== 'nlu.clause') continue
+      const form = other.slots.find(slot => slot[0] === 'form')[1]
+      if (form === 'nonfinite' && before && !referred.has(other.id) && !other.slots.some(slot => slot[0] === 'subject')) {
+        const relation = wire('r', 'nlu.relation')
+        relation.slots.push(['kind', 'open'], ['from', '$' + before.id], ['to', '$' + other.id])
+      }
+      before = other
+    }
+  }
 
   function linkSentence(all) {
     const terminator = all.at(-1).type === 'terminator' ? all.at(-1) : null
@@ -159,6 +181,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const held = previous?.type === 'entity' && !previous.pronoun && governing && (holder?.type === 'cue' || holder?.type === 'verb') &&
           !lexicon.takesClause(tokens[governing.predicate[0]].word)
         if (context.kinds !== false && bare && held && kinds.thing >= 3) doubts.push({position: verb.predicate[0], not: 'verb'})
+        // a word never seen as a verb where the frame leaves no doubt, and seen as a thing there,
+        // is not stated to be the action ("pie radius smaller")
+        else if (context.open !== false && bare && !verb.form && kinds.verb === 0 && kinds.thing >= 3 && !clause.subject?.pronoun) doubts.push({position: verb.predicate[0], not: 'verb'})
         if (stranded && lexicon.thingFirst(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
         else if (stranded && list[i - 2]?.type === 'verb') {
           // "make the chart show its gridlines": the thing before it is the one that does it
@@ -213,7 +238,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const form = clause.role !== 'main' ? 'nonfinite'
         : asks ? 'interrogative'
         : clause.subject ? 'declarative'
-        : verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite' : 'imperative'
+        : verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
+        // a form that says what was done, with no one doing it, is no command ("as drawn so far")
+        : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite' : 'imperative'
       target.slots.push(['form', form])
       if (clause.marker) {
         // a marker joins two clauses as a relation; otherwise it stays on its own clause
@@ -494,18 +521,33 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
               recipient = flips.has(id)
             }
           }
+          // does the verb take a second bare thing: one it gives, names, or turns the first into?
+          const verbWord = acts ? tokens[acts.predicate[0]].word : null
+          const takesTwo = predicative || verbWord && (lexicon.takesQuality(verbWord) || lexicon.names(verbWord) || lexicon.gives(verbWord))
+          const settled = key && !has(target, key) && (key !== 'predicative_entity' || takesTwo)
+          const beside = lastEntity && region[i - 1] === lastEntity && !lastEntity.pronoun && !lastEntity.literal
+          const value = Boolean(unit.literal) || Boolean(unit.name) && !unit.head && !unit.determiner?.length
           if (recipient) {
             // "give me a hand": the person comes first, the thing given second
             objects[0].holder[0] = 'indirect_object'
             role('direct_object', unit)
-          } else if (key && !has(target, key)) role(key, unit)
-          else {
-            // one bare entity more than the clause has places for stands beside the one before
+          } else if (context.open === false) {
+            if (key && !has(target, key)) role(key, unit)
+            else {
+              // one bare entity more than the clause has places for stands beside the one before
+              const relation = wire('r', 'nlu.relation')
+              relation.slots.push(['kind', 'apposition'], ['from', '$' + entityWire(objects.at(-1) ?? unit).id], ['to', '$' + made.id])
+              unit.holder = relation.slots[2]
+            }
+          } else if (settled) role(key, unit)
+          else if (beside && value) {
+            // "x 120", "id Id one": a value right after a thing stands with that thing; no word says how
             const relation = wire('r', 'nlu.relation')
-            relation.slots.push(['kind', 'apposition'], ['from', '$' + entityWire(objects.at(-1) ?? unit).id], ['to', '$' + made.id])
+            relation.slots.push(['kind', 'open'], ['from', '$' + entityWire(lastEntity).id], ['to', '$' + made.id])
             unit.holder = relation.slots[2]
-          }
-          objects.push(unit)
+            unit.tied = true
+          } else role('participant', unit)         // it takes part in the clause; the words do not settle how
+          if (!unit.tied) objects.push(unit)
           tail = null
         }
         lastEntity = unit
@@ -584,7 +626,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         else put(target, moves ? 'particle' : 'adverb', unit.first, unit.last)
       } else if (unit.type === 'complement') {
         for (const position of unit.degree) put(target, 'degree', position)
-        if (!acts && lastEntity && region[i - 1] === lastEntity && !unit.degree.length && !lastEntity.pronoun) {
+        // a quality right after a thing that the verb does not hold describes that thing ("with outline gold")
+        const ofClause = lastEntity && (objects.includes(lastEntity) || lastEntity.group && objects.some(other => other.group === lastEntity.group))
+        if ((!acts || context.open !== false && !ofClause) && lastEntity && region[i - 1] === lastEntity && !unit.degree.length && !lastEntity.pronoun) {
           for (let position = unit.value[0]; position <= unit.value[1]; position++) put(entityWire(lastEntity), 'modifier', position)
         } else if (!acts || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
         else { put(target, 'result_complement', ...unit.value); tail = objects.length ? 'quality' : null }
@@ -627,6 +671,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const toClause = '$' + clause.wire.id
     if (!entity || entity.pronoun) { slot[1] = toClause; done(); return }
     const toEntity = '$' + entityWire(entity).id
+    // "the level of Intro": the cue says what the thing before it is of
+    if (context.open !== false && context.linkOf(tokens[cue.last].word) === 'belongs') { slot[1] = toEntity; done(); return }
     if (clause.fragment && !clause.gapOf) {
       let best = entity, bestScore = -Infinity
       const seen = new Set()
@@ -661,6 +707,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (key) hosts.push({ref: '$' + entityWire(thing).id, score: context.holds('thing', key, cueWord, aim)})
     }
     hosts.sort((a, b) => b.score - a.score)
+    // When the evidence does not separate the hosts, the relation is held by the clause and the
+    // choice is left open: it places the action or describes one of the clause's things.
+    if (context.open !== false && hosts.length > 1 && hosts[0].score - hosts[1].score < context.openBelow) {
+      slot[1] = toClause
+      relation.slots.push(['attachment', 'open'])
+      done()
+      return
+    }
     const id = decisions.length
     decisions.push({id, margin: hosts.length > 1 ? hosts[0].score - hosts[1].score : Infinity, cue: cueWord})
     slot[1] = (flips.has(id) && hosts[1] ? hosts[1] : hosts[0]).ref
