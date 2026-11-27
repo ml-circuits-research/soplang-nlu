@@ -37,9 +37,11 @@ messages, where it does worse.
 
 - webmeet-dataset/semantic/ and webmeet-dataset/syntactic/ mirror each other (238 files, at most 1,000
   messages each; `tools/layers.mjs check`).
-- 62,066 of 183,497 messages have a syntactic circuit (33.8%): 56,934 by agreement of VSS and spaCy (up to the
-  start of marked relations), 5,100 accepted by a judge, 32 written by a judge. The others have an empty cell.
-- A judge read a random 2% of the agreement circuits: 10 of 1,154 rejected (0.87%).
+- 83,619 of 183,497 messages have a syntactic circuit (45.6%; 33.8% before the refilled conversion): 78,063 by
+  agreement of VSS and spaCy, 5,524 accepted by a judge, 32 written by a judge. The others have an empty cell.
+  By area: calendar 77.0%, document 53.8%, drawing 47.3%, diagram 40.3%.
+- A judge read a random 2% of the agreement circuits: first conversion 10 of 1,154 rejected (0.87%, key up to
+  the start of marked relations); refilled conversion with the wider key 2 of 433 rejected (0.46%).
 - The syntactic files are the only store of labels; the registry (annotations/syntax/v1/judged/) keeps only
   what a judge read or wrote, with the reasons.
 
@@ -137,14 +139,14 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- The 2% audit of the agreement circuits settled with the wider key on the 217 conversion folders (433
-  circuits, eval-results/conversion-audit-02), then the cells are written.
+- spaCy: a second round of general repairs in the layer that writes its circuits (agent).
+- DistilBERT retrained on the grown labels (syntax-v3, benchmark held out).
 
 ## Next steps, in order
 
 1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
    and the status page (docs/STATUS.md).
-2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
+2. After each round of rules, rerun VSS over the conversion, settle with the wider key, audit 2%, fill cells.
 3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
 4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
