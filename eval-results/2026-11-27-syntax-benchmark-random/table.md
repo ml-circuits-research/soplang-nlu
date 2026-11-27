@@ -1,10 +1,10 @@
 # Levels of the run 2026-11-27-syntax-benchmark-random
 
-Registry: 12310 judged circuits of 6111 messages. Judged in this run: 7123 circuits. Before the run, 593 of the 1831 messages had a label.
+Registry: 12310 judged circuits of 6111 messages. Judged in this run: 7306 circuits. Before the run, 593 of the 1831 messages had a label.
 
 | Strategy | Messages | L0 | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 | waiting | GOAL |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| vss | 1831 | 0 | 166 | 2 | 286 | 0 | 35 | 24 | 0 | 732 | 582 | 4 | 0 | 72.0% |
+| vss | 1831 | 0 | 145 | 2 | 270 | 0 | 26 | 6 | 0 | 796 | 582 | 4 | 0 | 75.5% |
 | prolog | 1831 | 41 | 229 | 1 | 383 | 7 | 37 | 4 | 0 | 658 | 238 | 233 | 0 | 61.7% |
 | distilbert | 1831 | 0 | 150 | 3 | 274 | 4 | 5 | 57 | 0 | 754 | 535 | 49 | 0 | 73.1% |
 | spacy | 1831 | 0 | 74 | 11 | 149 | 0 | 3 | 4 | 0 | 1000 | 406 | 184 | 0 | 86.8% |
@@ -17,7 +17,7 @@ Accepted circuits that leave an attachment open (`attachment=ambiguous`):
 
 | Strategy | Accepted circuits | With `attachment=ambiguous` | Share |
 | --- | ---: | ---: | ---: |
-| vss | 1318 | 80 | 6.1% |
+| vss | 1382 | 83 | 6.0% |
 | prolog | 1129 | 542 | 48.0% |
 | distilbert | 1338 | 79 | 5.9% |
 | spacy | 1590 | 293 | 18.4% |
