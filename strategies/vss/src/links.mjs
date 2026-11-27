@@ -11,6 +11,11 @@ const quote = JSON.stringify
  * @param flips decisions to take the other way (for an alternative reading)
  * @returns {wires: [{id, type, slots: [[key, value]]}], decisions: [{id, margin}]}
  */
+// Below this likeness two things are not listed together by a comma alone. Measured on the first conversion
+// round: items of a list scored 0.6 or more against the things before them, a day or an hour set off after a
+// phrase scored about 0.
+const UNLIKE = 0.3
+
 export function linkUnits(text, tokens, units, context, flips = new Set()) {
   const {lexicon} = context
   const wires = [], decisions = [], doubts = []
@@ -101,6 +106,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (other.type !== 'nlu.clause') continue
       const form = other.slots.find(slot => slot[0] === 'form')[1]
       if (form === 'nonfinite' && before && !referred.has(other.id) && !other.slots.some(slot => slot[0] === 'subject')) {
+        const relation = wire('r', 'nlu.relation')
+        relation.slots.push(['kind', 'open'], ['from', '$' + before.id], ['to', '$' + other.id])
+      }
+      // "tell me which events are scheduled": a clause that opens with a question word, right after a verb that takes
+      // what is asked or said, is what that verb takes
+      const told = before?.slots.find(slot => slot[0] === 'predicate')
+      if (form !== 'nonfinite' && told && told.length >= 4 && !referred.has(other.id) && other.slots.some(slot => slot[0] === 'question') &&
+          !before.slots.some(slot => slot[0] === 'clausal_complement') && (lexicon.asks(tokens[told[2]].word) || lexicon.takesClause(tokens[told[2]].word))) {
         const relation = wire('r', 'nlu.relation')
         relation.slots.push(['kind', 'open'], ['from', '$' + before.id], ['to', '$' + other.id])
       }
@@ -594,7 +607,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           // a comma alone lists the new thing with the things of the clause, not with the end of a relation
           const commaOnly = context.open !== false && pendingJoin.every(joiner => joiner.type === 'separator')
           const level = commaOnly ? frontier.filter(thing => thing.holder?.[0] !== 'to') : []
-          coordinate(partner(unit, level.length ? level : frontier), unit, pendingJoin)
+          // "book the sync at 16:00, Friday, for 60 minutes": set off by a comma after a phrase with its own linking
+          // word, a thing that nothing opens (no "a", no "the") and that is unlike every thing of the clause, in
+          // meaning and in build, is not one more of what the verb acts on. It belongs to the clause, and the words
+          // do not say how.
+          const likeness = Math.max(...(level.length ? level : frontier).map(thing => context.alike(tokens, thing, unit)))
+          const aside = commaOnly && verb && objects.length > 0 && !unit.determiner?.length && !unit.pronoun && frontier.at(-1)?.holder?.[0] === 'to' && likeness < UNLIKE
+          if (aside) {
+            const relation = wire('r', 'nlu.relation')
+            relation.slots.push(['kind', 'open'], ['from', '$' + target.id], ['to', '$' + entityWire(unit).id])
+            unit.holder = relation.slots[2]
+          } else coordinate(partner(unit, level.length ? level : frontier), unit, pendingJoin)
           pendingJoin = []
         } else {
           const broke = pendingJoin.find(joiner => joiner.type === 'separator')

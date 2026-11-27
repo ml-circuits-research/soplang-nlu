@@ -312,7 +312,7 @@ export function createVssReader(model, options = {}) {
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
     if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null,
-      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label'}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
+      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label', joins: word => lexicon.canBe(word, 'conjunction'), asksWith: word => lexicon.canBe(word, 'question')}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way

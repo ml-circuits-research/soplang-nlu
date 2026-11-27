@@ -131,12 +131,15 @@ export function emitSyntax(text, tokens, wires, knows) {
     if (!span) continue
     const tie = [...out.values()].find(wire => wire.type === 'syntax.relation' && wire.slots.some(slot => slot.key === 'to' && slot.ref === clause.id) && !wire.slots.some(slot => slot.key === 'marker'))
     if (tie) { add(tie, 'marker', span); continue }
+    // "the one on one, when is it": a question word that opens a clause built as a question asks about that clause; it ties nothing
+    if (clause.slots[0].value === 'interrogative' && knows.asksWith?.(words[span[0]].text.toLowerCase())) { add(clause, 'modifier', span); continue }
     const main = clauses.find(other => other !== clause && other.slots.some(slot => slot.key === 'verb') && firstWord(other) > firstWord(clause)) ??
       clauses.filter(other => other !== clause && firstWord(other) < firstWord(clause)).at(-1) ??
       clauses.find(other => other !== clause && firstWord(other) > firstWord(clause))
     if (main) relation(main, clause, span)
-    // alone in its message ("where is the title?"), the word modifies its own clause
-    else add(clause, 'modifier', span)
+    // alone in its message, a word that joins clauses has nothing to join: it is said in passing ("so make the boxes blue");
+    // any other such word modifies its own clause ("where is the title?")
+    else add(clause, knows.joins?.(words[span[0]].text.toLowerCase()) ? 'discourse' : 'modifier', span)
   }
   // a question word stands where its grammar puts it
   for (const [clause, span] of pendingQuestions) {
