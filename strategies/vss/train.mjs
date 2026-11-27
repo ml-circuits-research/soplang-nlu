@@ -77,7 +77,8 @@ console.log(`${texts.length} messages, ${starts.length - 1} sentences, ${total} 
 
 // Anchored frames measured worse than the plain model (see docs/strategies/vss.md); they are
 // counted and used only when --anchoring <strength> is given.
-const anchors = args.anchoring === undefined ? null : anchoredFrames(legend, messages, index)
+const frames = anchoredFrames(legend, messages, index)
+const anchors = args.anchoring === undefined ? null : frames
 const book = learnRoutes({legend, symbols, corpus, iterations, anchors, ...options, log: line => console.log(line)})
 const n = legend.stations.length, v = symbols.length
 const round = value => Number(value.toPrecision(5))
@@ -119,6 +120,8 @@ const habits = learnHabits(openModel(model), texts)
 model.memory = habits.memory
 delete habits.memory
 model.habits = habits
+// what kind of word each one is where the legend's words fix the frame: [verb, thing, quality]
+model.habits.kinds = Object.fromEntries(symbols.map((symbol, id) => [symbol, [frames[id * 3], frames[id * 3 + 1], frames[id * 3 + 2]].map(count => Math.round(count))]).filter(([, counts]) => counts[0] + counts[1] + counts[2] >= 3))
 console.log(`habits: ${Object.keys(model.habits.nominal).length} words told apart as thing or quality, ` +
   `${Object.keys(model.habits.attach.verb).length} verbs and ${Object.keys(model.habits.attach.noun).length} nouns with cue habits; ` +
   `memory of ${model.memory?.keys.length ?? 0} governing words`)

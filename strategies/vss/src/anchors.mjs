@@ -31,6 +31,8 @@ export function anchoredFrames(legend, messages, index) {
       // a verb: after a helping verb or a negation of one, or after "to", before its object or the end
       if ((helps(before) || denies(before) && (helps(earlier) || listed(earlier, 'auxiliary'))) && (object(after) || closes(after))) add(token, 0)
       if (listed(before, 'infinitive') && object(after)) add(token, 0)
+      // a verb: after a word that can only be the one who does it
+      if (before && legend.links.get(before.word) === 'subject' && !listed(earlier, 'cue')) add(token, 0)
       // a verb that opens the message or follows a courtesy word, before its object
       if ((t === 0 || listed(before, 'filler')) && object(after)) add(token, 0, 0.5)
       // a quality: graded, or said of something by "is"

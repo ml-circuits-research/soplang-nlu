@@ -129,6 +129,14 @@ export function buildUnits(tokens, stations, lexicon) {
     if (unit.type !== 'entity') continue
     const head = unit.head?.[0] ?? -9
     if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    // "the two lines differ": an entity that nothing holds, ending in a word never seen as a
+    // thing after a word that is one, with no verb after it: the last word is the verb
+    if (head > unit.first && lexicon.kindsOf && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1))) {
+      const k = units.indexOf(unit), holder = units[k - 1], next = units[k + 1]
+      const free = !holder || ['separator', 'conjunction', 'marker', 'filler', 'expression', 'adverb'].includes(holder.type)
+      const last = lexicon.kindsOf(tokens[head].word), before = lexicon.kindsOf(tokens[head - 1].word)
+      if (free && next?.type !== 'verb' && next?.type !== 'aux' && last.thing === 0 && before.thing >= 3 && tokens[head].shape === 'lower') units.doubts.push({position: head, not: 'thing'})
+    }
     // "approximately 73 words": a word that grades, standing as a thing right before a number
     for (let position = unit.first; position <= unit.last; position++) {
       if (stations[position + 1] === 'quantity' && ['noun', 'modifier', 'name'].includes(stations[position]) && lexicon.grades(tokens[position].word) && !lexicon.canBe(tokens[position].word, 'degree')) units.doubts.push({position, not: 'thing'})

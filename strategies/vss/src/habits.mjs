@@ -111,7 +111,8 @@ export function learnHabits(opened, texts) {
   const names = Object.keys(titles).filter(word => titles[word] >= 3 && titles[word] / verbTotal[word] >= 0.01)
   const gives = Object.keys(hands).filter(word => hands[word] >= 3 && hands[word] / verbTotal[word] >= 0.01)
   const asks = Object.keys(wonders).filter(word => wonders[word] >= 3 && wonders[word] / verbTotal[word] >= 0.02)
-  const takesClause = Object.keys(takes).filter(word => takes[word] >= 5 && takes[word] / verbTotal[word] >= 0.02)
+  // (the reader also asks that the word be a verb beyond doubt, which keeps chance words out)
+  const takesClause = Object.keys(takes).filter(word => takes[word] >= 5 && takes[word] / verbTotal[word] >= 0.003)
   // Doubtful cases first count half for each side, then by what the counts so far say.
   const perCue = table => { const out = {}; for (const cues of Object.values(table)) for (const [cue, count] of Object.entries(cues)) bump(out, cue, count); return out }
   const sum = table => Object.values(table).reduce((a, b) => a + b, 0)

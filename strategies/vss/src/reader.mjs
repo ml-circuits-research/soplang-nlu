@@ -52,11 +52,22 @@ export function openModel(model, options = {}) {
     return all > 0 && yes / all > 0.5
   }
   const anchored = new Set(habits.anchored ?? [])
+  // what the anchored frames say of a word; a form of a verb counts as that verb
+  const kindsOf = word => {
+    const own = habits.kinds?.[word] ?? [0, 0, 0]
+    let verb = own[0], thing = own[1]
+    for (const stem of stemsOf(word, legend.endings)) verb = Math.max(verb, habits.kinds?.[stem]?.[0] ?? 0)
+    // the plural of a thing is a thing
+    const plural = legend.forms.find(form => form.name === 'plural')?.endings ?? []
+    for (const stem of stemsOf(word, plural)) thing = Math.max(thing, habits.kinds?.[stem]?.[1] ?? 0)
+    return {verb, thing, quality: own[2]}
+  }
   const lexicon = {
+    kindsOf,
     // seen as a verb where the structure left no doubt, itself or the word it is a form of
     anchoredVerb: word => anchored.has(word) || stemsOf(word, legend.endings).some(stem => anchored.has(stem)),
     nominal: word => habits.nominal?.[word] === 1 ? true : habits.nominal?.[word] === 0 ? false : undefined,
-    takesClause: word => borrowed(habits.takesClause, word),
+    takesClause: word => borrowed(habits.takesClause, word) && kindsOf(word).verb >= 3,
     takesQuality: word => borrowed(habits.takesQuality, word),
     gives: word => borrowed(habits.gives, word),
     asks: word => borrowed(habits.asks, word),
@@ -103,7 +114,7 @@ export function openModel(model, options = {}) {
   const joiners = new Set(legend.kinds.filter(kind => kind.joins === 'clause').flatMap(kind => kind.cues))
   let opening = null
   const context = {
-    legend, lexicon, meanings, gapping: options.gapping,
+    legend, lexicon, meanings, gapping: options.gapping, kinds: options.kinds,
     joinsClauses: word => joiners.has(word),
     // two entities are alike when their heads are used alike and they are introduced alike
     alike: (tokens, left, right) => {

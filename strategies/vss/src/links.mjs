@@ -148,6 +148,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // subject of its own, cannot be placed: the word was probably not a verb
         const stranded = bare && !verb.form && !clause.subject && !clause.marker && !clause.conjunction && !clause.separator &&
           previous?.type === 'entity' && !previous.pronoun && clauses.length && list.slice(clauses.at(-1).index + 1, i).every(unit => unit.type === 'entity' || unit.type === 'cue')
+        // "can I get a cinnamon stick?": a bare verb right after a thing that a verb or a cue
+        // already holds, whose word is known as a thing where the legend fixes the frame, is
+        // the head of that thing
+        const kinds = lexicon.kindsOf(clause.predicate)
+        const holder = list[i - 2]
+        // (not when the verb before makes its object do something, and not when this would
+        // leave the sentence without any verb)
+        const governing = clauses.at(-1)?.verb
+        const held = previous?.type === 'entity' && !previous.pronoun && governing && (holder?.type === 'cue' || holder?.type === 'verb') &&
+          !lexicon.takesClause(tokens[governing.predicate[0]].word)
+        if (context.kinds !== false && bare && held && kinds.thing >= 3) doubts.push({position: verb.predicate[0], not: 'verb'})
         if (stranded && lexicon.thingFirst(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
         else if (stranded && list[i - 2]?.type === 'verb') {
           // "make the chart show its gridlines": the thing before it is the one that does it

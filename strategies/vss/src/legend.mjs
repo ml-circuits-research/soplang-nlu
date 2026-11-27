@@ -48,7 +48,7 @@ export function readLegend(source) {
     const station = need(wire.attrs.station[0])
     const open = wire.attrs.open?.[0] === 'true'
     for (const word of wire.attrs.word ?? []) {
-      if (wire.attrs.link) links.set(word, wire.attrs.link[0])
+      if (wire.attrs.link && !links.has(word)) links.set(word, wire.attrs.link[0])
       const entry = places.get(word) ?? {stations: new Set(), confined: false}
       entry.stations.add(station)
       if (!open) entry.confined = true

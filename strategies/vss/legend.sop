@@ -52,11 +52,13 @@
 # open use the text shows.
 @w.determiner vss.words station=determiner word="the" word="a" word="an" word="this" word="that" word="these" word="those" word="each" word="every" word="some" word="any" word="no" word="all" word="both" word="another" word="either" word="neither" word="my" word="your" word="its" word="his" word="her" word="our" word="their" word="which" word="what" word="whose"
 @w.pronoun vss.words station=pronoun word="it" word="they" word="them" word="he" word="she" word="him" word="her" word="we" word="us" word="you" word="i" word="me" word="this" word="that" word="these" word="those" word="something" word="anything" word="everything" word="nothing" word="someone" word="anyone" word="everyone" word="everybody" word="somebody" word="nobody" word="one" word="ones" word="there" word="itself" word="themselves" word="myself" word="yourself" word="what" word="who" word="whom" word="which" word="both" word="all" word="some" word="any" word="none" word="another" word="others" word="each" word="mine" word="yours" word="whatever" word="'s"
+# link=subject: the word can only be the one who does what the next word says ("they differ").
+@w.subject vss.words station=pronoun link=subject word="i" word="we" word="they" word="he" word="she"
 # link=recipient: before a second bare entity the word is the one who receives it ("give me a hand").
 @w.recipient vss.words station=pronoun link=recipient word="me" word="us" word="him" word="her" word="them"
 @w.possessive vss.words station=possessive word="'s"
 @w.question vss.words station=question word="what" word="which" word="who" word="whom" word="whose" word="where" word="when" word="why" word="how"
-@w.auxiliary vss.words station=auxiliary word="be" word="is" word="are" word="am" word="was" word="were" word="been" word="being" word="do" word="does" word="did" word="have" word="has" word="had" word="can" word="could" word="will" word="would" word="shall" word="should" word="may" word="might" word="must" word="'d" word="'ll" word="'ve" word="'re" word="'m" word="'s" word="ca" word="wo"
+@w.auxiliary vss.words station=auxiliary word="be" word="is" word="are" word="am" word="was" word="were" word="been" word="being" word="do" word="does" word="did" word="have" word="has" word="had" word="can" word="could" word="will" word="would" word="shall" word="should" word="may" word="might" word="must" word="cannot" word="'d" word="'ll" word="'ve" word="'re" word="'m" word="'s" word="ca" word="wo"
 # link=predicative: what follows the verb says what its subject is. link=infinitive: the marker
 # introduces a verb that completes the verb before it.
 @w.copula vss.words station=predicate link=predicative word="be" word="is" word="are" word="am" word="was" word="were" word="been" word="being" word="'s" word="'re" word="'m"
