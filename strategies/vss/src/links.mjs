@@ -154,7 +154,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       unit.station = 'predicate'
       // "…, would you": a helping verb with only the one it asks after it is a question with that one as its subject
       const asked = list[i + 1], beyond = list[i + 2]
-      if (context.open !== false && asked?.pronoun && (!beyond || beyond.type === 'separator') && !unit.auxiliary.length && list[i - 1]?.type !== 'entity') {
+      // (a helping verb never takes a pronoun as its object: whatever follows, the pronoun is its subject)
+      if (context.open !== false && asked?.pronoun && !unit.auxiliary.length && list[i - 1]?.type !== 'entity') {
         unit.inverted = {aux: unit, subject: asked}
         unit.asked = asked
       }
