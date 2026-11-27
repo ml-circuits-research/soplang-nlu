@@ -13,7 +13,7 @@ const quote = JSON.stringify
  */
 export function linkUnits(text, tokens, units, context, flips = new Set()) {
   const {lexicon} = context
-  const wires = [], decisions = []
+  const wires = [], decisions = [], doubts = []
   const counters = {c: 0, e: 0, r: 0, k: 0}
   const span = (first, last) => quote(text.slice(tokens[first].start, tokens[last].end))
   const word = unit => tokens[unit.last].word
@@ -66,7 +66,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     if (unit.type === 'terminator') sentences.push([])
   }
   for (const sentence of sentences) if (sentence.length) linkSentence(sentence)
-  return {wires, decisions}
+  return {wires, decisions, doubts}
 
   function linkSentence(all) {
     const terminator = all.at(-1).type === 'terminator' ? all.at(-1) : null
@@ -121,7 +121,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
                  lexicon.takesClause(tokens[list[i - 2].predicate[0]].word)) {
         clause.role = 'complement'
         clause.subject = previous
-      } else scanLeft(clause, i)
+      } else {
+        scanLeft(clause, i)
+        // a bare verb right after another verb's object, with nothing to introduce it and no
+        // subject of its own, cannot be placed: the word was probably not a verb
+        const stranded = bare && !verb.form && !clause.subject && !clause.marker && !clause.conjunction && !clause.separator &&
+          previous?.type === 'entity' && !previous.pronoun && clauses.length && list.slice(clauses.at(-1).index + 1, i).every(unit => unit.type === 'entity' || unit.type === 'cue')
+        if (stranded) doubts.push({position: verb.predicate[0], not: 'verb'})
+      }
       clauses.push(clause)
     }
     clauses.forEach((clause, k) => { if (k && clause.start <= clauses[k - 1].index) clause.start = clauses[k - 1].index + 1 })
@@ -137,15 +144,26 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     clauses.forEach((clause, k) => {
       const verb = clause.verb
       const end = k + 1 < clauses.length ? clauses[k + 1].start : list.length
-      const region = list.slice(clause.index + 1, end)
+      let region = list.slice(clause.index + 1, end), returned = []
+      if (clause.role === 'modifier') {
+        // what a participle says about a thing ends at the next separator; the list it stood in goes on
+        const cut = region.findIndex(unit => unit.type === 'separator')
+        const host = made.findLast(other => other.fragment && !other.gapOf || other.role === 'main')
+        if (cut >= 0 && host && region.slice(cut).some(unit => unit.type === 'entity')) { returned = region.slice(cut); region = region.slice(0, cut) }
+        clause.returnTo = host
+      }
       // "a group called g2": a past form with one bare entity after it is the cue of a relation
       const content = region.filter(unit => unit.type !== 'separator')
       if (clause.role === 'modifier' && verb.form === 'past' && !verb.negation.length && !verb.adverb.length &&
           content.length === 1 && content[0].type === 'entity') {
         const cue = {first: verb.predicate[0], last: verb.predicate[1]}
-        const relation = relate(entityWire(clause.modifies), cue, entityWire(content[0]))
+        const placed = clause.modifies.placedBy
+        const named = placed && !placed.pronoun && clause.modifies.name && !clause.modifies.head ? placed : clause.modifies
+        const relation = relate(entityWire(named), cue, entityWire(content[0]))
+        content[0].placedBy = named
         relation.slots[0][1] = context.kindOf('relation', tokens[cue.last].word) ?? relation.slots[0][1]
         strays.push(...region.filter(unit => unit.type === 'separator'))
+        if (returned.length) made.push(...fill(clause.returnTo, returned))
         return
       }
       const target = clause.wire = wire('c', 'nlu.clause')
@@ -160,7 +178,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (clause.marker) {
         // a marker joins two clauses as a relation; otherwise it stays on its own clause
         const anchor = list[list.indexOf(clause.marker) - 1]
-        const joins = clause.role === 'main' && made.length && anchor?.type !== 'entity' && anchor?.type !== 'verb'
+        const relative = context.linkOf(word(clause.marker)) === 'relative'
+        const joins = clause.role === 'main' && made.length && !(relative && anchor?.type === 'entity') && anchor?.type !== 'verb'
         if (joins) clause.joinedBy = clause.marker
         else { put(target, 'marker', clause.marker.first, clause.marker.last); clause.after = anchor }
       }
@@ -174,6 +193,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (clause.subject) target.slots.push(['subject', '$' + entityWire(clause.subject).id])
       for (const [cue, entity, from] of clause.chain ?? []) relate(entityWire(from), cue, entityWire(entity))
       made.push(clause, ...fill(clause, region))
+      if (returned.length) made.push(...fill(clause.returnTo, returned))
     })
     const standing = made.filter(clause => clause.fragment || clause.role === 'main')
     for (const unit of strays) put((standing.findLast(clause => clause.wire.id) ?? made[0] ?? orphan()).wire, 'separator', unit.first, unit.last)
@@ -185,8 +205,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       // the clause it is joined to: the nearest one before it that stands on its own
       const before = made.slice(0, k).findLast(other => other.fragment || other.role === 'main')
       if (clause.role === 'modifier') {
+        // "a man on the path wearing a cap": the participle describes the thing that was placed,
+        // unless the text shows it said of the place more often
+        let described = clause.modifies
+        const placed = described.placedBy
+        if (placed && !placed.pronoun && placed !== described &&
+            context.describes(clause.predicate, headWord(placed)) >= context.describes(clause.predicate, headWord(described))) described = placed
         const relation = wire('r', 'nlu.relation')
-        relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(clause.modifies).id], ['to', '$' + clause.wire.id])
+        relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(described).id], ['to', '$' + clause.wire.id])
         return
       }
       if (clause.role === 'infinitive' || clause.role === 'complement') {
@@ -315,9 +341,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
   function fill(clause, region) {
     const target = clause.wire
     const verb = clause.verb
-    const objects = [], opened = [], frontier = []
-    let lastEntity = null, pendingCue = null, pendingJoin = [], adverbForCue = null
-    const predicative = verb && context.linkOf(tokens[verb.predicate[0]].word) === 'predicative'
+    const state = clause.state ??= {objects: [], frontier: [], lastEntity: null, tail: null}
+    const {objects, frontier} = state
+    const opened = []
+    let lastEntity = state.lastEntity, pendingCue = null, pendingJoin = [], adverbForCue = null
+    // a fragment that repeats the pattern of a clause shares that clause's verb
+    const acts = verb ?? clause.gapOf?.verb
+    const predicative = acts && context.linkOf(tokens[acts.predicate[0]].word) === 'predicative'
+    const shapeOf = units => units.map(unit => ({entity: 'E', cue: 'C', complement: 'Q'})[unit.type] ?? (unit.type === 'adverb' ? '' : 'X')).join('')
+    // how the segment before a joiner ended: with a quality, or with a relation held by the clause
+    let tail = state.tail
     const role = (key, entity) => {
       const slot = [key, '$' + entityWire(entity).id]
       target.slots.push(slot)
@@ -339,6 +372,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           settle()
           const relation = relate(null, pendingCue, made, adverbForCue)
           attach(relation, clause, lastEntity, pendingCue, unit)
+          // the thing this one is placed by: the entity the relation starts at, or the clause's own thing
+          unit.placedBy = relation.slots.find(slot => slot[0] === 'from')[1] === '$' + target.id ? objects[0] ?? clause.subject : lastEntity
+          tail = relation.slots.find(slot => slot[0] === 'from')[1] === '$' + target.id ? 'held' : null
           pendingCue = null
           adverbForCue = null
           unit.holder = relation.slots.find(slot => slot[0] === 'to')
@@ -347,7 +383,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           pendingJoin = []
         } else {
           settle()
-          const key = clause.fragment ? (objects.length ? null : 'topic')
+          const key = clause.fragment && !clause.gapOf ? (objects.length ? null : 'topic')
             : predicative ? (objects.length || clause.subject ? 'predicative_entity' : 'subject')
             : objects.length === 0 ? 'direct_object' : objects.length === 1 ? 'predicative_entity' : null
           const recipient = key === 'predicative_entity' && !predicative && objects[0].holder?.[0] === 'direct_object' &&
@@ -364,12 +400,51 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             unit.holder = relation.slots[2]
           }
           objects.push(unit)
+          tail = null
         }
         lastEntity = unit
         frontier.push(unit)
         continue
       }
       if (unit.type === 'conjunction' || unit.type === 'separator') {
+        // "make the second box blue and the first one green": when what follows the joiner
+        // repeats the pattern of what precedes it, it is a clause of its own that shares the verb
+        let j = i
+        while (region[j]?.type === 'conjunction' || region[j]?.type === 'separator') j++
+        let k = j
+        while (k < region.length && region[k].type !== 'conjunction' && region[k].type !== 'separator') k++
+        const joiners = region.slice(i, j), segment = region.slice(j, k)
+        const after = shapeOf(segment)
+        const cue = segment.find(other => other.type === 'cue')
+        // the new segment has its own thing and then either its own quality, or its own relation
+        // that the verb would hold: the same build as the segment before it
+        const host = clause.gapOf ?? clause
+        const first = segment[0], model = host.state?.objects[0] ?? objects[0]
+        const sameClass = first?.type === 'entity' && model && !first.pronoun && Boolean(first.head) === Boolean(model.head) && Boolean(first.literal) === Boolean(model.literal)
+        const mirrors = sameClass && (host.gapJoin && after.startsWith('E') ||
+          tail === 'quality' && after.startsWith('EQ') ||
+          tail === 'held' && after.startsWith('ECE') &&
+            context.attach(host.predicate, headWord(first), tokens[cue.last].word) >= 0)
+        const parallel = context.gapping !== false && acts && !pendingCue && mirrors && !after.includes('X') &&
+          joiners.every(joiner => context.kindOf('coordination', tokens[joiner.last].word, true)) && !joiners.some(joiner => context.joinsClauses(word(joiner)))
+        if (parallel) {
+          settle()
+          const fragment = fragmentClause()
+          fragment.gapOf = host
+          fragment.predicate = host.predicate
+          let join = host.gapJoin
+          if (!join) {
+            join = host.gapJoin = wire('k', 'nlu.coordination')
+            join.slots.push(['kind', null], ['member', '$' + host.wire.id])
+          }
+          join.slots.push(['member', '$' + fragment.wire.id])
+          for (const joiner of joiners) put(join, 'cue', joiner.first, joiner.last)
+          join.slots[0][1] = context.kindOf('coordination', tokens[(joiners.findLast(joiner => joiner.type === 'conjunction') ?? joiners.at(-1)).last].word)
+          opened.push(fragment, ...fill(fragment, segment))
+          lastEntity = null
+          i = k - 1
+          continue
+        }
         // "…, then the girl to the left": what follows a joiner of clauses is a clause of its own
         const rest = region.slice(i + 1)
         if (unit.type === 'conjunction' && context.joinsClauses(word(unit)) && rest.some(other => other.type !== 'separator') && !pendingCue) {
@@ -400,8 +475,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         else put(target, moves ? 'particle' : 'adverb', unit.first, unit.last)
       } else if (unit.type === 'complement') {
         for (const position of unit.degree) put(target, 'degree', position)
-        if (!verb || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
-        else put(target, 'result_complement', ...unit.value)
+        if (!acts || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
+        else { put(target, 'result_complement', ...unit.value); tail = objects.length ? 'quality' : null }
       } else if (unit.type === 'expression') {
         // a detached expression is an act of its own: it gets its own clause
         const own = clause.fragment && !has(target, 'expression') && !has(target, 'topic') ? target : wire('c', 'nlu.clause')
@@ -417,6 +492,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     }
     if (pendingCue) put(target, verb ? 'particle' : 'adverb', pendingCue.first, pendingCue.last)
     settle()
+    state.lastEntity = lastEntity
+    state.tail = tail
     return opened
   }
 
@@ -435,7 +512,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const toClause = '$' + clause.wire.id
     if (!entity || entity.pronoun) { slot[1] = toClause; return }
     const toEntity = '$' + entityWire(entity).id
-    if (clause.fragment) { slot[1] = toEntity; return }
+    if (clause.fragment && !clause.gapOf) { slot[1] = toEntity; return }
     const score = context.attach(clause.predicate, headWord(entity), tokens[cue.last].word, headWord(target))
     const id = decisions.length
     decisions.push({id, margin: Math.abs(score), cue: tokens[cue.last].word})

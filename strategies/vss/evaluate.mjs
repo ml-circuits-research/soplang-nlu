@@ -19,7 +19,10 @@ const part = args.part ?? 'all'
 const {describe, sameGraph} = await createComparer(knowledgeDir)
 const without = new Set(String(args.without ?? '').split(',').filter(Boolean))
 const reader = createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')),
-  {meanings: !without.has('meanings'), attachment: !without.has('attachment'), alternatives: !without.has('alternatives')})
+  {meanings: !without.has('meanings'), attachment: !without.has('attachment'), alternatives: !without.has('alternatives'), gapping: !without.has('gapping')})
+// --against <option>: the same texts read with one mechanism switched off, to count what it wins and what it breaks
+const rival = args.against ? createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')), {[args.against]: false}) : null
+const duel = {better: [], worse: [], same: 0}
 
 // references: one record per exact text. A fixed tenth (by hash) is the part looked at while
 // developing; the rest is the test part.
@@ -78,6 +81,17 @@ for (const row of rows) {
       total[field][2] += best.said[key].size
     }
   }
+  if (rival) {
+    // per text: the links (with role) that each version shares with the closest reference
+    const other = rival.analyse(row.text).analyses[0]
+    if (other && first && other.sop !== analyses[0].sop) {
+      const theirs = describe(row.text, other.sop)
+      const f = said => { const hit = overlap(said.links, best.said.links); return said.links.size + best.said.links.size ? 2 * hit / (said.links.size + best.said.links.size) : 1 }
+      const gain = f(first) - f(theirs)
+      const entry = {text: row.text, gain, with: analyses[0].sop, without: other.sop}
+      if (gain > 1e-9) duel.better.push(entry); else if (gain < -1e-9) duel.worse.push(entry); else duel.same++
+    } else duel.same++
+  }
   if (args.show && isDev(row.text)) {
     const wanted = String(args.show).replace(/_/gu, ' ')
     const source = [...row.text.matchAll(/\S+/gu)]
@@ -116,6 +130,10 @@ if (args.words) for (const key of String(args.words).split(';')) console.log(key
 if (args.confusion) {
   console.log([...confusion].sort((a, b) => b[1] - a[1]).slice(0, 45).map(([key, count]) => count + '  ' + key).join('\n'))
   console.log([...linkMiss].sort((a, b) => b[1] - a[1]).map(([key, count]) => count + '  ' + key).join('\n'))
+}
+if (rival) {
+  console.log(`with ${args.against} against without: closer to the reference on ${duel.better.length} texts, further on ${duel.worse.length}, unchanged on ${duel.same}`)
+  for (const [name, list] of [['closer', duel.better], ['further', duel.worse]]) for (const entry of list.slice(0, Number(args.count ?? 4))) console.log(`\n[${name}] ${entry.text}\n--- with\n${entry.with}\n--- without\n${entry.without}`)
 }
 if (args.errors) {
   writeFileSync(resolve(args.errors), misses.slice(0, Number(args.count ?? 150)).map(miss =>

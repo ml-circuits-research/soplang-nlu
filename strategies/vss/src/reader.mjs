@@ -58,7 +58,7 @@ export function openModel(model, options = {}) {
   const meanings = openMeanings(options.meanings === false ? null : model.meanings)
   let opening = null
   const context = {
-    legend, lexicon, meanings,
+    legend, lexicon, meanings, gapping: options.gapping,
     joinsClauses: word => joiners.has(word),
     // two entities are alike when their heads are used alike and they are introduced alike
     alike: (tokens, left, right) => {
@@ -68,7 +68,9 @@ export function openModel(model, options = {}) {
     linkOf: word => legend.links.get(word),
     kindOf: (unit, cue, strict = false) => cue === null ? kinds.get(unit + '\0')
       : kinds.get(unit + '\0' + cue) ?? (strict || unit !== 'coordination' ? (unit === 'relation' ? undefined : null) : 'additive'),
-    attach: attachment(options.attachment === false ? null : habits.attach)
+    attach: attachment(options.attachment === false ? null : habits.attach),
+    // how often the text says this verb form of this thing (per occurrence of the thing)
+    describes: (form, head) => (habits.describes?.[form]?.[head] ?? 0) / ((habits.attach?.nounTotal?.[head] ?? 0) + 5)
   }
   return {legend, book, index, context, lexicon, meanings}
 }
@@ -77,16 +79,27 @@ export function createVssReader(model, options = {}) {
   const opened = openModel(model, options)
   const {legend, book, index, context, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
+  const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
+  const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
   function analyse(text) {
     const tokens = observe(text, legend.compounds)
     if (!tokens.length) return {analyses: []}
-    const {stations, confidence} = readRoutes(book, legend, index, tokens)
+    const tried = new Map()
+    let {stations, confidence} = readRoutes(book, legend, index, tokens)
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
-      const {wires, decisions} = linkUnits(text, tokens, units, context, flips)
-      return {sop: emit(wires), decisions}
+      const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)
+      return {sop: emit(wires), decisions, doubts: [...units.doubts, ...doubts].filter(doubt => !tried.has(doubt.position))}
     }
-    const first = read(new Set())
+    let first = read(new Set())
+    // A verb that the structure cannot place was probably not a verb: the sentence is read
+    // again with that word kept off the verb stations.
+    for (let again = 0; again < 3 && first.doubts.length; again++) {
+      for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : thingStations)
+      const banned = new Map(tried)
+      ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned))
+      first = read(new Set())
+    }
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence)}]
     // language can be ambiguous: the least certain attachment is also read the other way
     const doubtful = options.alternatives === false ? null : first.decisions.filter(decision => decision.margin < (options.ambiguous ?? AMBIGUOUS)).sort((a, b) => a.margin - b.margin)[0]

@@ -54,7 +54,9 @@ function prior(legend) {
   const end = new Float64Array(n)
   for (const from of legend.stations) {
     for (const to of legend.stations) {
-      transition[from.index * n + to.index] = from.follows.includes(to.index) ? FOLLOW : from.core ? LEAVE : BREAK
+      // a station that names what it may come after is against the grain anywhere else
+      const barred = to.after && !to.after.includes(from.index) && !(to.like !== null && false)
+      transition[from.index * n + to.index] = barred ? BREAK : from.follows.includes(to.index) ? FOLLOW : from.core ? LEAVE : BREAK
     }
     end[from.index] = from.core ? LEAVE : BREAK
   }
@@ -261,23 +263,24 @@ export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen =
  * The best station sequence of one message and, per token, the posterior of the chosen
  * station (its margin of confidence).
  */
-export function readRoutes(book, legend, index, tokens) {
+export function readRoutes(book, legend, index, tokens, banned = new Map()) {
   const stations = [], confidence = []
   for (const [from, to] of sentencesOf(legend, tokens)) {
-    const part = readSentence(book, legend, index, tokens.slice(from, to))
+    const bans = new Map([...banned].filter(([position]) => position >= from && position < to).map(([position, set]) => [position - from, set]))
+    const part = readSentence(book, legend, index, tokens.slice(from, to), bans)
     stations.push(...part.stations)
     confidence.push(...part.confidence)
   }
   return {stations, confidence}
 }
 
-function readSentence(book, legend, index, tokens) {
+function readSentence(book, legend, index, tokens, bans) {
   const n = legend.stations.length, v = book.symbols.length, k = SHAPES.length
   const length = tokens.length
   if (!length) return {stations: [], confidence: []}
   const symbols = tokens.map(token => symbolOf(index, legend, token))
   const forms = tokens.map(token => isFormShape(token.shape) ? -1 : shapeIndex(token.shape))
-  const emit = (t, s) => book.emission[book.base[s] * v + symbols[t]] * (forms[t] < 0 ? 1 : book.shape[book.base[s] * k + forms[t]])
+  const emit = (t, s) => bans.get(t)?.has(s) ? 0 : book.emission[book.base[s] * v + symbols[t]] * (forms[t] < 0 ? 1 : book.shape[book.base[s] * k + forms[t]])
   const score = new Float64Array(length * n).fill(-Infinity), back = new Int32Array(length * n)
   const alpha = new Float64Array(length * n), beta = new Float64Array(length * n), scale = new Float64Array(length)
   for (let t = 0; t < length; t++) {

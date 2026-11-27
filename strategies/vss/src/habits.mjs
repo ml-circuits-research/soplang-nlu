@@ -11,7 +11,7 @@ export function learnHabits(opened, texts) {
   const {legend, book, index, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
   const heads = {}, qualities = {}
-  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}
+  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}
   for (const text of texts) {
     const tokens = observe(text, legend.compounds)
     if (!tokens.length) continue
@@ -31,6 +31,11 @@ export function learnHabits(opened, texts) {
         // is the word a thing (it heads entities) or a quality (it says what a thing is like)?
         if (unit.head && stations[unit.head[1]] === 'noun') bump(heads, tokens[unit.head[1]].word)
         unit.modifier?.forEach((position, k) => { if (unit.degree?.length && k === 0) bump(qualities, tokens[position].word) })
+        // "a man wearing a hat": a verb form right after a thing that nothing else stands between says something of it
+        if (!unit.pronoun && head(unit) && next?.type === 'verb' && next.form && !next.auxiliary.length && units[i - 1]?.type !== 'cue') {
+          bump2(said, tokens[next.predicate[0]].word, head(unit))
+          bump(saidTotal, head(unit))
+        }
         // an entity no verb governs can only hold its own cue
         if (!unit.pronoun && head(unit)) bump(everyNoun, head(unit))
         if (!governed && !unit.pronoun && head(unit)) {
@@ -114,7 +119,8 @@ export function learnHabits(opened, texts) {
     verbCue: round1(attach.verbCue), nounCue: round1(attach.nounCue), verbAll: attach.verbAll, nounAll: attach.nounAll
   }
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
-  return {nominal, takesClause, takesQuality, together, attach}
+  const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
+  return {nominal, takesClause, takesQuality, together, describes, attach}
 }
 
 /** What an entity is counted under: its head word, or its class when it is a name or verbatim content. */

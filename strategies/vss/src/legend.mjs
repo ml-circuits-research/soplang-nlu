@@ -25,6 +25,7 @@ export function readLegend(source) {
     index, name: wire.id.replace(/^st\./u, ''), unit: wire.attrs.unit[0], key: wire.attrs.key[0],
     core: wire.attrs.core?.[0] === 'true', closed: wire.attrs.closed?.[0] === 'true',
     opens: wire.attrs.opens?.[0] !== 'false', ends: wire.attrs.ends?.[0] === 'true', as: wire.attrs.as?.[0] ?? null,
+    after: wire.attrs.after ?? null,
     like: wire.attrs.like?.[0] ?? null, shapes: wire.attrs.shape ?? [], suffixes: wire.attrs.suffix ?? [],
     follows: wire.attrs.follows ?? []
   }))
@@ -34,6 +35,10 @@ export function readLegend(source) {
     return byName.get(name).index
   }
   for (const station of stations) {
+    if (station.after) {
+      if (!station.after.includes('start')) station.opens = false
+      station.after = station.after.filter(name => name !== 'start').map(need)
+    }
     station.follows = station.follows.map(need)
     station.like = station.like === null ? null : need(station.like)
   }

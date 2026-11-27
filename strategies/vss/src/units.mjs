@@ -77,6 +77,13 @@ export function buildUnits(tokens, stations, lexicon) {
     units.push({type: SINGLE.has(station) ? station : 'other', first: i, last: i})
     i++
   }
+  // "a girl waving": a form of a verb that closes an entity after its noun was not a thing
+  units.doubts = []
+  for (const unit of units) {
+    if (unit.type !== 'entity' || !unit.head || unit.name) continue
+    const head = unit.head[0]
+    if (unit.compound.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+  }
   // "make the girl ginger": after a verb that says what its object becomes, a last word that
   // is a quality and was never seen standing with the word before it is that outcome.
   for (let k = 1; k < units.length; k++) {
@@ -140,7 +147,12 @@ export function buildUnits(tokens, stations, lexicon) {
       core.forEach((position, k) => { if (stations[position] === 'noun' || stations[position] === 'complement') head = k })
       modifier.forEach(attribute)
       const label = stations[core[0]] === 'name' && !determiner.length && !modifier.length && !quantity.length
-      if (label) entity.name = [core[0], core.at(-1)]       // "Budget split": a label of several words
+      const stands = core.length > 1 && lexicon.canBe(tokens[core.at(-1)].word, 'pronoun')
+      if (stands) {
+        // "the first one": a word that stands for a thing heads what describes it
+        core.slice(0, -1).forEach(position => entity.modifier.push(position))
+        entity.head = [core.at(-1), core.at(-1)]
+      } else if (label) entity.name = [core[0], core.at(-1)]       // "Budget split": a label of several words
       else if (head >= 0) {
         core.slice(0, head).forEach(position => entity.compound.push(position))
         entity.head = [core[head], core[head]]

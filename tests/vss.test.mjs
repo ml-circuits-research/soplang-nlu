@@ -62,6 +62,21 @@ test('a doubtful attachment gives two readings', () => {
   assert.equal(createVssReader(model, {ambiguous: 0}).analyse('put a hat on the man').analyses.length, 1)
 })
 
+test('a segment built like the one before it is a clause that shares the verb', () => {
+  const read = text => createVssReader(model).analyse(text).analyses[0].sop
+  const pairs = read('Make the second box blue and the first one green')
+  assert.match(pairs, /predicate="Make" direct_object=\$e1 result_complement="blue"/)
+  assert.match(pairs, /form=fragment direct_object=\$e2 result_complement="green"/)
+  assert.match(pairs, /nlu\.coordination kind=additive member=\$c1 member=\$c2 cue="and"/)
+  assert.match(pairs, /@e2 nlu\.entity determiner="the" modifier="first" head="one"/)
+  // two things with nothing of their own are one object
+  assert.match(read('Move the red circle and the blue square'), /direct_object=\$k1/)
+  // a second verb is a second clause
+  assert.match(read('Move the red circle and thank Sam'), /predicate="thank" direct_object=\$e2/)
+  // a participle describes the thing that was placed, not the place
+  assert.match(read('put a man on the path wearing a blue cap'), /kind=nominal_clause from=\$e1 to=\$c2/)
+})
+
 test('a person given something is the indirect object', () => {
   const sop = createVssReader(model).analyse('give me a red circle').analyses[0].sop
   assert.match(sop, /indirect_object=\$e1 direct_object=\$e2/)
