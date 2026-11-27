@@ -3,7 +3,7 @@
 //   node tests/benchmark/syntax/round.mjs plan [--rounds 3] [--min-messages 500] [--order size|name]
 //   node tests/benchmark/syntax/round.mjs start <round> [--min-messages 500] [--order size|name] [--files <tab/name.csv,…>]
 //   node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
-//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--relaxed] [--prefer vss] [--judge all|needed] [--focus vss]
+//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--relaxed] [--prefer vss] [--judge all|needed|audit] [--focus vss]
 //   (judges write <round>/judging/verdicts-<k>.jsonl)
 //   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100] [--now]
 //   (judges write <round>/rewriting/written-<k>.jsonl)
@@ -242,7 +242,9 @@ async function settle(roundDir, named) {
   // the circuit most families wrote; the other circuits wait, and a later call sends the next one when that one was
   // rejected. The circuits of the strategies named by --focus are always read, so that those strategies get a level
   // for every message. --judge all (the default) sends every circuit.
-  const needed = named.judge === 'needed', focus = new Set(typeof named.focus === 'string' ? named.focus.split(',').map(name => name.trim()) : [])
+  // --judge audit: a judge reads only the audit share of the agreed circuits (and the circuits of --focus); the other
+  // messages stay open for a later call
+  const auditOnly = named.judge === 'audit', needed = named.judge === 'needed' || auditOnly, focus = new Set(typeof named.focus === 'string' ? named.focus.split(',').map(name => name.trim()) : [])
   const wanted = new Set()
   if (needed) {
     const judgedHere = readRunVerdicts(roundDir).verdicts, circuits = new Map()
@@ -257,7 +259,7 @@ async function settle(roundDir, named) {
       const settledNow = [...ofText.keys()].some(core => verdictOf(core) === 'accepted' || agreedKeys.has(text + '\0' + core))
       const open = [...ofText.values()].filter(circuit => !verdictOf(circuit.core) && !agreedKeys.has(text + '\0' + circuit.core))
       for (const circuit of open) if ([...circuit.sources].some(name => focus.has(name))) wanted.add(text + '\0' + circuit.core)
-      if (settledNow || !open.length) continue
+      if (settledNow || !open.length || auditOnly) continue
       const support = circuit => [new Set([...circuit.sources].map(familyOf)).size, circuit.sources.size]
       const preferred = circuit => { const at = prefer.findIndex(name => circuit.sources.has(name)); return at < 0 ? prefer.length : at }
       const best = open.sort((a, b) => support(b)[0] - support(a)[0] || support(b)[1] - support(a)[1] || preferred(a) - preferred(b) || (a.core < b.core ? -1 : 1))[0]
