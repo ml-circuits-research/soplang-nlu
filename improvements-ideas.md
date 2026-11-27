@@ -120,6 +120,16 @@ messages, where it does worse.
   folders agreement rises from 31.7% to 38.9% of messages (calendar 10.6% to 56.0%). Two candidate kinds were
   dropped because judges rejected one of the variants.
 
+- Two learned methods tried and not adopted (experiments/syntax-learned/README.md):
+  - a transition-based parser with an averaged perceptron for VSS, trained on the labels: 55.3% known accepted
+    on the benchmark, 63–76% estimated in all (VSS 75.4%); it learns VSS's own conventions, because 91% of the
+    labels are agreement labels written by VSS;
+  - spaCy fine-tuned on the judged circuits: 64.6–66.4% known accepted with 30–33% unjudged, against 86.7% for
+    the base model; it fixes 48 rejected circuits and breaks none among those judged, but the rest looks
+    break-even.
+  Both need training signal from the hard part of the dataset (judged circuits, rejected ones as negatives)
+  before they can help; they may then serve as one more voice beside VSS and spaCy.
+
 ## In progress
 
 - VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
@@ -127,15 +137,14 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- Prototypes in scratch: a transition-based parser with an averaged perceptron for VSS (plain JavaScript),
-  and spaCy fine-tuned on the judged circuits; benchmark held out of both.
+- The 2% audit of the agreement circuits settled with the wider key on the 217 conversion folders (433
+  circuits, eval-results/conversion-audit-02), then the cells are written.
 
 ## Next steps, in order
 
 1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
    and the status page (docs/STATUS.md).
 2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
-3. Decide on the prototypes' numbers whether to build the learned structure and the fine-tuned spaCy.
 4. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
 5. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
