@@ -19,7 +19,7 @@ sources, so their agreement means something.
 
 | Strategy | Source of the analysis | Benchmark (random 1%) | State |
 | --- | --- | ---: | --- |
-| spacy | spaCy dependency parse + our rules (former spacy-beam) | 86.8% | general repairs done (a55e33f) |
+| spacy | spaCy dependency parse + our rules (former spacy-beam) | 89.6% | two rounds of general repairs (a55e33f, 0a7bb62) |
 | distilbert | DistilBERT trained on syntax circuits only | 73.1% | syntax-v2, trained on the current labels, benchmark held out |
 | vss | our unsupervised reader (stations learned from text, rules) | 75.5% | main focus; rules being added (agent) |
 | prolog | hand-written grammar | 61.7% | parked (owner: do not improve for now) |
@@ -132,6 +132,10 @@ messages, where it does worse.
   Both need training signal from the hard part of the dataset (judged circuits, rejected ones as negatives)
   before they can help; they may then serve as one more voice beside VSS and spaCy.
 
+- spaCy, second round of general repairs (0a7bb62): 86.8% -> 89.6% on the benchmark. Still rejected, by the
+  judge of the 76 new circuits: coordinations with the wrong conjuncts, scene-list items tied without a marker
+  instead of joining the 'then' series, relations starting across an 'and', nominals split.
+
 ## In progress
 
 - VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
@@ -139,7 +143,6 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- spaCy: a second round of general repairs in the layer that writes its circuits (agent).
 - DistilBERT retrained on the grown labels (syntax-v3, benchmark held out).
 
 ## Next steps, in order

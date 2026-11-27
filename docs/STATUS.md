@@ -1,8 +1,8 @@
 # Syntax work status
 
-Generated 2026-11-27 19:26 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 9b2831e (13 uncommitted paths) · webmeet-dataset 596ff1d. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
+Generated 2026-11-27 19:43 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 08fc191 (13 uncommitted paths) · webmeet-dataset 596ff1d. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
 
-> **Since the build of 2026-11-27 19:04** (6f11cb6): registry 12,310 → 12,743 circuits; dataset messages with a circuit 62,066 → 83,619; 2 new commits in soplang-nlu; 1 new commit in webmeet-dataset.
+> **Since the build of 2026-11-27 19:26** (9b2831e): spacy 86.8% → 89.6%; circuits judged in the benchmark run 7,306 → 7,382; 4 new commits in soplang-nlu.
 
 1. [What this project does](#what-this-project-does)
 2. [Working on now](#working-on-now)
@@ -17,7 +17,7 @@ Generated 2026-11-27 19:26 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 
 ## What this project does
 
-**At a glance:** **86.8%** GOAL of the best strategy (spacy): share of the 1,831 benchmark messages whose circuit a judge accepts · **75.5%** GOAL of VSS, our own reader and the main focus · **45.6%** of the dataset's 183,497 messages have a circuit (83,619)
+**At a glance:** **89.6%** GOAL of the best strategy (spacy): share of the 1,831 benchmark messages whose circuit a judge accepts · **75.5%** GOAL of VSS, our own reader and the main focus · **45.6%** of the dataset's 183,497 messages have a circuit (83,619)
 
 A **formalizer** (here called a **[strategy](#glossary)**) reads one English message alone, with no context and no knowledge base, and writes its syntactic **[circuit](#glossary)** in the `syntax` schema: the clauses, the nominals (the words that describe one thing), the relations between them and the coordinations, with every word of the message in exactly one place. The strategies are compared on one **[benchmark](#glossary)**: 1,831 messages, 1% of the dataset, drawn at random. A **[judge](#glossary)** reads every circuit without knowing which strategy wrote it, and accepts or rejects it. **GOAL** is the share of messages whose circuit is accepted (levels L8, L9 and L10, [below](#the-benchmark-live)); the aim is over 99%. Accepted circuits become the **[labels](#glossary)** of the dataset, which the strategies are measured and trained on. Terms are explained in the [Glossary](#glossary).
 
@@ -51,7 +51,7 @@ Read line by line, each line one wire:
 - **prolog** (parked): a hand-written grammar in Prolog.
 - **z3** (parked): a hand-written grammar written as constraints and solved by the Z3 solver.
 
-**Why VSS is the focus, although spaCy scores higher.** VSS needs only Node.js, its model is one file of 3.3 MB, it reads a message in 0.42 ms (median) on one CPU core, and it learns from raw text, so it is a reader we own and can extend, and it could run in a browser once a small loader is written. spaCy needs Python and a transformer of 500.7 MB and takes 51 ms per message. It stays as the strongest second voice: when two strategies that read from different sources write the same circuit, the label is settled with no judge ([Agreement](#agreement-between-vss-and-spacy)).
+**Why VSS is the focus, although spaCy scores higher.** VSS needs only Node.js, its model is one file of 3.3 MB, it reads a message in 0.42 ms (median) on one CPU core, and it learns from raw text, so it is a reader we own and can extend, and it could run in a browser once a small loader is written. spaCy needs Python and a transformer of 500.7 MB and takes 65 ms per message. It stays as the strongest second voice: when two strategies that read from different sources write the same circuit, the label is settled with no judge ([Agreement](#agreement-between-vss-and-spacy)).
 
 **Who the judges are.** Language-model agents (claude-opus-5-5: 12,417 circuits read so far) that follow written rules (`tests/benchmark/syntax/rules.md`). How often two judges, or a judge and a person, agree on this schema has not been measured yet.
 
@@ -59,15 +59,17 @@ More to read: [How VSS works](vss-architecture.html) · [The syntax work of 2026
 
 ## Working on now
 
-*Written by hand; last saved 2026-11-27 19:26. The numbers are in the computed sections below.*
+*Written by hand; last saved 2026-11-27 19:43. The numbers are in the computed sections below.*
 
 Updated by hand with every step; the numbers are in the sections this text links to.
 
 **Latest results**
 
+- spaCy reached **89.6%** on the benchmark (86.8% before) after a second round of general repairs in the layer
+  that writes its circuits (commit `0a7bb62`).
 - VSS reached **75.5%** on the benchmark (65.9% at the first judging): the rules of three fault analyses and
   the measured prototypes of the lever study ([Progress over time](#progress-over-time)). It is now above DistilBERT
-  (73.1%); spaCy leads with 86.8% after general repairs in our writing layer.
+  (73.1%).
 - The lever trials, judged in full: evidence from DistilBERT on the roles of words would add about 3.9 points
   to VSS; with perfect word tags (stations) up to about 9 points. Better tagging is a real lever for VSS,
   alongside the structural rules.
@@ -98,13 +100,14 @@ Updated by hand with every step; the numbers are in the sections this text links
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **spaCy, second round of general repairs** in the layer that writes its circuits, on the about 241
-  benchmark circuits judges still reject (scene lists, gapping, grading words, clauses untied across ";").
+- **DistilBERT retrained on the grown labels** (syntax-v3: 3,670 judged circuits and 77,800 agreement circuits
+  to train on, benchmark held out); then it runs on the benchmark and a judge reads its new circuits.
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Judge the benchmark circuits that the spaCy repairs change; record the new GOAL.
+2. A third round for spaCy on what judges still reject: coordinations with the wrong conjuncts, scene-list
+   items, relations that start across an 'and'.
 3. Rerun VSS over the conversion after each round of rules and settle again (each gain fills cells without a
    judge, with a 2% audit).
 4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
@@ -124,7 +127,7 @@ Updated by hand with every step; the numbers are in the sections this text links
 
 | Strategy | GOAL | Bar (each block 5%) |
 | --- | ---: | --- |
-| spacy | 86.8% | █████████████████░░░ |
+| spacy | 89.6% | ██████████████████░░ |
 | vss | 75.5% | ███████████████░░░░░ |
 | distilbert | 73.1% | ███████████████░░░░░ |
 | prolog (parked) | 61.7% | ████████████░░░░░░░░ |
@@ -149,7 +152,7 @@ Levels: L0 no valid circuit · L1–L6 rejected, with the judge's grade · L7 un
 
 | Strategy | GOAL (95% interval) | Accepted (L8–L10) | Rejected (L1–L6) | No circuit (L0) | Waiting for a judge |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| spacy | 86.8% (85.2–88.3) | 1,590 | 241 | 0 | 0 |
+| spacy | 89.6% (88.1–90.9) | 1,640 | 191 | 0 | 0 |
 | vss | 75.5% (73.5–77.4) | 1,382 | 449 | 0 | 0 |
 | distilbert | 73.1% (71.0–75.1) | 1,338 | 493 | 0 | 0 |
 | prolog (parked) | 61.7% (59.4–63.9) | 1,129 | 661 | 41 | 0 |
@@ -162,7 +165,7 @@ Levels: L0 no valid circuit · L1–L6 rejected, with the judge's grade · L7 un
 
 The strategy file of the run, and the commit that last changed it:
 
-- **spacy**: file written 2026-11-27 17:39; committed 17:40 in [`87a221e`](https://github.com/ml-circuits-research/soplang-nlu/commit/87a221e): "Benchmark: the repaired spaCy and the retrained DistilBERT (syntax-v2, benchmark messages held out of training) run a…"
+- **spacy**: file written 2026-11-27 19:36; committed 19:43 in [`08fc191`](https://github.com/ml-circuits-research/soplang-nlu/commit/08fc191): "Benchmark: verdicts on the 76 new spaCy circuits after the second round of repairs (0a7bb62), packet 47"
 - **vss**: file written 2026-11-27 18:13; committed 18:24 in [`1809b31`](https://github.com/ml-circuits-research/soplang-nlu/commit/1809b31): "Benchmark: verdicts on the 183 new VSS circuits after the study prototypes (83fce90), packets 45-46"
 - **distilbert**: file written 2026-11-27 17:38; committed 17:40 in [`87a221e`](https://github.com/ml-circuits-research/soplang-nlu/commit/87a221e): "Benchmark: the repaired spaCy and the retrained DistilBERT (syntax-v2, benchmark messages held out of training) run a…"
 - **prolog**: file written 2026-11-27 15:52; committed 16:14 in [`a09047d`](https://github.com/ml-circuits-research/soplang-nlu/commit/a09047d): "Batch conversion: settle and write scripts, the pooled audit of agreed circuits (1,154 read, 10 rejected), and the st…"
@@ -174,7 +177,7 @@ The strategy file of the run, and the commit that last changed it:
 
 | Strategy | GOAL | Messages | L0 | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 | waiting |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| spacy | 86.8% | 1,831 | 0 | 74 | 11 | 149 | 0 | 3 | 4 | 0 | 1,000 | 406 | 184 | 0 |
+| spacy | 89.6% | 1,831 | 0 | 49 | 9 | 126 | 0 | 3 | 4 | 0 | 1,050 | 406 | 184 | 0 |
 | vss | 75.5% | 1,831 | 0 | 145 | 2 | 270 | 0 | 26 | 6 | 0 | 796 | 582 | 4 | 0 |
 | distilbert | 73.1% | 1,831 | 0 | 150 | 3 | 274 | 4 | 5 | 57 | 0 | 754 | 535 | 49 | 0 |
 | prolog | 61.7% | 1,831 | 41 | 229 | 1 | 383 | 7 | 37 | 4 | 0 | 658 | 238 | 233 | 0 |
@@ -185,7 +188,7 @@ The strategy file of the run, and the commit that last changed it:
 
 | Strategy | Share | Accepted circuits | With attachment=ambiguous |
 | --- | ---: | ---: | ---: |
-| spacy | 18.4% | 1,590 | 293 |
+| spacy | 18.7% | 1,640 | 306 |
 | vss | 6.0% | 1,382 | 83 |
 | distilbert | 5.9% | 1,338 | 79 |
 | prolog | 48.0% | 1,129 | 542 |
@@ -195,7 +198,7 @@ A circuit may mark a phrase with `attachment=ambiguous` when the words do not sa
 
 </details>
 
-**About this run.** `2026-11-27-syntax-benchmark-random`: 1,831 messages drawn at random from the whole dataset (seed and method in `sample.lock.json`), every circuit of every strategy judged. Judged in this run: 7,306 circuits. Before the run, 593 of the 1,831 messages had a label. The [registry](#glossary) of judged circuits holds 12,743 circuits of 6,541 messages: 12,417 read by claude-opus-5-5, and 326 agreement circuits recorded with no judge: 306 agreement labels that the benchmark publication replaced, kept as accepted readings, in `2026-11-27-benchmark-random-replaced-agreement.jsonl`; 20 second agreed circuits of a conversion round, an open point of the journal, in `2026-11-27-round-02.jsonl`.
+**About this run.** `2026-11-27-syntax-benchmark-random`: 1,831 messages drawn at random from the whole dataset (seed and method in `sample.lock.json`), every circuit of every strategy judged. Judged in this run: 7,382 circuits. Before the run, 593 of the 1,831 messages had a label. The [registry](#glossary) of judged circuits holds 12,743 circuits of 6,541 messages: 12,417 read by claude-opus-5-5, and 326 agreement circuits recorded with no judge: 306 agreement labels that the benchmark publication replaced, kept as accepted readings, in `2026-11-27-benchmark-random-replaced-agreement.jsonl`; 20 second agreed circuits of a conversion round, an open point of the journal, in `2026-11-27-round-02.jsonl`.
 
 ## Progress over time
 
@@ -203,7 +206,7 @@ Each row is one judged measurement, written by hand into `docs/status/history.js
 
 | Strategy | Change (points) | First on the benchmark | Latest |
 | --- | ---: | ---: | ---: |
-| spacy | +4.3 | 82.5% (16:39) | 86.8% (17:52) |
+| spacy | +7.1 | 82.5% (16:39) | 89.6% (20:05) |
 | vss | +9.6 | 65.9% (16:39) | 75.5% (18:24) |
 | distilbert | +1.3 | 71.8% (16:39) | 73.1% (17:52) |
 | prolog (parked) | — | 61.7% (16:39) | 61.7% (16:39) |
@@ -213,6 +216,7 @@ Each row is one judged measurement, written by hand into `docs/status/history.js
 
 **Every measurement**, newest first:
 
+- **89.6%** spacy · 2026-11-27 20:05 · [`0a7bb62`](https://github.com/ml-circuits-research/soplang-nlu/commit/0a7bb62). After the second round of general repairs in the layer that writes spaCy's circuits (grading words before markers, verbless nouns hung as clauses, hyphenated names, question words that restart a sentence, then/next fragments sharing a verb, 'so' linking clauses, negated fragments). 76 new circuits judged: 58 accepted.
 - **75.5%** vss · 2026-11-27 18:24 · [`83fce90`](https://github.com/ml-circuits-research/soplang-nlu/commit/83fce90). After the measured prototypes of the lever study (83fce90: causative verb + object + bare verb, every part of a sentence tied, compound nouns, the opening command verb, participles after a comma); the 183 new circuits judged in packets 45-46 (commit 1809b31). VSS is now above DistilBERT.
 - **72.0%** vss · 2026-11-27 18:04 · [`fa46cb7`](https://github.com/ml-circuits-research/soplang-nlu/commit/fa46cb7). After the rules of fa46cb7 (the remaining rules of the drawing and diagram analyses, and rules found in the benchmark rejections); the 225 new circuits judged in packets 43-44 (commit 0f9b5c3).
 - **72.4%** vss *(trial: DistilBERT evidence on roles)* · 2026-11-27 17:59 · [`9df0889`](https://github.com/ml-circuits-research/soplang-nlu/commit/9df0889). Lever trial: the same table for all five word uses (verb, word of a nominal, modifier, marker, other) (+3.9 points against the plain copy).
@@ -237,12 +241,12 @@ Measured while the benchmark ran (`run.mjs`): each strategy in a process of its 
 | vss | 1,706 | 2 min | 0.42 | 1.12 | 2.4 | 0.59 | 48 ms |
 | prolog | 624 | 5 min | 1.10 | 3.41 | 7.0 | 1.60 | 7 ms |
 | distilbert | 262 | 12 min | 3.48 | 4.65 | 5.7 | 3.81 | not recorded |
-| spacy | 18 | 2.8 h | 51.1 | 74.1 | 111.3 | 55.2 | 2.8 s |
+| spacy | 14 | 3.5 h | 64.8 | 90.0 | 133.1 | 69.1 | 2.5 s |
 | z3 | 9 | 5.8 h | 56.7 | 254.4 | 984.8 | 113.6 | 252 ms |
 
 Start-up comes from `summary.json`, which `run.mjs` writes when it runs a strategy. For distilbert, summary.json still describes an earlier run (median 3.75 ms there, 3.48 ms in the strategy file), so the start-up of the current run was not recorded and is left out.
 
-**In practice.** VSS reads about 1,706 messages a second in one Node process on one CPU core, so the whole dataset takes about 2 min; with 20 processes on this machine's 20 cores, about 5 s (an estimate, not measured). spaCy takes about 2.8 h for the same work in one process: 94 times longer per message on average (121 times at the median). That makes spaCy the slowest step of every rerun over the whole dataset, such as the next one planned in [Working on now](#working-on-now). DistilBERT on the GPU takes about 12 min; Z3 about 5.8 h, with a long tail (90% of messages within 254 ms, 99% within 985 ms). For use while someone types: VSS's 0.4 ms is instant, spaCy's 51 ms goes unnoticed, and Z3's slow messages would be felt.
+**In practice.** VSS reads about 1,706 messages a second in one Node process on one CPU core, so the whole dataset takes about 2 min; with 20 processes on this machine's 20 cores, about 5 s (an estimate, not measured). spaCy takes about 3.5 h for the same work in one process: 118 times longer per message on average (154 times at the median). That makes spaCy the slowest step of every rerun over the whole dataset, such as the next one planned in [Working on now](#working-on-now). DistilBERT on the GPU takes about 12 min; Z3 about 5.8 h, with a long tail (90% of messages within 254 ms, 99% within 985 ms). For use while someone types: VSS's 0.4 ms is instant, spaCy's 65 ms goes unnoticed, and Z3's slow messages would be felt.
 
 **Not like for like.** DistilBERT ran on the GPU and spaCy on the CPU. The PyTorch strategies (spaCy's transformer and DistilBERT) may use several CPU threads inside their one process, so "one process" favours them. Messages were sent one at a time; spaCy and DistilBERT would be faster on batches of messages (not measured). **Not measured yet:** DistilBERT on a CPU (it decides whether DistilBERT can run where there is no GPU), the CPU time of each strategy, and speed with batches.
 
@@ -323,28 +327,28 @@ Two strategies that read a message from different sources (VSS from raw text, sp
 | Benchmark messages | first judging (16:39) | now |
 | --- | ---: | ---: |
 | Messages | 1,831 | 1,831 |
-| Same circuit | 400 (21.8%) | 430 (23.5%) |
-| Same up to attachment | 575 (31.4%) | 624 (34.1%) |
-| … accepted by the judges | 573 | 621 |
+| Same circuit | 400 (21.8%) | 440 (24.0%) |
+| Same up to attachment | 575 (31.4%) | 643 (35.1%) |
+| … accepted by the judges | 573 | 640 |
 | … rejected | 2 | 3 |
 
 By area (now; last column: same up to attachment at the first judging (16:39)). Small areas give rough shares: look at the number of messages.
 
 | Area | Same up to attachment | Messages | Same circuit | First judging (16:39) |
 | --- | ---: | ---: | ---: | ---: |
-| drawing | 38.2% | 876 | 27.6% | 36.4% |
-| diagram | 33.8% | 808 | 22.2% | 29.8% |
+| drawing | 39.6% | 876 | 28.2% | 36.4% |
+| diagram | 34.7% | 808 | 22.8% | 29.8% |
 | calendar | 16.7% | 48 | 6.3% | 12.5% |
 | document | 8.1% | 99 | 6.1% | 9.1% |
 
-Where both wrote a valid circuit and the circuits differ (1,207 messages, now), what the judges said of each:
+Where both wrote a valid circuit and the circuits differ (1,188 messages, now), what the judges said of each:
 
 | VSS's circuit | spaCy's circuit | Messages |
 | --- | --- | ---: |
-| accepted | accepted | 627 |
-| rejected | accepted | 339 |
-| accepted | rejected | 132 |
-| rejected | rejected | 109 |
+| accepted | accepted | 647 |
+| rejected | accepted | 350 |
+| rejected | rejected | 98 |
+| accepted | rejected | 93 |
 
 Where both circuits were accepted, the schema allows more than one reading (which word heads a name, a number after a noun as a dependent or as its own nominal, modifier or discourse word). A wider agreement key that counts these variations as the same would settle more messages with no judge.
 
@@ -373,12 +377,12 @@ The other 300 agreement labels of the dataset were settled outside these folders
 
 ## Journal
 
-The working journal, `improvements-ideas.md`, written by hand at each stage (last committed 2026-11-27 19:04): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
+The working journal, `improvements-ideas.md`, written by hand at each stage (last saved 2026-11-27 19:43): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
 
 > **Its numbers can be older than this page.** Parts of the journal, such as the table under "Where things stand", keep the figures of the time they were written. Where they differ from the computed sections above, the computed ones are current.
 
 <details>
-<summary>Open the journal (197 lines)</summary>
+<summary>Open the journal (202 lines)</summary>
 
 A working journal of the syntax-schema work: where things stand, what is being done now, and what could be done
 next. It is updated with every stage and committed with it, so the history of the plan stays in git.
@@ -399,7 +403,7 @@ sources, so their agreement means something.
 
 | Strategy | Source of the analysis | Benchmark (random 1%) | State |
 | --- | --- | ---: | --- |
-| spacy | spaCy dependency parse + our rules (former spacy-beam) | 86.8% | general repairs done (a55e33f) |
+| spacy | spaCy dependency parse + our rules (former spacy-beam) | 89.6% | two rounds of general repairs (a55e33f, 0a7bb62) |
 | distilbert | DistilBERT trained on syntax circuits only | 73.1% | syntax-v2, trained on the current labels, benchmark held out |
 | vss | our unsupervised reader (stations learned from text, rules) | 75.5% | main focus; rules being added (agent) |
 | prolog | hand-written grammar | 61.7% | parked (owner: do not improve for now) |
@@ -417,9 +421,11 @@ messages, where it does worse.
 
 - webmeet-dataset/semantic/ and webmeet-dataset/syntactic/ mirror each other (238 files, at most 1,000
   messages each; `tools/layers.mjs check`).
-- 62,066 of 183,497 messages have a syntactic circuit (33.8%): 56,934 by agreement of VSS and spaCy (up to the
-  start of marked relations), 5,100 accepted by a judge, 32 written by a judge. The others have an empty cell.
-- A judge read a random 2% of the agreement circuits: 10 of 1,154 rejected (0.87%).
+- 83,619 of 183,497 messages have a syntactic circuit (45.6%; 33.8% before the refilled conversion): 78,063 by
+  agreement of VSS and spaCy, 5,524 accepted by a judge, 32 written by a judge. The others have an empty cell.
+  By area: calendar 77.0%, document 53.8%, drawing 47.3%, diagram 40.3%.
+- A judge read a random 2% of the agreement circuits: first conversion 10 of 1,154 rejected (0.87%, key up to
+  the start of marked relations); refilled conversion with the wider key 2 of 433 rejected (0.46%).
 - The syntactic files are the only store of labels; the registry (annotations/syntax/v1/judged/) keeps only
   what a judge read or wrote, with the reasons.
 
@@ -510,6 +516,10 @@ messages, where it does worse.
   Both need training signal from the hard part of the dataset (judged circuits, rejected ones as negatives)
   before they can help; they may then serve as one more voice beside VSS and spaCy.
 
+- spaCy, second round of general repairs (0a7bb62): 86.8% -> 89.6% on the benchmark. Still rejected, by the
+  judge of the 76 new circuits: coordinations with the wrong conjuncts, scene-list items tied without a marker
+  instead of joining the 'then' series, relations starting across an 'and', nominals split.
+
 ### In progress
 
 - VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
@@ -517,14 +527,13 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- The 2% audit of the agreement circuits settled with the wider key on the 217 conversion folders (433
-  circuits, eval-results/conversion-audit-02), then the cells are written.
+- DistilBERT retrained on the grown labels (syntax-v3, benchmark held out).
 
 ### Next steps, in order
 
 1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
    and the status page (docs/STATUS.md).
-2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
+2. After each round of rules, rerun VSS over the conversion, settle with the wider key, audit 2%, fill cells.
 3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
 4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
@@ -581,20 +590,24 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 **soplang-nlu**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/soplang-nlu/commits)).
 
+- 2026-11-27 19:43 [`08fc191`](https://github.com/ml-circuits-research/soplang-nlu/commit/08fc191) Benchmark: verdicts on the 76 new spaCy circuits after the second round of repairs (0a7bb62), packet 47
+- 2026-11-27 19:34 [`0a7bb62`](https://github.com/ml-circuits-research/soplang-nlu/commit/0a7bb62) spaCy writer: a second round of general repairs
+- 2026-11-27 19:27 [`2ef47fa`](https://github.com/ml-circuits-research/soplang-nlu/commit/2ef47fa) Journal: the dataset at 45.6%, the second audit, DistilBERT syntax-v3 training
+- 2026-11-27 19:26 [`b15c66f`](https://github.com/ml-circuits-research/soplang-nlu/commit/b15c66f) Status: the dataset at 45.6% after the refilled conversion
 - 2026-11-27 19:26 [`9b2831e`](https://github.com/ml-circuits-research/soplang-nlu/commit/9b2831e) round.mjs write: a file with open cells is completed cell by cell; existing circuits stay
 - 2026-11-27 19:04 [`90adc96`](https://github.com/ml-circuits-research/soplang-nlu/commit/90adc96) Status: the learned prototypes, the refilled conversion and its audit
 - 2026-11-27 19:04 [`6f11cb6`](https://github.com/ml-circuits-research/soplang-nlu/commit/6f11cb6) Two learned methods for syntax circuits, measured and not adopted (experiments/syntax-learned)
 - 2026-11-27 18:52 [`5b4dacd`](https://github.com/ml-circuits-research/soplang-nlu/commit/5b4dacd) Status: the wider agreement key
 - 2026-11-27 18:52 [`8c9ed93`](https://github.com/ml-circuits-research/soplang-nlu/commit/8c9ed93) Journal: the wider agreement key, the current table, what runs and what comes next
 - 2026-11-27 18:51 [`c8d0a09`](https://github.com/ml-circuits-research/soplang-nlu/commit/c8d0a09) Agreement key 'variants': two circuits are alike also up to the choices the judges' rules let pass either way
-- 2026-11-27 18:47 [`ded2aa2`](https://github.com/ml-circuits-research/soplang-nlu/commit/ded2aa2) docs/README.md: the status page first
-- 2026-11-27 18:46 [`82cbdb0`](https://github.com/ml-circuits-research/soplang-nlu/commit/82cbdb0) Status page in docs (generated): docs/status.html and docs/STATUS.md from node docs/status/build.mjs
-- 2026-11-27 18:30 [`51606f5`](https://github.com/ml-circuits-research/soplang-nlu/commit/51606f5) Documentation (HTML, reviewed): the VSS reader's architecture, the decisions and insights of the syntax work of 2026-11-27, and how syntactic labels are made and measured
-- 2026-11-27 18:25 [`c205ab6`](https://github.com/ml-circuits-research/soplang-nlu/commit/c205ab6) Journal: VSS at 75.5% on the benchmark after the study prototypes
 
 <details>
 <summary>20 older commits of soplang-nlu</summary>
 
+- 2026-11-27 18:47 [`ded2aa2`](https://github.com/ml-circuits-research/soplang-nlu/commit/ded2aa2) docs/README.md: the status page first
+- 2026-11-27 18:46 [`82cbdb0`](https://github.com/ml-circuits-research/soplang-nlu/commit/82cbdb0) Status page in docs (generated): docs/status.html and docs/STATUS.md from node docs/status/build.mjs
+- 2026-11-27 18:30 [`51606f5`](https://github.com/ml-circuits-research/soplang-nlu/commit/51606f5) Documentation (HTML, reviewed): the VSS reader's architecture, the decisions and insights of the syntax work of 2026-11-27, and how syntactic labels are made and measured
+- 2026-11-27 18:25 [`c205ab6`](https://github.com/ml-circuits-research/soplang-nlu/commit/c205ab6) Journal: VSS at 75.5% on the benchmark after the study prototypes
 - 2026-11-27 18:24 [`1809b31`](https://github.com/ml-circuits-research/soplang-nlu/commit/1809b31) Benchmark: verdicts on the 183 new VSS circuits after the study prototypes (83fce90), packets 45-46
 - 2026-11-27 18:14 [`954da81`](https://github.com/ml-circuits-research/soplang-nlu/commit/954da81) batch-run.sh: a mode that runs the files of the batch conversion again after the strategies improved
 - 2026-11-27 18:13 [`83fce90`](https://github.com/ml-circuits-research/soplang-nlu/commit/83fce90) VSS: the measured prototypes of the lever study
@@ -611,10 +624,6 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 17:38 [`600196c`](https://github.com/ml-circuits-research/soplang-nlu/commit/600196c) Journal: spaCy repairs landed, judges' rules settled, documentation and lever study in progress
 - 2026-11-27 17:38 [`a81dd93`](https://github.com/ml-circuits-research/soplang-nlu/commit/a81dd93) Judges' rules: three cases settled where the benchmark judges ruled differently ('let's add', 'everything else', embedded question clauses)
 - 2026-11-27 17:37 [`a55e33f`](https://github.com/ml-circuits-research/soplang-nlu/commit/a55e33f) spaCy strategy: general repairs in the layer that writes its circuits
-- 2026-11-27 17:10 [`66e934b`](https://github.com/ml-circuits-research/soplang-nlu/commit/66e934b) Journal: how to make VSS a reusable engine with a standard grammar (audit of generality, rules as data, learned thresholds, a test outside the dataset)
-- 2026-11-27 17:03 [`8d8fa71`](https://github.com/ml-circuits-research/soplang-nlu/commit/8d8fa71) A working journal of the plan: where the syntax work stands, what is in progress, next steps and ideas
-- 2026-11-27 16:56 [`dd562c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/dd562c3) VSS: the frame fixes the verb, and embedded questions state
-- 2026-11-27 16:51 [`e52bfc8`](https://github.com/ml-circuits-research/soplang-nlu/commit/e52bfc8) Benchmark tools: labels are read from and written to the dataset's syntactic files; no labels file, no agreement lines in the registry
 
 </details>
 
@@ -696,4 +705,4 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 ---
 
-Built in 14.2 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.
+Built in 17.4 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.

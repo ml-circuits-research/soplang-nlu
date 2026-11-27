@@ -4,9 +4,11 @@ Updated by hand with every step; the numbers are in the sections this text links
 
 **Latest results**
 
+- spaCy reached **89.6%** on the benchmark (86.8% before) after a second round of general repairs in the layer
+  that writes its circuits (commit `0a7bb62`).
 - VSS reached **75.5%** on the benchmark (65.9% at the first judging): the rules of three fault analyses and
   the measured prototypes of the lever study ([Progress over time](#progress)). It is now above DistilBERT
-  (73.1%); spaCy leads with 86.8% after general repairs in our writing layer.
+  (73.1%).
 - The lever trials, judged in full: evidence from DistilBERT on the roles of words would add about 3.9 points
   to VSS; with perfect word tags (stations) up to about 9 points. Better tagging is a real lever for VSS,
   alongside the structural rules.
@@ -37,13 +39,14 @@ Updated by hand with every step; the numbers are in the sections this text links
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **spaCy, second round of general repairs** in the layer that writes its circuits, on the about 241
-  benchmark circuits judges still reject (scene lists, gapping, grading words, clauses untied across ";").
+- **DistilBERT retrained on the grown labels** (syntax-v3: 3,670 judged circuits and 77,800 agreement circuits
+  to train on, benchmark held out); then it runs on the benchmark and a judge reads its new circuits.
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Judge the benchmark circuits that the spaCy repairs change; record the new GOAL.
+2. A third round for spaCy on what judges still reject: coordinations with the wrong conjuncts, scene-list
+   items, relations that start across an 'and'.
 3. Rerun VSS over the conversion after each round of rules and settle again (each gain fills cells without a
    judge, with a 2% audit).
 4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
