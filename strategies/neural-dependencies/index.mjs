@@ -1,6 +1,7 @@
 import {spawn} from 'node:child_process'
 import {createInterface} from 'node:readline'
 import {fileURLToPath} from 'node:url'
+import {circuitOf} from './syntax-circuit.mjs'
 
 const worker = fileURLToPath(new URL('./worker.py',import.meta.url))
 
@@ -101,3 +102,24 @@ export async function openDependencies({syntaxModel = spacyDependencies, ...opti
     ...(parseBeam ? {parseBeam} : {})
   }
 }
+
+/**
+ * The strategy `neural-dependencies`: the dependency parse of the message, written as it stands
+ * as one circuit of the `syntax` schema. It corrects nothing the parser says. It reads no
+ * knowledge repository: its only resources are the parser and this package.
+ */
+async function open({python, model, syntaxModel} = {}) {
+  const parser = await openDependencies({python, model, syntaxModel})
+  async function analyse(text) {
+    if (typeof text !== 'string' || !text.trim()) return {analyses: [], error: 'Expected a nonempty text string.'}
+    try {
+      const {sop, loose} = circuitOf(text, await parser.parse(text))
+      return {analyses: [{sop, loose}]}
+    } catch (error) {
+      return {analyses: [], error: error instanceof Error ? error.message : String(error)}
+    }
+  }
+  return {analyse, metadata: parser.metadata, close: () => parser.close()}
+}
+
+export const neuralDependencies = {name: 'neural-dependencies', schema: 'syntax', open}
