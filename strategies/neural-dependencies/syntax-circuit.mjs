@@ -164,8 +164,9 @@ export function wiresOf(units) {
   const thanking = unit => verbal(unit) && unit.lemma === 'thank' && !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux') &&
     under(unit).some(part => part.lower === 'you' && part.index === unit.index + 1)
   const apart = unit => (!units[unit.index - 1] || !units[unit.index - 1].word) && (!units[unit.index + 1] || !units[unit.index + 1].word)
-  // a word said to the listener; a word in the place of a subject or an object is a nominal whatever its tag
-  const interjection = unit => !unit.quoted && (unit.dep === 'intj' || unit.pos === 'INTJ' && !ARGUMENT.has(unit.dep) || thanks(unit))
+  // a word said to the listener; a word in the place of a subject or an object is a nominal whatever its
+  // tag, and one the parser hung as an adverb says how or when ("facing right?", "now the adjacent two")
+  const interjection = unit => !unit.quoted && (unit.dep === 'intj' || unit.pos === 'INTJ' && !ARGUMENT.has(unit.dep) && unit.dep !== 'advmod' || thanks(unit))
 
   // A negation that stands directly before a preposition and hangs on a preposition, or governs
   // one, negates the relation of the preposition it stands before ("near Ben but not behind Jo").
@@ -277,8 +278,12 @@ export function wiresOf(units) {
       !['cc', 'intj'].includes(units[mark.index + 1].dep)
     const mark = units.slice(unit.index + 1).find(other => !other.word && [...other.value].some(sign => TERMINAL.has(sign)) && !inName(other))
     if (!mark?.value.includes('?')) return false
-    return !units.slice(unit.index + 1, mark.index).some(other => other.word && independent(other) && !bare(other))
+    // a group of words joined to the clause that opens with a question word of its own asks by itself
+    // ("I'd like the title start with a capital letter plus how about x axis on top?"): the mark is its own
+    return !units.slice(unit.index + 1, mark.index).some(other => other.word && (independent(other) && !bare(other) || asksByItself(other)))
   }
+  /** A verbless conjunct with a question word of its own before its main word: "…, plus how about x axis on top?" */
+  const asksByItself = unit => unit.dep === 'conj' && !verbal(unit) && under(unit).some(part => part.index < unit.index && INTERROGATIVE.has(part.tag))
   /** The index of the first and of the last word that hang on this unit, directly or not. */
   const firstOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstOf(part, depth + 1)))
   const lastOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => lastOf(part, depth + 1)))
@@ -502,9 +507,12 @@ export function wiresOf(units) {
       // verb does and shares it, as a conjunct does (Rule 3): "place one bird on the tree, then one kite on
       // top of it", "add a crown to the girl, next, a red cape". Before the verb it shares nothing ("a small
       // dog at the bottom, then drape…"), nor does a remark set after it with no such word ("…, hands off").
+      // So does one that opens with a phrase with a marker set before its nominal, saying where the next
+      // thing goes: "put a swing next to the tree, above it, three small red balloons".
       const lender = wire.ellipsis ?? (has(wire, 'verb') && wire.form !== 'nonfinite' ? wire : null)
       const opening = units.slice(head.index + 1, firstOf(part)).reverse().find(unit => unit.word)
-      const linked = [opening, units[firstOf(part)]].some(word => word?.word && SEQUENCE.has(word.lower) && word.dep === 'advmod' && !under(word).length)
+      const linked = [opening, units[firstOf(part)]].some(word => word?.word && SEQUENCE.has(word.lower) && word.dep === 'advmod' && !under(word).length) ||
+        under(part).some(inner => inner.dep === 'prep' && inner.index === firstOf(part) && under(inner).some(object => GOVERNED_BY_MARKER.has(object.dep)) && units.slice(lastOf(inner) + 1, part.index).some(mark => !mark.word))
       if (part.index > head.index && lender && linked && other.form === 'fragment') { other.ellipsis = lender; refer(other, 'ellipsis', lender) }
       const group = join(wire, other)
       if (group) { joinedFor.set(part.index, group); if (then) put(group, 'conjunction', then) }
@@ -601,6 +609,7 @@ export function wiresOf(units) {
     }
     // a clause that describes the nominal hangs on it; an adverbial clause hangs on the clause the nominal stands in
     if (heads(part)) return subordinate(dep === 'advcl' || dep === 'parataxis' || dep === 'dep' ? home : wire, part, home)
+    if (markedFragment(part, home)) return
     if (interjection(part)) return discourse(home, part)
     if (dep === 'poss') {
       // a possessive determiner is a word of the nominal; a possessor is a nominal, tied by "'s" when written
@@ -609,8 +618,13 @@ export function wiresOf(units) {
       if (mark) reserved.add(mark.index)
       return void relation(wire, nominal(part, home, mark ? 'marked' : 'beside'), mark ? [mark] : [], home)
     }
-    // a nominal set beside the head ("an object Status"): a relation with no marker
-    if (dep === 'appos') {
+    // a nominal set beside the head ("an object Status"): a relation with no marker. One set after a
+    // comma with "not" in front of it is set against what the clause says ("i meant blue, not green").
+    // An adjective right after the nominal, with no determiner of its own, names no thing ("change a
+    // heart head yellow big"): it says how the thing is, and goes by Rule 5 below
+    if (dep === 'appos' && contrast(home, part)) return
+    const describing = part.pos === 'ADJ' && units[firstOf(part) - 1]?.word && !under(part).some(inner => inner.dep === 'det' || inner.dep === 'poss')
+    if (dep === 'appos' && !describing) {
       const tie = relation(wire, nominal(part, home, 'beside'), [], home)
       if (wire.negated.has(part.index)) put(tie, 'negation', wire.negated.get(part.index))
       return
@@ -621,10 +635,14 @@ export function wiresOf(units) {
     if (SUBJECT.has(dep)) return complement(home, nominal(part, home, 'complement'))
     // an adverb that opens the nominal and is set off from it by punctuation modifies the clause
     // ("instead, a yellow column"); "then" after a punctuation mark joins the nominal to what stands before ("…, then a small cat")
+    // A determiner opens a nominal: an adverb that opens a message of no verb before the determiner of its
+    // nominal is a word of the clause, not of the thing ("now a second wooden boat in the same little pond")
     if (before && dep === 'advmod' && !under(part).length && firstOf(head) === part.index) {
       const mark = step => units[part.index + step]?.word === null
       if (part.lower === 'then' && (mark(-1) || mark(1))) return joiner(part, head, home, 'modifier', home)
-      if (mark(1)) return describe(home, part, true)
+      const next = units[part.index + 1]
+      const opening = head.head === head.index && !units.slice(0, part.index).some(other => other.word) && next?.word && next.head === head.index && next.dep === 'det'
+      if (mark(1) || opening) return describe(home, part, true)
     }
     // "else" after the pronoun or question word it belongs to is a word of that nominal ("everything else")
     if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case' || part.lower === 'else')) return inside(wire, part)
@@ -672,6 +690,23 @@ export function wiresOf(units) {
     const after = under(unit).filter(part => part.index > unit.index && !taken(part))
     return after.length === 1 && !heads(after[0]) && !prepositionLike(after[0]) && after[0].dep !== 'cc' && after[0].dep !== 'conj' ? after[0] : null
   }
+  /**
+   * English may leave a preposition without its object at the end of a relative clause or a question,
+   * where the object is what the clause is about (preposition stranding): "the place he started from"
+   * (from the place), "the one chart everyone waits for", "the order the two steps happen in", "what is
+   * link e4 between?" (between what). A preposition that governs nothing, in a clause that describes a
+   * noun, governs that noun; in a clause with a question word that stands for a thing, before the
+   * preposition, it governs that word.
+   */
+  function strandedObject(unit) {
+    if (unit.dep !== 'prep' || under(unit).length || unit.head === unit.index) return null
+    let clause = units[unit.head]
+    for (let steps = 0; !verbal(clause) && clause.head !== clause.index && steps < units.length; steps++) clause = units[clause.head]
+    if (!verbal(clause)) return null
+    if (clause.dep === 'relcl' && clause.head !== clause.index && clause.index < unit.index && NOMINAL.has(units[clause.head].pos)) return units[clause.head]
+    const asks = under(clause).find(part => part.index < unit.index && (part.tag === 'WP' || part.tag === 'WDT' && part.pos === 'PRON') && ARGUMENT.has(part.dep))
+    return asks ?? null
+  }
   /** A preposition with what it governs: a relation from `from` to that nominal or clause. */
   function prepositional(unit, from, home, unsettled = false) {
     if (taken(unit)) return null
@@ -685,6 +720,14 @@ export function wiresOf(units) {
     const chain = markerChain(unit)
     const {object} = chain
     if (!object) {
+      // a preposition left at the end of a relative clause or a question governs what that clause is about
+      const stranded = strandedObject(unit)
+      if (stranded) {
+        reserved.add(unit.index)
+        const wire = relation(from, nominal(stranded, home, 'marked'), [unit], home, false)
+        relationOf.set(unit.index, wire)
+        return wire
+      }
       // nothing governed: a particle or a direction, a modifier of the clause (Rule 5)
       describe(home, unit, true)
       return null
@@ -717,6 +760,7 @@ export function wiresOf(units) {
       else if (part.dep === 'cc' || part.dep === 'preconj') joiner(part, unit, home, 'discourse', home)
       else if (part.dep === 'conj') conjunct(unit, wire, part, home, 'modifier')
       else if (heads(part)) subordinate(home, part, home)
+      else if (markedFragment(part, home)) continue
       // a second nominal under the same marker, directly after the first ("at x 120"): it stands beside the first
       else if (GOVERNED_BY_MARKER.has(part.dep) && nominalHere(part) && target.type === 'nominal' && part.index === last(object) + 1) relation(target, nominal(part, home, 'beside'), [], home)
       // a second preposition hung on this one ("at x 120, at y 90"): a second relation from the same start
@@ -751,7 +795,7 @@ export function wiresOf(units) {
     const lender = home.ellipsis ?? (has(home, 'verb') ? home : null)
     // a word of greeting or thanks shares nothing ("move the box, and thanks")
     const shares = other => {
-      if (lender && other.form === 'fragment' && other !== lender && !interjection(part) && !thanking(part)) { other.ellipsis = lender; refer(other, 'ellipsis', lender) }
+      if (lender && other.form === 'fragment' && other !== lender && !interjection(part) && !thanking(part) && !asksByItself(part)) { other.ellipsis = lender; refer(other, 'ellipsis', lender) }
       return other
     }
     if (heads(part)) {
@@ -821,6 +865,21 @@ export function wiresOf(units) {
     const group = join(home, other)
     if (group) joinedFor.set(part.index, group)
     return other
+  }
+
+  /**
+   * A group of words with no verb that a subordinator introduces ("with the gate still reachable", "if
+   * possible") is a clause of its own, tied by that word to the clause it stands in, wherever the parser
+   * hung it: under a clause it is so written already (clauseChild), under a nominal or a preposition the
+   * subordinator would be left with no place.
+   * @returns the relation, or null when the part is no such group
+   */
+  function markedFragment(part, home) {
+    if (part.dep !== 'advcl' || home.type !== 'clause' || verbal(part)) return null
+    const markers = markersOf(part).filter(marker => marker.dep === 'mark')
+    if (!markers.length) return null
+    for (const marker of markers) reserved.add(marker.index)
+    return relation(home, clause(part), markers, home)
   }
 
   // ----- words the parse gave no grammatical place ----------------------------------------------

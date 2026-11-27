@@ -37,8 +37,35 @@ export function repairClauses(units) {
     return auxiliaries(unit).some(part => part.index < subject.index) || unit.pos === 'AUX' && unit.index < subject.index
   }
   let changed = 0
+  const firstWord = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstWord(part, depth + 1)))
 
-  // 0. "so" after a punctuation mark, at the head of a clause, joins that clause to what stands before
+  // 0. A word that joins two clauses stands at the head of the second. "so" after a punctuation mark,
+  //    followed directly by the words of a clause, opens that clause, whatever later verb the parser
+  //    hung it on: in "…, only with how it reads at a glance, so as a first pass rename the rent series,
+  //    then we revisit next week, could you also show the percentages" it opens "rename", not "show".
+  //    The clause it opens hangs on the clause before the mark, by "so"; the later clause, left with no
+  //    word that subordinates it, stands beside the clause it was hung on.
+  for (const so of units) {
+    if (!so.word || so.lower !== 'so' || !['mark', 'cc', 'advmod'].includes(so.dep) || under(so).length) continue
+    const mark = units[so.index - 1], held = units[so.head]
+    if (!mark || mark.word || !/^[,;:—–-]+$/u.test(mark.value) || !units[mark.index - 1]?.word) continue
+    // (a clause of its own: no auxiliary of another verb, no gerund that is a subject, "so anchoring it keeps…")
+    const opened = units.find(other => verbal(other) && other !== held && firstWord(other) === so.index + 1 && sentential(other) &&
+      !['aux', 'auxpass', 'amod', 'compound', ...SUBJECT].includes(other.dep))
+    if (!opened || held.word && held.index < opened.index) continue
+    // the clause before the mark: the highest word above the last word before it that still stands before it
+    let before = units[mark.index - 1]
+    for (let steps = 0; before.head !== before.index && units[before.head].index < mark.index && steps < units.length; steps++) before = units[before.head]
+    if (!verbal(before) || before === opened) continue
+    so.head = opened.index
+    so.dep = 'mark'
+    opened.head = before.index
+    opened.dep = 'advcl'
+    if (held.word && held.head === before.index && HUNG.has(held.dep)) held.dep = 'parataxis'
+    changed++
+  }
+
+  //    "so" after a punctuation mark, at the head of a clause, joins that clause to what stands before
   //    as its result: "nudge the barn next to the tree, so the view stays open", "it is a hierarchy, so
   //    lay out the diagram". The parser may read it as an adverb of the second clause and hang the first
   //    clause on the second; the first is then the main one, and "so" marks the second, hung on it.
@@ -167,6 +194,9 @@ export function repairClauses(units) {
       if (!verbal(governor) || governor.index > before.index) continue
       verb.head = governor.index
       verb.dep = 'parataxis'
+      // what the parser hung on "to" is a word of the question ("what values" in "…to what values does
+      // League show?"): the object of its verb
+      for (const part of under(before)) if (part !== verb) { part.head = verb.index; if (['pobj', 'pcomp'].includes(part.dep)) part.dep = 'dobj' }
       before.head = verb.index
       before.dep = 'mark'
       before.pos = 'ADP'
@@ -222,6 +252,65 @@ export function repairClauses(units) {
     marker.pos = 'ADP'
     subject.head = marker.index
     subject.dep = 'pobj'
+    changed++
+  }
+
+  // 11. A semicolon, colon or dash ends a clause, also for the nominals of the clause: a noun set before
+  //     one and hung on the verb after it as a bare adverb ("cheeks — add a sideburns, please"), or set
+  //     after a semicolon or a dash and hung on the verb before it as its object ("excuse me — the
+  //     missing piece: tick marks every five"), is a group of words of its own beside that clause. After
+  //     a colon the words may still be what the verb takes ("show me a market street: a stall, …").
+  for (const unit of units) {
+    if (!unit.word || unit.quoted || !['NOUN', 'PROPN'].includes(unit.pos) || unit.head === unit.index) continue
+    const verb = units[unit.head]
+    if (!verbal(verb) || !(unit.dep === 'npadvmod' && unit.index < verb.index || unit.dep === 'dobj' && unit.index > verb.index)) continue
+    const [from, to] = unit.index < verb.index ? [last(unit), verb.index] : [verb.index, first(unit)]
+    // (a question mark may close a name, "make Valid? a rounded rectangle")
+    if (!units.slice(from + 1, to).some(mark => !mark.word && /^[;:—–]+$/u.test(mark.value) && (unit.index < verb.index || !mark.value.includes(':')))) continue
+    unit.dep = 'dep'
+    changed++
+  }
+
+  // 12. A conjunction joins what stands on either side of it. A clause the parser made a second root of the
+  //     sentence, opened by a conjunction after a comma with no mark between them that ends a sentence
+  //     ("a jungle clearing at noon with a large green snake…, and keep the animals in the foreground"),
+  //     is joined to the root before it.
+  for (const unit of units) {
+    if (!verbal(unit) || unit.head !== unit.index) continue
+    const opening = under(unit).find(part => part.dep === 'cc' && part.index === first(unit) && !under(part).length)
+    if (!opening || units[opening.index - 1]?.value !== ',') continue
+    const earlier = units.slice(0, opening.index).reverse().find(other => other.word && other.head === other.index)
+    if (!earlier || units.slice(earlier.index, opening.index).some(mark => !mark.word && /[.!?;:]/u.test(mark.value))) continue
+    unit.head = earlier.index
+    unit.dep = 'conj'
+    changed++
+  }
+
+  // 13. Verbs joined by a conjunction share their form, as they share their subject and auxiliaries.
+  //     A base form with an object and no subject or auxiliary of its own, that the parser joined to a
+  //     participle completing a verb before it, is joined to that verb, a base form too: in "picture
+  //     the man jumping in the air, and push the whole page into comic book style" the commands are
+  //     "picture" and "push"; "jumping" is what the man does. The conjunction between them goes with it.
+  //     And a participle with no subject or auxiliary joined to a base form adds no command: it says how
+  //     the command is done ("go for y numbers even, starting at 0"), a participle clause of that verb.
+  const baseForm = unit => unit.tag === 'VB' && !auxiliaries(unit).length && !subjectOf(unit)
+  const participle = unit => ['VBG', 'VBN'].includes(unit.tag) && !auxiliaries(unit).length
+  for (const verb of units) {
+    if (!verbal(verb) || verb.dep !== 'conj' || !baseForm(verb) || !under(verb).some(part => part.dep === 'dobj')) continue
+    const first = units[verb.head], above = units[first.head]
+    if (!verbal(first) || !participle(first) || !['ccomp', 'xcomp'].includes(first.dep) || !verbal(above) || !['VB', 'VBP'].includes(above.tag) || above.index > first.index) continue
+    verb.head = above.index
+    for (const part of under(first)) if (part.dep === 'cc' && part.index > first.index && part.index < verb.index) part.head = above.index
+    changed++
+  }
+  for (const verb of units) {
+    if (!verbal(verb) || verb.dep !== 'conj' || !participle(verb) || subjectOf(verb) || verb.index < verb.head) continue
+    const first = units[verb.head]
+    if (!verbal(first) || !baseForm(first) || under(verb).some(part => part.dep === 'dobj')) continue
+    // set off by a comma, with no conjunction of its own in front of it ("…, and starting…" joins)
+    const previous = units.slice(0, verb.index).reverse().find(other => other.word)
+    if (!between(first, verb).some(mark => !mark.word && mark.value === ',') || previous?.dep === 'cc') continue
+    verb.dep = 'advcl'
     changed++
   }
   return changed
