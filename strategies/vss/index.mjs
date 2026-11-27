@@ -6,10 +6,12 @@ const defaultModel = new URL('./model/model.json', import.meta.url)
 
 export const vss = {
   name: 'vss',
+  // one circuit in the syntax schema, written from the text alone
+  schema: 'syntax',
   async open({vssModel} = {}) {
     const start = performance.now()
     const model = typeof vssModel === 'object' && vssModel ? vssModel : JSON.parse(await readFile(vssModel ?? defaultModel, 'utf8'))
-    const reader = createVssReader(model)
+    const reader = createVssReader(model, {schema: 'syntax'})
     return {
       modelLoadMs: performance.now() - start,
       async analyse(text) {
@@ -17,7 +19,7 @@ export const vss = {
           const {analyses} = reader.analyse(text)
           return {analyses}
         } catch (error) {
-          return {analyses: [], analysisDiagnostics: {error: error instanceof Error ? error.message : String(error)}}
+          return {analyses: [], error: error instanceof Error ? error.message : String(error)}
         }
       },
       async close() {}

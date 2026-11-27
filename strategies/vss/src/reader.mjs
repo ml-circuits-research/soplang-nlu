@@ -3,6 +3,7 @@
 import {readLegend} from './legend.mjs'
 import {observe} from './observe.mjs'
 import {listRoutes, readRoutes, symbolOf} from './routes.mjs'
+import {emitSyntax} from './emit-syntax.mjs'
 import {stemsOf} from './forms.mjs'
 import {buildUnits} from './units.mjs'
 import {linkUnits} from './links.mjs'
@@ -236,7 +237,7 @@ export function createVssReader(model, options = {}) {
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
       const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)
-      return {sop: emit(wires), decisions, doubts: [...units.doubts, ...doubts].filter(doubt => !tried.has(doubt.position))}
+      return {sop: emit(wires), wires, decisions, doubts: [...units.doubts, ...doubts].filter(doubt => !tried.has(doubt.position))}
     }
     let first = read(new Set())
     // What the routes learned of a word across the whole text outweighs one doubtful path: a word that
@@ -259,6 +260,8 @@ export function createVssReader(model, options = {}) {
       first = read(new Set())
       first.doubts.push(...leaning())
     }
+    // the reading in the syntax schema: one circuit, written from the linker's wires
+    if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal'}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way

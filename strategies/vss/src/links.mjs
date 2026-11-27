@@ -22,7 +22,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     wires.push(made)
     return made
   }
-  const put = (target, key, first, last = first) => target.slots.push([key, span(first, last)])
+  // a quoted value keeps the tokens it covers, so that it can be written in any schema
+  const put = (target, key, first, last = first) => target.slots.push([key, span(first, last), first, last])
   const has = (target, key) => target.slots.some(slot => slot[0] === key)
   // a clause that completes a verb; a verb that already has one is tied to the second with no word saying how
   const completes = (governor, clause) => {
@@ -638,6 +639,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           settle()
           const fragment = fragmentClause()
           fragment.gapOf = host
+          // the fragment shares the verb of the clause it mirrors
+          fragment.wire.shares = host.wire.id
           fragment.predicate = host.predicate
           let join = host.gapJoin
           if (!join) {

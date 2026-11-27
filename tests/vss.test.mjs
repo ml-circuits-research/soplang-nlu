@@ -106,8 +106,9 @@ test('a person given something is the indirect object', () => {
   assert.match(sop, /@e1 nlu\.entity pronoun="me"/)
 })
 
-test('vss readings pass the public adapter with every word accounted for', {skip: !existsSync(knowledgeDir) && 'needs a knowledge checkout'}, async () => {
-  const reader = await createReader({strategy: vss, knowledgeDir})
+test('vss readings pass the public adapter with every word accounted for', async () => {
+  // the public strategy writes the syntax schema; the adapter checks it with no knowledge checkout
+  const reader = await createReader({strategy: vss})
   try {
     for (const text of [
       'Draw a picture, now!',
@@ -119,8 +120,9 @@ test('vss readings pass the public adapter with every word accounted for', {skip
       'book Room 7 for Planning on 2026-12-19 from 11:00 UTC for 45 minutes.'
     ]) {
       const result = await reader.propose(text)
-      assert.ok(result.candidates.length >= 1, text + ' ' + JSON.stringify(result.rejected))
-      for (const candidate of result.candidates) assert.ok(hasCompleteSource(candidate.check), text + '\n' + candidate.sop)
+      assert.equal(result.candidates.length, 1, text + ' ' + JSON.stringify(result.rejected))
+      assert.equal(result.candidates[0].check.valid, true, text + '\n' + result.candidates[0].sop)
+      assert.match(result.candidates[0].sop, /^@\S+ syntax\./u)
     }
     assert.equal((await reader.propose('')).candidates.length, 0)
   } finally {
