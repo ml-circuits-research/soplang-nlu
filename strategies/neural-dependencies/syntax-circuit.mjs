@@ -160,9 +160,10 @@ export function wiresOf(units) {
   // a word of thanks standing by itself, not as the object of a verb or of a preposition
   const thanks = unit => unit.lower === 'thanks' && !unit.quoted && !under(unit).some(part => part.dep === 'det' || part.dep === 'amod' || part.dep === 'poss') &&
     (!ARGUMENT.has(unit.dep) || apart(unit))
-  // "thank you" said as a formula: no subject, no auxiliary
+  // "thank you" said as a formula: no subject, no auxiliary; governed by a preposition it is words mentioned, what
+  // the paragraph says ("rewrite the paragraph as Thank you for your patience"), not words said to the listener
   const thanking = unit => verbal(unit) && unit.lemma === 'thank' && !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux') &&
-    under(unit).some(part => part.lower === 'you' && part.index === unit.index + 1)
+    under(unit).some(part => part.lower === 'you' && part.index === unit.index + 1) && !(GOVERNED_BY_MARKER.has(unit.dep) && prepositionLike(units[unit.head]))
   const apart = unit => (!units[unit.index - 1] || !units[unit.index - 1].word) && (!units[unit.index + 1] || !units[unit.index + 1].word)
   // a word said to the listener; a word in the place of a subject or an object is a nominal whatever its
   // tag, and one the parser hung as an adverb says how or when ("facing right?", "now the adjacent two")

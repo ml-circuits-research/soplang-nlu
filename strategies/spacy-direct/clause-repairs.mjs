@@ -5,7 +5,7 @@
 // complement or its adverbial clause. Each rule below states a fact of English clause syntax,
 // checks it on the parser's own tags and relations, and relabels or moves the arc. The only words a
 // rule names are function words: the linking words "then", "next" and "so", the articles "a" and "an",
-// and the "to" of an infinitive. A
+// the negative determiner "no", and the "to" of an infinitive. A
 // relabelled clause is `parataxis`: set side by side with the other.
 const STRONG = /^[;:—–.!?]+$/u
 const SUBJECT = new Set(['nsubj', 'nsubjpass', 'expl', 'csubj', 'csubjpass'])
@@ -39,6 +39,8 @@ export function repairClauses(units) {
   }
   let changed = 0
   const firstWord = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstWord(part, depth + 1)))
+  const first = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => first(part, depth + 1)))
+  const last = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => last(part, depth + 1)))
 
   // 0. A word that joins two clauses stands at the head of the second. "so" after a punctuation mark,
   //    followed directly by the words of a clause, opens that clause, whatever later verb the parser
@@ -71,12 +73,29 @@ export function repairClauses(units) {
   //    lay out the diagram". The parser may read it as an adverb of the second clause and hang the first
   //    clause on the second; the first is then the main one, and "so" marks the second, hung on it.
   //    (First, since the rules below read the subordinators it sets.)
+  //    The parser may also hang "so" by no named relation ("…, so could you turn Survey results into a doughnut
+  //    chart?"). And a word it could not place that opens the sentence before the first clause, both hung on the
+  //    clause of "so", heads that first clause: in "what if we put a tall tree in front of the stone house, so it
+  //    is the first thing seen" the clause of "if" hangs on "what", and the clause of "so" on the clause of "if".
   for (const so of units) {
-    if (!so.word || so.lower !== 'so' || so.dep !== 'advmod' || under(so).length) continue
+    if (!so.word || so.lower !== 'so' || !['advmod', 'dep'].includes(so.dep) || under(so).length) continue
     const mark = units[so.index - 1], verb = units[so.head]
     if (!mark || mark.word || !/^[,;:—–-]+$/u.test(mark.value) || !verbal(verb) || verb.index < so.index) continue
     const before = under(verb).filter(part => part.index < mark.index)
     if (verb.head === verb.index) {
+      const opening = before.length === 2 && before[0].dep === 'dep' && before[0] === units.find(unit => unit.word) && !under(before[0]).length &&
+        verbal(before[1]) && ['advcl', 'ccomp'].includes(before[1].dep) ? before[0] : null
+      if (opening) {
+        const [, clause] = before
+        opening.head = opening.index
+        opening.dep = 'ROOT'
+        clause.head = opening.index
+        verb.head = clause.index
+        verb.dep = 'advcl'
+        so.dep = 'mark'
+        changed++
+        continue
+      }
       if (before.length !== 1) continue
       const [earlier] = before
       earlier.head = earlier.index
@@ -107,6 +126,16 @@ export function repairClauses(units) {
     //    comma in front of a command or an inverted question, is a statement of its own.
     const frontedStatement = unit.index < governor.index && set(unit, governor) && Boolean(subjectOf(unit)) && directive(governor)
     if (acrossStrong || frontedStatement) { unit.dep = 'parataxis'; changed++ }
+  }
+
+  //    So does a group of words with no verb that the parser hung across such a mark on a verb after it as the clause
+  //    that completes it: "how about a poodle instead? — go on" is a question, then a command.
+  for (const unit of units) {
+    if (!unit.word || verbal(unit) || !['ccomp', 'xcomp', 'advcl'].includes(unit.dep) || unit.head < unit.index || !verbal(units[unit.head])) continue
+    if (!units.slice(last(unit) + 1, unit.head).some(mark => !mark.word && STRONG.test(mark.value))) continue
+    unit.head = unit.index
+    unit.dep = 'ROOT'
+    changed++
   }
 
   // 4. Only a main clause puts an auxiliary before its subject: "is anything overlapping the house?"
@@ -143,8 +172,6 @@ export function repairClauses(units) {
   // 6. No comma stands between a subject and its verb. A nominal that the parser made the subject of
   //    a base form standing after it across a comma ("a small cat on the bench, then make the boat
   //    blue") is a group of words of its own, and the base form, left with no subject, commands.
-  const first = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => first(part, depth + 1)))
-  const last = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => last(part, depth + 1)))
   for (const unit of units) {
     if (!unit.word || unit.dep !== 'nsubj' || unit.head === unit.index) continue
     const verb = units[unit.head]
@@ -344,6 +371,28 @@ export function repairClauses(units) {
     const previous = units.slice(0, verb.index).reverse().find(other => other.word)
     if (!between(first, verb).some(mark => !mark.word && mark.value === ',') || previous?.dep === 'cc') continue
     verb.dep = 'advcl'
+    changed++
+  }
+
+  // 15. The negative determiner "no" opens a nominal that denies a thing; set after a comma at the end of a clause
+  //     ("…, so every gap stays the same, no other change to the scene", "…, then the woman in the red dress exits
+  //     the scene, no other change") it measures no verb and renames no nominal: it is a remark of its own beside
+  //     the clause before the comma. The parser may hang it on that verb as a bare adverb (a measure), or on a
+  //     nominal further back as an apposition; it then hangs on that clause by no named relation, and the writer
+  //     sets it beside the clause. (An apposition right after its nominal, "no shed, no car", is left alone.)
+  for (const unit of units) {
+    if (!unit.word || unit.quoted || !['NOUN', 'PROPN'].includes(unit.pos) || !['npadvmod', 'appos'].includes(unit.dep) || unit.head > unit.index) continue
+    const start = first(unit), comma = units[start - 1]
+    if (units[start]?.lower !== 'no' || units[start].dep !== 'det' || comma?.value !== ',' || !units[start - 2]?.word) continue
+    const held = units[unit.head]
+    const reaches = (from, to) => { for (let at = from, steps = 0; steps <= units.length; at = units[at.head], steps++) { if (at === to) return true; if (at.head === at.index) return false } return false }
+    if (unit.dep === 'npadvmod' ? !verbal(held) : reaches(units[start - 2], held)) continue
+    // the clause before the comma: the highest word above the last word before it that still stands before it
+    let before = units[start - 2]
+    for (let steps = 0; before.head !== before.index && units[before.head].index < start && steps < units.length; steps++) before = units[before.head]
+    if (!verbal(before)) continue
+    unit.head = before.index
+    unit.dep = 'dep'
     changed++
   }
   return changed
