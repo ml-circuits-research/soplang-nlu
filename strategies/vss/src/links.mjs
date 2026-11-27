@@ -99,8 +99,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
   // A clause without a finite verb that nothing refers to belongs with the clause before it; no
   // word says how. It is tied to that clause and the tie is left open.
   function tieLoose(made) {
+    // (a clause that only starts a relation, "split by time of day", is not yet tied to anything before it)
     const referred = new Set()
-    for (const other of made) for (const [, value] of other.slots) if (typeof value === 'string' && value.startsWith('$')) referred.add(value.slice(1))
+    for (const other of made) for (const [key, value] of other.slots) if (key !== 'from' && typeof value === 'string' && value.startsWith('$')) referred.add(value.slice(1))
     let before = null
     for (const other of made) {
       if (other.type !== 'nlu.clause') continue
@@ -111,9 +112,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       }
       // "tell me which events are scheduled": a clause that opens with a question word, right after a verb that takes
       // what is asked or said, is what that verb takes
-      const told = before?.slots.find(slot => slot[0] === 'predicate')
-      if (form !== 'nonfinite' && told && told.length >= 4 && !referred.has(other.id) && other.slots.some(slot => slot[0] === 'question') &&
-          !before.slots.some(slot => slot[0] === 'clausal_complement') && (lexicon.asks(tokens[told[2]].word) || lexicon.takesClause(tokens[told[2]].word))) {
+      // (so is one whose question word stands right after any verb: "that is how the picture goes", "showing how they differ")
+      const told = before?.slots.find(slot => slot[0] === 'predicate'), asked = other.slots.find(slot => slot[0] === 'question')
+      if (form !== 'nonfinite' && told && told.length >= 4 && !referred.has(other.id) && asked &&
+          !before.slots.some(slot => slot[0] === 'clausal_complement') && (lexicon.asks(tokens[told[2]].word) || lexicon.takesClause(tokens[told[2]].word) || asked[2] === told[3] + 1)) {
         const relation = wire('r', 'nlu.relation')
         relation.slots.push(['kind', 'open'], ['from', '$' + before.id], ['to', '$' + other.id])
       }
@@ -314,7 +316,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const target = clause.wire = wire('c', 'nlu.clause')
       const question = clause.question
       const last = k === clauses.length - 1
-      const asks = Boolean(question || verb.inverted) || last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
+      // "that is how the picture goes", "tell me what it shows": a question word, then a subject in its own right (a word
+      // that stands for a thing, or a thing with its determiner; any thing after a question word that asks about no
+      // thing: "how", "where", "when", "why"), then the verb: the clause states. A question would have its helping verb
+      // before the subject.
+      const ownSubject = clause.subject && question && list.indexOf(clause.subject) > list.indexOf(question) &&
+        (Boolean(clause.subject.pronoun) || clause.subject.determiner?.length > 0 || lexicon.canBe(word(question), 'adverb'))
+      const stated = context.open !== false && Boolean(ownSubject) && !verb.inverted
+      const asks = Boolean(question && !stated || verb.inverted) || last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
       const finite = verb.auxiliary.length > 0 || lexicon.sForm(clause.predicate) ||
         Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject'
       const form = clause.role !== 'main' ? (context.open !== false && clause.role === 'complement' && finite ? 'declarative' : 'nonfinite')
@@ -519,6 +528,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             j = list.indexOf(before) - 1
             break
           }
+          // "the way the drawing looks": two things in a row before a verb form that needs a subject (a form in -s, or a
+          // finite helping verb): the second, opened by a determiner, is that subject, and the clause says which first
+          // thing is meant
+          const needsSubject = verb.auxiliary.length ? context.tagged(tokens[verb.auxiliary[0]].word, 'finite') : lexicon.sForm(clause.predicate) || context.tagged(clause.predicate, 'finite')
+          if (context.open !== false && before?.type === 'entity' && !chain.length && unit.determiner?.length && !before.pronoun && needsSubject && !verb.inverted) {
+            clause.subject = unit
+            clause.relativeTo = before
+            j = head - 1
+            break
+          }
           if (before && ['verb', 'cue', 'entity', 'complement'].includes(before.type)) break
           clause.subject = list[head]
           clause.chain = chain
@@ -639,7 +658,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
               if (region[j].type === 'conjunction') closed = region[j + 1]?.type === 'entity' || region[j + 1]?.type === 'complement'
               else if (!['separator', 'entity'].includes(region[j].type)) break
             }
-            seriesU = closed && region[i - 2] === frontier.at(-1) && frontier.at(-1)?.holder?.[0] === 'to'
+            // (only when the thing before the comma is introduced like the new one: "next to the postbox, a small girl"
+            // names a place, then begins a new thing)
+            seriesU = closed && region[i - 2] === frontier.at(-1) && frontier.at(-1)?.holder?.[0] === 'to' &&
+              context.opener(tokens, frontier.at(-1)) === context.opener(tokens, unit)
           }
           const asideW = false
           if (seriesU) coordinate(frontier.at(-1), unit, pendingJoin)

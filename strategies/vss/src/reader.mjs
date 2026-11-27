@@ -104,7 +104,9 @@ export function openModel(model, options = {}) {
     // a verb form in -s: it is said of a subject and never opens a command
     sForm: word => {
       const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
-      return stemsOf(word, endings).some(stem => (habits.kinds?.[stem]?.[0] ?? 0) >= 3)
+      // "goes": a verb of two letters takes its ending as well (the forms of longer words are found through their stems)
+      const short = endings.filter(ending => word.length === ending.length + 2 && word.endsWith(ending)).map(ending => word.slice(0, -ending.length))
+      return [...stemsOf(word, endings), ...short].some(stem => (habits.kinds?.[stem]?.[0] ?? 0) >= 3)
     },
     // does the word say how a thing is: a graded form of a known word, or a word the fixed frames
     // showed as a quality far more often than as a thing

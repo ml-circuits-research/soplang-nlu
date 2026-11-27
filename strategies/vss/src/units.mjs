@@ -321,6 +321,31 @@ export function buildUnits(tokens, stations, lexicon) {
     // the graded form is then no name of a thing either
     if (stations[t + 1] === 'noun') units.doubts.push({position: t + 1, not: 'head'})
   }
+  // "so the animals can still pass", "it won't fit": a helping verb that is never a verb by itself (can, will, should, …),
+  // with its subject right before it, is followed by its verb: the next word that says neither when nor how nor "not"
+  for (let t = 2; t < tokens.length; t++) {
+    if (!lexicon.kindsOf || !['noun', 'modifier', 'complement'].includes(stations[t]) || tokens[t].shape !== 'lower') continue
+    let helper = t - 1
+    while (helper >= 0 && ['adverb', 'negation'].includes(stations[helper])) helper--
+    if (helper < 1 || stations[helper] !== 'auxiliary' || lexicon.canBe(tokens[helper].word, 'predicate')) continue
+    // ("so I honestly can't vouch for it": a word that says how may stand between the subject and the helping verb)
+    let subject = helper - 1
+    while (subject > 0 && stations[subject] === 'adverb') subject--
+    if (!['noun', 'name', 'pronoun'].includes(stations[subject])) continue
+    // (the word must have been shown as a verb, or never as anything: "yes we can thanks" keeps its words)
+    const seen = lexicon.kindsOf(tokens[t].word)
+    if (seen.verb >= 1 || seen.thing + seen.quality === 0 && !lexicon.listed(tokens[t].word)) units.doubts.push({position: t, is: 'verb'})
+  }
+  // "…, just like that": a word that the language lists as a linking word and as a verb ("like") is the verb only where
+  // its subject, a helping verb or "to" stands before it ("people like it", "I would like a chart"). Opening a phrase after
+  // a break, a linking word or another verb, it links.
+  for (let t = 1; t < tokens.length; t++) {
+    if (!['predicate', 'following'].includes(stations[t]) || !lexicon.canBe(tokens[t].word, 'cue') || !lexicon.canBe(tokens[t].word, 'predicate')) continue
+    let before = t - 1
+    while (before >= 0 && ['adverb', 'negation'].includes(stations[before])) before--
+    if (before >= 0 && ['pronoun', 'noun', 'name', 'auxiliary', 'infinitive'].includes(stations[before])) continue
+    units.doubts.push({position: t, not: 'verb'})
+  }
   // "a falcon high above the hill": before a linking word, the last word of a thing that the text did not show as a
   // thing, but showed saying how things are, is not what the thing is named by; it says where or how
   for (let k = 0; k + 1 < units.length; k++) {
@@ -370,6 +395,10 @@ export function buildUnits(tokens, stations, lexicon) {
     const thing = units[k], verb = units[k + 1], after = units[k + 2]
     if (!lexicon.formOf || thing.type !== 'entity' || !thing.determiner?.length || thing.head?.[0] !== thing.last || verb.type !== 'verb') continue
     if (verb.first !== verb.last || verb.first !== thing.last + 1 || after?.type === 'entity' || lexicon.formOf(tokens[thing.last].word) !== 'progressive') continue
+    // ("how the drawing looks": a form in -s that the text showed as a verb at least as often as a thing is said of the
+    // thing before it; it stays the verb)
+    const seen = lexicon.kindsOf(tokens[verb.first].word)
+    if (lexicon.sForm(tokens[verb.first].word) && seen.verb >= seen.thing) continue
     units.doubts.push({position: verb.first, is: 'head'})
   }
   // "use curved connectors": right after a verb that is no helper, a past form before a noun describes the noun
@@ -429,11 +458,17 @@ export function buildUnits(tokens, stations, lexicon) {
   }
   // "where the path bends": a word that opens a clause needs a verb. When only one group of words follows
   // it, the last word of the group is that verb if it can be one.
+  // "tell me how the picture goes", "showing how the broadcasts split by time of day": inside a message, a word that asks
+  // how, where, when or why opens such a clause as well. Its verb may be followed by more words, as long as none of
+  // them is a verb.
   for (let k = 0; k + 1 < units.length; k++) {
     const opener = units[k], group = units[k + 1], after = units[k + 2]
-    if (!lexicon.linkOf || opener.type !== 'marker' || lexicon.linkOf(tokens[opener.last].word) === 'infinitive') continue
+    const asks = opener.type === 'question' && k > 0 && lexicon.canBe(tokens[opener.first].word, 'adverb')
+    if (!lexicon.linkOf || !asks && (opener.type !== 'marker' || lexicon.linkOf(tokens[opener.last].word) === 'infinitive')) continue
     if (group.type !== 'entity' || group.pronoun || !group.head || group.head[0] !== group.last || group.head[0] === group.first) continue
-    if (after && !['terminator', 'separator', 'conjunction'].includes(after.type)) continue
+    let verbless = asks
+    for (let m = k + 2; verbless && m < units.length && !['terminator', 'separator', 'conjunction'].includes(units[m].type); m++) verbless = !['verb', 'aux'].includes(units[m].type)
+    if (after && !['terminator', 'separator', 'conjunction'].includes(after.type) && !verbless) continue
     const head = group.head[0], word = tokens[head].word
     if (tokens[head].shape === 'lower' && (lexicon.sForm(word) || lexicon.kindsOf(word).verb >= 3)) units.doubts.push({position: head, is: 'verb'})
   }
