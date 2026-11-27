@@ -59,9 +59,9 @@ Settles what needs no judge, and prepares the rest for a judge.
 | `--families` | how many different families must write a circuit alike; default 3 |
 | `--key` | what "alike" means: `core` (the default), `relaxed` or `variants` |
 | `--relaxed` | the same as `--key relaxed`; still accepted |
-| `--prefer` | `vss,…`: under `relaxed` or `variants`, the circuit of the first of these stands for the group and becomes the label |
+| `--prefer` | `hmm-rules,…`: under `relaxed` or `variants`, the circuit of the first of these stands for the group and becomes the label |
 | `--judge` | `all` (the default): every circuit not yet decided. `needed`: per open message, only the circuit with the most families, then the next after a rejection. `audit`: only the audit share and `--focus` |
-| `--focus` | `vss,…`: the circuits of these strategies always go to a judge |
+| `--focus` | `hmm-rules,…`: the circuits of these strategies always go to a judge |
 | `--audit` | the share of agreed circuits a judge reads; default 0.05 |
 | `--seed` | the seed of the audit choice; default the round folder's name |
 | `--size` | lines per packet; default 200 |

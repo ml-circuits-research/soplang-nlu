@@ -6,7 +6,7 @@ This page: the eight formalizers kept in the code but left out of the [conversio
 
 ## Why they are retired
 
-Each is too close to an active formalizer: it reads a message from the same source, so it belongs to the same **family**. Formalizers of one family repeat each other's faults, and their agreement is no independent evidence ([Agreement between formalizers](../evaluation/agreement.md)).
+Each is too close to one of the five formalizers that take part (spaCy, hmm-rules, DistilBERT, Prolog, Z3): it reads a message from the same source, so it belongs to the same **family**. Formalizers of one family repeat each other's faults, and their agreement is no independent evidence ([Agreement between formalizers](../evaluation/agreement.md)).
 
 On the 598 messages of conversion round 2, these pairs wrote the same circuit (comment in `tests/benchmark/syntax/strategies.mjs`):
 
@@ -30,7 +30,7 @@ The family of each is declared in `families` in the same file ([Benchmark tools]
 | --- | --- |
 | Family | parser |
 | What it does | One dependency parse, with the repairs of word classes and clause boundaries, written as one circuit. No beam. |
-| Now | Its repair files and learned word lists in `strategies/spacy-direct/` are used by `spacy` ([spaCy: how a circuit is written](spacy-details.md)). The batch conversion ran it (`batch-run.sh` runs `vss,spacy-direct,distilbert` by default), so its name appears in the sources of labels, such as `spacy-direct+vss`. |
+| Now | Its repair files and learned word lists in `strategies/spacy-direct/` are used by `spacy` ([spaCy: how a circuit is written](spacy-details.md)). The batch conversion ran it (`batch-run.sh` runs `hmm-rules,spacy-direct,distilbert` by default), so its name appears in the sources of labels, such as `spacy-direct+vss`. |
 
 ## spacy-beam
 

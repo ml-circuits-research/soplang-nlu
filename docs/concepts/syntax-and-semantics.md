@@ -18,7 +18,7 @@ The project writes two different circuits for one message, each with its own sch
 The message "schedule a meeting with Ana tomorrow", as both circuits stand in the WebMeet dataset (file
 `calendar/meetings-07.csv` of each layer).
 
-**Syntactic circuit.** Settled by agreement of the formalizers spacy, spacy-direct and vss:
+**Syntactic circuit.** Settled by agreement of the formalizers spacy, spacy-direct and hmm-rules:
 
 ```sop
 @c1 syntax.clause form=imperative verb="schedule" modifier="tomorrow" complement=$n1

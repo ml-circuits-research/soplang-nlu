@@ -87,7 +87,7 @@ The exact rules (identifiers, escapes in strings, errors) are on
 - **One notation for everything.** The dataset's labels, the knowledge the applications use and the output
   of the formalizers are all written in SOP Lang. The definition puts it this way: one language serves for
   facts, for the declarations that say what facts may exist, and for queries. Even the hand-given file of
-  the VSS formalizer (`strategies/vss/legend.sop`) is written in it.
+  the hmm-rules formalizer (`strategies/hmm-rules/legend.sop`) is written in it.
 - **Easy for a program to check.** Each wire is flat: an id, a type and key=value entries. A program can
   check every key and value against a schema, and every quoted word against the message
   ([next page](schemas.md)).

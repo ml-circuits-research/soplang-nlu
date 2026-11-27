@@ -19,7 +19,7 @@ tests/benchmark/syntax/batch-run.sh [parallel] [strategies] [mode]
 | Argument | Meaning |
 | --- | --- |
 | parallel | how many files run at once; default 4 |
-| strategies | default `vss,spacy-direct,distilbert` |
+| strategies | default `hmm-rules,spacy-direct,distilbert` |
 | mode | `new` (the default): files with no syntactic file. `open`: the batch files again, after the strategies improved; move the earlier outputs aside first, since `--reuse` keeps them |
 
 - One folder per source file, `eval-results/conversion/<tab>__<name>/`, made with `round.mjs start --files <file> --min-messages 1`; then `run.mjs --only <strategies> --reuse <folder> --jobs 3`.
@@ -39,7 +39,7 @@ tests/benchmark/syntax/batch-settle.sh [audit] [parallel] [flags]
 | `--again` | settle also the folders that have a `settle.json` |
 | `--key` | `relaxed` (the default), `variants` or `core` |
 
-- For each folder with `sample.json` and `spacy.jsonl` or `spacy-direct.jsonl`, it runs VSS again, then `round.mjs settle --families 2 --key <key> --prefer vss --judge audit --audit <share> --size 170`.
+- For each folder with `sample.json` and `spacy.jsonl` or `spacy-direct.jsonl`, it runs hmm-rules again, then `round.mjs settle --families 2 --key <key> --prefer hmm-rules --judge audit --audit <share> --size 170`.
 - It writes nothing into the dataset.
 
 ### pool.mjs

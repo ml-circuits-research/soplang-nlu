@@ -9,7 +9,7 @@ Kind: Explanation.
 
 GOAL and the levels are defined in [Levels](levels.md). Each circuit was read by one
 [judge](judging.md). How often two judges, or a judge and a person, agree on this schema is not
-measured. The nearest figure is from the earlier `nlu` schema: judges accepted only 93% of VSS
+measured. The nearest figure is from the earlier `nlu` schema: judges accepted only 93% of hmm-rules
 readings identical to circuits already accepted. That limits what a measured 99% can mean
 ([Judges](judging.md#what-is-not-known-about-judges)).
 
@@ -26,18 +26,18 @@ the model has seen the answer.
   agreement circuits that included 576 benchmark messages. Its result there was not a held-out
   measure. Which checkpoint ran is not recorded
   ([DistilBERT: model, output stage, options, checkpoints](../formalizers/distilbert-details.md)).
-- VSS learns from the raw text of the whole dataset, benchmark messages included, without their
-  labels. That is learning from text, not from labels; its effect on VSS's score is not measured.
+- hmm-rules learns from the raw text of the whole dataset, benchmark messages included, without their
+  labels. That is learning from text, not from labels; its effect on the score of hmm-rules is not measured.
 
 ## No longer an unseen sample
 
 The benchmark was drawn as an unseen sample. Since then:
 
-- VSS's rules from commit `dd562c3` on were checked against its judged circuits, and the rules of
+- the rules of hmm-rules from commit `dd562c3` on were checked against its judged circuits, and the rules of
   `fa46cb7` include rules found in its rejected circuits.
 - spaCy's repairs of `a55e33f` and `0a7bb62` were checked on its judged benchmark circuits,
   rejected and accepted (their commit messages).
-- The study that forced VSS's word tags (its *stations*) to fit accepted circuits also measured on
+- The study that forced the word tags of hmm-rules (its *stations*) to fit accepted circuits also measured on
   it.
 - The judges' rules changed after the first judging (commit `a81dd93`), so a rerun is judged by
   different rules.
@@ -54,12 +54,12 @@ split of the first judging: [Results as first measured](../project/first-results
 
 ## Small files and rounds scored on their own rules
 
-VSS reached 83.7% and 86.8% GOAL on the first runs of conversion rounds 1 and 2, but 65.9% on the
+hmm-rules reached 83.7% and 86.8% GOAL on the first runs of conversion rounds 1 and 2, but 65.9% on the
 random sample at the first judging. The rounds take the smallest files first, a
 [selection bias](https://en.wikipedia.org/wiki/Selection_bias).
 
 Rules drawn from a round's own files also raise that round's score, as
-[overfitting](https://en.wikipedia.org/wiki/Overfitting) does: on round 1, VSS had 83.7% before the
+[overfitting](https://en.wikipedia.org/wiki/Overfitting) does: on round 1, hmm-rules had 83.7% before the
 rules drawn from it and 92.3% after them (the round's report). Round reports are also not comparable
 with the benchmark: in a round, an agreed circuit counts as accepted for the formalizers that wrote
 it. Only files the rules were not drawn from measure a reader.
@@ -67,13 +67,13 @@ it. Only files the rules were not drawn from measure a reader.
 ## Message length
 
 On the random sample, drawing and diagram messages are not longer than average (words split at white
-space; counted for the syntax-work report, with VSS's GOAL at the first judging):
+space; counted for the syntax-work report, with the GOAL of hmm-rules at the first judging):
 
-- **drawing**: 876 messages, 13.9 words on average, VSS 68.2%
-- **diagram**: 808 messages, 12.4 words, VSS 60.9%
-- **document**: 99 messages, 12.3 words, VSS 79.8%
-- **calendar**: 48 messages, 14.2 words, VSS 79.2%
-- **all**: 1,831 messages, 13.1 words, VSS 65.9%
+- **drawing**: 876 messages, 13.9 words on average, hmm-rules 68.2%
+- **diagram**: 808 messages, 12.4 words, hmm-rules 60.9%
+- **document**: 99 messages, 12.3 words, hmm-rules 79.8%
+- **calendar**: 48 messages, 14.2 words, hmm-rules 79.2%
+- **all**: 1,831 messages, 13.1 words, hmm-rules 65.9%
 
 The journal explains lower scores by "long drawing and chart messages"; the part about length is not
 supported by these counts. Acceptance by message length is not measured.
@@ -93,9 +93,9 @@ On 1,831 messages a GOAL is known to about ±2 points
 - GOAL on messages from outside the dataset;
 - how often the normal form falls back to the circuit as written;
 - GOAL on a fresh sample;
-- a paired test of the VSS trials on the same messages;
+- a paired test of the hmm-rules trials on the same messages;
 - which DistilBERT checkpoint ran in the first judging.
 
 Current numbers, and what is being measured next: [STATUS.md](../STATUS.md#working-on-now).
 
-Next: [VSS in depth](../vss/README.md) · Up: [Evaluation and labels](README.md)
+Next: [hmm-rules in depth](../hmm-rules/README.md) · Up: [Evaluation and labels](README.md)

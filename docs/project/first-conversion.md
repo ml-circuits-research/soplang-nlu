@@ -46,7 +46,7 @@ Later the benchmark publication replaced one agreement label of round 2 with a j
 
 After the two rounds, every remaining source file was converted in one pass, with agreement of two families and a 2% audit instead of a judge for every message ([T1](tool-decisions.md#t1), [T4](tool-decisions.md#t4)). Output in `eval-results/conversion/`, one folder per source file, which git ignores.
 
-- **217 folders.** VSS and spacy-direct ran over all of them; the older DistilBERT ran only on six calendar files.
+- **217 folders.** hmm-rules and spacy-direct ran over all of them; the older DistilBERT ran only on six calendar files.
 - **58,103 circuits agreed.** 43,471 were written exactly alike by at least two families; 14,632 matched only when it is ignored where each relation with a marker (a linking word such as "on") starts, its attachment site.
 - **Audit: 1,163 agreed circuits read by a judge, 10 rejected** (0.86%). The commit message of dataset `0b58c84` says 10 of 1,154, because it counts the 9 audit circuits of `calendar/meetings-01.01` with the 564 circuits read in that folder.
 - **56,940 agreement labels** written into the syntactic files.
@@ -54,7 +54,7 @@ After the two rounds, every remaining source file was converted in one pass, wit
 - **122,583 cells left empty**, for later work (`--allow-open`).
 - **60,914 of 183,497 messages** had a label after the batch and the rounds (dataset `0b58c84`).
 
-In `calendar/meetings-01.01` a judge read 564 VSS circuits (one for each of the 555 messages with no agreed circuit, and 9 audit circuits) and accepted 560: on these templated booking messages spacy-direct, not VSS, was wrong.
+In `calendar/meetings-01.01` a judge read 564 hmm-rules circuits (one for each of the 555 messages with no agreed circuit, and 9 audit circuits) and accepted 560: on these templated booking messages spacy-direct, not hmm-rules, was wrong.
 
 ## Data cleanup
 
@@ -76,7 +76,7 @@ Counts of messages, which here equal rows. Agreement · judge · written, then t
 6. The same publication replaces 318 labels by judge labels: 307 agreement labels (306 from the batch, 1 from round 2) and 11 judge labels.
 7. End of the day: 56,934 · 5,100 · 32, total **62,066 of 183,497 messages** (33.8%).
 
-The first judged VSS run on the fixed sample had also given 1,160 judge labels (dataset `e0a20ad`). They are not a separate set of rows: they reached the syntactic files through the writes of the rounds and the batch, and are counted there.
+The first judged hmm-rules run on the fixed sample had also given 1,160 judge labels (dataset `e0a20ad`). They are not a separate set of rows: they reached the syntactic files through the writes of the rounds and the batch, and are counted there.
 
 ## Later
 

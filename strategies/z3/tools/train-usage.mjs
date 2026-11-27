@@ -8,7 +8,7 @@
 // Usage: node strategies/z3/tools/train-usage.mjs <dataset folder> [out.json]
 import {writeFileSync} from 'node:fs'
 import {wordsOf} from '../../../lib/syntax.mjs'
-import {readMessages} from '../../vss/src/corpus.mjs'
+import {readMessages} from '../../hmm-rules/src/corpus.mjs'
 import * as en from '../src/syntax/english.mjs'
 
 const [dataset, out = new URL('../model/usage.json', import.meta.url).pathname] = process.argv.slice(2)

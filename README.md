@@ -4,7 +4,8 @@ soplang-nlu reads one English message typed to an application and writes how the
 **circuit** in the SOP Lang notation, in the `syntax` schema (`schemas/syntax/schema.sop`). It uses only the
 words of the message. Several formalizers (the code says *strategies*, one folder each under `strategies/`) do
 this from different sources of knowledge; their circuits are judged and become the labels of the WebMeet
-dataset.
+dataset. spaCy is the one formalizer being improved; hmm-rules (called vss until 2026-11-27),
+DistilBERT, Prolog and Z3 are experimental; rvss, a vector-symbolic reader, is being built.
 
 **Documentation: [docs/README.md](docs/README.md)**: what the project is, reading paths, and sections from the
 concepts to the reference. Current numbers: [docs/STATUS.md](docs/STATUS.md).
@@ -16,9 +17,9 @@ checkout, where a module can import the package by its own name:
 
 ```js
 import {createReader} from 'soplang-nlu'
-import {vss} from 'soplang-nlu/strategies/vss'
+import {hmmRules} from 'soplang-nlu/strategies/hmm-rules'
 
-const reader = await createReader({strategy: vss})
+const reader = await createReader({strategy: hmmRules})
 try {
   const {candidates, error} = await reader.propose('move it')
   if (error) console.error(error)
@@ -29,7 +30,7 @@ try {
 ```
 
 The reader checks the circuit with `validateSyntax` (`lib/syntax.mjs`) and returns it in `candidates` only
-when it is valid; otherwise `error` says why. VSS needs only Node.js. The other formalizers need more:
+when it is valid; otherwise `error` says why. hmm-rules needs only Node.js. The other formalizers need more:
 spaCy and DistilBERT need Python, Prolog needs SWI-Prolog, Z3 needs `npm ci --prefix strategies/z3`.
 Details: [Run a formalizer](docs/guides/run-a-formalizer.md) and [Library API](docs/reference/library.md).
 

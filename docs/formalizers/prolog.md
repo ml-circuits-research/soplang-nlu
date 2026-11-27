@@ -1,8 +1,8 @@
 [Home](../README.md) › [Formalizers](README.md) › Prolog
 
-# Prolog (parked)
+# Prolog (experimental)
 
-This page: a description of the parked Prolog formalizer, a hand-written grammar over word classes, with the open-class words learned from the text. Kind: Explanation.
+This page: a description of the experimental Prolog formalizer, a hand-written grammar over word classes, with the open-class words learned from the text. Kind: Explanation.
 
 ## What it is
 
@@ -44,9 +44,9 @@ About a millisecond per message; it needs SWI-Prolog. Comparison: [Speed and cos
 - **Many open attachments.** It marks a large share of its accepted circuits `attachment=ambiguous`, by step 5 above. The judges let that pass, which makes its circuits easier to accept. The share is in [STATUS](../STATUS.md#the-benchmark-live).
 - **No circuit for some messages.** Some messages get no valid circuit, level L0 ([Levels L0–L10 and GOAL](../evaluation/levels.md)).
 
-## Why parked
+## Why experimental
 
-Prolog is still measured, but not improved for now: the owner's decision. The owner keeps at most four strategies with different sources, and one hand-written grammar among them. Prolog and Z3 both stand for that place, and which one keeps it is open ([decision D10](../project/decisions.md#d10)).
+Prolog is still measured, kept runnable and a voice in agreement for its own family, but not improved for now: the owner's decision (called parked until 2026-11-27). The owner keeps at most four strategies with different sources, and one hand-written grammar among them. Prolog and Z3 both stand for that place, and which one keeps it is open ([decision D10](../project/decisions.md#d10)).
 
 ## Run it
 
@@ -58,4 +58,4 @@ The old page `docs/strategies/prolog.md` described an earlier reader of the `nlu
 
 ---
 
-Next: [Z3 (parked)](z3.md) · Up: [Formalizers](README.md)
+Next: [Z3 (experimental)](z3.md) · Up: [Formalizers](README.md)

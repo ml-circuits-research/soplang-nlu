@@ -19,11 +19,11 @@ sources, so their agreement means something.
 
 | Strategy | Source of the analysis | Benchmark (random 1%) | State |
 | --- | --- | ---: | --- |
-| spacy | spaCy dependency parse + our rules (former spacy-beam) | 89.6% | two rounds of general repairs (a55e33f, 0a7bb62) |
-| distilbert | DistilBERT trained on syntax circuits only | 77.3% | syntax-v3, trained on the grown labels (83,619), benchmark held out |
-| vss | our unsupervised reader (stations learned from text, rules) | 77.2% | main focus; rules being added (agent) |
-| prolog | hand-written grammar | 61.7% | parked (owner: do not improve for now) |
-| z3 | constraint model | 59.3% | parked |
+| spacy | spaCy dependency parse + our rules (former spacy-beam) | 89.6% | active; two rounds of general repairs (a55e33f, 0a7bb62) |
+| distilbert | DistilBERT trained on syntax circuits only | 77.3% | experimental; syntax-v3, trained on the grown labels (83,619), benchmark held out |
+| hmm-rules (vss until 2026-11-27) | our unsupervised reader (stations learned from text, rules) | 77.2% | experimental (renamed 2026-11-27) |
+| prolog | hand-written grammar | 61.7% | experimental (owner: do not improve for now) |
+| z3 | constraint model | 59.3% | experimental |
 
 Left out of rounds and benchmark (too close to one of the above, code kept): spacy-direct, spacy-beam,
 neural-dependencies, neuro-selector, selector-distilbert, neuro-prolog, neuro-z3, prolog-example-transfer.
@@ -66,6 +66,14 @@ messages, where it does worse.
 
 ## Done since the first version of this journal
 
+- 2026-11-27: the strategy `vss` is renamed `hmm-rules` (owner's decision): it is a hidden Markov model learned
+  from raw text plus general rules over function words, and had only kept the name of the vector-symbolic
+  reader it started as. Folder `strategies/hmm-rules/`, export `hmmRules` (`vss` kept as an alias), tests
+  `tests/hmm-rules*.test.mjs`, docs `docs/hmm-rules/`. Old run folders (`vss.jsonl`), registry lines and
+  labels that say `vss` are read as `hmm-rules` through one alias table (`strategyAliases` in
+  tests/benchmark/syntax/lib.mjs); the dataset's `source` cells now say `hmm-rules`. spaCy is the one active
+  strategy; hmm-rules, DistilBERT, Prolog and Z3 are experimental (measured, kept runnable, not improved for
+  now); the real vector-symbolic reader, `rvss` (strategies/rvss), is being built.
 - spaCy: general repairs in the layer that writes its circuits (commit a55e33f): capitalised verb forms
   inside a sentence are names, the first word of a verbless clause before a determiner is its verb, embedded
   questions state, "let's", "everything else", "from now on", numbers joined by a preposition, adjectives

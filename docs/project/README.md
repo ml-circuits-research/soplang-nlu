@@ -26,7 +26,7 @@ The living plan is the journal, [improvements-ideas.md](../../improvements-ideas
 
 | Page | What it holds |
 | --- | --- |
-| [History in brief](history.md) | The nlu period, the origin of VSS and of strict-vss, the schema versions, and the day of 2026-11-27 hour by hour. |
+| [History in brief](history.md) | The nlu period, the origin of VSS (now hmm-rules) and of rvss, the schema versions, and the day of 2026-11-27 hour by hour. |
 | [First results](first-results.md) | The first measurements of 2026-11-27, each attributed to its commit. |
 | [First conversion](first-conversion.md) | Conversion rounds 1 and 2, the first batch conversion, the data cleanup, and how the label counts fitted together. |
 | [nlu period](nlu-period.md) | How the project worked before the syntax schema, so that leftovers in the code can be understood. |
@@ -48,7 +48,7 @@ The history pages hold dated numbers. They do not describe the current state; fo
 | Journal | [improvements-ideas.md](../../improvements-ideas.md): the plan, updated with every step. |
 | syntax schema | The current target of every formalizer: four wire types and 18 keys that state only grammar ([Overview](../schema/overview.md)). |
 | nlu schema | The detailed schema used until the morning of 2026-11-27, with more than 50 keys and knowledge worlds ([The nlu-schema period](nlu-period.md)). |
-| VSS | The reader built in this project: a formalizer that learns from raw text and adds hand-written general rules ([VSS in depth](../vss/README.md)). |
+| hmm-rules | The reader built in this project: a formalizer that learns from raw text and adds hand-written general rules ([hmm-rules in depth](../hmm-rules/README.md)). |
 | Commit | A short hash such as `9f57aa3`, a commit in soplang-nlu unless "dataset" is written before it (then webmeet-dataset). |
 | Run folder | A folder under `eval-results/` that holds one benchmark run or one conversion round. |
 | Session notes | Notes of the working session of 2026-11-27. They are not in the repository, so claims taken only from them are marked. |

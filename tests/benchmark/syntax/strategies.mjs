@@ -1,15 +1,32 @@
 // The strategies of the syntax benchmark: [module, export name]. A strategy takes part once its
 // exported object declares `schema: 'syntax'`; until then run.mjs reports it as "not ported".
 //
-// The work goes on with four at most (the owner's decision of 2026-11-27): VSS, the one strategy
+// The work goes on with four at most (the owner's decision of 2026-11-27): hmm-rules, the one strategy
 // that reads the dependency parse, DistilBERT, and one hand-written grammar. `prolog` and `z3`
 // both stand for that fourth place until the 1% benchmark has judged them; one of them leaves then.
+// hmm-rules was called vss until 2026-11-27 (renamed because it is a hidden Markov model plus rules, not
+// a vector-symbolic reader); old run folders and registry lines that say vss are read as hmm-rules
+// (strategyAliases in lib.mjs).
+import {strategyName} from './lib.mjs'
+
 export const strategyModules = {
-  vss: ['../../../strategies/vss/index.mjs', 'vss'],
+  'hmm-rules': ['../../../strategies/hmm-rules/index.mjs', 'hmmRules'],
   spacy: ['../../../strategies/spacy/index.mjs', 'spacy'],
   distilbert: ['../../../strategies/distilbert/index.mjs', 'distilBert'],
   prolog: ['../../../strategies/prolog/index.mjs', 'prolog'],
   z3: ['../../../strategies/z3/index.mjs', 'z3']
+}
+
+// The status of each strategy that takes part (the owner's decision of 2026-11-27). "active": measured and
+// being improved; spacy is the one active strategy. "experimental": measured on the benchmark, kept runnable
+// (and trainable), still a voice in agreement for its own family, but not being improved now. The real
+// vector-symbolic reader, rvss (strategies/rvss), is being built; it is not listed until it runs.
+export const strategyStatus = {
+  'hmm-rules': 'experimental',
+  spacy: 'active',
+  distilbert: 'experimental',
+  prolog: 'experimental',
+  z3: 'experimental'
 }
 
 // Left out of the rounds and of the benchmark: each is too close to one of the strategies above.
@@ -36,14 +53,17 @@ export const retiredModules = {
 // A circuit is settled by agreement only when strategies of enough different families wrote it
 // (round.mjs settle, --families).
 export const families = {
-  vss: ['vss'],
+  'hmm-rules': ['hmm-rules'],
   parser: ['spacy', 'spacy-direct', 'spacy-beam', 'neural-dependencies', 'neuro-prolog', 'neuro-z3', 'neuro-selector', 'selector-distilbert'],
   prolog: ['prolog', 'prolog-worlds', 'prolog-example-transfer'],
   z3: ['z3'],
   distilbert: ['distilbert']
 }
-/** A function from the name of a strategy to its family; a strategy no family names is a family of its own. */
+/**
+ * A function from the name of a strategy to its family; a strategy no family names is a family of its own. An old
+ * name of a strategy (strategyAliases in lib.mjs), given or declared, stands for the strategy it is now.
+ */
 export function familyFinder(declared = families) {
-  const byName = new Map(Object.entries(declared).flatMap(([family, names]) => names.map(name => [name, family])))
-  return name => byName.get(name) ?? name
+  const byName = new Map(Object.entries(declared).flatMap(([family, names]) => names.map(name => [strategyName(name), strategyName(family)])))
+  return name => byName.get(strategyName(name)) ?? strategyName(name)
 }

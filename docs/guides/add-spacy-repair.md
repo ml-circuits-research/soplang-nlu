@@ -74,4 +74,4 @@ They write `describing-words.mjs` and `command-openers.mjs` beside them; both fi
 - **The repair files are shared.** `spacy` is `spacy-beam` under one name; `spacy-direct` and `spacy-beam` share every repair, and `neural-dependencies` shares the writer. A repair changes the circuits of the retired names too.
 - **Others may be changing the same files.** Work runs in parallel ([decision D14](../project/decisions.md#d14)): look at `git status` before editing.
 
-Next: [Retrain VSS](retrain-vss.md) · Up: [How-to guides](README.md)
+Next: [Retrain hmm-rules](retrain-hmm-rules.md) · Up: [How-to guides](README.md)

@@ -25,12 +25,12 @@ This page: the one page that compares the formalizers on speed and cost. It says
 
 ## What each formalizer needs
 
-### vss
+### hmm-rules
 
 | Need | Fact |
 | --- | --- |
 | Runtime | Node.js only: plain JavaScript in one process. |
-| Model files | One JSON file, `strategies/vss/model/model.json`. |
+| Model files | One JSON file, `strategies/hmm-rules/model/model.json`. |
 | Hardware | One CPU core. No GPU. |
 | In a browser | Not yet: a small loader is needed, not built. |
 | Trained on | Raw text only, with no labels. |
@@ -81,7 +81,7 @@ The sizes of the model files are on the status page, [Side by side](../STATUS.md
 
 Per message, one message at a time:
 
-- **VSS and Prolog**: about a millisecond or less; VSS is the fastest.
+- **hmm-rules and Prolog**: about a millisecond or less; hmm-rules is the fastest.
 - **DistilBERT**: a few milliseconds, on a GPU.
 - **spaCy and Z3**: tens of milliseconds. Z3 has a long tail.
 
@@ -101,7 +101,7 @@ Per message, one message at a time:
 
 ## Training cost
 
-- **VSS** trains on the whole raw text of the dataset, on a CPU, with no labels.
+- **hmm-rules** trains on the whole raw text of the dataset, on a CPU, with no labels.
 - **spaCy** is not trained by this project.
 - **DistilBERT** trains on the labels, on a GPU, and is retrained as the labels grow ([DistilBERT: checkpoints](distilbert-details.md#checkpoints)).
 - **Prolog and Z3** only count words in raw text.
@@ -110,8 +110,8 @@ The training times are on the status page.
 
 ## In practice
 
-- **Reruns over the whole dataset.** spaCy is the slowest step of every rerun over all messages, such as those after each round of rules ([Converting the dataset](../evaluation/conversion.md)). VSS, run in several processes at once, would take seconds (an estimate, not measured).
-- **While someone types.** VSS is instant, and spaCy's delay goes unnoticed. Z3's slowest messages would be felt.
+- **Reruns over the whole dataset.** spaCy is the slowest step of every rerun over all messages, such as those after each round of rules ([Converting the dataset](../evaluation/conversion.md)). hmm-rules, run in several processes at once, would take seconds (an estimate, not measured).
+- **While someone types.** hmm-rules is instant, and spaCy's delay goes unnoticed. Z3's slowest messages would be felt.
 
 ## Where the numbers are
 

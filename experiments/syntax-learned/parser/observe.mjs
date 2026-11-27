@@ -25,7 +25,7 @@ export function shapeOf(surface, initial) {
  * @returns {words, atoms: [{w, sfx, shape, st, kd, pp, pn, first, q}], endsQ}
  */
 const flag = (on, name) => on ? name : ''
-// VSS's learned word habits (strategies/vss/src/reader.mjs, lexicon), in three groups
+// VSS's learned word habits (strategies/hmm-rules/src/reader.mjs, lexicon; the strategy was then named vss), in three groups
 function habitsOf(lex, word) {
   const verbal = [flag(lex.takesClause(word), 'tc'), flag(lex.takesQuality(word), 'tq'), flag(lex.gives(word), 'gv'), flag(lex.asks(word), 'ak'), flag(lex.directs(word), 'dr'),
     flag(lex.names(word), 'nm'), flag(lex.makesDo(word), 'md'), flag(lex.anchoredVerb(word), 'an'), flag(lex.sForm(word), 'sf'), lex.formOf(word) ?? ''].join('')

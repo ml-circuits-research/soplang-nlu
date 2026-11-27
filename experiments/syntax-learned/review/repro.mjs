@@ -5,7 +5,7 @@ const S = '/tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b35
 const {normalForm} = await import(root + 'tests/benchmark/syntax/lib.mjs')
 const {vssParser} = await import(S + 'parser/strategy.mjs')
 const lines = file => readFileSync(file, 'utf8').split('\n').filter(Boolean).map(line => JSON.parse(line))
-console.log('vss model mtime', statSync(root + 'strategies/vss/model/model.json').mtime.toISOString(), 'parser model mtime', statSync(S + 'parser/model.json.gz').mtime.toISOString())
+console.log('vss model mtime', statSync(root + 'strategies/hmm-rules/model/model.json').mtime.toISOString(), 'parser model mtime', statSync(S + 'parser/model.json.gz').mtime.toISOString())
 const r = await vssParser.open()
 let same = 0, n = 0
 for (const row of lines(S + 'parser/bench-x-e15-g3.jsonl')) {

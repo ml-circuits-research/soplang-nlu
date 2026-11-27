@@ -112,17 +112,20 @@ Constants of `lib.mjs`: `LEVELS` (L0 to L10), `GRADES` (L8, L1 to L6), `GOAL_LEV
 
 | Name | What it is |
 | --- | --- |
-| `strategyModules` | the five active strategies: vss, spacy, distilbert, prolog, z3, each as `[module path, export name]` |
+| `strategyModules` | the five strategies that take part: hmm-rules, spacy, distilbert, prolog, z3, each as `[module path, export name]` |
+| `strategyStatus` | the status of each: `active` (spacy) or `experimental` (the four others) |
 | `retiredModules` | the eight left out of rounds and benchmark; they still run with `run.mjs --only` |
 | `families` | the family of each strategy (below) |
-| `familyFinder` | gives the family of a name; a name no family lists is a family of its own |
+| `familyFinder` | gives the family of a name, old names included; a name no family lists is a family of its own |
 
 The families:
 
-- `vss`: vss.
+- `hmm-rules`: hmm-rules.
 - `parser`: spacy, spacy-direct, spacy-beam, neural-dependencies, neuro-prolog, neuro-z3, neuro-selector, selector-distilbert. They read the spaCy dependency parse, or choose among circuits written from it.
 - `prolog`: prolog, prolog-worlds, prolog-example-transfer. `prolog-worlds` is a name kept for an older strategy; it has no module and no folder.
 - `z3`: z3.
 - `distilbert`: distilbert.
+
+**Old names.** `strategyAliases` in `lib.mjs` maps an old name of a strategy to its name now: `{vss: 'hmm-rules'}`. Every reader of earlier files uses it (`strategyName`): `readOutputs` reads a `vss.jsonl` as hmm-rules unless the folder also holds `hmm-rules.jsonl`; the family of a name, and the sources of registry lines and labels, are looked up by the name now. So the tables and the agreement of old run folders come out unchanged.
 
 Next: [Conversion tools](conversion-tools.md) · Up: [Reference](README.md)

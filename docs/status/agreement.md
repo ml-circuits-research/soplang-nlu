@@ -2,11 +2,11 @@
 
 # Agreement and audit in detail
 
-This page: how often VSS and spaCy write the same circuit on the benchmark, by area and over time, what the judges said where they differ, the audit of the batch conversion, and where the agreed circuits stand in the dataset. Kind: Reference.
+This page: how often hmm-rules and spaCy write the same circuit on the benchmark, by area and over time, what the judges said where they differ, the audit of the batch conversion, and where the agreed circuits stand in the dataset. Kind: Reference.
 
-Generated 2026-11-27 22:24 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 7ffdbd4 (61 uncommitted paths) · webmeet-dataset 0a01d23. The main figures are in [Agreement between VSS and spaCy](../STATUS.md#agreement-between-vss-and-spacy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Agreement between hmm-rules and spaCy](../STATUS.md#agreement-between-hmm-rules-and-spacy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
-Two strategies that read a message from different sources (VSS from raw text, spaCy from a parser trained on treebanks) and write the same circuit are very likely right. This is how most labels of the dataset were made. **Same circuit**: equal after the [normal form](../reference/glossary.md#project-terms) (wire names and order do not matter). **Up to attachment**: the same circuit except where a phrase with a linking word ("on", "of", "for") starts, which the judges' rules let be the clause or a nominal of it (the journal says "up to the start of marked relations"). Under it: how many of these agreed circuits the judges accepted, rejected, or have not read.
+Two strategies that read a message from different sources (hmm-rules from raw text, spaCy from a parser trained on treebanks) and write the same circuit are very likely right. This is how most labels of the dataset were made. **Same circuit**: equal after the [normal form](../reference/glossary.md#project-terms) (wire names and order do not matter). **Up to attachment**: the same circuit except where a phrase with a linking word ("on", "of", "for") starts, which the judges' rules let be the clause or a nominal of it (the journal says "up to the start of marked relations"). Under it: how many of these agreed circuits the judges accepted, rejected, or have not read.
 
 **First judging (16:39)**, benchmark messages:
 
@@ -41,10 +41,10 @@ Where both wrote a valid circuit and the circuits differ (1,129 messages, now), 
 
 | Messages | What the judges said |
 | ---: | --- |
-| 717 | VSS's circuit: accepted; spaCy's circuit: accepted |
-| 313 | VSS's circuit: rejected; spaCy's circuit: accepted |
-| 55 | VSS's circuit: rejected; spaCy's circuit: rejected |
-| 44 | VSS's circuit: accepted; spaCy's circuit: rejected |
+| 704 | circuit of hmm-rules: accepted; spaCy's circuit: accepted |
+| 326 | circuit of hmm-rules: rejected; spaCy's circuit: accepted |
+| 56 | circuit of hmm-rules: rejected; spaCy's circuit: rejected |
+| 43 | circuit of hmm-rules: accepted; spaCy's circuit: rejected |
 
 Where both circuits were accepted, the schema allows more than one reading (which word heads a name, a number after a noun as a dependent or as its own nominal, modifier or discourse word). The tables above compare by the keys `core` and `relaxed`; the wider key `variants` (commit `c8d0a09`) also counts such choices as the same ([Agreement: the keys](../evaluation/agreement.md)).
 
@@ -60,14 +60,14 @@ Where both circuits were accepted, the schema allows more than one reading (whic
 
 The records count 1,715 audit circuits read (1,698 accepted, 17 rejected), and these are the figures shown. The journal and commit `a09047d` give 1,154 read and 10 rejected: the audit of the first batch conversion alone. The records also hold the audits of the later refills of the conversion. The judges read the audit circuits in pooled packets (`eval-results/conversion-audit`, `eval-results/conversion-audit-02`, `eval-results/conversion-audit-03`), together with other circuits of the conversion folders. How the counts add up: [The audit: the counts](../evaluation/audit.md#the-counts).
 
-**Why the dataset has 84,188 agreement labels, not 86,437.** Where the 86,437 agreed circuits stand in the dataset now:
+**Why the dataset has 84,186 agreement labels, not 86,437.** Where the 86,437 agreed circuits stand in the dataset now:
 
 | Count | Where the agreed circuit stands |
 | ---: | --- |
-| 83,888 | Still the label, marked as settled by agreement |
+| 83,886 | Still the label, marked as settled by agreement |
 | 1,682 | Still the label, now marked as accepted by a judge (read in the audit and accepted) |
-| 851 | Replaced by another circuit (353 of them on benchmark messages, when the benchmark was published) |
-| 16 | No circuit in the dataset now (the cell was emptied) |
+| 849 | Replaced by another circuit (352 of them on benchmark messages, when the benchmark was published) |
+| 20 | No circuit in the dataset now (the cell was emptied) |
 
 The other 300 agreement labels of the dataset were settled outside these folders.
 

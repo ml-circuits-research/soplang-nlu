@@ -137,7 +137,7 @@ The sizes of `syntax-v2` and `syntax-v3` come from their `training-summary.json`
 
 ## Measuring a checkpoint
 
-`eval-results/2026-11-27-distilbert-syntax-training/measure.mjs <name> <training folder>` runs a checkpoint through the common reader. It reports the valid circuits and those equal to the gold circuit on the development messages; on the 598 messages of round 2, how often the circuit is the one VSS or spacy-direct wrote; and the time per message on CPU and GPU.
+`eval-results/2026-11-27-distilbert-syntax-training/measure.mjs <name> <training folder>` runs a checkpoint through the common reader. It reports the valid circuits and those equal to the gold circuit on the development messages; on the 598 messages of round 2, how often the circuit is the one hmm-rules or spacy-direct wrote; and the time per message on CPU and GPU.
 
 ## Older files
 
@@ -145,4 +145,4 @@ These files belong to the model trained on the older `nlu` annotations. They sta
 
 ---
 
-Next: [Prolog (parked)](prolog.md) · Up: [Formalizers](README.md)
+Next: [Prolog (experimental)](prolog.md) · Up: [Formalizers](README.md)

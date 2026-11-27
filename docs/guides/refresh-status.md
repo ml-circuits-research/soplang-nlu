@@ -18,7 +18,7 @@ A real row of `history.json`:
 ```json
 {
   "time": "2026-11-27 16:39",
-  "strategy": "vss",
+  "strategy": "hmm-rules",
   "goal": 65.9,
   "commit": "9f57aa3",
   "sample": "random 1%",
@@ -32,7 +32,7 @@ A real row of `history.json`:
 node docs/status/build.mjs
 ```
 
-It writes `docs/status.html`, one page with charts for a browser, and the same content in Markdown for GitHub: `docs/STATUS.md`, a short page with the main figures of each section, and one page per section under `docs/status/` with the full tables, which `STATUS.md` links. It reads the repositories as they are and the two hand-written files, and computes the rest every time: the levels of the benchmark run, the speed of each formalizer, the size of the model files, the labels of the dataset, the agreement between VSS and spaCy, the audit of the batch conversion, the journal and the recent commits of both repositories. A section that cannot be computed says so, and the others are still written.
+It writes `docs/status.html`, one page with charts for a browser, and the same content in Markdown for GitHub: `docs/STATUS.md`, a short page with the main figures of each section, and one page per section under `docs/status/` with the full tables, which `STATUS.md` links. It reads the repositories as they are and the two hand-written files, and computes the rest every time: the levels of the benchmark run, the speed of each formalizer, the size of the model files, the labels of the dataset, the agreement between hmm-rules and spaCy, the audit of the batch conversion, the journal and the recent commits of both repositories. A section that cannot be computed says so, and the others are still written.
 
 It changes one more file, `docs/status/last-build.json`: the numbers of the last build that changed. The next build compares against it to write the line "Since the build of …" at the top of the page.
 

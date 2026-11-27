@@ -9,7 +9,7 @@ Reference pages hold exact facts to look up: names, options, file formats, rules
 ## Terms
 
 - [Glossary](glossary.md): every term of the project once, in plain words, with a link to the page that explains it.
-- [VSS's own names](../vss/names.md): the names used inside the VSS code, such as station, route book and unit, with the established term for each.
+- [hmm-rules' own names](../hmm-rules/names.md): the names used inside the hmm-rules code, such as station, route book and unit, with the established term for each.
 
 ## Notation
 
@@ -37,7 +37,7 @@ Reference pages hold exact facts to look up: names, options, file formats, rules
 - [Conversion tools](conversion-tools.md): `round.mjs` and the check of written circuits.
 - [Batch and dataset tools](batch-tools.md): the batch scripts, `pool.mjs`, and the dataset's `layers.mjs`.
 - [Where everything is stored](storage.md): the syntactic files, the registry, run folders and conversion folders, with their formats.
-- [Folders and repositories](folders.md): this repository's folders, the VSS files, the status files, the sibling repositories.
+- [Folders and repositories](folders.md): this repository's folders, the hmm-rules files, the status files, the sibling repositories.
 
 ## Formalizer details
 
@@ -45,14 +45,14 @@ Reference pages hold exact facts to look up: names, options, file formats, rules
 - [DistilBERT: model, output stage, options, checkpoints](../formalizers/distilbert-details.md).
 - [Retired formalizers](../formalizers/retired.md): the eight strategies kept but left out of rounds and benchmark.
 
-## VSS
+## hmm-rules
 
-- [The legend](../vss/legend.md) and [the legend's marks](../vss/legend-marks.md): the hand-given file of VSS.
-- [The stations](../vss/stations.md): the 25 kinds of position a word can stand in.
-- [Writing the syntax circuit](../vss/writing.md): how internal wires become syntax wires.
-- [The model file](../vss/model-file.md): what `model/model.json` holds.
-- [The rule catalogue in brief](../vss/rules.md): the rules of VSS, grouped.
-- [VSS commands and options](../vss/options.md): training, reading and their options.
+- [The legend](../hmm-rules/legend.md) and [the legend's marks](../hmm-rules/legend-marks.md): the hand-given file of hmm-rules.
+- [The stations](../hmm-rules/stations.md): the 25 kinds of position a word can stand in.
+- [Writing the syntax circuit](../hmm-rules/writing.md): how internal wires become syntax wires.
+- [The model file](../hmm-rules/model-file.md): what `model/model.json` holds.
+- [The rule catalogue in brief](../hmm-rules/rules.md): the rules of hmm-rules, grouped.
+- [hmm-rules commands and options](../hmm-rules/options.md): training, reading and their options.
 
 ## Current numbers
 

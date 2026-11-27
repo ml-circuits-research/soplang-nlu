@@ -7,7 +7,7 @@ import {treeToCircuit} from './tree.mjs'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
 const {normalForm, relaxedCore, readLabels} = await import(root + 'tests/benchmark/syntax/lib.mjs')
 const sourceOf = new Map([...readLabels()].map(([t, l]) => [t, l.source]))
-const {createVssReader} = await import(root + 'strategies/vss/src/reader.mjs')
+const {createVssReader} = await import(root + 'strategies/hmm-rules/src/reader.mjs')
 const {openVerdicts, runDir} = await import('./verdicts.mjs')
 const modelFile = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'model.json.gz'
 const tag = process.argv.includes('--tag') ? process.argv[process.argv.indexOf('--tag') + 1] : 'parser'
@@ -15,7 +15,7 @@ const t0 = performance.now()
 const parser = Parser.fromJSON(JSON.parse(gunzipSync(readFileSync(modelFile))))
 const loadMs = performance.now() - t0
 const data = JSON.parse(gunzipSync(readFileSync(process.argv.includes('--data') ? process.argv[process.argv.indexOf('--data') + 1] : 'data.json.gz')))
-const vss = createVssReader(JSON.parse(readFileSync(root + 'strategies/vss/model/model.json', 'utf8')), {schema: 'syntax'})
+const vss = createVssReader(JSON.parse(readFileSync(root + 'strategies/hmm-rules/model/model.json', 'utf8')), {schema: 'syntax'})
 
 function circuitOf(x) {
   const {heads, labels} = parser.parse(x)

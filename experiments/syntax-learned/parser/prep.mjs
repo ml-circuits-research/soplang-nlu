@@ -6,12 +6,12 @@ import {createHash} from 'node:crypto'
 import {gzipSync} from 'node:zlib'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
 const {readLabels, readSample} = await import(root + 'tests/benchmark/syntax/lib.mjs')
-const {createVssReader} = await import(root + 'strategies/vss/src/reader.mjs')
+const {createVssReader} = await import(root + 'strategies/hmm-rules/src/reader.mjs')
 const {circuitToTree} = await import('./tree.mjs')
 const {observeWords} = await import('./observe.mjs')
 const {projective} = await import('./projective.mjs')
 
-const model = JSON.parse(readFileSync(root + 'strategies/vss/model/model.json', 'utf8'))
+const model = JSON.parse(readFileSync(root + 'strategies/hmm-rules/model/model.json', 'utf8'))
 const vss = createVssReader(model, {schema: 'syntax'})
 const clusters = JSON.parse(readFileSync('clusters.json', 'utf8'))
 const outFile = process.argv[2] ?? 'data.json.gz'

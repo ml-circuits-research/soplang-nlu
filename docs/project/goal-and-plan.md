@@ -29,7 +29,7 @@ Three working rules of the owner ([D14](decisions.md#d14)):
 
 1. **Commit each step.** Each piece that lands is committed, so nothing stays only in a working tree.
 2. **Keep the plan in the journal.** [improvements-ideas.md](../../improvements-ideas.md) is updated and committed with every stage, so the history of the plan stays in git.
-3. **Run independent work in parallel.** On 2026-11-27 the rewriting of each strategy (the code calls a formalizer a strategy) for the syntax schema, the three analyses of the faults of [VSS](../vss/README.md) (the reader built in this project) by area, the [DistilBERT](../formalizers/distilbert.md) retraining and the [spaCy](../formalizers/spacy.md) repairs ran as parallel agents.
+3. **Run independent work in parallel.** On 2026-11-27 the rewriting of each strategy (the code calls a formalizer a strategy) for the syntax schema, the three analyses of the faults of [hmm-rules](../hmm-rules/README.md) (the reader built in this project) by area, the [DistilBERT](../formalizers/distilbert.md) retraining and the [spaCy](../formalizers/spacy.md) repairs ran as parallel agents.
 
 Other decisions shape the daily work: at most four strategies, chosen for different sources of analysis ([D10](decisions.md#d10)); testing the strategies and converting the dataset in the same rounds ([D8](decisions.md#d8)); one judge, and one fixer who writes the circuit when the judge rejects it, per open message ([D9](decisions.md#d9)).
 

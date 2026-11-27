@@ -32,7 +32,7 @@ As in any benchmark ([Run the benchmark](run-benchmark.md), step 1).
 
 ```sh
 node tests/benchmark/syntax/round.mjs settle <round> \
-  --judge needed --focus vss
+  --judge needed --focus hmm-rules
 ```
 
 For every message, the circuits are grouped by their [core](../evaluation/normal-form.md):
@@ -43,7 +43,7 @@ For every message, the circuits are grouped by their [core](../evaluation/normal
 - a random share of the agreed circuits still goes to a judge, mixed with the others ([audit](../evaluation/audit.md); `--audit`, 0.05 by default);
 - the other circuits go to packets, according to `--judge`.
 
-`--judge all`, the default, sends every circuit not yet decided, as a benchmark does. `--judge needed` sends, for each message with no accepted circuit, only one circuit: the one most families wrote, then most formalizers, then the first formalizer named by `--prefer`. When it is rejected, the next call of `settle` sends the next one. This is the owner's rule of one judge per message ([decision D9](../project/decisions.md#d9)). `--focus vss` still sends every circuit of VSS, so VSS gets a level on every message.
+`--judge all`, the default, sends every circuit not yet decided, as a benchmark does. `--judge needed` sends, for each message with no accepted circuit, only one circuit: the one most families wrote, then most formalizers, then the first formalizer named by `--prefer`. When it is rejected, the next call of `settle` sends the next one. This is the owner's rule of one judge per message ([decision D9](../project/decisions.md#d9)). `--focus vss` still sends every circuit of hmm-rules, so hmm-rules gets a level on every message.
 
 It writes `settle.json` (the counts) and `key/agreement.jsonl` (the agreed circuits).
 

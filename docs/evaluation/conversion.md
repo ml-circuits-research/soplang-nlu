@@ -73,14 +73,14 @@ After rounds 1 and 2, the rest of the dataset was converted in one pass on 2026-
 
 1. `batch-run.sh` ran the formalizers over every semantic file with no syntactic file, one folder
    per file under `eval-results/conversion/`.
-2. `batch-settle.sh` settled each folder with two families, the `relaxed` key, `--prefer vss` and a
+2. `batch-settle.sh` settled each folder with two families, the `relaxed` key, `--prefer hmm-rules` and a
    2% audit.
 3. `pool.mjs` gathered the audit lines of all folders into packets of the usual size for judges, and
    handed the verdicts back.
 4. `batch-write.sh` wrote each folder with `--allow-open`, leaving empty cells where nothing was
    settled.
 
-Later the same day the batch folders were refilled: VSS and spaCy in their versions of that time
+Later the same day the batch folders were refilled: hmm-rules and spaCy in their versions of that time
 ran again, `settle` used the `variants` key with a 2% audit, and the empty cells were filled (the
 journal, and [STATUS.md: Working on now](../STATUS.md#working-on-now)).
 

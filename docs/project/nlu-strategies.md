@@ -56,8 +56,8 @@ A constraint model solved by the [Z3 solver](https://en.wikipedia.org/wiki/Z3_Th
 - `neuro-prolog`: [Retired formalizers](../formalizers/retired.md)
 - `neuro-z3`: [Retired formalizers](../formalizers/retired.md)
 - `prolog-example-transfer`: [Retired formalizers](../formalizers/retired.md)
-- `prolog`: [Prolog (parked)](../formalizers/prolog.md)
-- `z3`: [Z3 (parked)](../formalizers/z3.md)
+- `prolog`: [Prolog (experimental)](../formalizers/prolog.md)
+- `z3`: [Z3 (experimental)](../formalizers/z3.md)
 
 All of them now write the syntax schema; the retired ones still run by name, but leave rounds and benchmark ([Decisions, D10](decisions.md#d10)).
 

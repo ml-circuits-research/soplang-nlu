@@ -80,7 +80,7 @@ Run it with `--only distilbert` and have its new circuits judged: [Run the bench
 
 - **Benchmark messages in training data.** A retrain without `--exclude` trains on the labels of the benchmark's messages, and its benchmark score is then not a held-out measure ([data leakage](https://en.wikipedia.org/wiki/Leakage_(machine_learning)); [Limits of the measurements](../evaluation/validity.md)).
 - **The default path in the code is `syntax-v1`**, the first checkpoint, used when no model is named. Name the checkpoint you mean.
-- **Agreement labels teach the agreeing formalizers' readings.** A DistilBERT trained on circuits that VSS and spaCy agreed on learns their readings; the session notes conclude it then no longer counts as an independent voice in agreement.
+- **Agreement labels teach the agreeing formalizers' readings.** A DistilBERT trained on circuits that hmm-rules and spaCy agreed on learns their readings; the session notes conclude it then no longer counts as an independent voice in agreement.
 - **Checkpoints are not in git.** `.local-models` is ignored by git, so the training summary stays only on the machine that trained it. Copy what matters into the commit message.
 - **Training time** grows with the number of training messages; current figures are in [speed and cost per strategy](../STATUS.md#speed-and-cost-per-strategy).
 

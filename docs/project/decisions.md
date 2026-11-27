@@ -32,7 +32,7 @@ The working session kept these decisions in notes that are not in the repository
 | Decision | A circuit fails only when it states something wrong or loses information the words give. Plausible and incomplete readings pass. This is the external reviewer's criterion, adopted by the owner. |
 | Reason | A formalizer sees one message without context. It should state what the words settle and leave the rest to the next layer, which "never has to undo a guess". |
 | Consequence | The judges' rules ([rules.md](../../tests/benchmark/syntax/rules.md)) ask one question, give grades L1 to L6, list where several readings pass and what is not judged, and add a settled case whenever judges disagreed. Detail: [Judges and the judging rule](../evaluation/judging.md). |
-| Landed | In the nlu schema, `strategies/vss/judging-rules.md`: `8fb0205`, `615e232`, `9196fe7`. In the syntax schema, rules.md: `e166870` (created), `24de853` (5 settled cases), `01695d3` (6 settled cases). |
+| Landed | In the nlu schema, `strategies/hmm-rules/judging-rules.md`: `8fb0205`, `615e232`, `9196fe7`. In the syntax schema, rules.md: `e166870` (created), `24de853` (5 settled cases), `01695d3` (6 settled cases). |
 
 ## D3
 
@@ -60,8 +60,8 @@ Why the project left the nlu schema:
 | --- | --- |
 | Decision | Each strategy reads the text and writes one syntax circuit: without building an nlu circuit first, without the repository sop-knowledge-worlds, and without the old annotated data, which is no longer trusted. |
 | Reason | The purpose of the schema (D3). The old annotations were written for another schema and judged by other rules. |
-| Consequence | A strategy declares `schema: 'syntax'`; the common reader `createReader` (`lib/reader.mjs`) always checks its circuit; `SOP_KNOWLEDGE_DIR` plays no part. All twelve strategies were rewritten for the syntax schema ("ported") the same day by parallel agents. The 2,290 reference circuits rewritten from accepted nlu circuits are kept apart and do not count as accepted (dataset `73dc89e`, `5c45966`). VSS trains on the text column of `semantic/` (`14ef4a6`). |
-| Landed | VSS `7795983`; spaCy family `0632942`; Prolog family `b775362`; neural family `662a663`; Z3 family `d12c190`. |
+| Consequence | A strategy declares `schema: 'syntax'`; the common reader `createReader` (`lib/reader.mjs`) always checks its circuit; `SOP_KNOWLEDGE_DIR` plays no part. All twelve strategies were rewritten for the syntax schema ("ported") the same day by parallel agents. The 2,290 reference circuits rewritten from accepted nlu circuits are kept apart and do not count as accepted (dataset `73dc89e`, `5c45966`). hmm-rules trains on the text column of `semantic/` (`14ef4a6`). |
+| Landed | hmm-rules `7795983`; spaCy family `0632942`; Prolog family `b775362`; neural family `662a663`; Z3 family `d12c190`. |
 
 The one exception: the six DistilBERT runs of the batch conversion (calendar files meetings-01.01 to -03, written 14:59–15:00) came before the retraining of D11. They used the port of `662a663`, whose weights had been fitted on the old annotations. The 986 agreement labels of those files that involve DistilBERT rest partly on that model ([Tool choices, T1](tool-decisions.md#t1)).
 
@@ -71,9 +71,9 @@ The one exception: the six DistilBERT runs of the batch conversion (calendar fil
 
 | Part | Record |
 | --- | --- |
-| Decision | Rules and word lists may name markers (prepositions, subordinators), coordinating conjunctions, auxiliaries, pronouns, determiners, numerals, and common verbs with their irregular forms; never nouns, adjectives, or anything particular to the dataset. Training on the dataset (its text and its accepted circuits) is allowed; writing its cases into the code is not. VSS's word sets live in `strategies/vss/legend.sop`, never in JavaScript. |
+| Decision | Rules and word lists may name markers (prepositions, subordinators), coordinating conjunctions, auxiliaries, pronouns, determiners, numerals, and common verbs with their irregular forms; never nouns, adjectives, or anything particular to the dataset. Training on the dataset (its text and its accepted circuits) is allowed; writing its cases into the code is not. The word sets of hmm-rules live in `strategies/hmm-rules/legend.sop`, never in JavaScript. |
 | Reason | The reader should hold statements about English that would work on other English text, not a memory of this dataset. |
-| Consequence | `cd237e3` removed position adjectives, evaluative adjectives, three fixed phrases, graded adjectives and listed direction adverbs from VSS's lists; learned word pairs, word endings and general rules took their place. The Prolog grammar's hand lists hold function words and common verbs only (`b775362`). |
+| Consequence | `cd237e3` removed position adjectives, evaluative adjectives, three fixed phrases, graded adjectives and listed direction adverbs from the lists of hmm-rules; learned word pairs, word endings and general rules took their place. The Prolog grammar's hand lists hold function words and common verbs only (`b775362`). |
 | Landed | `cd237e3`; the legend changed after the port in `cd237e3`, `e33cc24`, `71faa24` and `59066d1`. |
 
 ## D6
@@ -126,7 +126,7 @@ The one exception: the six DistilBERT runs of the batch conversion (calendar fil
 
 | Part | Record |
 | --- | --- |
-| Decision | Work on vss, spacy (one strategy for the dependency parse), distilbert, and one hand-written analysis: the Prolog grammar or the Z3 constraint model. Both were benchmarked and both are parked; which one keeps the fourth place is open. Rules learned on VSS may be carried into Z3 later. |
+| Decision | Work on vss (now hmm-rules), spacy (one strategy for the dependency parse), distilbert, and one hand-written analysis: the Prolog grammar or the Z3 constraint model. Both were benchmarked and both are parked (experimental since 2026-11-27); which one keeps the fourth place is open. Rules learned on hmm-rules may be carried into Z3 later. |
 | Reason | Agreement says something only between different sources. Strategies that share a source repeat each other's faults and add judging cost ([Agreement](../evaluation/agreement.md)). |
 | Consequence | `tests/benchmark/syntax/strategies.mjs` lists the five strategies and the eight retired ones, still runnable by name ([Retired formalizers](../formalizers/retired.md)). `strategies/spacy/index.mjs` is spacy-beam under one name. |
 | Landed | `40c00a7`. |
@@ -172,8 +172,8 @@ The one exception: the six DistilBERT runs of the batch conversion (calendar fil
 | --- | --- |
 | Decision | As stated. |
 | Reason | The history of the plan stays in git; independent work does not wait. |
-| Consequence | The ports (D4), the three analyses of VSS faults by area, the DistilBERT retraining and the spaCy repairs ran as parallel agents. See [Goal and plan](goal-and-plan.md). |
-| Landed | `8d8fa71` (journal), `66e934b` (how to make VSS reusable). |
+| Consequence | The ports (D4), the three analyses of hmm-rules faults by area, the DistilBERT retraining and the spaCy repairs ran as parallel agents. See [Goal and plan](goal-and-plan.md). |
+| Landed | `8d8fa71` (journal), `66e934b` (how to make hmm-rules reusable). |
 
 ---
 

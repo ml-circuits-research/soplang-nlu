@@ -6,7 +6,7 @@ This page: how to run the formalizers on the benchmark sample, send their circui
 
 ## Before you start
 
-- What the benchmark is and why it is built this way: [The benchmark](../evaluation/benchmark.md). A first, small walk-through: [Measure VSS on 20 messages](../evaluation/first-measurement.md).
+- What the benchmark is and why it is built this way: [The benchmark](../evaluation/benchmark.md). A first, small walk-through: [Measure hmm-rules on 20 messages](../evaluation/first-measurement.md).
 - Choose a new run folder under `eval-results/`, for example `eval-results/2026-11-27-syntax-benchmark-a`. Steps 1 to 3 write only into that folder; step 4 writes into the dataset.
 - The sample of the benchmark is `eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz`, a random 1% of the dataset's messages.
 - The commands below use two shell variables:
@@ -34,7 +34,7 @@ node tests/benchmark/syntax/run.mjs $E/<run> \
   --sample $B/sample.json.gz
 ```
 
-Every formalizer listed under `strategyModules` in `tests/benchmark/syntax/strategies.mjs` runs over the sample, each in a process of its own, and writes one file `<name>.jsonl`: one line per message, with its circuit or the error. `--only vss,spacy` runs some of them; a retired formalizer runs only when `--only` names it. A crash or a timeout costs one message, not the run. Options and details: [Benchmark tools](../reference/run-tools.md).
+Every formalizer listed under `strategyModules` in `tests/benchmark/syntax/strategies.mjs` runs over the sample, each in a process of its own, and writes one file `<name>.jsonl`: one line per message, with its circuit or the error. `--only hmm-rules,spacy` runs some of them; a retired formalizer runs only when `--only` names it. A crash or a timeout costs one message, not the run. Options and details: [Benchmark tools](../reference/run-tools.md).
 
 ## Step 2: prepare the packets for the judges
 

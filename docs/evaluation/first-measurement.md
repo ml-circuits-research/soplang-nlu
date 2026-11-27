@@ -1,13 +1,13 @@
-[Home](../README.md) › [Evaluation and labels](README.md) › Measure VSS on 20 messages
+[Home](../README.md) › [Evaluation and labels](README.md) › Measure hmm-rules on 20 messages
 
-# Measure VSS on 20 messages
+# Measure hmm-rules on 20 messages
 
-This page: run VSS on 20 benchmark messages in a scratch folder, prepare the packets for a judge,
+This page: run hmm-rules on 20 benchmark messages in a scratch folder, prepare the packets for a judge,
 and read the table, without writing to the dataset or the registry. Kind: Tutorial.
 
 ## What you will do
 
-Three commands, and a check, with [VSS](../formalizers/vss.md), the project's own formalizer.
+Three commands, and a check, with [hmm-rules](../formalizers/hmm-rules.md), the project's own formalizer.
 Everything is written into a scratch *run folder*. You will not publish anything, because publishing
 writes labels into the dataset; the tutorial stops before it. The terms *label*, *registry* and
 *packet* are in the [glossary](../reference/glossary.md#project-terms).
@@ -26,36 +26,36 @@ labels are the dataset's own, read only.
 ## Before you start
 
 - A checkout of soplang-nlu with webmeet-dataset next to it (`../webmeet-dataset`), and Node.js
-  (VSS needs nothing else). Run every command from the soplang-nlu folder.
+  (hmm-rules needs nothing else). Run every command from the soplang-nlu folder.
 - Set four names (the trial registry folder need not exist):
 
 ```sh
-RUN=/tmp/try/vss-20
+RUN=/tmp/try/hmm-rules-20
 TRIAL=/tmp/try/registry
 DATA=../webmeet-dataset/syntactic
 SAMPLE=eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz
 ```
 
-## Step 1: run VSS
+## Step 1: run hmm-rules
 
 ```sh
-node tests/benchmark/syntax/run.mjs $RUN --only vss \
+node tests/benchmark/syntax/run.mjs $RUN --only hmm-rules \
   --sample $SAMPLE --limit 20
 ```
 
 The output begins (the third line is wrapped here):
 
 ```
-vss: started
-vss: ran
-Run vss-20: 20 messages of
+hmm-rules: started
+hmm-rules: ran
+Run hmm-rules-20: 20 messages of
 eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz
 ```
 
 Then comes a table with one row per formalizer, and a line that names the written file. The row
-for vss, as a list of columns:
+for hmm-rules, as a list of columns:
 
-| Column | vss |
+| Column | hmm-rules |
 | --- | --- |
 | Status | ran |
 | Messages | 20 |
@@ -65,8 +65,8 @@ for vss, as a list of columns:
 
 The first 20 messages of the sample were taken. Look into `$RUN`:
 
-- `vss.jsonl` holds one line per message: `{id, text, sop, error, ms}`. Its first line is the
-  message `diagram/charts-01.csv#232`, "make a bar chart of the projects by name please", with VSS's
+- `hmm-rules.jsonl` holds one line per message: `{id, text, sop, error, ms}`. Its first line is the
+  message `diagram/charts-01.csv#232`, "make a bar chart of the projects by name please", with hmm-rules'
   circuit in `sop`.
 - `summary.json` holds, per formalizer, its status, the time to start (`startupMs`, here 50), the
   messages, the valid circuits and the median milliseconds per message. Times depend on the machine
@@ -90,9 +90,9 @@ Registry: 0 judged circuits of 0 messages, in 0 files.
 New packets: packet-1.jsonl (10), packet-2.jsonl (5)
 ```
 
-Between them stands a table; its one row, for vss:
+Between them stands a table; its one row, for hmm-rules:
 
-| Column | vss |
+| Column | hmm-rules |
 | --- | --- |
 | Messages | 20 |
 | No valid circuit | 0 |
@@ -109,7 +109,7 @@ What was written into `$RUN`:
 - `key/items.jsonl`: which formalizer wrote circuit n (not for the judge);
 - `key/labels-before.jsonl`: 19 lines, one per message that had a label.
 
-The first packet line is VSS's circuit for "make a bar chart of the projects by name please". It
+The first packet line is the circuit of hmm-rules for "make a bar chart of the projects by name please". It
 starts "by name" at "projects", while the label starts it at the clause with
 `attachment=ambiguous`. The cores differ, so the circuit needs a judge.
 
@@ -120,9 +120,9 @@ node tests/benchmark/syntax/table.mjs $RUN \
   --registry $TRIAL --syntactic $DATA
 ```
 
-Its row for vss, as a list of columns:
+Its row for hmm-rules, as a list of columns:
 
-| Column | vss |
+| Column | hmm-rules |
 | --- | --- |
 | Messages | 20 |
 | L0 to L8 | 0 each |
@@ -149,13 +149,13 @@ Copy the two files of step 1 into a new run folder and prepare it without the tr
 still writes only into its run folder; the dataset's registry and labels are only read.
 
 ```sh
-mkdir -p /tmp/try/vss-20-real
-cp $RUN/vss.jsonl $RUN/summary.json /tmp/try/vss-20-real/
+mkdir -p /tmp/try/hmm-rules-20-real
+cp $RUN/hmm-rules.jsonl $RUN/summary.json /tmp/try/hmm-rules-20-real/
 node tests/benchmark/syntax/judge-prepare.mjs \
-  /tmp/try/vss-20-real --size 10
+  /tmp/try/hmm-rules-20-real --size 10
 ```
 
-In the run shown here, its row for vss read: 5 equal to the label, 9 already accepted, 3 already
+In the run shown here, its row for hmm-rules read: 5 equal to the label, 9 already accepted, 3 already
 rejected, 3 need a judge. Earlier judging had already read most of these circuits.
 
 ## What you learned
@@ -174,7 +174,7 @@ How the levels are decided: [Levels](levels.md).
 
 ## The run shown
 
-Run on 2026-11-27 at soplang-nlu commit `97a1b83` (with uncommitted VSS work of another session in
-the working tree), webmeet-dataset at `596ff1d`. Your numbers will differ as VSS and labels change.
+Run on 2026-11-27 at soplang-nlu commit `97a1b83` (with uncommitted hmm-rules work of another session in
+the working tree), webmeet-dataset at `596ff1d`. Your numbers will differ as hmm-rules and labels change.
 
 Next: [Agreement between formalizers](agreement.md) · Up: [Evaluation and labels](README.md)

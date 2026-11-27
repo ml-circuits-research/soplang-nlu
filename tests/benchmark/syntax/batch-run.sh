@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 # Runs the three strategies of the batch conversion over every source file of the dataset that has
 # no syntactic file yet: one round folder per file, eval-results/conversion/<tab>__<name>/.
-# The three read a message from different sources (VSS, the dependency parser, DistilBERT), so
+# The three read a message from different sources (hmm-rules, the dependency parser, DistilBERT), so
 # that two of them writing the same circuit says something. No judge is involved here.
 #
-#   tests/benchmark/syntax/batch-run.sh [parallel files, default 4] [strategies, default vss,spacy-direct,distilbert] [new|open]
+#   tests/benchmark/syntax/batch-run.sh [parallel files, default 4] [strategies, default hmm-rules,spacy-direct,distilbert] [new|open]
 #
 # A file whose round folder already holds the output of a strategy is not run again for it
-# (run.mjs --reuse). The strategies see the environment variables they document; set them first.
+# (run.mjs --reuse; an old folder's vss.jsonl counts as the output of hmm-rules, the strategy's name since
+# 2026-11-27). The strategies see the environment variables they document; set them first.
 set -u
 cd "$(dirname "$0")/../../.."
 parallel="${1:-4}"
-strategies="${2:-vss,spacy-direct,distilbert}"
+strategies="${2:-hmm-rules,spacy-direct,distilbert}"
 dataset="../webmeet-dataset"
 out="eval-results/conversion"
 mkdir -p "$out"
@@ -26,7 +27,7 @@ one() {
     node tests/benchmark/syntax/round.mjs start "$dir" --files "$file" --min-messages 1 > "$dir.start.log" 2>&1 || { echo "start failed: $file"; return; }
   fi
   node tests/benchmark/syntax/run.mjs "$dir" --sample "$dir/sample.json" --only "$strategies" --reuse "$dir" --jobs 3 > "$dir.run.log" 2>&1
-  echo "done $file: $(grep -c . "$dir/sample.json" > /dev/null; tail -n 6 "$dir.run.log" | grep -E '^\| (vss|spacy-direct|distilbert|z3) ' | awk -F'|' '{printf "%s%s/%s ", $2, $5, $4}')"
+  echo "done $file: $(grep -c . "$dir/sample.json" > /dev/null; tail -n 6 "$dir.run.log" | grep -E '^\| (hmm-rules|spacy-direct|distilbert|z3) ' | awk -F'|' '{printf "%s%s/%s ", $2, $5, $4}')"
 }
 export -f one
 

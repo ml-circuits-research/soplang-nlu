@@ -8,7 +8,7 @@ This page: the rule-by-rule mapping from the earlier `nlu` schema to the syntax 
 
 Until the morning of 2026-11-27 the formalizers wrote the `nlu` schema (`schemas/nlu/schema.sop`), which has more than 50 keys ([The nlu-schema period](../project/nlu-period.md)). Its names are still met in two places:
 
-- **Inside VSS.** The linker of VSS still names the keys of its wires with `nlu` names (`predicate`, `direct_object`, `particle`…). `strategies/vss/src/emit-syntax.mjs` maps them to the syntax keys when it writes the circuit ([Writing the syntax circuit](../vss/writing.md)).
+- **Inside hmm-rules.** The linker of hmm-rules still names the keys of its wires with `nlu` names (`predicate`, `direct_object`, `particle`…). `strategies/hmm-rules/src/emit-syntax.mjs` maps them to the syntax keys when it writes the circuit ([Writing the syntax circuit](../hmm-rules/writing.md)).
 - **In the reference circuits.** The accepted `nlu` circuits of the dataset were rewritten into this schema by the table below (see "Reference circuits").
 
 ## How it relates to the `nlu` schema
@@ -51,13 +51,13 @@ The figures come from one fixed sample: 1,831 messages, 1% of the messages of `w
 
 **How readings are graded.** A judge, a language model, reads the message and the circuits a formalizer returned for it and gives one level from L0 to L10. L0 to L7 mean that at least one returned circuit is wrong. For example, L1 is a wrong clause or verb, L3 a wrong relation or grouping, L6 lost information, and L7 one good circuit beside a wrong one. L8, L9 and L10 mean that every returned circuit is acceptable. The figure that matters is the share of messages at L8, L9 or L10.
 
-**The formalizer measured.** VSS is the reader in `soplang-nlu/strategies/vss`. It learns from the text of the dataset without annotations.
+**The formalizer measured.** hmm-rules is the reader in `soplang-nlu/strategies/hmm-rules`. It learns from the text of the dataset without annotations.
 
 | Result | Measurement |
 | --- | --- |
-| 63.2% | VSS, judged in the `nlu` schema: share of messages at L8, L9 or L10 |
+| 63.2% | hmm-rules, judged in the `nlu` schema: share of messages at L8, L9 or L10 |
 
-The next table shows how much the smaller schema changes by itself. It counts the VSS readings that are identical to a circuit already accepted in the dataset, at each level of detail.
+The next table shows how much the smaller schema changes by itself. It counts the hmm-rules readings that are identical to a circuit already accepted in the dataset, at each level of detail.
 
 | Identical | Compared |
 | --- | --- |

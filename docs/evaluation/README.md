@@ -72,7 +72,7 @@ The `accepted_by` cell of a message's row in the dataset records which way:
 ### Measuring formalizers
 
 - [The benchmark](benchmark.md): the random 1% sample, publication, and how to read a GOAL.
-- [Measure VSS on 20 messages](first-measurement.md) (Tutorial): run, prepare packets, read the
+- [Measure hmm-rules on 20 messages](first-measurement.md) (Tutorial): run, prepare packets, read the
   table.
 
 ### Labels without a judge

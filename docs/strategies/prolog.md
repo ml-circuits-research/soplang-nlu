@@ -6,7 +6,7 @@ This page: a pointer to where this content now lives. Kind: Reference.
 
 This was the page of the strategy `prolog` in `docs/strategies/`. Its content now lives in:
 
-- [Prolog](../formalizers/prolog.md): the formalizer as it is now (parked).
+- [Prolog](../formalizers/prolog.md): the formalizer as it is now (experimental).
 - [Strategies of the nlu-schema period: prolog](../project/nlu-strategies.md#prolog): what the earlier page described.
 
 Its text as it stood is kept in the git history:

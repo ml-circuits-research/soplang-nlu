@@ -9,5 +9,5 @@ export const strategyModules = {
   'neuro-z3': ['../../strategies/neuro-z3/index.mjs', 'neuroZ3'],
   'neuro-selector': ['../../strategies/neuro-selector/index.mjs', 'neuroSelector'],
   'neuro-prolog': ['../../strategies/neuro-prolog/index.mjs', 'neuroProlog'],
-  vss: ['../../strategies/vss/index.mjs', 'vss']
+  'hmm-rules': ['../../strategies/hmm-rules/index.mjs', 'hmmRules']
 }

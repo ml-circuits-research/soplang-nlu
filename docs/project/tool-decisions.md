@@ -16,22 +16,22 @@ Terms: *agreement* means that strategies of different *families* (sources of ana
 
 | Part | Record |
 | --- | --- |
-| Decision | `round.mjs settle` accepts a circuit by agreement when strategies of at least three families wrote it (`--families`, default 3). The batch conversion uses two families, with relaxed agreement and an audit (`batch-settle.sh` that day: `--families 2 --relaxed --prefer vss --judge audit --audit 0.02`; since `c8d0a09` the script passes `--key`, `relaxed` by default). |
+| Decision | `round.mjs settle` accepts a circuit by agreement when strategies of at least three families wrote it (`--families`, default 3). The batch conversion uses two families, with relaxed agreement and an audit (`batch-settle.sh` that day: `--families 2 --relaxed --prefer hmm-rules --judge audit --audit 0.02`; since `c8d0a09` the script passes `--key`, `relaxed` by default). |
 | Reason | The evidence for each number is explained in [Agreement between formalizers](../evaluation/agreement.md); it is not repeated here. |
-| Consequence | The audit of the batch is the only measure of its error rate ([The audit](../evaluation/audit.md)). In 211 of the 217 batch folders only VSS and spacy-direct ran, so two families were all there was. |
+| Consequence | The audit of the batch is the only measure of its error rate ([The audit](../evaluation/audit.md)). In 211 of the 217 batch folders only hmm-rules and spacy-direct ran, so two families were all there was. |
 | Landed | `9a57cfe`, `40c00a7`, `edb1319`. |
 
 Which DistilBERT ran in the batch: its six files were written at 14:59–15:00, before the syntax-only checkpoint existed (15:15–15:23, file times) and before `9ae0e6f` landed (15:31). These runs therefore used the port of `662a663`, with weights fitted on the old nlu annotations. Nothing in the run folders records the checkpoint. The inference rests on the file times and on the code at `7db7628`, where `strategies/distilbert/index.mjs` still loaded the older model (checked during the review of the report).
 
 ## T2
 
-**Relaxed agreement, and VSS's circuit becomes the label.**
+**Relaxed agreement, and the circuit of hmm-rules becomes the label.**
 
 | Part | Record |
 | --- | --- |
-| Decision | Circuits that differ only in where a relation with a marker starts (its attachment site), and in the mark `attachment=ambiguous`, count as written alike. The circuit of the first strategy named by `--prefer` (vss) becomes the label. |
-| Reason | The judges' rules accept several attachment sites. For choosing VSS's circuit no reason is recorded: the comment in `round.mjs` says only that the circuit of the first strategy of `--prefer` "stands for them". |
-| Consequence | Labels settled this way carry VSS's attachment site. On a labelled message VSS's circuit is usually the label (L9), while spaCy's circuit with the other site needs a judge and, when accepted, replaces the label (L10). In the first judging of the benchmark, VSS had 586 messages at L9 and none at L10. |
+| Decision | Circuits that differ only in where a relation with a marker starts (its attachment site), and in the mark `attachment=ambiguous`, count as written alike. The circuit of the first strategy named by `--prefer` (hmm-rules) becomes the label. |
+| Reason | The judges' rules accept several attachment sites. For choosing the circuit of hmm-rules no reason is recorded: the comment in `round.mjs` says only that the circuit of the first strategy of `--prefer` "stands for them". |
+| Consequence | Labels settled this way carry the attachment site of hmm-rules. On a labelled message the circuit of hmm-rules is usually the label (L9), while spaCy's circuit with the other site needs a judge and, when accepted, replaces the label (L10). In the first judging of the benchmark, hmm-rules had 586 messages at L9 and none at L10. |
 | Landed | `40c00a7` (`relaxedCore` and `agreedCircuits` in `tests/benchmark/syntax/lib.mjs`). |
 
 Later, `c8d0a09` added a wider key, `--key variants`: two circuits also count as alike up to eight choices that the judges' rules let pass either way ([Agreement](../evaluation/agreement.md)).
@@ -64,18 +64,18 @@ Before `9b2831e`, `round.mjs write` left a whole file untouched when the round h
 
 No comment, commit message or session note gives a reason for these. Each is a number or default in the code:
 
-- **`--prefer vss`**: VSS's circuit stands for a group under relaxed agreement and becomes the label (T2).
+- **`--prefer hmm-rules`**: the circuit of hmm-rules stands for a group under relaxed agreement and becomes the label (T2).
 - **Smallest files first**: `pickFiles` in `round.mjs` sorts the free source files by their number of messages unless `--order name` is given. The effect is measured: the early rounds overstate a reader ([Limits](../evaluation/validity.md)).
 - **1,000 messages per file**: the limit of [D7](decisions.md#d7); its other half, the mirrored layers, has a reason.
 - **An audit share of 0.02** in `batch-settle.sh`, against the default 0.05 of `round.mjs settle` (T4).
 - **A packet size of 170** in the batch and in the benchmark (`--size 170`; also the default of `pool.mjs`), against the default of 200 in `round.mjs settle` and `judge-prepare.mjs`. A packet is the file of circuits one judge reads.
-- **The VSS loop limit of 4**: at most 4 re-decodings after a doubt about a word, so at most 5 readings. When the limit is reached, the last reading is used even if it still has fresh doubts ([Reading](../vss/reading.md)).
+- **The hmm-rules loop limit of 4**: at most 4 re-decodings after a doubt about a word, so at most 5 readings. When the limit is reached, the last reading is used even if it still has fresh doubts ([Reading](../hmm-rules/reading.md)).
 
 Also not recorded: why DistilBERT ran in only 6 of the 217 batch folders.
 
 ## Thresholds whose origin is not recorded
 
-VSS's rules use numbers such as "a word seen as a thing at least 20 times" or "a likeness below 0.3". Three are documented as chosen from counts in this dataset; most others, such as "at least 3", have no recorded origin. The [rule catalogue](../vss/rules.md) marks each kind. Making these numbers learned instead of set is one of the steps in [Making VSS reusable](../vss/reuse.md).
+The rules of hmm-rules use numbers such as "a word seen as a thing at least 20 times" or "a likeness below 0.3". Three are documented as chosen from counts in this dataset; most others, such as "at least 3", have no recorded origin. The [rule catalogue](../hmm-rules/rules.md) marks each kind. Making these numbers learned instead of set is one of the steps in [Making hmm-rules reusable](../hmm-rules/reuse.md).
 
 ---
 

@@ -8,7 +8,7 @@ import {Parser} from './parser.mjs'
 import {treeToCircuit} from './tree.mjs'
 import {observeWords} from './observe.mjs'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
-const {createVssReader} = await import(root + 'strategies/vss/src/reader.mjs')
+const {createVssReader} = await import(root + 'strategies/hmm-rules/src/reader.mjs')
 
 export function createParserReader({vssModel, parserModel, clusters}) {
   const vss = createVssReader(vssModel, {schema: 'syntax'})
@@ -29,7 +29,7 @@ export const vssParser = {
   async open({model = new URL('./model.json.gz', import.meta.url)} = {}) {
     const start = performance.now()
     const reader = createParserReader({
-      vssModel: JSON.parse(readFileSync(root + 'strategies/vss/model/model.json', 'utf8')),
+      vssModel: JSON.parse(readFileSync(root + 'strategies/hmm-rules/model/model.json', 'utf8')),
       parserModel: JSON.parse(gunzipSync(readFileSync(model))),
       clusters: JSON.parse(readFileSync(new URL('./clusters.json', import.meta.url), 'utf8'))
     })

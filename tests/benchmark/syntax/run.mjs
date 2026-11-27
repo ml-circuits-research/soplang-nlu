@@ -10,6 +10,8 @@
 // hangs loses one message and never stops the others.
 // --reuse <folder>: when <folder>/<strategy>.jsonl exists, its circuits are checked again and taken
 // instead of running the strategy. Name the run folder itself to continue a run.
+// A strategy may be named by an old name (strategyAliases in lib.mjs: vss for hmm-rules) in --only and in the
+// options file; --reuse takes the file of an old name (vss.jsonl) when the folder has none of the name now.
 // --options <file>: a JSON file {"<strategy>": {…}} with what a strategy needs to open, such as the
 // path of its model. A strategy also sees the environment variables it documents.
 // No knowledge repository is read: SOP_KNOWLEDGE_DIR is removed before a strategy is loaded, and a
@@ -20,7 +22,7 @@ import {join, resolve, relative, basename} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
 import {createReader} from '../../../lib/reader.mjs'
 import {validateSyntax} from '../../../lib/syntax.mjs'
-import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, sampleFile, packageRoot} from './lib.mjs'
+import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, sampleFile, packageRoot, strategyName, strategyAliases, outputFile} from './lib.mjs'
 
 const thisFile = fileURLToPath(import.meta.url)
 const {words, named} = readArguments(process.argv.slice(2))
@@ -56,7 +58,9 @@ async function child() {
   const sample = readSample(sampleSource).slice(0, limit)
   const started = performance.now()
   let reader
-  const {knowledgeDir, strategy: _, ...configuration} = typeof named.options === 'string' ? readJson(resolve(named.options))[named.child] ?? {} : {}
+  const given = typeof named.options === 'string' ? readJson(resolve(named.options)) : {}
+  const oldNames = Object.keys(strategyAliases).filter(old => strategyAliases[old] === named.child)
+  const {knowledgeDir, strategy: _, ...configuration} = [named.child, ...oldNames].map(name => given[name]).find(Boolean) ?? {}
   try { reader = await createReader({...configuration, strategy}) } catch (error) { await leave({type: 'failed', error: 'the strategy could not be opened: ' + messageOf(error)}) }
   await send({type: 'ready', startupMs: Math.round(performance.now() - started)})
   for (let index = Number(named.from ?? 0); index < sample.length; index++) {
@@ -84,7 +88,7 @@ async function parent() {
   // the strategies that take part, and those left out, which still run when named with --only
   const {strategyModules: active, retiredModules = {}} = await import(pathToFileURL(strategiesFile).href)
   const strategyModules = {...retiredModules, ...active}
-  const only = typeof named.only === 'string' ? named.only.split(',').map(name => name.trim()).filter(Boolean) : null
+  const only = typeof named.only === 'string' ? named.only.split(',').map(name => strategyName(name.trim())).filter(Boolean) : null
   const unknown = (only ?? []).filter(name => !strategyModules[name])
   if (unknown.length) { console.error(`Unknown strategy: ${unknown.join(', ')}. Known: ${Object.keys(strategyModules).join(', ')}`); process.exit(2) }
   const names = only ?? Object.keys(active)
@@ -124,7 +128,7 @@ async function parent() {
   })
 
   async function runStrategy(name) {
-    const reused = reuseDir && join(reuseDir, name + '.jsonl')
+    const reused = reuseDir && outputFile(reuseDir, name)
     if (reused && existsSync(reused)) return {status: 'reused', reusedFrom: relative(packageRoot, reused), rows: takeOver(readJsonl(reused), sample)}
     const rows = new Array(sample.length).fill(null)
     let from = 0, restarts = 0, startupMs = null

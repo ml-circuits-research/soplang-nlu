@@ -85,7 +85,7 @@ is in that file. Where the rules came from, all on 2026-11-27:
 
 | Commit | What it added |
 | --- | --- |
-| `8fb0205` | the criterion, in `strategies/vss/judging-rules.md` (the earlier `nlu` schema) |
+| `8fb0205` | the criterion, in `strategies/hmm-rules/judging-rules.md` (the earlier `nlu` schema) |
 | `615e232`, `9196fe7` | the first settled cases there |
 | `e166870` | `tests/benchmark/syntax/rules.md` created, for the syntax schema |
 | `24de853` | five settled cases |
@@ -115,7 +115,7 @@ No time or money spent on judging is recorded.
 - **Judge and person**: how often a judge agrees with a human annotator is not measured.
 - **A limit from the nlu era** (the earlier, larger schema; see
   [The nlu period](../project/nlu-period.md)): on the morning of 2026-11-27, judges accepted only
-  93% of VSS readings identical to circuits already accepted, and the VSS page of that time
+  93% of hmm-rules readings identical to circuits already accepted, and the hmm-rules page of that time
   concluded "so no design can measure near 99%" (as cited in the syntax-work report). Whether the
   simpler schema and rules reduce this disagreement is not known.
 - **Verdicts written by a script**: two judge agents read all their circuits and then wrote

@@ -3,7 +3,7 @@
 //   node clusters.mjs  -> clusters.json {word: [c64, c256]}
 import {readFileSync, writeFileSync} from 'node:fs'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
-const model = JSON.parse(readFileSync(root + 'strategies/vss/model/model.json', 'utf8'))
+const model = JSON.parse(readFileSync(root + 'strategies/hmm-rules/model/model.json', 'utf8'))
 const {dimensions: D, words} = model.meanings
 const binary = atob(model.meanings.vectors)
 const X = words.map((_, k) => { const v = new Float32Array(D); let norm = 0

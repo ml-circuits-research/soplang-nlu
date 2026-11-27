@@ -20,7 +20,7 @@ formalizers themselves: [Formalizers](../formalizers/README.md).
 
 | Family | Formalizers, and what they read the message from |
 | --- | --- |
-| `vss` | `vss`: its own model, learned from the text of the dataset |
+| `hmm-rules` | `hmm-rules` (called `vss` until 2026-11-27; old files that say `vss` are read as `hmm-rules`): its own model, learned from the text of the dataset |
 | `parser` | `spacy`, and the retired `spacy-direct`, `spacy-beam`, `neural-dependencies`, `neuro-prolog`, `neuro-z3`, `neuro-selector`, `selector-distilbert`: the spaCy [dependency parse](https://en.wikipedia.org/wiki/Dependency_grammar) (a tree with one head word for each word), or a choice among circuits written from it |
 | `prolog` | `prolog`, `prolog-example-transfer` (and `prolog-worlds`, a name kept for an older formalizer): a hand-written grammar in Prolog |
 | `z3` | `z3`: a hand-written grammar solved as constraints |
@@ -43,9 +43,9 @@ two formalizers wrote the same circuit (recounted with `agree.mjs` for the synta
 - `spacy-direct`, `neuro-prolog` (same): 77.6%
 - `spacy-direct`, `spacy-beam` (same): 75.1%
 - `z3`, `prolog` (different): 54.0%
-- `vss`, `distilbert` (different): 48.0%
-- `vss`, `spacy-direct` (different): 40.3%
-- `vss`, `prolog` (different): 29.6%
+- `hmm-rules`, `distilbert` (different): 48.0%
+- `hmm-rules`, `spacy-direct` (different): 40.3%
+- `hmm-rules`, `prolog` (different): 29.6%
 - `prolog`, `distilbert` (different): 28.1%
 
 The sources give different ranges for this comparison. The session notes say 77–97% within the
@@ -56,7 +56,7 @@ for the selectors and hybrids, and 28–54% between families.
 **Agreement within a family is not reliable.** When the three spaCy formalizers wrote a circuit
 alike in round 1, a judge still rejected 53 of the 439 of these circuits that were judged (12.1%).
 
-**Two families can share a source.** A judge rejected 14 of 39 circuits that only VSS and Prolog
+**Two families can share a source.** A judge rejected 14 of 39 circuits that only hmm-rules and Prolog
 wrote alike, against 3 of 427 that three or four families wrote alike. The session notes explain it:
 both read word order with a learned lexicon. `tests/benchmark/syntax/README.md` gives these figures
 for "the first judged sample"; which run that was is not identified in the sources.
@@ -69,9 +69,9 @@ for "the first judged sample"; which run that was is not identified in the sourc
 | batch | 2: `batch-settle.sh` passes `--families 2` |
 | library | 2: the default of `agreedCircuits` in `lib.mjs` |
 
-Reading only `lib.mjs` gives the wrong default for rounds. In the batch conversion, VSS and
+Reading only `lib.mjs` gives the wrong default for rounds. In the batch conversion, hmm-rules and
 spacy-direct were the only formalizers in 211 of 217 folders, so three families would have needed
-DistilBERT, which ran in six. The evidence when two was chosen: on rounds 1 and 2, VSS and
+DistilBERT, which ran in six. The evidence when two was chosen: on rounds 1 and 2, hmm-rules and
 spacy-direct agreed under the relaxed key on 606 messages, of which a judge rejected 2 (commit
 `40c00a7`). The decision is recorded as [T1](../project/tool-decisions.md#t1).
 
@@ -89,7 +89,7 @@ from round 1:
 
 ```
 # turn underline on for the Results heading
-# vss: "for the Results heading" hangs from "underline"
+# hmm-rules: "for the Results heading" hangs from "underline"
 @r1 syntax.relation marker="for" from=$n1 to=$n2
 # spacy-direct: it hangs from the clause
 @r1 syntax.relation marker="for" from=$c1 to=$n2
@@ -114,7 +114,7 @@ The exact rewriting, and the choices that judges accepted both ways but `rules.m
 
 Under `relaxed` or `variants`, the circuits counted alike form one group. The circuit of the first
 formalizer named by `--prefer` stands for it, else the one most formalizers wrote. The batch uses
-`--prefer vss`, so VSS's choice became the label. No reason for choosing VSS is recorded
+`--prefer hmm-rules` (`--prefer vss` before the rename), so the choice of hmm-rules became the label. No reason for choosing hmm-rules is recorded
 ([T2](../project/tool-decisions.md#t2)). What this does to the benchmark:
 [The benchmark](benchmark.md#how-to-read-a-goal).
 
@@ -133,8 +133,8 @@ formalizer named by `--prefer` stands for it, else the one most formalizers wrot
   2026-11-27).
 - **The parser's fault on calendar templates.** spacy-direct made the time zone the head of the
   clock time ("14:00 UTC" with head "UTC") in 990 of 1,000 messages of `calendar/meetings-01.01`, so
-  agreement was low there through the parser's fault. A judge read 564 VSS circuits of that file and
-  accepted 560; the session notes also give 77 of 77 sampled calendar circuits of VSS as right
+  agreement was low there through the parser's fault. A judge read 564 hmm-rules circuits of that file and
+  accepted 560; the session notes also give 77 of 77 sampled calendar circuits of hmm-rules as right
   (session notes only). Clock times with "UTC" were among the spaCy repairs listed as in progress at
   the end of that day; whether the fault is gone was not recounted.
 
@@ -146,6 +146,6 @@ formalizer named by `--prefer` stands for it, else the one most formalizers wrot
 | New here | The procedure: families declared by source, keys up to what the judges' rules let pass, and a seeded audit. |
 | Particular | The families are this project's formalizers; the `variants` key follows this project's `rules.md`. |
 
-Current numbers: [STATUS.md: Agreement between VSS and spaCy](../STATUS.md#agreement-between-vss-and-spacy).
+Current numbers: [STATUS.md: Agreement between hmm-rules and spaCy](../STATUS.md#agreement-between-hmm-rules-and-spacy).
 
 Next: [The audit of agreed circuits](audit.md) · Up: [Evaluation and labels](README.md)

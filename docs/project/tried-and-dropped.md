@@ -4,7 +4,7 @@
 
 This page: what was tried and set aside, each with what was measured and why it was dropped, so that nobody repeats it unknowingly. Kind: Explanation.
 
-Each item says what was tried, the evidence, and where the evidence is. "Session notes" means the notes of the working session of 2026-11-27, which are not in the repository; such claims could not be checked against a file. Most items come from [syntax-work-2026-11-27.html](../syntax-work-2026-11-27.html), section "What was tried and dropped", and from the journal. Project terms (agreement, family, label) are in the [Glossary](../reference/glossary.md#project-terms); the names VSS uses (station, kinds, role-filler memory, doubt) on [VSS's own names](../vss/names.md).
+Each item says what was tried, the evidence, and where the evidence is. "Session notes" means the notes of the working session of 2026-11-27, which are not in the repository; such claims could not be checked against a file. Most items come from [syntax-work-2026-11-27.html](../syntax-work-2026-11-27.html), section "What was tried and dropped", and from the journal. Project terms (agreement, family, label) are in the [Glossary](../reference/glossary.md#project-terms); the names hmm-rules uses (station, kinds, role-filler memory, doubt) on [hmm-rules' own names](../hmm-rules/names.md).
 
 ## Goal and organisation
 
@@ -22,7 +22,7 @@ Round 1 sent every strategy's circuit to a judge: 1,798 circuits for 575 message
 
 ### Strict agreement
 
-Requiring two circuits to be identical before they count as agreeing. On rounds 1 and 2 (1,173 messages), VSS and spacy-direct agreed on 469 messages strictly and on 606 when it is ignored where each relation with a marker (a linking word such as "on") starts; a judge rejected 2 of the 606. Replaced by relaxed agreement ([T2](tool-decisions.md#t2); `40c00a7`), later widened again by `c8d0a09`. Method: [Agreement between formalizers](../evaluation/agreement.md).
+Requiring two circuits to be identical before they count as agreeing. On rounds 1 and 2 (1,173 messages), hmm-rules and spacy-direct agreed on 469 messages strictly and on 606 when it is ignored where each relation with a marker (a linking word such as "on") starts; a judge rejected 2 of the 606. Replaced by relaxed agreement ([T2](tool-decisions.md#t2); `40c00a7`), later widened again by `c8d0a09`. Method: [Agreement between formalizers](../evaluation/agreement.md).
 
 ### Two candidate kinds for the wider agreement key
 
@@ -52,7 +52,7 @@ An intermediate draft named the keys with everyday words (main, via, other, star
 
 A key giving each value's position, two circuits for one ambiguous attachment, a relation that starts at another relation, "make" as a clause of its own, and the names object and noun_phrase. Each is rejected with its reason in the schema pages ([Suggestions not adopted](../schema/decisions-names.md#suggestions-not-adopted); the first review: [Decisions 1–5](../schema/decisions-review-1.md)).
 
-## VSS
+## hmm-rules
 
 ### Counting word kinds from accepted circuits
 
@@ -76,7 +76,7 @@ Measured on the nlu schema, each worse, each off by default: (1) smoothing what 
 
 ### Word kinds as a prior inside EM
 
-The option `train.mjs --anchoring` pulls each word towards the kind (verb, thing, quality) that contexts fixed by function words show, such as "the ___ on" for a thing. This was the fourth experiment of the nlu period. It measured worse and stays off unless the option is given, so the kinds serve only the rules ([What VSS learns beyond the HMM](../vss/learned-knowledge.md)).
+The option `train.mjs --anchoring` pulls each word towards the kind (verb, thing, quality) that contexts fixed by function words show, such as "the ___ on" for a thing. This was the fourth experiment of the nlu period. It measured worse and stays off unless the option is given, so the kinds serve only the rules ([What hmm-rules learns beyond the HMM](../hmm-rules/learned-knowledge.md)).
 
 ## spaCy
 
@@ -88,10 +88,10 @@ The fourth round of spaCy repairs dropped two of the rules it tried: openers rea
 
 Two standard learned methods were tried in a scratch folder and copied, with their findings, to [experiments/syntax-learned/README.md](../../experiments/syntax-learned/README.md). Neither is adopted.
 
-- **A transition-based parser for VSS.** Standard parts: arc-eager transitions ([shift-reduce parsing](https://en.wikipedia.org/wiki/Shift-reduce_parser)), a dynamic oracle, and an averaged [perceptron](https://en.wikipedia.org/wiki/Perceptron), trained on the labels with the benchmark left out. On the benchmark: 55.3% known accepted, an estimated 63–76% in all, against 75.4% for VSS on the same snapshot.
+- **A transition-based parser for hmm-rules.** Standard parts: arc-eager transitions ([shift-reduce parsing](https://en.wikipedia.org/wiki/Shift-reduce_parser)), a dynamic oracle, and an averaged [perceptron](https://en.wikipedia.org/wiki/Perceptron), trained on the labels with the benchmark left out. On the benchmark: 55.3% known accepted, an estimated 63–76% in all, against 75.4% for hmm-rules on the same snapshot.
 - **spaCy [fine-tuned](https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)) on the judged circuits.** 64.6–66.4% known accepted with 30–33% not judged, against 86.7% for the base model. It fixed 48 rejected circuits and broke none among those judged; the rest looked break-even.
 
-The findings: both learn VSS's own conventions. 91% of the parser's training labels are agreement labels, which carry VSS's circuits by construction, and two thirds of the judged labels used for spaCy are VSS's circuits. The README proposes, for the parser, training on the judged circuits with the rejected ones as negative examples, used beside VSS as one more voice rather than instead of it; for spaCy, training on corrections only, kept as one more alternative inside the spaCy strategy.
+The findings: both learn the conventions of hmm-rules. 91% of the parser's training labels are agreement labels, which carry the circuits of hmm-rules by construction, and two thirds of the judged labels used for spaCy are the circuits of hmm-rules. The README proposes, for the parser, training on the judged circuits with the rejected ones as negative examples, used beside hmm-rules as one more voice rather than instead of it; for spaCy, training on corrections only, kept as one more alternative inside the spaCy strategy.
 
 ---
 

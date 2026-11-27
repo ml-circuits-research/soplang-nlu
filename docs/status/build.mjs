@@ -16,7 +16,7 @@
 //   the levels of the benchmark run (with the functions of tests/benchmark/syntax/lib.mjs that table.mjs
 //   uses), the speed of each strategy (the milliseconds recorded for every message in the strategy
 //   files of the run; start-up from summary.json), the size of the model files, the labels of the
-//   dataset (webmeet-dataset/syntactic), the agreement between VSS and spaCy, the audit of the batch
+//   dataset (webmeet-dataset/syntactic), the agreement between hmm-rules and spaCy, the audit of the batch
 //   conversion, the journal (improvements-ideas.md) and the recent commits of both repositories.
 // A section that cannot be computed says so on the page, and the other sections are still written.
 import {readFileSync, writeFileSync, existsSync, readdirSync, lstatSync, statSync} from 'node:fs'
@@ -101,20 +101,22 @@ function lastWritten(file) {
 }
 
 // ---- the strategies: colour slot (fixed order) and what each one is
-const ACTIVE = ['vss', 'spacy', 'distilbert', 'prolog', 'z3']
+const ACTIVE = ['hmm-rules', 'spacy', 'distilbert', 'prolog', 'z3']
 const colour = name => ACTIVE.includes(name) ? name : 'other'
 const dot = name => `<span class="dot s-${colour(name)}" aria-hidden="true"></span>`
+// the states of tests/benchmark/syntax/strategies.mjs (strategyStatus): spacy is the one active strategy; the others are
+// experimental (measured, kept runnable, not improved for now). rvss, the vector-symbolic reader, is being built.
 const ABOUT = {
-  vss: {state: 'main focus', line: 'our own reader. It learns classes of words (stations) from raw text with no labels; hand-written rules about English, which name only function words, then build the circuit. Node.js only.'},
+  'hmm-rules': {state: 'experimental', line: 'our own reader so far, called vss until 2026-11-27. A hidden Markov model learned from raw text with no labels tags each word with a class (a station); hand-written rules about English, which name only function words, then build the circuit. Node.js only.'},
   spacy: {state: 'active', line: 'an outside dependency parser (spaCy\'s English transformer, trained by its makers on large treebanks) plus our layer that turns its parse into a circuit. Python.'},
-  distilbert: {state: 'active', line: 'a small transformer (DistilBERT, pretrained on English text) fine-tuned on our circuits. Python with PyTorch.'},
-  prolog: {state: 'parked', line: 'a hand-written grammar in Prolog.'},
-  z3: {state: 'parked', line: 'a hand-written grammar written as constraints and solved by the Z3 solver.'}
+  distilbert: {state: 'experimental', line: 'a small transformer (DistilBERT, pretrained on English text) fine-tuned on our circuits. Python with PyTorch.'},
+  prolog: {state: 'experimental', line: 'a hand-written grammar in Prolog.'},
+  z3: {state: 'experimental', line: 'a hand-written grammar written as constraints and solved by the Z3 solver.'}
 }
-const parked = name => ABOUT[name]?.state === 'parked'
+const experimental = name => ABOUT[name]?.state === 'experimental'
 const nameCell = (name, {chip = true} = {}) => ({
-  html: dot(name) + esc(name) + (chip && parked(name) ? ' <span class="chip">parked</span>' : ''),
-  md: name + (chip && parked(name) ? ' (parked)' : '')
+  html: dot(name) + esc(name) + (chip && experimental(name) ? ' <span class="chip">experimental</span>' : ''),
+  md: name + (chip && experimental(name) ? ' (experimental)' : '')
 })
 
 // ---- Markdown, a small subset: headings, paragraphs, lists, tables, code blocks, code spans, bold, links
@@ -288,8 +290,8 @@ function table(head, rows, align = [], {foot = [], sticky = true} = {}) {
 const rich = markdown => ({html: inline(markdown), md: markdown})
 /** The name of a strategy as a line of its own, above its small table: a coloured dot on the page, bold in Markdown. */
 const label = (name, extra = '') => ({
-  html: `<p class="who">${dot(name)}<strong>${esc(name)}</strong>${parked(name) ? ' <span class="chip">parked</span>' : ''}${extra ? ' ' + inline(extra) : ''}</p>`,
-  md: `**${name}**${parked(name) ? ' (parked)' : ''}${extra ? ' ' + extra : ''}`
+  html: `<p class="who">${dot(name)}<strong>${esc(name)}</strong>${experimental(name) ? ' <span class="chip">experimental</span>' : ''}${extra ? ' ' + inline(extra) : ''}</p>`,
+  md: `**${name}**${experimental(name) ? ' (experimental)' : ''}${extra ? ' ' + extra : ''}`
 })
 /** A note in a box on the page; a quoted paragraph in Markdown. */
 const box = (markdown, kind = '') => ({html: `<div class="box${kind ? ' ' + kind : ''}">${markdownToHtml(markdown)}</div>`, md: markdown.split('\n').map(line => '> ' + line).join('\n')})
@@ -344,7 +346,8 @@ const bench = memo(() => {
     judgedHere: count('judge'), agreedHere: count('agreement'), messages: texts.size, texts,
     labelled: [...texts].filter(text => labelsBefore.has(text)).length, judges}
 })
-const history = memo(() => readJson(join(here, 'history.json')))
+// a row of an old name of a strategy (vss) counts under its name now (hmm-rules): strategyAliases in tests/benchmark/syntax/lib.mjs
+const history = memo(() => readJson(join(here, 'history.json')).map(entry => ({...entry, strategy: lib.strategyName(entry.strategy)})))
 /** The DistilBERT checkpoint of the latest DistilBERT row of history.json ("syntax-v3"); syntax-v2 when none is named. */
 const distilCheckpoint = memo(() => {
   try {
@@ -406,18 +409,18 @@ const speed = memo(() => {
 })
 /** What each strategy needs and where its analysis comes from; model sizes measured on disk now. */
 const facts = memo(() => {
-  let vssTrained = null, distil = null
-  try { vssTrained = readJson(join(root, 'strategies/vss/model/model.json')).trained } catch { /* unknown */ }
+  let hmmTrained = null, distil = null
+  try { hmmTrained = readJson(join(root, 'strategies/hmm-rules/model/model.json')).trained } catch { /* unknown */ }
   const checkpoint = distilCheckpoint()
   try { distil = readJson(join(root, `.local-models/distilbert/${checkpoint}/training-summary.json`)) } catch { /* unknown */ }
   const wasm = join(root, 'strategies/z3/node_modules/z3-solver/build/z3-built.wasm')
   return {
-    vss: {runtime: 'Node.js', browserShort: 'not yet; needs a small loader', trainingShort: 'about 1 min, CPU', labels: 'no: raw text only',
+    'hmm-rules': {runtime: 'Node.js', browserShort: 'not yet; needs a small loader', trainingShort: 'about 1 min, CPU', labels: 'no: raw text only',
       runs: 'Node.js only: plain JavaScript in one process, on one CPU core. No GPU, no Python.',
       browser: 'Not yet. The reader is plain JavaScript and the model is one JSON file; Node is used only to read its files, so a browser needs a small loader, which is not built yet.',
-      models: [['model.json', join(root, 'strategies/vss/model/model.json')]],
-      training: 'About 60–70 s on the CPU (reported by the training runs, not measured here)' + (vssTrained ? `, from ${num(vssTrained.messages)} messages of raw text (${num(vssTrained.tokens)} words, ${vssTrained.iterations} rounds of EM). No labels are used. The raw text is the whole dataset, so it includes the benchmark messages, without their labels.` : '.'),
-      source: 'Stations (classes of words and their order) learned from raw text with no labels, plus hand-written rules about English that name only function words.'},
+      models: [['model.json', join(root, 'strategies/hmm-rules/model/model.json')]],
+      training: 'About 60–70 s on the CPU (reported by the training runs, not measured here)' + (hmmTrained ? `, from ${num(hmmTrained.messages)} messages of raw text (${num(hmmTrained.tokens)} words, ${hmmTrained.iterations} rounds of EM). No labels are used. The raw text is the whole dataset, so it includes the benchmark messages, without their labels.` : '.'),
+      source: 'Stations (classes of words and their order) learned from raw text with no labels by a hidden Markov model, plus hand-written rules about English that name only function words. Experimental: not improved for now (owner\'s decision).'},
     spacy: {runtime: 'Python with spaCy and spacy-transformers (PyTorch)', browserShort: 'no', trainingShort: 'none by us', labels: 'no: English treebanks, by its makers',
       runs: 'Python with spaCy 3.8 and the transformer pipeline en_core_web_trf 3.8.0, called from Node; on the CPU in the benchmark.',
       browser: 'No: it needs Python and a transformer of about half a gigabyte.',
@@ -432,20 +435,20 @@ const facts = memo(() => {
       training: distil ? `Checkpoint ${checkpoint}, the one named by the latest DistilBERT measurement of "Progress over time": ${Math.round(distil.trainingSeconds / 60)} min for ${distil.epochs?.length ?? distil.maximumEpochs} epochs on the ${distil.device === 'cuda' ? 'GPU' : distil.device}, ${num(distil.trainRows)} training circuits ` +
         `(judged labels, and agreement labels at weight ${distil.messages?.agreement?.weight ?? '?'}); benchmark messages held out. ` +
         `On held-out development messages ${share(distil.development?.equalToGoldByCore)} equal the label.` : 'unknown (training-summary.json not found)',
-      source: 'A transformer (DistilBERT, pretrained on English text) fine-tuned on our syntax circuits.'},
+      source: 'A transformer (DistilBERT, pretrained on English text) fine-tuned on our syntax circuits. Experimental: not improved for now (owner\'s decision).'},
     prolog: {runtime: 'SWI-Prolog', browserShort: 'not as it is', trainingShort: 'word counts only', labels: 'no: raw text counts',
       runs: 'SWI-Prolog (a native program), called from Node.',
       browser: 'Not as it is (SWI-Prolog has a WebAssembly build; not tried).',
       models: [['word model', join(root, 'strategies/prolog/model')]],
       training: 'The grammar is hand-written. A small word model counts, in raw text, where each word stands next to function words.',
-      source: 'A hand-written grammar. Parked: not improved for now (owner\'s decision).'},
+      source: 'A hand-written grammar. Experimental: not improved for now (owner\'s decision).'},
     z3: {runtime: `Node.js and z3-solver, whose WebAssembly file is ${bytes(sized(wasm))}`, browserShort: 'in principle; large', trainingShort: 'word counts only', labels: 'no: raw text counts',
       runs: 'The Z3 solver compiled to WebAssembly (z3-solver), inside Node.',
       browser: 'In principle: z3-solver has a browser build, but its WebAssembly file is large and needs threads in the browser.',
       models: [['word usage table', join(root, 'strategies/z3/model')]],
       runtimeFiles: [['z3-built.wasm', wasm]],
       training: 'The grammar is hand-written as constraints. A table counts how each word is used in raw text.',
-      source: 'A hand-written grammar as constraints, solved by Z3. Parked.'}
+      source: 'A hand-written grammar as constraints, solved by Z3. Experimental.'}
   }
 })
 const modelSize = name => { const list = facts()[name]?.models ?? []; const found = list.map(([, path]) => sized(path)).filter(size => size !== null); return found.length ? found.reduce((a, b) => a + b, 0) : null }
@@ -472,7 +475,7 @@ function describeCircuit(sop) {
 const LINKS = [
   ['README.md', 'The documentation (home)'],
   ['schema/README.md', 'The syntax schema and its rules'],
-  ['vss/README.md', 'VSS in depth'],
+  ['hmm-rules/README.md', 'hmm-rules in depth'],
   ['evaluation/README.md', 'How circuits are judged and become labels'],
   ['project/reports.md', 'The three full reports (HTML)'],
   ['../improvements-ideas.md', 'The working journal (also below)'],
@@ -494,18 +497,18 @@ section('read', 'How to read this page', () => [
 
 // STATUS.md only: the three figures a reader looks for first
 section('glance', 'At a glance', () => {
-  const {sorted, messages} = bench(), best = sorted[0], vss = sorted.find(row => row.strategy === 'vss')
+  const {sorted, messages} = bench(), best = sorted[0], hmm = sorted.find(row => row.strategy === 'hmm-rules')
   const data = datasetStats().total
   let fastest = null
   try { fastest = speed().list.filter(row => row.median !== null).sort((a, b) => a.median - b.median)[0] ?? null } catch { /* the speed section reports its own error */ }
   return [table(['Measure', 'Now'], [
     ['Highest GOAL', `${share(best.goal)}, ${best.strategy}`],
-    ...(vss && vss !== best ? [['GOAL of VSS', share(vss.goal) + (vss.waiting ? `; ${num(vss.waiting)} circuits wait for a judge` : '')]] : []),
+    ...(hmm && hmm !== best ? [['GOAL of hmm-rules', share(hmm.goal) + (hmm.waiting ? `; ${num(hmm.waiting)} circuits wait for a judge` : '')]] : []),
     ...(fastest ? [['Fastest', `${fastest.name}, ${fastest.median.toFixed(2)} ms per message (median)`]] : []),
     ['Dataset', `${pct(data.circuit, data.messages)} of ${num(data.messages)} messages have a circuit (${num(data.circuit)})`]
   ]),
   `GOAL is the share of the ${num(messages)} benchmark messages whose circuit is accepted ([Levels and GOAL](evaluation/levels.md)). ` +
-  'VSS is the reader built in this project and the main focus ([Formalizers](formalizers/README.md)). What the project does: [the home page](README.md#what-this-is).']
+  'spacy is the one active strategy; hmm-rules (our own reader so far, called vss until 2026-11-27), distilbert, prolog and z3 are [experimental](#g-experimental), and a vector-symbolic reader, rvss, is being built ([Formalizers](formalizers/README.md)). What the project does: [the home page](README.md#what-this-is).']
 }, {where: 'md'})
 
 section('about', 'What this project does', () => {
@@ -513,11 +516,11 @@ section('about', 'What this project does', () => {
   try { messages = bench().messages } catch { /* the benchmark section reports its own error */ }
   const blocks = []
   try {
-    const {sorted} = bench(), best = sorted[0], vss = sorted.find(row => row.strategy === 'vss')
+    const {sorted} = bench(), best = sorted[0], hmm = sorted.find(row => row.strategy === 'hmm-rules')
     const data = datasetStats().total
     const tiles = [
       [share(best.goal), `GOAL of the best strategy (${best.strategy}): share of the ${num(messages)} benchmark messages whose circuit a judge accepts`],
-      vss ? [share(vss.goal), 'GOAL of VSS, our own reader and the main focus' + (vss.waiting ? `; ${num(vss.waiting)} of its circuits wait for a judge (at most ${share(vss.atMost)})` : '')] : null,
+      hmm && hmm !== best ? [share(hmm.goal), 'GOAL of hmm-rules, our own reader so far (experimental)' + (hmm.waiting ? `; ${num(hmm.waiting)} of its circuits wait for a judge (at most ${share(hmm.atMost)})` : '')] : null,
       [pct(data.circuit, data.messages), `of the dataset's ${num(data.messages)} messages have a circuit (${num(data.circuit)})`]
     ].filter(Boolean)
     blocks.push({
@@ -542,14 +545,17 @@ section('about', 'What this project does', () => {
           (/attachment=ambiguous marker="by"/u.test(label.label) ? ' (here, whether "by name" goes with the making or with the projects)' : '') + '; the judges accept either place.' : ''))
     }
   } catch { /* no example; the rest of the section stands */ }
-  blocks.push('**The five strategies.** Three are worked on; two are [parked](#g-parked) (still measured, not improved for now, owner\'s decision):\n\n' +
+  blocks.push('**The five strategies.** One is worked on, spacy; four are [experimental](#g-experimental) (still measured and kept runnable, not improved for now, owner\'s decision). ' +
+    'A vector-symbolic reader of our own, rvss, is being built (`strategies/rvss/`) and is not measured yet:\n\n' +
     ACTIVE.map(name => `- **${name}**${ABOUT[name].state !== 'active' ? ` (${ABOUT[name].state})` : ''}: ${ABOUT[name].line}`).join('\n'))
   try {
     const {by} = speed()
-    if (by.vss && by.spacy) blocks.push(`**Why VSS is the focus, although spaCy scores higher.** VSS needs only Node.js, its model is one file of ${bytes(modelSize('vss'))}, ` +
-      `it reads a message in ${by.vss.median.toFixed(2)} ms (median) on one CPU core, and it learns from raw text, so it is a reader we own and can extend, ` +
-      `and it could run in a browser once a small loader is written. spaCy needs Python and a transformer of ${bytes(modelSize('spacy'))} and takes ${by.spacy.median.toFixed(0)} ms per message. ` +
-      'It stays as the strongest second voice: when two strategies that read from different sources write the same circuit, the label is settled with no judge ([Agreement](#agreement)).')
+    const hmm = by['hmm-rules'], highest = bench().sorted[0]?.strategy === 'spacy'
+    if (hmm && by.spacy) blocks.push(`**Why spaCy is the active strategy, and what the experimental ones still give.** ${highest ? 'spaCy has the highest GOAL on the benchmark. ' : ''}` +
+      `It needs Python and a transformer of ${bytes(modelSize('spacy'))} and takes ${by.spacy.median.toFixed(0)} ms per message. ` +
+      `hmm-rules needs only Node.js, its model is one file of ${bytes(modelSize('hmm-rules'))}, it reads a message in ${hmm.median.toFixed(2)} ms (median) on one CPU core, and it learns from raw text. ` +
+      'The experimental strategies stay as voices from other sources: when two strategies that read from different sources write the same circuit, the label is settled with no judge ([Agreement](#agreement)). ' +
+      'hmm-rules was called vss until 2026-11-27; it is a hidden Markov model plus rules, and the vector-symbolic reader of the project is rvss, now being built.')
   } catch { /* the speed section reports its own error */ }
   try {
     const judges = Object.entries(bench().judges).filter(([name]) => name !== 'agreement').sort((a, b) => b[1] - a[1])
@@ -584,7 +590,7 @@ section('benchmark', 'The benchmark, live', () => {
   const goalCell = row => `${share(row.goal)} (${interval(accepted(row), row.messages)})`
   const bars = sorted.map(row => {
     const width = (100 * (row.goal ?? 0)).toFixed(1), extra = row.waiting ? (100 * (row.atMost - row.goal)).toFixed(1) : null
-    return `<div class="bar"><span class="name">${dot(row.strategy)}${esc(row.strategy)}${parked(row.strategy) ? '<span class="chip">parked</span>' : ''}</span>` +
+    return `<div class="bar"><span class="name">${dot(row.strategy)}${esc(row.strategy)}${experimental(row.strategy) ? '<span class="chip">experimental</span>' : ''}</span>` +
       `<span class="track" role="img" aria-label="${esc(row.strategy)}: ${share(row.goal)} of messages accepted"><span class="fill s-${colour(row.strategy)}" style="width:${width}%"></span>` +
       (extra ? `<span class="fill waitfill s-${colour(row.strategy)}" style="left:${width}%;width:${extra}%"></span>` : '') +
       `<span class="aim"></span></span><span class="val">${share(row.goal)}</span></div>`
@@ -632,7 +638,7 @@ section('benchmark', 'The benchmark, live', () => {
     md: table(['Strategy', 'GOAL (each block 5%)'], sorted.map(row => [nameCell(row.strategy), `${share(row.goal)} ${textBar(row.goal)}`])).md},
     {html: `<p class="note">Levels: ${esc(levelsShort)}.</p>`, md: `Levels: ${levelsShort}. The exact definitions: [Levels and GOAL](evaluation/levels.md).`},
     anyWaiting ? box(`**Not final yet:** ${sorted.filter(row => row.waiting).map(row => `${row.strategy} has ${num(row.waiting)} circuits that no judge has read`).join('; ')}. Its GOAL can only rise when they are judged.`, 'warn') : null,
-    box('**Not an unseen sample any more.** From commit `dd562c3` on, VSS\'s rules were checked against the judged circuits of this benchmark, and the rules of `fa46cb7` include rules found in its rejected circuits; ' +
+    box('**Not an unseen sample any more.** From commit `dd562c3` on, the rules of hmm-rules (then named vss) were checked against the judged circuits of this benchmark, and the rules of `fa46cb7` include rules found in its rejected circuits; ' +
       'the spaCy repairs of `a55e33f` were measured on its rejected circuits too. Their scores here are therefore likely higher than on messages nobody has looked at. ' +
       'The first DistilBERT checkpoint (71.8% in [Progress](#progress)) had been trained on agreement circuits of 576 of these messages; the later checkpoints hold them out. ' +
       'A fresh sample is planned ([Limits of the measurements](evaluation/validity.md#no-longer-an-unseen-sample)).')
@@ -676,10 +682,10 @@ section('progress', 'Progress over time', () => {
   const newest = [...entries].sort((a, b) => a.time < b.time ? 1 : a.time > b.time ? -1 : b.index - a.index)
   const chip = (text, kind = '') => ({html: ` <span class="chip${kind ? ' ' + kind : ''}">${esc(text)}</span>`, md: ` *(${text})*`})
   const blocks = [htmlOnly('Each row is one judged measurement, written by hand into `docs/status/history.json` when its verdicts are in. ' +
-    'Rows marked *trial* are experiments on a copy of VSS (the [lever trials](#g-lever)), not strategies. The oldest row was measured on other messages ' +
+    'Rows marked *trial* are experiments on a copy of hmm-rules, then named vss (the [lever trials](#g-lever)), not strategies. The oldest row was measured on other messages ' +
     'than the benchmark, so it is not comparable with the others.')]
   const more = [mdOnly('Each item is one judged measurement, written by hand into `docs/status/history.json` when its verdicts are in. ' +
-    'Items marked *trial* are experiments on a copy of VSS (the [lever trials](#g-lever)), not strategies. The oldest item was measured on other messages ' +
+    'Items marked *trial* are experiments on a copy of hmm-rules, then named vss (the [lever trials](#g-lever)), not strategies. The oldest item was measured on other messages ' +
     'than the benchmark, so it is not comparable with the others.')]
   // the chart: first and latest measurement of every strategy on the benchmark
   const series = new Map()
@@ -716,7 +722,7 @@ section('progress', 'Progress over time', () => {
       : `${row.first.goal.toFixed(1)}% (${row.first.time.slice(11)}) → ${row.last.goal.toFixed(1)}% (${row.last.time.slice(11)}); ${signed(change(row))} points`])))
   }
   more.push('**How sure these numbers are.** Each GOAL comes from 1,831 messages, so it is known to about ±2 points (95% interval). ' +
-    'A change of 1 or 2 points between two separate measurements can be chance. The trial rows are paired (the same messages and the same copy of VSS, with one aid added), ' +
+    'A change of 1 or 2 points between two separate measurements can be chance. The trial rows are paired (the same messages and the same copy of hmm-rules, with one aid added), ' +
     'which makes their differences more precise than two separate intervals suggest; a paired test was not run. Their gains of +1.3 and +2.2 points are close to the uncertainty, the +3.9 of the roles less so.')
   more.push('**Every measurement**, newest first:')
   const tagsOf = entry => [entry.trial ? chip('trial: ' + entry.trial, 'trial') : null, entry.sample && entry.sample !== 'random 1%' ? chip(entry.sample) : null].filter(Boolean)
@@ -781,15 +787,16 @@ section('speed', 'Speed and cost per strategy', () => {
   more.push('Start-up comes from `summary.json`, which `run.mjs` writes when it runs a strategy.' + (stale.length
     ? ' ' + stale.map(row => `For ${row.name}, summary.json still describes an earlier run (median ${row.summaryMedian.toFixed(2)} ms there, ${row.median.toFixed(2)} ms in the strategy file)`).join('; ') +
       ', so the start-up of the current run was not recorded and is left out.' : ''))
-  if (by.vss && by.spacy) {
-    const parallel = by.vss.whole / cores
-    more.push(`**In practice.** VSS reads about ${num(Math.round(by.vss.perSecond))} messages a second in one Node process on one CPU core, so the whole dataset takes about ` +
-      `${duration(by.vss.whole)}; with ${cores} processes on this machine's ${cores} cores, about ${duration(parallel)} (an estimate, not measured). ` +
-      `spaCy takes about ${duration(by.spacy.whole)} for the same work in one process: ${Math.round(by.spacy.average / by.vss.average)} times longer per message on average ` +
-      `(${Math.round(by.spacy.median / by.vss.median)} times at the median). That makes spaCy the slowest step of every rerun over the whole dataset, such as the next one planned in [Working on now](#now)` +
+  const hmm = by['hmm-rules']
+  if (hmm && by.spacy) {
+    const parallel = hmm.whole / cores
+    more.push(`**In practice.** hmm-rules reads about ${num(Math.round(hmm.perSecond))} messages a second in one Node process on one CPU core, so the whole dataset takes about ` +
+      `${duration(hmm.whole)}; with ${cores} processes on this machine's ${cores} cores, about ${duration(parallel)} (an estimate, not measured). ` +
+      `spaCy takes about ${duration(by.spacy.whole)} for the same work in one process: ${Math.round(by.spacy.average / hmm.average)} times longer per message on average ` +
+      `(${Math.round(by.spacy.median / hmm.median)} times at the median). That makes spaCy the slowest step of every rerun over the whole dataset, such as the next one planned in [Working on now](#now)` +
       (by.distilbert ? `. DistilBERT on the GPU takes about ${duration(by.distilbert.whole)}` : '') +
       (by.z3 ? `; Z3 about ${duration(by.z3.whole)}, with a long tail (90% of messages within ${by.z3.p90.toFixed(0)} ms, 99% within ${by.z3.p99.toFixed(0)} ms)` : '') +
-      `. For use while someone types: VSS's ${by.vss.median.toFixed(1)} ms is instant, spaCy's ${by.spacy.median.toFixed(0)} ms goes unnoticed` + (by.z3 ? ', and Z3\'s slow messages would be felt.' : '.'))
+      `. For use while someone types: the ${hmm.median.toFixed(1)} ms of hmm-rules is instant, spaCy's ${by.spacy.median.toFixed(0)} ms goes unnoticed` + (by.z3 ? ', and Z3\'s slow messages would be felt.' : '.'))
   }
   more.push({html: markdownToHtml('**Not like for like.** DistilBERT ran on the GPU and spaCy on the CPU. The PyTorch strategies (spaCy\'s transformer and DistilBERT) may use several CPU threads inside their one process, ' +
     'so "one process" favours them. Messages were sent one at a time; spaCy and DistilBERT would be faster on batches of messages (not measured). ' +
@@ -836,7 +843,7 @@ section('dataset', 'The dataset', () => {
   }
 }, {page: {file: 'dataset.md', title: 'Dataset labels by area', purpose: 'how many messages of each area of the dataset have a circuit, and how each circuit was accepted.'}})
 
-section('agreement', 'Agreement between VSS and spaCy', () => {
+section('agreement', 'Agreement between hmm-rules and spaCy', () => {
   const {outputs, registry, labelsBefore, texts: benchmarkTexts} = bench()
   // what the judges said of a circuit: a verdict of this run, else the registry, else the label before the run
   const judged = new Map()
@@ -863,13 +870,15 @@ section('agreement', 'Agreement between VSS and spaCy', () => {
   const current = name => outputs.find(output => output.strategy === name)?.rows
   const firstTime = history().filter(entry => !entry.trial && entry.sample === 'random 1%').map(entry => entry.time).sort()[0]
   const versions = []
-  if (existsSync(join(runDir, 'first-run/vss.jsonl')) && existsSync(join(runDir, 'first-run/spacy.jsonl')))
-    versions.push([`first judging${firstTime ? ` (${firstTime.slice(11)})` : ''}`, coresOf(readJsonl(join(runDir, 'first-run/vss.jsonl')), false), coresOf(readJsonl(join(runDir, 'first-run/spacy.jsonl')), false)])
-  if (current('vss') && current('spacy')) versions.push(['now', coresOf(current('vss'), true), coresOf(current('spacy'), true)])
-  if (!versions.length) throw new Error('the run has no circuits of VSS and spaCy')
-  const results = versions.map(([label, vss, spacy]) => {
+  // the first run holds the file of hmm-rules under its name then, vss.jsonl (lib.outputFile finds it)
+  const firstHmm = lib.outputFile(join(runDir, 'first-run'), 'hmm-rules')
+  if (existsSync(firstHmm) && existsSync(join(runDir, 'first-run/spacy.jsonl')))
+    versions.push([`first judging${firstTime ? ` (${firstTime.slice(11)})` : ''}`, coresOf(readJsonl(firstHmm), false), coresOf(readJsonl(join(runDir, 'first-run/spacy.jsonl')), false)])
+  if (current('hmm-rules') && current('spacy')) versions.push(['now', coresOf(current('hmm-rules'), true), coresOf(current('spacy'), true)])
+  if (!versions.length) throw new Error('the run has no circuits of hmm-rules and spaCy')
+  const results = versions.map(([label, hmm, spacy]) => {
     const total = {n: 0, strict: 0, relaxed: 0, ok: 0, bad: 0, unknown: 0}, areas = new Map(), split = {}
-    for (const [text, a] of vss) {
+    for (const [text, a] of hmm) {
       const b = spacy.get(text), area = a.id.split('/')[0]
       const t = areas.get(area) ?? areas.set(area, {n: 0, strict: 0, relaxed: 0}).get(area)
       const x = a.core, y = b?.core ?? null
@@ -899,12 +908,12 @@ section('agreement', 'Agreement between VSS and spaCy', () => {
   const capital = text => text.charAt(0).toUpperCase() + text.slice(1)
   const t = latest.total
   // STATUS.md: two lines; the audit line is added below when the conversion folders are there
-  const blocks = [mdOnly(`**${capital(latest.label)}, on the ${num(t.n)} benchmark messages**, VSS and spaCy write the same circuit for ${num(t.strict)} (${pct(t.strict, t.n)}), ` +
+  const blocks = [mdOnly(`**${capital(latest.label)}, on the ${num(t.n)} benchmark messages**, hmm-rules and spaCy write the same circuit for ${num(t.strict)} (${pct(t.strict, t.n)}), ` +
     `and the same up to attachment (where a phrase with a linking word starts) for ${num(t.relaxed)} (${pct(t.relaxed, t.n)}). ` +
     `The judges accepted ${num(t.ok)} of these and rejected ${num(t.bad)}` + (t.unknown ? `; ${num(t.unknown)} have no verdict yet` : '') +
     '. Why agreement settles labels: [Agreement between formalizers](evaluation/agreement.md).')]
   const more = [
-    'Two strategies that read a message from different sources (VSS from raw text, spaCy from a parser trained on treebanks) and write the same circuit are very likely right. ' +
+    'Two strategies that read a message from different sources (hmm-rules from raw text, spaCy from a parser trained on treebanks) and write the same circuit are very likely right. ' +
     'This is how most labels of the dataset were made. **Same circuit**: equal after the [normal form](#g-normal) (wire names and order do not matter). ' +
     '**Up to attachment**: the same circuit except where a phrase with a linking word ("on", "of", "for") starts, which the judges\' rules let be the clause or a nominal of it ' +
     '(the journal says "up to the start of marked relations"). Under it: how many of these agreed circuits the judges accepted, rejected, or have not read.',
@@ -917,8 +926,8 @@ section('agreement', 'Agreement between VSS and spaCy', () => {
         (earlier ? `; ${earlier.label}: ${earlier.areas.get(area) ? pct(earlier.areas.get(area).relaxed, earlier.areas.get(area).n) : '—'} up to attachment` : '')])),
     `Where both wrote a valid circuit and the circuits differ (${num(differing)} messages, ${latest.label}), what the judges said of each:`,
     table(['Messages', 'What the judges said'], Object.entries(latest.split).sort((a, b) => b[1] - a[1]).map(([key, count]) => {
-      const [ofVss, ofSpacy] = key.split('|')
-      return [num(count), `VSS's circuit: ${ofVss}; spaCy's circuit: ${ofSpacy}`]
+      const [ofHmm, ofSpacy] = key.split('|')
+      return [num(count), `circuit of hmm-rules: ${ofHmm}; spaCy's circuit: ${ofSpacy}`]
     }), ['r', ''], {sticky: false}),
     'Where both circuits were accepted, the schema allows more than one reading (which word heads a name, a number after a noun as a dependent or as its own nominal, ' +
     'modifier or discourse word). The tables above compare by the keys `core` and `relaxed`; the wider key `variants` (commit `c8d0a09`) also counts such choices as the same ' +
@@ -987,7 +996,7 @@ section('agreement', 'Agreement between VSS and spaCy', () => {
     } catch (error) { more.push(`Where the agreed circuits stand in the dataset could not be computed: ${String(error?.message ?? error).split('\n')[0]}`) }
   }
   return {blocks, more}
-}, {page: {file: 'agreement.md', title: 'Agreement and audit in detail', purpose: 'how often VSS and spaCy write the same circuit on the benchmark, by area and over time, what the judges said where they differ, the audit of the batch conversion, and where the agreed circuits stand in the dataset.'}})
+}, {page: {file: 'agreement.md', title: 'Agreement and audit in detail', purpose: 'how often hmm-rules and spaCy write the same circuit on the benchmark, by area and over time, what the judges said where they differ, the audit of the batch conversion, and where the agreed circuits stand in the dataset.'}})
 
 section('journal', 'Journal', () => {
   const file = join(root, 'improvements-ideas.md')
@@ -1033,13 +1042,13 @@ section('glossary', 'Glossary', () => {
   try { messages = bench().messages } catch { /* unknown */ }
   const terms = [
     ['g-message', 'Message', 'One text a user typed, such as "make a bar chart of the projects by name please". The dataset holds messages to a drawing app, a diagram tool, a calendar and a document editor.'],
-    ['g-strategy', 'Strategy (formalizer)', 'A program that reads one message alone, with no context and no knowledge base, and writes its circuit. Five are measured: vss, spacy, distilbert, prolog, z3 ([what each is](#about)).'],
-    ['g-vss', 'VSS', 'The name of our own reader (`strategies/vss/`). The repository does not expand the letters; its word vectors are those of vector symbolic architectures ([How VSS works](vss/how-it-works.md)).'],
+    ['g-strategy', 'Strategy (formalizer)', 'A program that reads one message alone, with no context and no knowledge base, and writes its circuit. Five are measured: hmm-rules, spacy, distilbert, prolog, z3 ([what each is](#about)).'],
+    ['g-hmm-rules', 'hmm-rules', 'Our own reader so far (`strategies/hmm-rules/`), called vss until 2026-11-27: a [hidden Markov model](https://en.wikipedia.org/wiki/Hidden_Markov_model) learned from raw text tags each word with a station, and general rules over function words build the circuit. It kept the name of the vector-symbolic reader it started as; it was renamed because it is not one. Experimental. The vector-symbolic reader of the project is rvss, being built ([How hmm-rules works](hmm-rules/how-it-works.md)).'],
     ['g-circuit', 'Circuit', 'The syntactic analysis of one message, written as lines of SOP Lang, one line (a wire) per part. Every word of the message has exactly one place in it. There is an example under [What this project does](#about).'],
     ['g-wire', 'Wire', 'One line of a circuit: a name, a type, and keys that hold words of the message or point to other wires. Example: `@n1 syntax.nominal dependent="the" head="box"`.'],
     ['g-wire-types', 'The four wire types', '**clause**: one verb with everything that belongs to it (one command, statement or question). **nominal**: the words that describe one thing ("the two small red boxes"). **relation**: a tie between two wires, usually through a linking word ("on", "of", "next to"). **coordination**: things or clauses put side by side with "and", "or", "but".'],
     ['g-schema', 'Syntax schema', 'The rules that say which wires and keys exist and how to use them: 4 wire types and 18 keys ([The syntax schema](schema/README.md)).'],
-    ['g-sop', 'SOP Lang', 'The line language circuits are written in: each line starts with a name such as `@c1`, then a type and keys with their values. The project writes its other declarations in it too, such as the VSS legend.'],
+    ['g-sop', 'SOP Lang', 'The line language circuits are written in: each line starts with a name such as `@c1`, then a type and keys with their values. The project writes its other declarations in it too, such as the legend of hmm-rules.'],
     ['g-judge', 'Judge', 'A reviewer that reads a message and one circuit, without knowing which strategy wrote it, and accepts it or rejects it with a grade (L1 to L6), following written rules (`tests/benchmark/syntax/rules.md`). Here the judges are language-model agents; the registry names each one. How often two judges, or a judge and a person, agree on this schema has not been measured yet.'],
     ['g-packet', 'Packet', 'A file of up to 200 circuits that one judge reads in one go (`judging/packet-N.jsonl` in a run folder); the verdicts go to `judging/verdicts-N.jsonl`. "Judged in packets 45-46" names two such files.'],
     ['g-label', 'Label', 'The accepted circuit of a message, kept in the `sop` column of the dataset\'s syntactic files. Labels are what strategies are measured against and trained on.'],
@@ -1051,21 +1060,21 @@ section('glossary', 'Glossary', () => {
     ['g-attachment', 'Up to attachment', 'Two circuits that are equal except for where a phrase with a linking word starts (the clause or a nominal of it); the journal calls it "up to the start of marked relations". The judges\' rules allow either place, so such circuits count as agreeing. `attachment=ambiguous` marks a phrase whose place the words do not settle.'],
     ['g-registry', 'Registry', 'Every circuit a judge has read, accepted or rejected, with the reason (`webmeet-dataset/annotations/syntax/v1/judged`). A circuit is judged once. It also keeps a few agreement circuits with no judge, as accepted readings.'],
     ['g-round', 'Round (conversion round)', 'One pass over the next files of the dataset: the strategies write circuits, agreement settles what it can, a judge reads the rest, and the accepted circuits are written into the files.'],
-    ['g-benchmark', 'Benchmark', `1% of the dataset's messages drawn at random (${runName}${messages ? `, ${num(messages)} messages` : ''}). Every circuit of every strategy on it is judged. Its messages are held out of training on labels; VSS learns its stations from raw text that includes them, without labels. Some rules were found by reading its rejected circuits, so it is no longer an unseen sample; a fresh sample is planned.`],
+    ['g-benchmark', 'Benchmark', `1% of the dataset's messages drawn at random (${runName}${messages ? `, ${num(messages)} messages` : ''}). Every circuit of every strategy on it is judged. Its messages are held out of training on labels; hmm-rules learns its stations from raw text that includes them, without labels. Some rules were found by reading its rejected circuits, so it is no longer an unseen sample; a fresh sample is planned.`],
     ['g-levels', 'Levels and GOAL', 'L0 no valid circuit; L1–L6 rejected, with the judge\'s grade; L7 unused; L8 accepted; L9 equal to the earlier label; L10 accepted and replacing the earlier label. GOAL is the share of messages at L8, L9 or L10.'],
     ['g-interval', '95% interval', 'The range in which the true share most likely lies, given how many messages were measured (the Wilson score interval). On 1,831 messages it is about ±2 points, so a difference of 1 or 2 points between two separate measurements can be chance.'],
-    ['g-station', 'Station (VSS)', 'A class of words that VSS learns from raw text by the company words keep and by their order, with no labels. VSS reads a message as a path through stations; then its rules build the circuit.'],
-    ['g-em', 'EM (expectation–maximization)', 'How VSS\'s station tagger is trained: it guesses which station each word stands at, counts, and guesses again, round after round, from raw text with no labels.'],
-    ['g-linker', 'Linker (VSS)', 'The part of VSS that builds clauses, relations and coordinations from the words and their stations, by rules with thresholds, in one pass.'],
-    ['g-analysis', 'Drawing, diagram and calendar analyses', 'Studies of the faults VSS makes on the files of one area of the dataset: agents read a sample of VSS circuits and proposed general rules, which were then added to VSS.'],
-    ['g-lever', 'Lever trial', 'An experiment on a copy of VSS that adds one learned aid, judged against the same copy without it on the same benchmark messages. A lever is a change beyond adding single rules.'],
-    ['g-prior', 'Station prior', 'A lever trial: VSS\'s station tagger trained again with the accepted circuits mapped to stations, as a weighted starting point.'],
-    ['g-evidence', 'DistilBERT evidence', 'A lever trial: a per-word table learned from DistilBERT\'s circuits says how a word is used (verb, word of a nominal, modifier, marker, other). Where the table is sure and VSS disagrees, VSS keeps the word off the stations the table rules out. "On the verb" uses it for the verb only; "on roles" for all five uses.'],
+    ['g-station', 'Station (hmm-rules)', 'A class of words that hmm-rules learns from raw text by the company words keep and by their order, with no labels: a hidden state of its hidden Markov model. hmm-rules reads a message as a path through stations; then its rules build the circuit.'],
+    ['g-em', 'EM (expectation–maximization)', 'How the station tagger of hmm-rules is trained (Baum–Welch, the EM method for a hidden Markov model): it guesses which station each word stands at, counts, and guesses again, round after round, from raw text with no labels.'],
+    ['g-linker', 'Linker (hmm-rules)', 'The part of hmm-rules that builds clauses, relations and coordinations from the words and their stations, by rules with thresholds, in one pass.'],
+    ['g-analysis', 'Drawing, diagram and calendar analyses', 'Studies of the faults hmm-rules (then named vss) makes on the files of one area of the dataset: agents read a sample of its circuits and proposed general rules, which were then added to it.'],
+    ['g-lever', 'Lever trial', 'An experiment on a copy of hmm-rules (then named vss) that adds one learned aid, judged against the same copy without it on the same benchmark messages. A lever is a change beyond adding single rules.'],
+    ['g-prior', 'Station prior', 'A lever trial: the station tagger of hmm-rules trained again with the accepted circuits mapped to stations, as a weighted starting point.'],
+    ['g-evidence', 'DistilBERT evidence', 'A lever trial: a per-word table learned from DistilBERT\'s circuits says how a word is used (verb, word of a nominal, modifier, marker, other). Where the table is sure and hmm-rules disagrees, hmm-rules keeps the word off the stations the table rules out. "On the verb" uses it for the verb only; "on roles" for all five uses.'],
     ['g-checkpoint', 'Checkpoint', `The saved weights of a trained model; ${distilCheckpoint()} is the DistilBERT checkpoint of the latest DistilBERT measurement.`],
     ['g-epoch', 'Epoch', 'One pass of training over all training examples.'],
     ['g-development', 'Development messages', 'Labelled messages kept out of training to choose settings and check progress while training. They are not the benchmark.'],
     ['g-held', 'Held out', 'Kept out of training on labels, so that a measurement on those messages is fair.'],
-    ['g-parked', 'Parked', 'Still measured on the benchmark, but not improved for now (owner\'s decision): prolog and z3.']
+    ['g-experimental', 'Experimental', 'Still measured on the benchmark and kept runnable, and still a voice in agreement for its own family, but not improved for now (owner\'s decision of 2026-11-27): hmm-rules, distilbert, prolog and z3. spacy is the one active strategy; rvss, a vector-symbolic reader, is being built.']
   ]
   return ['The terms of this page, in short. Every term of the project, with the page that explains it: the [Glossary](reference/glossary.md) of the documentation.', {
     html: '<dl class="glossary">' + terms.map(([id, term, text]) => `<dt id="${id}">${esc(term)}</dt><dd>${inline(text)}</dd>`).join('') + '</dl>',
@@ -1136,7 +1145,7 @@ const css = `
   --bg: #f4f6f8; --surface: #ffffff; --fg: #18202a; --muted: #55606d; --line: #d8dee5; --track: #e5e9ee;
   --accent: #1c6886; --accent-soft: #e2eff4; --code-bg: #eaeef2; --shade: rgba(16, 24, 32, .18);
   --warn-bg: #fdf4de; --warn-line: #d9a93a;
-  --s-vss: #257de0; --s-spacy: #f47230; --s-distilbert: #00b894; --s-prolog: #f2a600; --s-z3: #ee7fac; --s-other: #6a4ce2;
+  --s-hmm-rules: #257de0; --s-spacy: #f47230; --s-distilbert: #00b894; --s-prolog: #f2a600; --s-z3: #ee7fac; --s-other: #6a4ce2;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   color-scheme: light;
@@ -1146,7 +1155,7 @@ const css = `
     --bg: #101317; --surface: #181c21; --fg: #e3e7eb; --muted: #9ba5b0; --line: #2c333b; --track: #262c33;
     --accent: #6db8d5; --accent-soft: #19303a; --code-bg: #232931; --shade: rgba(0, 0, 0, .6);
     --warn-bg: #2a2414; --warn-line: #8a6d25;
-    --s-vss: #338ced; --s-spacy: #e76624; --s-distilbert: #00a888; --s-prolog: #d28e05; --s-z3: #e24d8b; --s-other: #9887ef;
+    --s-hmm-rules: #338ced; --s-spacy: #e76624; --s-distilbert: #00a888; --s-prolog: #d28e05; --s-z3: #e24d8b; --s-other: #9887ef;
     color-scheme: dark;
   }
 }
@@ -1154,7 +1163,7 @@ const css = `
   --bg: #101317; --surface: #181c21; --fg: #e3e7eb; --muted: #9ba5b0; --line: #2c333b; --track: #262c33;
   --accent: #6db8d5; --accent-soft: #19303a; --code-bg: #232931; --shade: rgba(0, 0, 0, .6);
   --warn-bg: #2a2414; --warn-line: #8a6d25;
-  --s-vss: #338ced; --s-spacy: #e76624; --s-distilbert: #00a888; --s-prolog: #d28e05; --s-z3: #e24d8b; --s-other: #9887ef;
+  --s-hmm-rules: #338ced; --s-spacy: #e76624; --s-distilbert: #00a888; --s-prolog: #d28e05; --s-z3: #e24d8b; --s-other: #9887ef;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -1213,7 +1222,7 @@ table.two td.n:first-child { color: var(--fg); }
 .next { margin-top: 2rem; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .95rem; }
 table.sticky th:first-child, table.sticky td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; min-width: 6.5rem; max-width: 11rem; }
 .dot { display: inline-block; width: .62em; height: .62em; border-radius: 50%; margin-right: .4em; vertical-align: .05em; }
-.s-vss { background: var(--s-vss); fill: var(--s-vss); } .s-spacy { background: var(--s-spacy); fill: var(--s-spacy); }
+.s-hmm-rules { background: var(--s-hmm-rules); fill: var(--s-hmm-rules); } .s-spacy { background: var(--s-spacy); fill: var(--s-spacy); }
 .s-distilbert { background: var(--s-distilbert); fill: var(--s-distilbert); } .s-prolog { background: var(--s-prolog); fill: var(--s-prolog); }
 .s-z3 { background: var(--s-z3); fill: var(--s-z3); } .s-other { background: var(--s-other); fill: var(--s-other); }
 .chip { display: inline-block; font-size: .78rem; font-weight: 500; line-height: 1.5; padding: 0 .45rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; vertical-align: .1em; }
@@ -1238,7 +1247,7 @@ summary { cursor: pointer; color: var(--accent); padding: .2rem 0; }
 .chart .aimline { stroke: var(--fg); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .chart .link { stroke: var(--muted); stroke-width: 2; opacity: .6; }
 .chart .first { stroke-width: 3; stroke-linecap: round; }
-.chart .first.s-vss { stroke: var(--s-vss); } .chart .first.s-spacy { stroke: var(--s-spacy); } .chart .first.s-distilbert { stroke: var(--s-distilbert); }
+.chart .first.s-hmm-rules { stroke: var(--s-hmm-rules); } .chart .first.s-spacy { stroke: var(--s-spacy); } .chart .first.s-distilbert { stroke: var(--s-distilbert); }
 .chart .first.s-prolog { stroke: var(--s-prolog); } .chart .first.s-z3 { stroke: var(--s-z3); } .chart .first.s-other { stroke: var(--s-other); }
 .chart .last { stroke: var(--surface); stroke-width: 2; }
 figcaption { color: var(--muted); font-size: .88rem; margin-top: .3rem; max-width: 72ch; }
@@ -1308,7 +1317,7 @@ ${htmlSections.map(s => `<section id="${s.id}" aria-labelledby="${s.id}-title">\
 const GLOSSARY_GROUP = {
   'g-lever': 'trials-and-training', 'g-prior': 'trials-and-training', 'g-evidence': 'trials-and-training', 'g-epoch': 'trials-and-training',
   'g-development': 'trials-and-training', 'g-interval': 'nlp-and-statistics', 'g-em': 'nlp-and-statistics',
-  'g-station': 'vsss-own-names', 'g-linker': 'vsss-own-names', 'g-sop': 'notation-terms', 'g-wire': 'notation-terms', 'g-wire-types': 'grammar-terms'
+  'g-station': 'hmm-rules-own-names', 'g-linker': 'hmm-rules-own-names', 'g-sop': 'notation-terms', 'g-wire': 'notation-terms', 'g-wire-types': 'grammar-terms'
 }
 /**
  * The links of a Markdown text written relative to docs/, made right for a page at `depth` folders below docs/.

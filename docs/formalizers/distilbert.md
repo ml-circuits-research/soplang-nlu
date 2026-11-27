@@ -4,6 +4,8 @@
 
 This page: an introduction to the DistilBERT formalizer, a small transformer model fine-tuned on this project's syntax circuits. Kind: Explanation.
 
+**Status: experimental** (the owner's decision of 2026-11-27). DistilBERT is measured on the benchmark, kept runnable and trainable, and still a voice in agreement for its own family, but it is not being improved now ([Formalizers](README.md#experimental)).
+
 ## What it is
 
 DistilBERT is a small [transformer](https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)) language model, distilled from the larger [BERT](https://en.wikipedia.org/wiki/BERT_(language_model)) model ([knowledge distillation](https://en.wikipedia.org/wiki/Knowledge_distillation): a small model trained to imitate a large one). Its makers pretrained it on English text.
@@ -34,7 +36,7 @@ It learns from the labels of the dataset ([The WebMeet dataset and its labels](.
 - **Judged labels** (gold): circuits a judge accepted or wrote. About one in ten is kept out of training, to choose the best epoch (one pass over the training data) and the thresholds.
 - **Agreement labels** (silver): circuits that formalizers of different sources wrote alike. They count with a lower weight.
 
-From checkpoint `syntax-v2` on, the benchmark messages are held out of training. DistilBERT is not fully independent of the other formalizers, because most labels come from VSS and spaCy agreeing.
+From checkpoint `syntax-v2` on, the benchmark messages are held out of training. DistilBERT is not fully independent of the other formalizers, because most labels come from hmm-rules and spaCy agreeing.
 
 ## Standard, new here, particular
 
@@ -42,7 +44,7 @@ From checkpoint `syntax-v2` on, the benchmark messages are held out of training.
 | --- | --- |
 | Standard | A pretrained transformer, fine-tuned for a prediction task over tokens. Choosing the best epoch on held-out messages ([early stopping](https://en.wikipedia.org/wiki/Early_stopping)). |
 | New here | The prediction targets (nodes, owners, edges, atoms, all read from the schema) and the output stage that turns them into a valid circuit. |
-| Particular | It is trained on this dataset's labels, most of which come from VSS and spaCy agreeing. |
+| Particular | It is trained on this dataset's labels, most of which come from hmm-rules and spaCy agreeing. |
 
 ## Speed and cost
 
@@ -51,7 +53,7 @@ A few milliseconds per message on a GPU; on a CPU the current checkpoint is not 
 ## Known limits
 
 - **Which checkpoint ran is not recorded.** A benchmark run's `summary.json` has no checkpoint field. For the first judged benchmark run, the checkpoint was most probably one trained on agreement circuits of 576 benchmark messages, so that score was not a held-out measure ([DistilBERT: checkpoints](distilbert-details.md#checkpoints)).
-- **It depends on other formalizers.** It learns mostly from circuits that VSS and spaCy agreed on, so it learns their readings. The session notes of 2026-11-27 add a reading, not a separate measurement: agreement happens mostly on easy messages, so judged examples from the hard messages help it more than thousands of agreed ones ([Limits of the measurements](../evaluation/validity.md)).
+- **It depends on other formalizers.** It learns mostly from circuits that hmm-rules and spaCy agreed on, so it learns their readings. The session notes of 2026-11-27 add a reading, not a separate measurement: agreement happens mostly on easy messages, so judged examples from the hard messages help it more than thousands of agreed ones ([Limits of the measurements](../evaluation/validity.md)).
 - **The default path is old.** With no option, the code loads `syntax-v1`. A run must name the checkpoint it wants.
 - **Not in a browser as it is.** That would need an export to ONNX and a web runtime, which is not done.
 

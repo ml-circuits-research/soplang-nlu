@@ -11,7 +11,7 @@ To run a formalizer step by step: [Run a formalizer](../guides/run-a-formalizer.
 ## The package
 
 - Name `soplang-nlu`, version 0.1.0, ES modules, `"private": true` in package.json: it is not published. Run code from inside a checkout, where a module can import the package by its own name, or install the package from a local path.
-- Exports: `.` is `lib/index.mjs`; `./strategies/<name>` exists for vss, distilbert, prolog, z3, spacy-beam, spacy-direct, selector-distilbert, neuro-z3, neuro-selector, neuro-prolog and prolog-example-transfer.
+- Exports: `.` is `lib/index.mjs`; `./strategies/<name>` exists for hmm-rules (also under its old name, `./strategies/vss`), distilbert, prolog, z3, spacy-beam, spacy-direct, selector-distilbert, neuro-z3, neuro-selector, neuro-prolog and prolog-example-transfer.
 - There is no export for `strategies/spacy`, nor for `strategies/neural-dependencies`. The benchmark imports spacy by its file path (`tests/benchmark/syntax/strategies.mjs`).
 - `npm test` runs `node --test tests/*.test.mjs`. `npm run benchmark` runs `tests/benchmark/port-run.mjs`, not the syntax benchmark ([Benchmark tools](run-tools.md)).
 
@@ -21,7 +21,7 @@ To run a formalizer step by step: [Run a formalizer](../guides/run-a-formalizer.
 
 | Option | Meaning |
 | --- | --- |
-| `strategy` | the strategy object, for example `vss` |
+| `strategy` | the strategy object, for example `hmmRules` |
 | `maxReadings` | 1 or 2 (default 2); any other value throws `RangeError`; used only on the legacy path |
 | `schemaPaths` | extra schema files for the old checker; used only on the legacy path |
 | other keys | passed to `strategy.open(configuration)`, for example the path of a model |

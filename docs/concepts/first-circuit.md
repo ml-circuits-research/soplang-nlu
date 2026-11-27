@@ -86,12 +86,12 @@ relation read:
 ```
 
 The other five wires were the same. Here "by name" is tied to "projects", with no mark. That circuit had
-been settled by agreement of the formalizers spacy-direct and VSS, in the conversion run (a run that
+been settled by agreement of the formalizers spacy-direct and hmm-rules, in the conversion run (a run that
 labels whole files of the dataset) `2026-11-27-agreement-diagram__charts-01.01`.
 
 What happened next, in the benchmark run `2026-11-27-syntax-benchmark-random`:
 
-- VSS and DistilBERT wrote the earlier label's circuit. A circuit equal to the label the message had before
+- hmm-rules and DistilBERT wrote the earlier label's circuit. A circuit equal to the label the message had before
   the run counts as accepted without a judge: level L9 ([Levels](../evaluation/levels.md)).
 - prolog, spacy and z3 wrote the circuit of step 2. A judge accepted it; since the message had another
   label, this is level L10 for them.
@@ -105,9 +105,9 @@ any nominal of that clause that grammar allows. The label is one right circuit, 
 
 ## Step 7. Read one yourself
 
-The message "Move the blue box towards the yellow circle.", as VSS writes it with the code of commit
+The message "Move the blue box towards the yellow circle.", as hmm-rules writes it with the code of commit
 `c080ce8`, the same circuit as on the [home page](../README.md#an-example) (the output can change when
-VSS's rules change or its model is retrained):
+The rules of hmm-rules change or its model is retrained):
 
 ```sop
 @c1 syntax.clause form=imperative verb="Move" complement=$n1
@@ -116,12 +116,12 @@ VSS's rules change or its model is retrained):
 @n2 syntax.nominal dependent="the" dependent="yellow" head="circle"
 ```
 
-Three of these four lines are asserted by the test `tests/vss-syntax.test.mjs`. Before reading on, answer:
+Three of these four lines are asserted by the test `tests/hmm-rules-syntax.test.mjs`. Before reading on, answer:
 
 1. Which wire is the clause, what is its form, and what is its verb?
 2. Which words form the first nominal, and which is its head?
 3. Where does the relation start and end, and which word marks it?
-4. Did VSS settle the attachment, or leave it open?
+4. Did hmm-rules settle the attachment, or leave it open?
 5. The message has "the" twice. Which wire holds which?
 
 **Answers.**
@@ -129,7 +129,7 @@ Three of these four lines are asserted by the test `tests/vss-syntax.test.mjs`. 
 1. `@c1`: a command (`imperative`) with the verb "Move"; its complement is `n1`.
 2. "the blue box", with the head "box".
 3. It starts at the clause `c1`, ends at "the yellow circle" (`n2`), and "towards" marks it.
-4. Settled: the relation starts at the clause and has no mark, so in VSS's reading "towards the yellow
+4. Settled: the relation starts at the clause and has no mark, so in the reading of hmm-rules "towards the yellow
    circle" goes with the verb "Move", not with "the blue box".
 5. `@n1` is written before `@n2`, so it claims the first "the" (Rule 1). The full stop is punctuation and
    stands in no wire.
@@ -137,8 +137,8 @@ Three of these four lines are asserted by the test `tests/vss-syntax.test.mjs`. 
 ## Try it on your machine
 
 The how-to guide [Run a formalizer: read one message from code](../guides/run-a-formalizer.md#read-one-message-from-code)
-gives a short program that reads this very message with VSS. Save it as a file inside a checkout of
-`soplang-nlu` and run it with `node`. With the VSS code of commit `c080ce8` it prints the four wires
+gives a short program that reads this very message with hmm-rules. Save it as a file inside a checkout of
+`soplang-nlu` and run it with `node`. With the hmm-rules code of commit `c080ce8` it prints the four wires
 of step 7. The reader checks the circuit with `validateSyntax` and returns it only when it is valid.
 
 ## What you learned

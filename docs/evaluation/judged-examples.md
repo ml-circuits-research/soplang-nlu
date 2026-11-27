@@ -19,7 +19,7 @@ the message and the circuit.
 
 ```sop
 # hair short
-# vss (item 223): L8
+# hmm-rules (item 223): L8
 @n1 syntax.nominal head="hair" dependent="short"
 @c1 syntax.clause form=fragment complement=$n1
 
@@ -33,7 +33,7 @@ the message and the circuit.
 @c2 syntax.clause form=fragment complement=$n1
 ```
 
-The message has no verb, so every circuit writes a fragment. VSS holds "short" inside the nominal,
+The message has no verb, so every circuit writes a fragment. hmm-rules holds "short" inside the nominal,
 as a dependent of "hair"; the other three hold it as a modifier of the clause. Both passed: the
 judge found no wrong statement to quote in either.
 
@@ -47,7 +47,7 @@ does not say: L4.
 
 ```sop
 # add a sun 260 400
-# distilbert, vss (item 1190): L8
+# distilbert, hmm-rules (item 1190): L8
 @c1 syntax.clause form=imperative verb="add" complement=$n1
 @n1 syntax.nominal dependent="a" head="sun" dependent="260" dependent="400"
 
@@ -63,7 +63,7 @@ does not say: L4.
 @n2 syntax.nominal dependent="260" head="400"
 ```
 
-VSS and DistilBERT keep the numbers inside the nominal of "sun". Prolog and spaCy make "260 400" a
+hmm-rules and DistilBERT keep the numbers inside the nominal of "sun". Prolog and spaCy make "260 400" a
 nominal of its own, tied to "sun" by a relation with no linking word. Both pass, by a settled case
 of `rules.md`: a number right after a noun may be a dependent of that noun, or a nominal of its own
 tied to the noun by a relation without a marker.
@@ -79,7 +79,7 @@ nothing to quote, and it passes.
 
 ```sop
 # node Intro to 260, 240
-# vss, first judging (item 1721): L3
+# hmm-rules, first judging (item 1721): L3
 @n1 syntax.nominal head="node" dependent="Intro"
 @r1 syntax.relation marker="to" from=$n1 to=$n2
 @n2 syntax.nominal head="260"
@@ -87,7 +87,7 @@ nothing to quote, and it passes.
 @c1 syntax.clause form=fragment complement=$k1
 @k1 syntax.coordination conjunct=$n1 conjunct=$n3
 
-# vss after the rules of fa46cb7 (item 6952): L8
+# hmm-rules after the rules of fa46cb7 (item 6952): L8
 @n1 syntax.nominal head="node" dependent="Intro"
 @r1 syntax.relation marker="to" from=$n1 to=$k1
 @n2 syntax.nominal head="260"
@@ -111,7 +111,7 @@ alike by prolog, spacy and z3 and accepted (L8), is read line by line in
 # item 1 (prolog, spacy, z3): L8
 @r2 syntax.relation attachment=ambiguous marker="by" from=$c1 to=$n3
 
-# item 5859 (vss, distilbert), the rest alike: L8
+# item 5859 (hmm-rules, distilbert), the rest alike: L8
 @r2 syntax.relation marker="by" from=$n2 to=$n3
 ```
 
@@ -126,7 +126,7 @@ of the benchmark replaced it with item 1, which a judge had accepted
 
 ## Exercise
 
-The message "b2, make it centred". VSS's circuit at the first judging (item 337):
+The message "b2, make it centred". The circuit of hmm-rules at the first judging (item 337):
 
 ```sop
 @n1 syntax.nominal head="b2"
@@ -140,7 +140,7 @@ Decide before reading on: acceptable, or which grade? Check each grade of the
 
 **Answer.** L6. The judge's note: "The fragment 'b2' is tied to nothing inside its sentence." Z3
 wrote the same circuit plus a coordination of the two clauses (item 338), and it passed: the
-fragment is tied. VSS after the rule batch of `83fce90`, which ties every part of a sentence, added
+fragment is tied. hmm-rules after the rule batch of `83fce90`, which ties every part of a sentence, added
 a relation from the clause to the fragment (item 7134) and passed too.
 
 A second answer from the same message: DistilBERT held "b2" as a word said to the listener

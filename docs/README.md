@@ -21,8 +21,8 @@ so a later reader, outside this repository, does it, starting from a checked str
 
 ## An example
 
-The message "Move the blue box towards the yellow circle." as VSS, the project's own formalizer, writes it
-with the code of commit `c080ce8`; three of its four lines are asserted by the test `tests/vss-syntax.test.mjs`:
+The message "Move the blue box towards the yellow circle." as hmm-rules, the project's own formalizer, writes it
+with the code of commit `c080ce8`; three of its four lines are asserted by the test `tests/hmm-rules-syntax.test.mjs`:
 
 ```sop
 @c1 syntax.clause form=imperative verb="Move" complement=$n1
@@ -51,8 +51,8 @@ Each line is one wire: a clause (the command "Move"), two nominals (the box, the
   [Library API](reference/library.md) › [Write a new formalizer](guides/write-a-formalizer.md).
 - **Run the benchmark and judge it**: [Run the benchmark](guides/run-benchmark.md) ›
   [Judge a packet](guides/judge-a-packet.md) › [Levels and GOAL](evaluation/levels.md).
-- **Improve VSS**: [VSS in depth](vss/README.md) › [Known limits of VSS](vss/limits.md) ›
-  [Find faults](guides/find-faults.md) › [Add a rule to VSS](guides/add-vss-rule.md).
+- **Change hmm-rules**: [hmm-rules in depth](hmm-rules/README.md) › [Known limits of hmm-rules](hmm-rules/limits.md) ›
+  [Find faults](guides/find-faults.md) › [Add a rule to hmm-rules](guides/add-hmm-rules-rule.md).
 - **Review the method**: [What is new here](project/what-is-new.md) ›
   [Related work](schema/related-work.md) › [Judges](evaluation/judging.md) ›
   [Limits of the measurements](evaluation/validity.md).
@@ -69,8 +69,9 @@ Each line is one wire: a clause (the command "Move"), two nominals (the box, the
   about speed and cost.
 - [Evaluation and labels](evaluation/README.md): the dataset, judging, levels and GOAL, the benchmark,
   agreement, the audit, conversion, limits.
-- [VSS in depth](vss/README.md): the project's own reader, from training to the written circuit. It sits
-  under Formalizers › VSS and is listed here because VSS is the main focus.
+- [hmm-rules in depth](hmm-rules/README.md): the project's own reader, from training to the written circuit. It sits
+  under Formalizers › hmm-rules and is listed here as a section of its own; hmm-rules, called vss until
+  2026-11-27, is experimental now.
 - [How-to guides](guides/README.md): run, test, benchmark, judge, convert, find faults, add rules, retrain,
   write a formalizer.
 - [Reference](reference/README.md): glossary, SOP Lang rules, library API, tools and options, storage, folders.

@@ -4,7 +4,7 @@ const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
 const {createReader} = await import(root + 'lib/index.mjs')
 const {readSample} = await import(root + 'tests/benchmark/syntax/lib.mjs')
 const {vssParser} = await import('./strategy.mjs')
-const {vss} = await import(root + 'strategies/vss/index.mjs')
+const {vss} = await import(root + 'strategies/hmm-rules/index.mjs')
 const model = new URL(process.argv[2] ?? 'model.json.gz', import.meta.url)
 const bench = readSample(root + 'eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz')
 for (const [name, strategy, options] of [['vss-parser', vssParser, {model}], ['vss', vss, {}]]) {

@@ -4,7 +4,7 @@ Registry: 13006 judged circuits of 6659 messages. Judged in this run: 8073 circu
 
 | Strategy | Messages | L0 | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 | waiting | GOAL |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| vss | 1831 | 0 | 115 | 2 | 239 | 0 | 22 | 6 | 0 | 861 | 581 | 5 | 0 | 79.0% |
+| hmm-rules | 1831 | 0 | 115 | 2 | 239 | 0 | 22 | 6 | 0 | 861 | 581 | 5 | 0 | 79.0% |
 | prolog | 1831 | 41 | 228 | 1 | 386 | 7 | 37 | 4 | 0 | 656 | 238 | 233 | 0 | 61.6% |
 | distilbert | 1831 | 0 | 139 | 0 | 251 | 3 | 8 | 24 | 0 | 821 | 538 | 47 | 0 | 76.8% |
 | spacy | 1831 | 0 | 25 | 3 | 68 | 1 | 0 | 2 | 0 | 1141 | 404 | 187 | 0 | 94.6% |
@@ -17,7 +17,7 @@ Accepted circuits that leave an attachment open (`attachment=ambiguous`):
 
 | Strategy | Accepted circuits | With `attachment=ambiguous` | Share |
 | --- | ---: | ---: | ---: |
-| vss | 1447 | 91 | 6.3% |
+| hmm-rules | 1447 | 91 | 6.3% |
 | prolog | 1127 | 540 | 47.9% |
 | distilbert | 1406 | 84 | 6.0% |
 | spacy | 1732 | 325 | 18.8% |

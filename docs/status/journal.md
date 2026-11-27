@@ -4,7 +4,7 @@
 
 This page: a copy of the working journal improvements-ideas.md, made at every build, with its wide tables written as lists so that it reads on a phone. Kind: Reference.
 
-Generated 2026-11-27 22:24 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 7ffdbd4 (61 uncommitted paths) · webmeet-dataset 0a01d23. The main figures are in [Journal](../STATUS.md#journal) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Journal](../STATUS.md#journal) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 > **Its numbers can be older than the status page.** Parts of the journal, such as the table under "Where things stand", keep the figures of the time they were written. Where they differ from the computed sections of the status page, the computed ones are current.
 
@@ -27,11 +27,11 @@ possible, ideally over 99%.
 The work goes on with four strategies at most (owner's decision): they read a message from really different
 sources, so their agreement means something.
 
-- **spacy**: Source of the analysis: spaCy dependency parse + our rules (former spacy-beam); Benchmark (random 1%): 89.6%; State: two rounds of general repairs (a55e33f, 0a7bb62)
-- **distilbert**: Source of the analysis: DistilBERT trained on syntax circuits only; Benchmark (random 1%): 77.3%; State: syntax-v3, trained on the grown labels (83,619), benchmark held out
-- **vss**: Source of the analysis: our unsupervised reader (stations learned from text, rules); Benchmark (random 1%): 77.2%; State: main focus; rules being added (agent)
-- **prolog**: Source of the analysis: hand-written grammar; Benchmark (random 1%): 61.7%; State: parked (owner: do not improve for now)
-- **z3**: Source of the analysis: constraint model; Benchmark (random 1%): 59.3%; State: parked
+- **spacy**: Source of the analysis: spaCy dependency parse + our rules (former spacy-beam); Benchmark (random 1%): 89.6%; State: active; two rounds of general repairs (a55e33f, 0a7bb62)
+- **distilbert**: Source of the analysis: DistilBERT trained on syntax circuits only; Benchmark (random 1%): 77.3%; State: experimental; syntax-v3, trained on the grown labels (83,619), benchmark held out
+- **hmm-rules (vss until 2026-11-27)**: Source of the analysis: our unsupervised reader (stations learned from text, rules); Benchmark (random 1%): 77.2%; State: experimental (renamed 2026-11-27)
+- **prolog**: Source of the analysis: hand-written grammar; Benchmark (random 1%): 61.7%; State: experimental (owner: do not improve for now)
+- **z3**: Source of the analysis: constraint model; Benchmark (random 1%): 59.3%; State: experimental
 
 
 Left out of rounds and benchmark (too close to one of the above, code kept): spacy-direct, spacy-beam,
@@ -75,6 +75,14 @@ messages, where it does worse.
 
 ### Done since the first version of this journal
 
+- 2026-11-27: the strategy `vss` is renamed `hmm-rules` (owner's decision): it is a hidden Markov model learned
+  from raw text plus general rules over function words, and had only kept the name of the vector-symbolic
+  reader it started as. Folder `strategies/hmm-rules/`, export `hmmRules` (`vss` kept as an alias), tests
+  `tests/hmm-rules*.test.mjs`, docs `docs/hmm-rules/`. Old run folders (`vss.jsonl`), registry lines and
+  labels that say `vss` are read as `hmm-rules` through one alias table (`strategyAliases` in
+  tests/benchmark/syntax/lib.mjs); the dataset's `source` cells now say `hmm-rules`. spaCy is the one active
+  strategy; hmm-rules, DistilBERT, Prolog and Z3 are experimental (measured, kept runnable, not improved for
+  now); the real vector-symbolic reader, `rvss` (strategies/strict-vss), is being built.
 - spaCy: general repairs in the layer that writes its circuits (commit a55e33f): capitalised verb forms
   inside a sentence are names, the first word of a verbless clause before a determiner is its verb, embedded
   questions state, "let's", "everything else", "from now on", numbers joined by a preposition, adjectives

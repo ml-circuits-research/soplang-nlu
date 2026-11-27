@@ -174,14 +174,53 @@ export function normalForm(text, sop) {
   return core === null ? {sop, core: coreOf(text, sop), kept: 'as written'} : {sop: normal, core}
 }
 
+// ---- the names of strategies
+/**
+ * The old names of strategies that were renamed: old name -> name now. The files written before a rename keep the
+ * old name: the strategy files of old run folders (vss.jsonl), the `source` of registry lines and of labels
+ * ("vss+spacy"), the `sources` of the items and of the agreed circuits of a run, the families of strategies files.
+ * Every reader of those files maps an old name to the name now (strategyName), so that tables and agreement work on
+ * old folders unchanged; nothing is renamed in the files themselves.
+ *   vss -> hmm-rules (2026-11-27): a hidden Markov model learned from raw text plus general rules over function
+ *   words, which had kept the name of the vector-symbolic reader it started as. The vector-symbolic reader of the
+ *   project is now rvss.
+ */
+export const strategyAliases = Object.freeze({vss: 'hmm-rules'})
+/** The name now of a strategy, or of a family, given by its name now or by an old name (strategyAliases). */
+export const strategyName = name => typeof name === 'string' && Object.hasOwn(strategyAliases, name) ? strategyAliases[name] : name
+/** A `source` cell, names joined by "+", with every old name replaced by the name now; the order and every other name are kept. */
+export const sourceNow = source => typeof source === 'string' && source ? source.split('+').map(strategyName).join('+') : source
+/** The names of a list of strategies or families with every old name replaced (the order is kept, a repeated name once). */
+export const namesNow = names => Array.isArray(names) ? [...new Set(names.map(strategyName))] : names
+/**
+ * The strategy file of a run folder for a strategy named by its name now or an old one: <name now>.jsonl, or else the
+ * file of an old name of the same strategy (vss.jsonl for hmm-rules), or else the file of the name as given.
+ */
+export function outputFile(runDir, name) {
+  const now = strategyName(name)
+  const names = [now, ...Object.keys(strategyAliases).filter(old => strategyAliases[old] === now), name]
+  return names.map(one => join(runDir, one + '.jsonl')).find(file => existsSync(file)) ?? join(runDir, now + '.jsonl')
+}
+
 // ---- the outputs of a run
-/** The strategy files of a run folder: [{strategy, rows: [{id, text, sop, error, ms, normal, core}]}]. */
+/**
+ * The strategy files of a run folder: [{strategy, rows: [{id, text, sop, error, ms, normal, core}]}]. A strategy is named
+ * by its name now: a file of an old name (vss.jsonl) is read as the strategy it is now (hmm-rules), unless the folder
+ * also has the file of the name now (hmm-rules.jsonl), which is then read instead.
+ */
 export function readOutputs(runDir) {
   const summaryFile = join(runDir, 'summary.json')
   const names = existsSync(summaryFile)
     ? Object.entries(readJson(summaryFile).strategies ?? {}).filter(([, entry]) => entry.file).map(([name]) => name)
     : readdirSync(runDir).filter(file => file.endsWith('.jsonl')).map(file => file.slice(0, -6)).sort()
-  return names.filter(name => existsSync(join(runDir, name + '.jsonl'))).map(name => ({strategy: name, rows: withCores(readJsonl(join(runDir, name + '.jsonl')))}))
+  const outputs = [], seen = new Set()
+  for (const name of names) {
+    const strategy = strategyName(name), file = [strategy, name].map(one => join(runDir, one + '.jsonl')).find(one => existsSync(one))
+    if (!file || seen.has(strategy)) continue
+    seen.add(strategy)
+    outputs.push({strategy, rows: withCores(readJsonl(file))})
+  }
+  return outputs
 }
 /** Adds to every row the normal form of its circuit and its core; both null when the circuit is not valid. */
 export function withCores(rows) {
@@ -200,7 +239,9 @@ export function emptyRegistry() { return {files: [], rows: 0, ignored: 0, older:
  * can name it in `supersedes`. The entry keeps it as `file`, a property that is not enumerable, so it is never
  * written out with the line.
  */
-export function addToRegistry(registry, row, file = null) {
+export function addToRegistry(registry, line, file = null) {
+  // a line written before a strategy was renamed names it by its old name: the registry holds the name now
+  const row = typeof line.source === 'string' && sourceNow(line.source) !== line.source ? {...line, source: sourceNow(line.source)} : line
   const normal = normalForm(row.text, row.sop)
   if (!normal?.core || !['accepted', 'rejected'].includes(row.verdict)) { registry.ignored++; return false }
   registry.rows++
@@ -263,7 +304,9 @@ export const SYNTACTIC_HEADER = ['text', 'sop', 'source', 'accepted_by']
  */
 export function labelLine(line) {
   let core
-  return Object.defineProperty({...line}, 'core', {get: () => core === undefined ? (core = normalForm(line.text, line.label)?.core ?? null) : core})
+  // a source written before a strategy was renamed names it by its old name: the label line holds the name now
+  const named = typeof line.source === 'string' ? {...line, source: sourceNow(line.source)} : {...line}
+  return Object.defineProperty(named, 'core', {get: () => core === undefined ? (core = normalForm(line.text, line.label)?.core ?? null) : core})
 }
 /**
  * The labels: a Map from the text of a message to its label line. `dir` is the folder of syntactic
@@ -661,7 +704,7 @@ export function renderAgreement(result) {
  * The core of a circuit with the start of every relation that has a marker left out, and its
  * ambiguity mark: what two circuits share when they differ only in where a phrase attaches. The
  * judges' rules let such a start be the clause or any nominal of it that grammar allows. On the
- * first two judged rounds, 325 of 327 circuits that VSS wrote and a parser strategy matched up to
+ * first two judged rounds, 325 of 327 circuits that hmm-rules (then named vss) wrote and a parser strategy matched up to
  * these starts were accepted.
  */
 export function relaxedCore(core) {
@@ -1004,7 +1047,17 @@ export const judgingDir = runDir => join(runDir, 'judging')
 export const itemsFile = runDir => join(runDir, 'key', 'items.jsonl')
 export const agreementFile = runDir => join(runDir, 'key', 'agreement.jsonl')
 /** The circuits of the run settled by agreement, as round.mjs settle recorded them; none for a run without that step. */
-export function readAgreement(runDir) { return existsSync(agreementFile(runDir)) ? readJsonl(agreementFile(runDir)) : [] }
+export function readAgreement(runDir) { return existsSync(agreementFile(runDir)) ? readJsonl(agreementFile(runDir)).map(withNamesNow) : [] }
+/**
+ * An item or an agreed circuit of a run with its `sources` and `families` named by their names now (strategyAliases),
+ * sorted again as the tools write them.
+ */
+const withNamesNow = line => {
+  const renamed = names => Array.isArray(names) && names.some(name => strategyName(name) !== name) ? namesNow(names).sort() : names
+  const sources = renamed(line.sources), families = renamed(line.families)
+  return sources === line.sources && families === line.families ? line
+    : {...line, ...sources === line.sources ? {} : {sources}, ...families === line.families ? {} : {families}}
+}
 /** Writes what a judge needs: the items, new packets for the added ones, the rules and the checker. Returns the new packets as [name, lines]. */
 export function writeJudging(runDir, items, added, size = 200) {
   const folder = judgingDir(runDir)
@@ -1053,7 +1106,7 @@ export function readLabelsBefore(runDir, labels = new Labels()) {
   }
   return before
 }
-export function readItems(runDir) { return existsSync(itemsFile(runDir)) ? readJsonl(itemsFile(runDir)) : [] }
+export function readItems(runDir) { return existsSync(itemsFile(runDir)) ? readJsonl(itemsFile(runDir)).map(withNamesNow) : [] }
 /**
  * The verdicts of the run that pass the check of check.mjs: {verdicts: [{n, grade, note, packet}], problems}.
  * `packet` is the number k of the packet: runVerdicts lets the latest packet's verdict count.

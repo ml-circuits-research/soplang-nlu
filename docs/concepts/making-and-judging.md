@@ -9,10 +9,12 @@ lines with a link to its own page, before any later section uses them. Kind: Exp
 
 A **formalizer** is a program that reads one message and writes its circuit. The code calls it a
 *strategy*; in NLP terms it is a parser. Each formalizer reads English from a different source of
-knowledge, on purpose. Five are measured:
+knowledge, on purpose. Five are measured; spacy is the one being improved now, the four others are
+experimental: still measured and still a voice in agreement, not improved for now.
 
-- **vss**: the project's own reader. It learns classes of words from raw text, with no labels; hand-written
-  rules about English, which name only function words, then build the circuit.
+- **hmm-rules** (called vss until 2026-11-27): the project's own reader. A hidden Markov model learns
+  classes of words from raw text, with no labels; hand-written rules about English, which name only
+  function words, then build the circuit.
 - **spacy**: an outside [dependency parser](grammar-notation.md#the-dependency-tree) (spaCy's English
   transformer model) plus this project's layer that writes its parse as a circuit, with repairs.
 - **distilbert**: a small [transformer](https://en.wikipedia.org/wiki/Transformer_(deep_learning)) language
@@ -20,7 +22,7 @@ knowledge, on purpose. Five are measured:
   this project's labels.
 - **prolog** and **z3**: hand-written grammars, one in [Prolog](https://en.wikipedia.org/wiki/Prolog) and
   one written as constraints and solved by the [Z3](https://en.wikipedia.org/wiki/Z3_Theorem_Prover)
-  solver. Both are parked: still measured, not improved for now.
+  solver.
 
 Formalizers that read the same source (for example several built on the same spaCy parse) form one
 **family**. More: [Formalizers](../formalizers/README.md).

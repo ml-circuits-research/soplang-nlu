@@ -18,7 +18,7 @@ env -u SOP_KNOWLEDGE_DIR npm test
 
 ```sh
 env -u SOP_KNOWLEDGE_DIR node --test \
-  tests/vss-syntax.test.mjs tests/vss.test.mjs
+  tests/hmm-rules-syntax.test.mjs tests/hmm-rules.test.mjs
 ```
 
 The key files, each named `tests/<name>.test.mjs`:
@@ -27,8 +27,8 @@ The key files, each named `tests/<name>.test.mjs`:
 | --- | --- |
 | syntax-contract | The contract every formalizer of the syntax schema is held to: the schema, the checker and the writer of `lib/syntax.mjs`. |
 | syntax-benchmark | The evaluation tools: normal form, registry, labels, packets, the check of verdict files, levels and GOAL, agreement, the random sample, runs from start to table with stub formalizers, and a conversion round from source file to syntactic file. |
-| vss-syntax | VSS end to end through the common reader, in the syntax schema. |
-| vss | The VSS legend, observation of words, and VSS's internal output in the older `nlu` form. |
+| hmm-rules-syntax | hmm-rules end to end through the common reader, in the syntax schema. |
+| hmm-rules | The hmm-rules legend, observation of words, and the internal output of hmm-rules in the older `nlu` form. |
 | spacy-syntax | The parser formalizers (`neural-dependencies`, `spacy-direct`, `spacy-beam`) on parses recorded once from the pretrained parser, one or more per repair. The last test runs the parser itself, and only when `SOP_NLU_SYNTAX_PYTHON` and `SOP_NLU_SYNTAX_MODEL` are set. |
 | distilbert-strategy | The DistilBERT adapter: it handles the replies of its Python worker one request at a time and keeps the exact checks of the message's text. |
 | prolog-syntax | The Prolog formalizers through the common reader. Skipped when no SWI-Prolog is found. The part that reads a dependency parse uses recorded parses, and runs the live parser only when the two spaCy variables are set. |
@@ -42,7 +42,7 @@ Many of the other files in `tests/` test strategies and tools of the earlier `nl
 
 ```sh
 env -u SOP_KNOWLEDGE_DIR node --test \
-  --test-name-pattern="fragment" tests/vss-syntax.test.mjs
+  --test-name-pattern="fragment" tests/hmm-rules-syntax.test.mjs
 ```
 
 This runs the test "a message with no verb is a fragment".
@@ -66,13 +66,13 @@ A line `not ok` names each failed test, with the expected and the actual value u
 | --- | --- |
 | `lib/syntax.mjs` | syntax-contract, then all tests: every formalizer depends on the checker and the writer. |
 | Benchmark tools | syntax-benchmark. |
-| VSS rule or legend | vss-syntax and vss, after retraining when the change needs it. |
+| Rules of hmm-rules | hmm-rules-syntax and hmm-rules, after a change to a rule or to the legend; retrain first when the change needs it. |
 | spaCy repair | spacy-syntax. |
 | Before a commit | All tests. |
 
 ## Pitfalls
 
-- **`tests/vss.test.mjs` can pass with a stale model.** It reads `strategies/vss/legend.sop` directly, while reading takes the legend from the copy inside `model.json`. After a change to the legend, retrain ([Retrain VSS](retrain-vss.md)); the reason is in [The model file](../vss/model-file.md).
+- **`tests/hmm-rules.test.mjs` can pass with a stale model.** It reads `strategies/hmm-rules/legend.sop` directly, while reading takes the legend from the copy inside `model.json`. After a change to the legend, retrain ([Retrain hmm-rules](retrain-hmm-rules.md)); the reason is in [The model file](../hmm-rules/model-file.md).
 - **`npm run benchmark` is not the benchmark.** It runs `tests/benchmark/port-run.mjs` of the `nlu` period. The current benchmark is in [Run the benchmark](run-benchmark.md).
 - **Outside runtimes.** Tests of formalizers that need Python or SWI-Prolog run their full form only where those are installed and named (see [Run a formalizer](run-a-formalizer.md)).
 - **Test counts change** with every rule and repair, so this page states none. The output of `node --test` ends with the counts of the run.

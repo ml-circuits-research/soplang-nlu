@@ -4,7 +4,8 @@ Two general methods, tried in a scratch folder and copied here so that the code 
 history. Neither is adopted: on the 1% benchmark (eval-results/2026-11-27-syntax-benchmark-random) neither
 beats the strategy it would replace. The scripts still name the scratch paths they were run from
 (`/tmp/claude-1000/…/scratchpad/learned/…`); the training data, the parses and the spaCy models (3.8 GB) were
-not copied.
+not copied. The strategy called VSS here is `hmm-rules` since 2026-11-27 (a hidden Markov model plus rules;
+the vector-symbolic reader of the project is now `rvss`); the scripts import it from `strategies/hmm-rules/`.
 
 ## 1. A transition-based parser for VSS (parser/)
 

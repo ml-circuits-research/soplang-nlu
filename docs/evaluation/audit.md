@@ -50,7 +50,7 @@ counts a different part.
 | Total | What it counts |
 | --- | --- |
 | 1,154 read | 10 rejected. The first batch conversion, as the commit message of dataset `0b58c84`, the journal and the README of `webmeet-dataset/syntactic/` give it. |
-| 1,163 read | 10 rejected. The same first batch, recounted in the evaluation report: the 1,154 leaves out 9 audit lines of `calendar/meetings-01.01`, which were counted with the 564 VSS circuits a judge read in that folder. |
+| 1,163 read | 10 rejected. The same first batch, recounted in the evaluation report: the 1,154 leaves out 9 audit lines of `calendar/meetings-01.01`, which were counted with the 564 hmm-rules circuits a judge read in that folder. |
 | The status page | Every audit recorded in the conversion folders now: the first batch and the later refills of the conversion, recomputed at every build ([Agreement and audit in detail](../status/agreement.md)). |
 
 When this page was written, the status page counted 1,715 read and 17 rejected. That total is the
@@ -68,23 +68,23 @@ because its pooled packets also held other circuits of the conversion folders
 
 By the families that agreed (the recount at 18:00 on 2026-11-27):
 
-- **parser + vss**: 57,087 agreed, 1,140 read, 10 rejected (0.88%)
-- **distilbert + vss**: 793 agreed, 18 read, none rejected
-- **distilbert + parser + vss**: 114 agreed, 2 read, none rejected
+- **parser + hmm-rules**: 57,087 agreed, 1,140 read, 10 rejected (0.88%)
+- **distilbert + hmm-rules**: 793 agreed, 18 read, none rejected
+- **distilbert + parser + hmm-rules**: 114 agreed, 2 read, none rejected
 - **distilbert + parser**: 109 agreed, 3 read, none rejected
 - **all**: 58,103 agreed, 1,163 read, 10 rejected
 
-Current totals: [Status: Agreement between VSS and spaCy](../STATUS.md#agreement-between-vss-and-spacy).
+Current totals: [Status: Agreement between hmm-rules and spaCy](../STATUS.md#agreement-between-hmm-rules-and-spacy).
 
 ## Exact against relaxed matches
 
-In the first batch audit, parser–VSS circuits written exactly alike: 870 read, 6 rejected. Circuits
+In the first batch audit, parser–hmm-rules circuits written exactly alike: 870 read, 6 rejected. Circuits
 alike only under the `relaxed` key: 270 read, 4 rejected. The counts are too small to tell the two
 error rates apart.
 
 ## Three rejected examples
 
-Judges' notes on circuits that VSS and the parser agreed on (from
+Judges' notes on circuits that hmm-rules and the parser agreed on (from
 `eval-results/conversion-audit/verdicts-*.jsonl`):
 
 - L1: "'Have the legend switched on.' is a command with 'Have' as its verb and 'the legend' as its

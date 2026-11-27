@@ -12,18 +12,18 @@ Each report was written on 2026-11-27 and revised the same day after two reviews
 
 ## vss-architecture.html
 
-[vss-architecture.html](../vss-architecture.html), "The VSS reader: architecture".
+[vss-architecture.html](../vss-architecture.html), "The VSS reader: architecture" (written when the strategy was called vss; it is hmm-rules now, [hmm-rules: Name](../formalizers/hmm-rules.md#name)).
 
 | Item | Detail |
 | --- | --- |
-| Covers | How VSS reads one message and writes its circuit: what it learns from raw text, what is declared by hand, the order of the steps, and every rule the code holds. |
+| Covers | How hmm-rules reads one message and writes its circuit: what it learns from raw text, what is declared by hand, the order of the steps, and every rule the code holds. |
 | For | A reviewer who has not read the code and wants to judge the design, what is particular to WebMeet, and what a reusable engine would need. |
-| Describes | `strategies/vss` at commit `fa46cb7` (17:49). Rules that first appeared there carry the mark "(fa46cb7)". |
+| Describes | The strategy, then `strategies/vss`, at commit `fa46cb7` (17:49). Rules that first appeared there carry the mark "(fa46cb7)". |
 | Written | First version 17:31–17:45 from the working tree; revised at about 18:00 after two reviews. |
 | Sections | 16: purpose and constraints; terms; files; training and reading; training step by step; the legend; reading step by step; internal names to syntax keys; the rule catalogue; learned and declared; commands; results; changes since the old VSS page; limits; reuse; sources. |
 | Superseded | Its numbers (now in STATUS); the lever-study estimates of its section 15, made before the trials were judged; the rules added after `fa46cb7`, such as `83fce90` and `71f0dd2`. |
 
-Where the wiki covers the same topics: the section [VSS in depth](../vss/README.md) and the page [VSS](../formalizers/vss.md); in this section, [Tool choices](tool-decisions.md), [Tried and dropped](tried-and-dropped.md), [First results](first-results.md) and [The nlu-schema period](nlu-period.md).
+Where the wiki covers the same topics: the section [hmm-rules in depth](../hmm-rules/README.md) and the page [hmm-rules](../formalizers/hmm-rules.md); in this section, [Tool choices](tool-decisions.md), [Tried and dropped](tried-and-dropped.md), [First results](first-results.md) and [The nlu-schema period](nlu-period.md).
 
 ## syntax-work-2026-11-27.html
 
@@ -55,13 +55,13 @@ Where the wiki covers the same topics: most of [Evaluation and labels](../evalua
 
 - Every number says what it counts and where it was counted. Numbers recounted from files carry "recounted for this document"; numbers the reviewers computed from the git history carry "checked during review".
 - A number is cited at the commit named with it, since the run folders changed afterwards.
-- **Session notes** are the notes of the working session of 2026-11-27. They are not in the repository. The claims taken only from them are listed in syntax-work-2026-11-27.html, section "Sources": the 41 of 1,831 circuits changed by counting word kinds from accepted circuits; VSS right on 77 of 77 sampled calendar circuits; the sample counts of the three area analyses; the false alarms of an automatic safety check on two judge agents; the experiment relating "goes" to "go".
+- **Session notes** are the notes of the working session of 2026-11-27. They are not in the repository. The claims taken only from them are listed in syntax-work-2026-11-27.html, section "Sources": the 41 of 1,831 circuits changed by counting word kinds from accepted circuits; hmm-rules right on 77 of 77 sampled calendar circuits; the sample counts of the three area analyses; the false alarms of an automatic safety check on two judge agents; the experiment relating "goes" to "go".
 
 ## Older pages and records
 
 - The former index of docs/ from the nlu period, `docs/history/nlu-schema-period.md` (its text as it stood: `git show 97a1b83:docs/history/nlu-schema-period.md`), summarised in [The nlu-schema period](nlu-period.md).
 - The two learned prototypes: [experiments/syntax-learned/README.md](../../experiments/syntax-learned/README.md), summarised in [Tried and dropped](tried-and-dropped.md).
-- The design of strict-vss: [strategies/strict-vss/DESIGN.md](../../strategies/strict-vss/DESIGN.md).
+- The design of rvss (folder `strategies/rvss/`, first `strategies/strict-vss/`): [strategies/rvss/DESIGN.md](../../strategies/rvss/DESIGN.md).
 
 ---
 

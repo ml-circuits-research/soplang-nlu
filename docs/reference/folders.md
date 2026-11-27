@@ -2,7 +2,7 @@
 
 # Folders and repositories
 
-This page: a map of this repository's folders, of the files of the VSS folder and of the status files, and the sibling repositories. Kind: Reference.
+This page: a map of this repository's folders, of the files of the hmm-rules folder and of the status files, and the sibling repositories. Kind: Reference.
 
 Where data and run outputs are stored, file by file: [Where everything is stored](storage.md).
 
@@ -39,12 +39,11 @@ In `experiments/`: `syntax-learned/` with its README, and the older prototypes `
 
 Active, worked on:
 
-- `vss/`: the project's own reader, the main focus ([below](#the-vss-folder)).
 - `spacy/`: the spaCy dependency parse written as a circuit. It is spacy-beam under one name; its code stays in `spacy-beam/` (the beam), `spacy-direct/` (the repairs) and `neural-dependencies/` (the Python transport and the circuit writer).
+Experimental: still measured and a voice in agreement, not improved for now (called parked for prolog and z3 until 2026-11-27):
+
+- `hmm-rules/`: the project's own reader, called `vss` until 2026-11-27 ([below](#the-hmm-rules-folder)).
 - `distilbert/`: DistilBERT fine-tuned on syntax circuits; `retrain.mjs` trains it.
-
-Parked, still measured:
-
 - `prolog/`: a hand-written grammar in SWI-Prolog.
 - `z3/`: a hand-written grammar written as constraints and solved by the Z3 solver; it has its own `package.json` and `node_modules/`.
 
@@ -61,13 +60,13 @@ Retired: left out of rounds and benchmark, and still run by name with `run.mjs -
 
 In design:
 
-- `strict-vss/`: a reader whose analysis goes through a vector-symbolic sentence state. `DESIGN.md` (first draft in commit `f5be34c`, revised the same day) and the first measurements in `m0/`; nothing is trained yet.
+- `rvss/`: rvss, a reader whose analysis goes through a vector-symbolic sentence state (the folder was first called `strict-vss/`). `DESIGN.md` (first draft in commit `f5be34c`, revised the same day) and the first measurements in `m0/`; nothing is trained yet.
 
 Each one: [Formalizers](../formalizers/README.md) and [Retired formalizers](../formalizers/retired.md).
 
-## The VSS folder
+## The hmm-rules folder
 
-`strategies/vss/`, grouped by use as at commit `fa46cb7`. A file marked T runs during training: a change to it changes the model, so the model must be retrained ([Retrain the VSS model](../guides/retrain-vss.md)). A file marked R is used only to read. Later commits changed the contents of several files but added or removed none. Terms such as HMM, EM, Viterbi and chunker: [Glossary](glossary.md#nlp-and-statistics).
+`strategies/hmm-rules/`, grouped by use as at commit `fa46cb7`. A file marked T runs during training: a change to it changes the model, so the model must be retrained ([Retrain the hmm-rules model](../guides/retrain-hmm-rules.md)). A file marked R is used only to read. Later commits changed the contents of several files but added or removed none. Terms such as HMM, EM, Viterbi and chunker: [Glossary](glossary.md#nlp-and-statistics).
 
 Training (T):
 
@@ -80,7 +79,7 @@ Training (T):
 
 Reading (R):
 
-- `index.mjs`: the strategy object `vss` (`schema: 'syntax'`); it loads the model.
+- `index.mjs`: the strategy object `hmmRules`, named `hmm-rules` (`schema: 'syntax'`; also exported as `vss`, its old name); it loads the model.
 - `model/model.json`: the trained model, with a copy of the legend.
 - `src/reader.mjs`: opens the model, builds the lexicon and the linker's context, runs the reading loop; its `openModel` also serves training.
 - `src/links.mjs`: the linker: clauses, roles, relations and coordinations, as internal `nlu.*` wires.
@@ -100,18 +99,18 @@ Obsolete:
 - `core.mjs`, `compare.mjs`, `evaluate.mjs`, `judged.mjs`, `triage.mjs`: measurement tools of the nlu period; they need the sop-knowledge-worlds checkout.
 - `judging-rules.md`, `judging-rules-syntax.md`: judging rules of the nlu schema and of version 1; superseded by `tests/benchmark/syntax/rules.md`.
 
-What each part does: [VSS in depth](../vss/README.md).
+What each part does: [hmm-rules in depth](../hmm-rules/README.md).
 
 ## docs
 
-- `README.md`: the home page of this documentation, and the section folders `concepts/`, `schema/`, `formalizers/`, `evaluation/`, `vss/`, `guides/`, `reference/`, `project/`.
+- `README.md`: the home page of this documentation, and the section folders `concepts/`, `schema/`, `formalizers/`, `evaluation/`, `hmm-rules/`, `guides/`, `reference/`, `project/`.
 - The three full reports in HTML: `vss-architecture.html`, `syntax-work-2026-11-27.html`, `syntax-evaluation-and-conversion.html` ([The full reports](../project/reports.md)). GitHub shows HTML from a private repository only as source: open them from a local checkout.
 - `STATUS.md` and `status.html`: the status page, generated. `STATUS.md` holds the main figures and links one page per section under `status/`; `status.html` holds everything on one page with charts (open it from a local checkout).
 - `status/`: the generator, its hand-written inputs and the generated section pages ([below](#the-status-files)).
 - Pointer pages: short pages kept at the old paths, so that old links still lead somewhere. Each says where its content now lives and how to read its old text from git:
   - [syntax-schema.md](../syntax-schema.md), the former single-file specification of the schema;
   - [history/nlu-schema-period.md](../history/nlu-schema-period.md), the former notes of the nlu period;
-  - `strategies/`, the former strategy pages: [vss](../strategies/vss.md), [spacy](../strategies/spacy.md), [distilbert](../strategies/distilbert.md), [prolog](../strategies/prolog.md), [z3](../strategies/z3.md), [spacy-direct](../strategies/spacy-direct.md), [spacy-beam](../strategies/spacy-beam.md), [neural-dependencies](../strategies/neural-dependencies.md), [neuro-selector](../strategies/neuro-selector.md), [selector-distilbert](../strategies/selector-distilbert.md), [prolog-example-transfer](../strategies/prolog-example-transfer.md).
+  - `strategies/`, the former strategy pages: [vss, now hmm-rules](../strategies/hmm-rules.md), [spacy](../strategies/spacy.md), [distilbert](../strategies/distilbert.md), [prolog](../strategies/prolog.md), [z3](../strategies/z3.md), [spacy-direct](../strategies/spacy-direct.md), [spacy-beam](../strategies/spacy-beam.md), [neural-dependencies](../strategies/neural-dependencies.md), [neuro-selector](../strategies/neuro-selector.md), [selector-distilbert](../strategies/selector-distilbert.md), [prolog-example-transfer](../strategies/prolog-example-transfer.md).
 - `tools/`: the check of this documentation, `check-docs.mjs` (links, anchors, tables, the page template, reachability). How to run it: [Refresh the status page and check the docs](../guides/refresh-status.md).
 
 ## The status files
@@ -137,6 +136,6 @@ They stand beside this one, in the same parent folder; the tools find `../webmee
 - `webmeet-dataset/`: the data: the messages, the semantic and syntactic layers, the registry, `tools/layers.mjs`.
 - `soplang-words-lib/`: SOP Lang's definition (`docs/language.md`) and the sopworld library that runs worlds.
 - `sop-knowledge-worlds/`: worlds of knowledge in SOP Lang; the formalizers do not read it.
-- `vsa-semantic-space/`: the earlier vector-symbolic reader whose name VSS kept ([History in brief](../project/history.md)).
+- `vsa-semantic-space/`: the earlier vector-symbolic reader whose name VSS kept until it was renamed hmm-rules ([History in brief](../project/history.md)).
 
 Next: [Project](../project/README.md) · Up: [Reference](README.md)

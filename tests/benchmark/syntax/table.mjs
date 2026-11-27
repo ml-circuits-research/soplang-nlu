@@ -9,10 +9,11 @@
 // The labels before the run are those in <run-folder>/key/labels-before.jsonl, taken when the run
 // was first prepared or published; a run that has no such file yet is compared with the labels of
 // now, which are the circuits in the syntactic files of the dataset.
+// A strategy file of an old name (vss.jsonl) stands in the row of the strategy's name now (hmm-rules): strategyAliases in lib.mjs.
 import {existsSync, writeFileSync} from 'node:fs'
 import {join, resolve, basename} from 'node:path'
 import {readArguments, readOutputs, readRegistry, readRunVerdicts, readLabels, readLabelsBefore, tableOf, renderTable, readJson, writeJson,
-  defaultRegistryDir, syntacticDirOf} from './lib.mjs'
+  defaultRegistryDir, syntacticDirOf, strategyName} from './lib.mjs'
 
 const {words, named} = readArguments(process.argv.slice(2))
 if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/table.mjs <run-folder>'); process.exit(2) }
@@ -29,7 +30,8 @@ const labels = readLabelsBefore(runDir, labelsNow)
 const read = readRunVerdicts(runDir), verdicts = read.verdicts
 const table = tableOf(outputs, registry, verdicts, labels, labelsNow)
 const summaryFile = join(runDir, 'summary.json')
-const notRun = existsSync(summaryFile) ? Object.entries(readJson(summaryFile).strategies ?? {}).filter(([, entry]) => !entry.file).map(([name, entry]) => [name, entry.status]) : []
+const ran = new Set(outputs.map(output => output.strategy))
+const notRun = existsSync(summaryFile) ? Object.entries(readJson(summaryFile).strategies ?? {}).filter(([name, entry]) => !entry.file && !ran.has(strategyName(name))).map(([name, entry]) => [strategyName(name), entry.status]) : []
 const count = by => [...verdicts.values()].reduce((sum, circuits) => sum + [...circuits.values()].filter(verdict => verdict.by === by).length, 0)
 const judgedHere = count('judge'), agreedHere = count('agreement')
 const texts = new Set(outputs.flatMap(output => output.rows.map(row => row.text)))

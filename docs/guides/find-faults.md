@@ -4,7 +4,7 @@
 
 This page: how to find a formalizer's faults in judged rejections, compare its circuits before and after a change, check the change on accepted circuits, and send the changed ones to judges. Kind: How-to guide.
 
-The method is error analysis in the plain sense: read what the judges rejected, group the rejections by construction (the same kind of phrase or sentence pattern, such as a number after a noun), and fix the largest groups with general rules. On 2026-11-27 three analyses of VSS's faults, one per area of the dataset (calendar, diagram and document, drawing), each read a sample of VSS circuits and proposed general rules.
+The method is error analysis in the plain sense: read what the judges rejected, group the rejections by construction (the same kind of phrase or sentence pattern, such as a number after a noun), and fix the largest groups with general rules. On 2026-11-27 three analyses of the faults of hmm-rules, one per area of the dataset (calendar, diagram and document, drawing), each read a sample of hmm-rules circuits and proposed general rules.
 
 ## Step 1: find the rejections
 
@@ -13,25 +13,27 @@ Two places hold them ([Where everything is stored](../reference/storage.md)):
 - **The registry**, `webmeet-dataset/annotations/syntax/v1/judged/<tag>.jsonl`: one line per circuit a judge read or wrote, `{text, sop, core, verdict, grade, note, judge, run, source}`. A rejection has `verdict` "rejected", a grade from L1 to L6, and a note that quotes the words. `source` names the formalizers that wrote the circuit, joined by `+`, or says `judge` for a circuit a judge wrote.
 - **A run folder**: `key/items.jsonl` maps each item number `n` to the formalizers that wrote it (`sources`), and `judging/verdicts-<k>.jsonl` holds the verdicts by `n`.
 
-To list the rejected circuits of one formalizer in a registry file:
+To list the rejected circuits of one formalizer in a registry file (lines written before the rename of 2026-11-27 name hmm-rules by its old name, vss, so give both names):
 
 ```sh
 node --input-type=module -e '
 import {readFileSync} from "node:fs"
-const [file, name] = process.argv.slice(1)
+const [file, ...names] = process.argv.slice(1)
 for (const line of readFileSync(file, "utf8").split("\n")) {
   if (!line) continue
   const row = JSON.parse(line)
   if (row.verdict !== "rejected") continue
-  if (!row.source.split("+").includes(name)) continue
+  const sources = row.source.split("+")
+  if (!sources.some(name => names.includes(name))) continue
   console.log(row.grade, row.text, "\n  " + row.note)
 }
-' ../webmeet-dataset/annotations/syntax/v1/judged/<tag>.jsonl vss
+' ../webmeet-dataset/annotations/syntax/v1/judged/<tag>.jsonl \
+  hmm-rules vss
 ```
 
 ## Step 2: pick cases fairly
 
-Prefer rejections from the conversion folders, or analyses by area, over the benchmark. Rules drawn from the benchmark's own rejections make the benchmark overstate the formalizer: from VSS's rule batch `dd562c3` on, VSS's rules were checked against the judged benchmark, so that sample is no longer unseen ([Limits of the measurements](../evaluation/validity.md)). Group the rejections by construction, and look for a statement about English that fixes a whole group, not one message.
+Prefer rejections from the conversion folders, or analyses by area, over the benchmark. Rules drawn from the benchmark's own rejections make the benchmark overstate the formalizer: from the rule batch `dd562c3` of hmm-rules on, its rules were checked against the judged benchmark, so that sample is no longer unseen ([Limits of the measurements](../evaluation/validity.md)). Group the rejections by construction, and look for a statement about English that fixes a whole group, not one message.
 
 ## Step 3: compare circuits before and after the change
 
@@ -40,10 +42,10 @@ Run the formalizer on the same sample into two scratch folders, one before the c
 ```sh
 S=eval-results/conversion/<tab>__<name>/sample.json
 node tests/benchmark/syntax/run.mjs <scratch>/before \
-  --only vss --sample $S
+  --only hmm-rules --sample $S
 # … make the change (and retrain, if it needs it) …
 node tests/benchmark/syntax/run.mjs <scratch>/after \
-  --only vss --sample $S
+  --only hmm-rules --sample $S
 ```
 
 Then list the messages whose circuit changed. `coreOf`, exported from the package (`lib/index.mjs`), gives a text that is equal for two circuits that say the same, whatever their wire names ([When two circuits are the same](../evaluation/normal-form.md)):
@@ -67,14 +69,15 @@ for (const [id, row] of after) {
   console.log(row.text + "\n- " + old.sop + "\n+ " + row.sop)
 }
 console.log(changed + " of " + after.size + " changed")
-' <scratch>/before/vss.jsonl <scratch>/after/vss.jsonl
+' <scratch>/before/hmm-rules.jsonl \
+  <scratch>/after/hmm-rules.jsonl
 ```
 
-This snippet was run on two files of the benchmark folder (`first-run/vss.jsonl` and `vss.jsonl`) when this page was written. The benchmark tools compare circuits by `coreOf` applied to the normal form (`normalForm` in `tests/benchmark/syntax/lib.mjs`), which also treats `marker="next to"` and `marker="next" marker="to"` as the same; for two runs of one formalizer, `coreOf` alone is usually enough.
+This snippet was run on two files of the benchmark folder (`first-run/vss.jsonl` and `vss.jsonl`, written when hmm-rules was called vss) when this page was written. The benchmark tools compare circuits by `coreOf` applied to the normal form (`normalForm` in `tests/benchmark/syntax/lib.mjs`), which also treats `marker="next to"` and `marker="next" marker="to"` as the same; for two runs of one formalizer, `coreOf` alone is usually enough.
 
 ## Step 4: check the change on accepted circuits
 
-The VSS rule batches of 2026-11-27 were checked on about 8,000 accepted circuits of the dataset. The script used then is not kept in the repository; the commands below do the same check with the tools that exist. They were run, with 400 messages, when this page was written.
+The hmm-rules rule batches of 2026-11-27 were checked on about 8,000 accepted circuits of the dataset. The script used then is not kept in the repository; the commands below do the same check with the tools that exist. They were run, with 400 messages, when this page was written.
 
 1. Draw a repeatable sample of messages that have a label (an accepted circuit). The seed is any text; the same seed gives the same sample:
 
@@ -123,7 +126,7 @@ The VSS rule batches of 2026-11-27 were checked on about 8,000 accepted circuits
    }
    console.log(`equal to the label: ${was} before,` +
      ` ${is} after; ${lost} no longer equal`)
-   ' $S/before/vss.jsonl $S/after/vss.jsonl
+   ' $S/before/hmm-rules.jsonl $S/after/hmm-rules.jsonl
    ```
 
 Run both from the repository's root, with `env -u SOP_KNOWLEDGE_DIR` in front if that variable is set. A circuit that is no longer equal to its label is not wrong by that alone, since several circuits can be right; step 5 says what to do with it.
@@ -140,6 +143,6 @@ Run the formalizer again in the benchmark folder, after keeping the judged files
 
 - **A judged rerun on the same benchmark is not an independent measure** once its rejections guided the change.
 - **The run folder changes under you.** `run.mjs` overwrites `<name>.jsonl`; `table.mjs` counts the files that stand in the folder now.
-- **Retraining moves unrelated readings.** For VSS, compare before and after on accepted circuits after every retraining ([Retrain VSS](retrain-vss.md)).
+- **Retraining moves unrelated readings.** For hmm-rules, compare before and after on accepted circuits after every retraining ([Retrain hmm-rules](retrain-hmm-rules.md)).
 
-Next: [Add a VSS rule](add-vss-rule.md) · Up: [How-to guides](README.md)
+Next: [Add a rule to hmm-rules](add-hmm-rules-rule.md) · Up: [How-to guides](README.md)

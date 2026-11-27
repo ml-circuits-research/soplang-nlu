@@ -16,7 +16,7 @@ Four words appear on every page:
 
 - **Node.js.** Every tool is a Node.js script. The Z3 formalizer's own package asks for Node.js 20 or later (`strategies/z3/package.json`).
 - **Two checkouts side by side.** A checkout of `soplang-nlu` with `webmeet-dataset` next to it, in the same parent folder. The tools look for the dataset at `../webmeet-dataset`, counted from the `soplang-nlu` folder.
-- **Outside runtimes, for some formalizers.** spaCy needs Python with spaCy, DistilBERT needs Python with PyTorch, Prolog needs SWI-Prolog. VSS needs only Node.js. Z3 needs Node.js and its own npm package, installed with one command. The set-up of each is in [Run a formalizer](run-a-formalizer.md).
+- **Outside runtimes, for some formalizers.** spaCy needs Python with spaCy, DistilBERT needs Python with PyTorch, Prolog needs SWI-Prolog. hmm-rules needs only Node.js. Z3 needs Node.js and its own npm package, installed with one command. The set-up of each is in [Run a formalizer](run-a-formalizer.md).
 - **Code runs inside the checkout.** The package is private (`"private": true` in `package.json`), so a script imports it by its name `soplang-nlu` only from inside the checkout.
 
 ## Conventions
@@ -46,9 +46,9 @@ Four words appear on every page:
 ## Improving formalizers
 
 - [Find faults](find-faults.md): find faults in judged rejections, compare circuits before and after a change, send the changed ones to judges.
-- [Add a VSS rule](add-vss-rule.md): add a general rule of English to VSS.
+- [Add a rule to hmm-rules](add-hmm-rules-rule.md): add a general rule of English to hmm-rules.
 - [Add a spaCy repair](add-spacy-repair.md): add a general repair to the spaCy formalizer.
-- [Retrain VSS](retrain-vss.md): train the VSS model again after a change to its legend or its training code.
+- [Retrain hmm-rules](retrain-hmm-rules.md): train the hmm-rules model again after a change to its legend or its training code.
 - [Retrain DistilBERT](retrain-distilbert.md): train DistilBERT again on the current labels, with the benchmark held out.
 - [Write a formalizer](write-a-formalizer.md): write a new formalizer that the reader accepts and the benchmark can measure.
 
@@ -57,8 +57,8 @@ Four words appear on every page:
 Most work on a formalizer follows the same loop. Each step is one guide:
 
 1. [Find faults](find-faults.md) in circuits that judges rejected.
-2. Change the formalizer: [a VSS rule](add-vss-rule.md) or [a spaCy repair](add-spacy-repair.md).
-3. [Retrain VSS](retrain-vss.md), only when the change needs it.
+2. Change the formalizer: [a rule of hmm-rules](add-hmm-rules-rule.md) or [a spaCy repair](add-spacy-repair.md).
+3. [Retrain hmm-rules](retrain-hmm-rules.md), only when the change needs it.
 4. [Run the tests](run-tests.md), and compare the circuits before and after the change.
 5. Run the formalizer on the benchmark again and have the changed circuits judged ([Run the benchmark](run-benchmark.md), [Judge a packet](judge-a-packet.md)).
 6. Record the result and [refresh the status page](refresh-status.md).

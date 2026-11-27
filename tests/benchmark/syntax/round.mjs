@@ -3,7 +3,7 @@
 //   node tests/benchmark/syntax/round.mjs plan [--rounds 3] [--min-messages 500] [--order size|name]
 //   node tests/benchmark/syntax/round.mjs start <round> [--min-messages 500] [--order size|name] [--files <tab/name.csv,…>]
 //   node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
-//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--key core|relaxed|variants] [--relaxed] [--prefer vss] [--judge all|needed|audit] [--focus vss]
+//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--key core|relaxed|variants] [--relaxed] [--prefer hmm-rules] [--judge all|needed|audit] [--focus hmm-rules]
 //   (judges write <round>/judging/verdicts-<k>.jsonl)
 //   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100] [--now]
 //   (judges write <round>/rewriting/written-<k>.jsonl)
@@ -23,6 +23,7 @@
 // The label of a message is the circuit in its row of the syntactic files; there is no other store.
 // Every command takes --dataset <folder> (default ../webmeet-dataset): the registry and the
 // syntactic files are those of that dataset. The source files are read as they are on disk, not from git.
+// --prefer and --focus may name a strategy by an old name (strategyAliases in lib.mjs: vss for hmm-rules).
 import {createHash} from 'node:crypto'
 import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, copyFileSync} from 'node:fs'
 import {basename, dirname, join, relative, resolve} from 'node:path'
@@ -30,7 +31,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url'
 import {coreOf} from '../../../lib/syntax.mjs'
 import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, messagesOfCsv, writeCsv, readCsv, readOutputs, readRegistry, addToRegistry, lookup,
   readLabels, labelChanges, labelLine, SYNTACTIC_HEADER, collectItems, readItems, writeJudging, agreedCircuits, AGREEMENT_KEYS, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
-  keepLabelsBefore, readLabelsBefore, tableOf, renderTable, judgingDir, packageRoot} from './lib.mjs'
+  keepLabelsBefore, readLabelsBefore, tableOf, renderTable, judgingDir, packageRoot, strategyName} from './lib.mjs'
 import {readWritten, rewritingPackets} from './rewrite-check.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -251,7 +252,7 @@ async function settle(roundDir, named) {
   // rejected by the judge far more often than those of three
   const minFamilies = Number(named.families ?? 3)
   // circuits counted alike by --key: the circuit of the first strategy of --prefer stands for them
-  const prefer = typeof named.prefer === 'string' ? named.prefer.split(',').map(name => name.trim()) : []
+  const prefer = typeof named.prefer === 'string' ? named.prefer.split(',').map(name => strategyName(name.trim())) : []
   const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {key: compare, prefer, labels}), foundKeys = new Set(found.map(key))
   const agreed = [...readAgreement(roundDir).filter(circuit => !foundKeys.has(key(circuit))).map(({audit: _, ...circuit}) => circuit), ...found]
   const audited = chooseAudit(agreed, audit, seed), agreedKeys = new Set(agreed.map(key))
@@ -261,7 +262,7 @@ async function settle(roundDir, named) {
   // for every message. --judge all (the default) sends every circuit.
   // --judge audit: a judge reads only the audit share of the agreed circuits (and the circuits of --focus); the other
   // messages stay open for a later call
-  const auditOnly = named.judge === 'audit', needed = named.judge === 'needed' || auditOnly, focus = new Set(typeof named.focus === 'string' ? named.focus.split(',').map(name => name.trim()) : [])
+  const auditOnly = named.judge === 'audit', needed = named.judge === 'needed' || auditOnly, focus = new Set(typeof named.focus === 'string' ? named.focus.split(',').map(name => strategyName(name.trim())) : [])
   const wanted = new Set()
   if (needed) {
     const judgedHere = readRunVerdicts(roundDir).verdicts, circuits = new Map()

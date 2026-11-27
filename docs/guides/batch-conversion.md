@@ -13,10 +13,11 @@ Each file gets its own folder, `eval-results/conversion/<tab>__<name>/`: the fil
 ## Step 1: run the formalizers
 
 ```sh
-tests/benchmark/syntax/batch-run.sh 4 vss,spacy-direct,distilbert
+tests/benchmark/syntax/batch-run.sh 4 \
+  hmm-rules,spacy-direct,distilbert
 ```
 
-The arguments are the number of files run in parallel (default 4), the formalizers (default `vss,spacy-direct,distilbert`) and the mode (default `new`).
+The arguments are the number of files run in parallel (default 4), the formalizers (default `hmm-rules,spacy-direct,distilbert`) and the mode (default `new`).
 
 - `new`: every semantic file with no syntactic file, and not held by a hand-run round, gets a folder (`round.mjs start --files <file> --min-messages 1`), then `run.mjs --reuse` runs the formalizers. Output already in the folder is kept.
 - `open`: every file that has a folder under `eval-results/conversion/` and a syntactic file is run again, after the formalizers improved, so that its empty cells can be filled. The script does not look at the cells, so files with no empty cell run too. Move the earlier outputs aside first: `--reuse` keeps any output it finds.
@@ -29,7 +30,7 @@ No judge is involved in this step.
 tests/benchmark/syntax/batch-settle.sh 0.02 8 --key variants
 ```
 
-The arguments are the audit share (default 0.02), the folders settled in parallel (default 8), `--again` and `--key relaxed|variants|core` (default `relaxed`). For every folder that holds a sample and the circuits of `spacy` or `spacy-direct`, it runs VSS again (it is quick, and its rules change), then `round.mjs settle --families 2 --key <key> --prefer vss --judge audit`. A folder that is settled already is skipped unless `--again` is given. The key says when two circuits count as written alike ([Agreement](../evaluation/agreement.md)).
+The arguments are the audit share (default 0.02), the folders settled in parallel (default 8), `--again` and `--key relaxed|variants|core` (default `relaxed`). For every folder that holds a sample and the circuits of `spacy` or `spacy-direct`, it runs hmm-rules again (it is quick, and its rules change), then `round.mjs settle --families 2 --key <key> --prefer vss --judge audit`. A folder that is settled already is skipped unless `--again` is given. The key says when two circuits count as written alike ([Agreement](../evaluation/agreement.md)).
 
 ## Step 3: have the audit judged
 
@@ -91,9 +92,9 @@ Commit after each step: the run folders in `soplang-nlu`, the syntactic files an
 
 ## Pitfalls
 
-- **The first batch used `spacy-direct`**, not `spacy`: the default of `batch-run.sh`, chosen before the owner kept one spaCy formalizer. Agreement labels therefore say `spacy-direct+vss`.
+- **The first batch used `spacy-direct`**, not `spacy`: the default of `batch-run.sh`, chosen before the owner kept one spaCy formalizer. Agreement labels therefore say `spacy-direct+hmm-rules` (`spacy-direct+vss` before the rename of 2026-11-27).
 - **Every formalizer file a folder names counts.** Settlement reads every file that the folder's `summary.json` names, so a third formalizer's file takes part in the agreement too.
-- **VSS is rerun at every settle.** The VSS file in a folder is from the last settle; a later `--again` may write circuits no judge has seen. Circuits already agreed stay agreed.
+- **hmm-rules is rerun at every settle.** The hmm-rules file in a folder is from the last settle; a later `--again` may write circuits no judge has seen. Circuits already agreed stay agreed.
 - **`open` mode keeps old outputs** unless they were moved aside first.
 
 Next: [Run a conversion round](conversion-round.md) · Up: [How-to guides](README.md)

@@ -6,7 +6,7 @@ This page: the command-line tools of `tests/benchmark/syntax/` that draw a sampl
 
 > `tests/benchmark/syntax/README.md` describes the same tools (wide tables; best read on a computer). Where it and the code differ, the code wins. This page follows the usage header and the option parsing of each file.
 
-All commands run from the `soplang-nlu` folder. The order of the steps: [Run the benchmark](../guides/run-benchmark.md). Judging: [Judge a packet](../guides/judge-a-packet.md). A worked example: [Measure VSS on 20 messages](../evaluation/first-measurement.md). Terms: [Glossary](glossary.md#project-terms).
+All commands run from the `soplang-nlu` folder. The order of the steps: [Run the benchmark](../guides/run-benchmark.md). Judging: [Judge a packet](../guides/judge-a-packet.md). A worked example: [Measure hmm-rules on 20 messages](../evaluation/first-measurement.md). Terms: [Glossary](glossary.md#project-terms).
 
 **Standard, New here, Particular.** A sample drawn at random with a fixed seed is a standard [simple random sample](https://en.wikipedia.org/wiki/Simple_random_sample), and packets that hide which strategy wrote a circuit are standard [blind evaluation](https://en.wikipedia.org/wiki/Blinded_experiment). New here: one packet line per distinct circuit, the labels frozen before the run, and the [levels](../evaluation/levels.md). Particular: the default paths point at this project's dataset and samples.
 
@@ -37,7 +37,7 @@ node tests/benchmark/syntax/sample.mjs <out-file> [options]
 
 ### run.mjs
 
-Runs every active strategy over a sample and writes one file per strategy.
+Runs every strategy of `strategyModules` (spacy, and the experimental hmm-rules, distilbert, prolog and z3) over a sample and writes one file per strategy.
 
 ```sh
 node tests/benchmark/syntax/run.mjs <run-folder> [options]
@@ -46,7 +46,7 @@ node tests/benchmark/syntax/run.mjs <run-folder> [options]
 | Option | Meaning |
 | --- | --- |
 | `--sample` | a JSON array of `{id, text}`, gzipped or not. Default: the earlier fixed sample, `eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz` |
-| `--only` | `vss,z3`: run only these; a retired strategy runs when named here |
+| `--only` | `hmm-rules,z3`: run only these; a retired strategy runs when named here |
 | `--limit` | `50`: only the first 50 messages |
 | `--reuse` | a folder: take `<folder>/<strategy>.jsonl` when it exists, and check every circuit again. Name the run folder itself to continue a run |
 | `--timeout` | seconds per message; default 120 |

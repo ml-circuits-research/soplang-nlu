@@ -15,7 +15,8 @@ import {coreOf, validateSyntax, writeCircuit} from '../lib/index.mjs'
 import {normalForm, withCores, emptyRegistry, addToRegistry, lookup, collectItems, packetsOf, runVerdicts, levelOf, tableOf, renderTable,
   agreementOf, renderAgreement, chooseLabels, labelChanges, readLabels, writeLabels, labelLine, Labels, keepLabelsBefore, readLabelsBefore, readArguments, readSample,
   readJsonl, readJson, LEVELS, defaultSyntacticDir, defaultRegistryDir, syntacticDirOf, readCsv, writeCsv, csvCell, rawRows, agreedCircuits, chooseAudit, packageRoot,
-  relaxedCore, agreementKey, agreementKeysOf, writtenAlike, AGREEMENT_KEYS, newestLine, readRegistry, rejudgedLabelChanges, acceptedCircuitsOf, publication} from './benchmark/syntax/lib.mjs'
+  relaxedCore, agreementKey, agreementKeysOf, writtenAlike, AGREEMENT_KEYS, newestLine, readRegistry, rejudgedLabelChanges, acceptedCircuitsOf, publication,
+  readOutputs, readItems, readAgreement, strategyAliases, strategyName, sourceNow, outputFile} from './benchmark/syntax/lib.mjs'
 import {rejudgeItems, rulesVersion} from './benchmark/syntax/rejudge.mjs'
 import {checkLabelsFile, checkRegistryLines} from './benchmark/syntax/drop-duplicates.mjs'
 import {messagesOfCsv, distinctMessages, drawSample, messageFiles} from './benchmark/syntax/sample.mjs'
@@ -24,7 +25,7 @@ import {checkWritten, describeFinding} from './benchmark/syntax/rewrite-check.mj
 import {checkVerdicts, quotesTheMessage} from './benchmark/syntax/check.mjs'
 import {errorKind, takeOver} from './benchmark/syntax/run.mjs'
 import {convert} from './benchmark/syntax/convert-nlu.mjs'
-import {strategyModules as activeModules, retiredModules, families, familyFinder} from './benchmark/syntax/strategies.mjs'
+import {strategyModules as activeModules, retiredModules, families, familyFinder, strategyStatus} from './benchmark/syntax/strategies.mjs'
 // the strategies that take part, and those left out of the rounds, which still run by name
 const strategyModules = {...retiredModules, ...activeModules}
 import {strategyModules as earlierModules} from './benchmark/strategies.mjs'
@@ -44,7 +45,7 @@ const nounReading = verbReading.replace('from=$c1 to=$n2', 'from=$n1 to=$n2')
 const openReading = verbReading.replace('marker="next to"', 'marker="next to" attachment=ambiguous')
 const broken = verbReading.replace(' dependent="red"', '')
 const row = (id, message, sop, error = null) => ({id, text: message, sop, error, ms: 1})
-const judged = (message, sop, verdict, more = {}) => ({text: message, sop, core: coreOf(message, sop), verdict, grade: verdict === 'accepted' ? 'L8' : 'L3', note: '', judge: 'test', run: 'earlier', source: 'vss', ...more})
+const judged = (message, sop, verdict, more = {}) => ({text: message, sop, core: coreOf(message, sop), verdict, grade: verdict === 'accepted' ? 'L8' : 'L3', note: '', judge: 'test', run: 'earlier', source: 'hmm-rules', ...more})
 // the syntactic files of the dataset itself: no test may change them
 const datasetFiles = () => existsSync(defaultSyntacticDir) ? readdirSync(defaultSyntacticDir, {recursive: true}).sort().map(name => { const stat = statSync(join(defaultSyntacticDir, name)); return name + ' ' + stat.size + ' ' + stat.mtimeMs }).join('\n') : null
 
@@ -95,7 +96,7 @@ test('the registry is looked up by message and core', () => {
 test('the registry holds only what a judge decided: a line without a verdict is ignored', () => {
   const registry = emptyRegistry()
   // a reference circuit rewritten from the nlu schema has no verdict in this schema
-  assert.equal(addToRegistry(registry, {text, sop: verbReading, core: coreOf(text, verbReading), source: 'reference', nlu: {judge: 'x', run: 'y', writtenBy: 'vss'}}), false)
+  assert.equal(addToRegistry(registry, {text, sop: verbReading, core: coreOf(text, verbReading), source: 'reference', nlu: {judge: 'x', run: 'y', writtenBy: 'hmm-rules'}}), false)
   assert.equal(lookup(registry, text, normalForm(text, verbReading).core), undefined)
   // the first line read for a circuit counts
   addToRegistry(registry, judged(text, verbReading, 'rejected', {grade: 'L3'}))
@@ -214,8 +215,8 @@ test('the labels are the circuits in the syntactic files, and a run writes them 
   // a file the earlier tools wrote, with every label of the dataset and other keys, is still read
   const old = join(dir, '..', 'old-run')
   mkdirSync(join(old, 'key'), {recursive: true})
-  writeFileSync(join(old, 'key/labels-before.jsonl'), JSON.stringify({text: 'turn it', label: circuit('turn'), core: 'a stored core is not trusted', run: 'earlier', source: 'vss', previous: null}) + '\n')
-  assert.deepEqual([...readLabelsBefore(old, labels)].map(([message, line]) => [message, line.core, line.source, line.accepted_by]), [['turn it', coreOf('turn it', circuit('turn')), 'vss', '']])
+  writeFileSync(join(old, 'key/labels-before.jsonl'), JSON.stringify({text: 'turn it', label: circuit('turn'), core: 'a stored core is not trusted', run: 'earlier', source: 'hmm-rules', previous: null}) + '\n')
+  assert.deepEqual([...readLabelsBefore(old, labels)].map(([message, line]) => [message, line.core, line.source, line.accepted_by]), [['turn it', coreOf('turn it', circuit('turn')), 'hmm-rules', '']])
 
   // the syntactic files that go with a registry: those of its dataset; a registry named for a trial brings its own
   assert.equal(syntacticDirOf(), defaultSyntacticDir)
@@ -236,7 +237,7 @@ test('the check of a verdict file', () => {
     '{"n": 3, "grade": "L3", "note": "\'verb\' is wrong"}',               // quotes a word that is not in the message
     '{"n": 4, "grade": "L8", "note": "ok"}', '{"n": 4, "grade": "L8", "note": "ok"}',   // judged twice
     '{"n": 9, "grade": "L8", "note": ""}',                               // no line of the packet
-    'not json', '{"n": 1, "grade": "L8"}', '{"n": 1, "grade": "L8", "note": "", "strategy": "vss"}'])
+    'not json', '{"n": 1, "grade": "L8"}', '{"n": 1, "grade": "L8", "note": "", "strategy": "hmm-rules"}'])
   assert.equal(bad.problems.length, 8)
   assert.match(bad.problems.join('\n'), /L9.*\n.*n=2 is rejected.*\n.*n=3 is rejected.*\n.*judged twice.*\n.*n=9 is no line.*\n.*not a JSON object.*\n.*needs a note.*\n.*unknown key strategy/u)
   assert.deepEqual([bad.judged, bad.accepted, bad.rejected, bad.missing], [2, 2, 0, [2, 3]])
@@ -248,7 +249,7 @@ test('the check of a verdict file', () => {
 test('levels and GOAL from the labels, the registry and the verdicts of the run', () => {
   const circuit = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
   const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
-  const label = (message, sop) => [message, labelLine({text: message, label: sop, source: 'vss', accepted_by: 'judge'})]
+  const label = (message, sop) => [message, labelLine({text: message, label: sop, source: 'hmm-rules', accepted_by: 'judge'})]
   // before the run: three messages have a label; the registry holds what judges decided
   const labels = new Map([label('move it', circuit('move')), label('lift it', circuit('lift')), label('turn it', circuit('turn'))])
   const registry = emptyRegistry()
@@ -273,7 +274,7 @@ test('levels and GOAL from the labels, the registry and the verdicts of the run'
   // before any judge has worked
   assert.deepEqual(rows.map(line => levelOf(line, registry, new Map(), labels)), ['L9', 'L8', 'L3', 'waiting', 'waiting', 'waiting', 'waiting', 'L0', 'L0', 'waiting'])
   // a circuit that became the label after the run started, by agreement in a conversion round, is accepted: L8
-  const since = new Map([['bend it', labelLine({text: 'bend it', label: circuit('bend'), source: 'vss+spacy', accepted_by: 'agreement'})]])
+  const since = new Map([['bend it', labelLine({text: 'bend it', label: circuit('bend'), source: 'hmm-rules+spacy', accepted_by: 'agreement'})]])
   assert.deepEqual([6, 5].map(at => levelOf(rows[at], registry, new Map(), labels, since)), ['L8', 'waiting'])
   assert.equal(levelOf(rows[6], registry, new Map(), labels, () => since), 'L8')
   assert.equal(levelOf(rows[0], registry, new Map(), labels, () => { throw new Error('the labels of now are not read for a circuit that is known') }), 'L9')
@@ -366,16 +367,20 @@ test('the list of strategies: those of the earlier benchmark, each in one family
   const earlier = Object.fromEntries(Object.entries(earlierModules).map(([name, entry]) => [name === 'prolog-worlds' ? 'prolog' : name, entry]))
   // `spacy` is the one name of the strategies that read the dependency parse
   assert.deepEqual(Object.keys(strategyModules).filter(name => name !== 'neural-dependencies' && name !== 'spacy').sort(), Object.keys(earlier).sort())
-  assert.deepEqual(Object.keys(activeModules), ['vss', 'spacy', 'distilbert', 'prolog', 'z3'], 'four strategies at most, with two candidates for the fourth place')
+  assert.deepEqual(Object.keys(activeModules), ['hmm-rules', 'spacy', 'distilbert', 'prolog', 'z3'], 'four strategies at most, with two candidates for the fourth place')
+  assert.deepEqual(Object.keys(strategyStatus), Object.keys(activeModules), 'every strategy that takes part has a status')
+  assert.deepEqual(Object.entries(strategyStatus).filter(([, status]) => status === 'active').map(([name]) => name), ['spacy'], 'spacy is the one active strategy')
+  assert.deepEqual(['hmm-rules', 'distilbert', 'prolog', 'z3'].map(name => strategyStatus[name]), Array(4).fill('experimental'))
   for (const [name, [module, exported]] of Object.entries(strategyModules)) {
     if (earlier[name]) assert.equal(exported, earlier[name][1])
     assert.equal(existsSync(new URL(module, new URL('./benchmark/syntax/strategies.mjs', import.meta.url))), true, module)
   }
   const familyOf = familyFinder()
   // a family is the source of the analysis: whatever reads the dependency parse, or chooses among circuits written from it, stands with the parser
-  assert.deepEqual(Object.keys(families), ['vss', 'parser', 'prolog', 'z3', 'distilbert'])
+  assert.deepEqual(Object.keys(families), ['hmm-rules', 'parser', 'prolog', 'z3', 'distilbert'])
   for (const name of Object.keys(strategyModules)) assert.ok(families[familyOf(name)]?.includes(name), name + ' stands in a family')
-  assert.deepEqual(['vss', 'spacy-direct', 'neural-dependencies', 'prolog', 'neuro-prolog', 'neuro-z3', 'distilbert', 'neuro-selector'].map(familyOf), ['vss', 'parser', 'parser', 'prolog', 'parser', 'parser', 'distilbert', 'parser'])
+  assert.deepEqual(['hmm-rules', 'spacy-direct', 'neural-dependencies', 'prolog', 'neuro-prolog', 'neuro-z3', 'distilbert', 'neuro-selector'].map(familyOf), ['hmm-rules', 'parser', 'parser', 'prolog', 'parser', 'parser', 'distilbert', 'parser'])
+  assert.equal(familyOf('vss'), 'hmm-rules', 'the name of hmm-rules before 2026-11-27 stands in its family')
   assert.equal(new Set(Object.values(families).flat()).size, Object.values(families).flat().length, 'no strategy stands in two families')
   assert.equal(familyOf('a-new-strategy'), 'a-new-strategy')
 })
@@ -807,14 +812,14 @@ test('circuits written alike up to the choices the rules let pass are settled by
   const message = 'Please, make fence purple. Thanks!'
   const inOne = '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" discourse="Thanks" complement=$n1\n@n1 syntax.nominal head="fence"'
   const apart = '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" complement=$n1\n@n1 syntax.nominal head="fence"\n@c2 syntax.clause form=fragment discourse="Thanks"'
-  const outputs = [{strategy: 'vss', rows: withCores([row('1', message, inOne), row('2', text, verbReading)])}, {strategy: 'spacy', rows: withCores([row('1', message, apart), row('2', text, nounReading)])}]
-  const familyOf = familyFinder({own: ['vss'], parser: ['spacy']})
-  // "core": nothing agrees; "relaxed": the start of "next to"; "variants": also the place of "Thanks", and VSS's circuit stands for both
+  const outputs = [{strategy: 'hmm-rules', rows: withCores([row('1', message, inOne), row('2', text, verbReading)])}, {strategy: 'spacy', rows: withCores([row('1', message, apart), row('2', text, nounReading)])}]
+  const familyOf = familyFinder({own: ['hmm-rules'], parser: ['spacy']})
+  // "core": nothing agrees; "relaxed": the start of "next to"; "variants": also the place of "Thanks", and the circuit of hmm-rules stands for both
   assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2).map(circuit => circuit.text), [])
-  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {relaxed: true, prefer: ['vss']}).map(circuit => circuit.text), [text])
-  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'relaxed', prefer: ['vss']}).map(circuit => circuit.text), [text])
-  const agreed = agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'variants', prefer: ['vss']})
-  assert.deepEqual(agreed.map(circuit => [circuit.text, circuit.sources, circuit.core]), [[message, ['spacy', 'vss'], normalForm(message, inOne).core], [text, ['spacy', 'vss'], normalForm(text, verbReading).core]])
+  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {relaxed: true, prefer: ['hmm-rules']}).map(circuit => circuit.text), [text])
+  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'relaxed', prefer: ['hmm-rules']}).map(circuit => circuit.text), [text])
+  const agreed = agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'variants', prefer: ['hmm-rules']})
+  assert.deepEqual(agreed.map(circuit => [circuit.text, circuit.sources, circuit.core]), [[message, ['hmm-rules', 'spacy'], normalForm(message, inOne).core], [text, ['hmm-rules', 'spacy'], normalForm(text, verbReading).core]])
   assert.throws(() => agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'loose'}), /Unknown agreement key/u)
 
   // agreed.mjs over run folders, with each key
@@ -822,12 +827,12 @@ test('circuits written alike up to the choices the rules let pass are settled by
   mkdirSync(join(dir, 'run'))
   for (const {strategy, rows} of outputs) writeFileSync(join(dir, 'run', strategy + '.jsonl'), rows.map(({id, text: words, sop}) => JSON.stringify({id, text: words, sop})).join('\n') + '\n')
   const agree = key => {
-    const done = spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, key + '.jsonl'), '--strategies', 'vss,spacy', ...(key === 'none' ? [] : ['--key', key]), join(dir, 'run')], {encoding: 'utf8'})
+    const done = spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, key + '.jsonl'), '--strategies', 'hmm-rules,spacy', ...(key === 'none' ? [] : ['--key', key]), join(dir, 'run')], {encoding: 'utf8'})
     assert.equal(done.status, 0, done.stderr)
     return readJsonl(join(dir, key + '.jsonl')).map(line => line.text)
   }
   assert.deepEqual([agree('none'), agree('core'), agree('relaxed'), agree('variants')], [[], [], [text], [message, text]])
-  assert.equal(spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, 'x.jsonl'), '--strategies', 'vss,spacy', '--key', 'loose', join(dir, 'run')], {encoding: 'utf8'}).status, 2)
+  assert.equal(spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, 'x.jsonl'), '--strategies', 'hmm-rules,spacy', '--key', 'loose', join(dir, 'run')], {encoding: 'utf8'}).status, 2)
 })
 
 test('the circuit of a message, and the refusal of a file with open messages', () => {
@@ -846,7 +851,7 @@ test('the circuit of a message, and the refusal of a file with open messages', (
   addToRegistry(registry, judged('show it', bare('show'), 'accepted', {source: 'judge', run: 'earlier'}))
   // the labels of the messages, from the syntactic files: "show it" has a circuit settled by agreement, which
   // no registry line records; the agreed label of "turn it" was read by a judge later, and rejected
-  const cells = new Map([['show it', labelLine({text: 'show it', label: flat('show'), source: 'beta+vss', accepted_by: 'agreement'})],
+  const cells = new Map([['show it', labelLine({text: 'show it', label: flat('show'), source: 'beta+hmm-rules', accepted_by: 'agreement'})],
     ['turn it', labelLine({text: 'turn it', label: full('turn'), source: 'alpha', accepted_by: 'agreement'})]])
   const core = (message, sop) => normalForm(message, sop).core
   const agreed = [{text: 'move it', core: core('move it', full('move')), sources: ['alpha', 'beta']}, {text: 'lift it', core: core('lift it', full('lift')), sources: ['alpha', 'beta']}]
@@ -860,10 +865,10 @@ test('the circuit of a message, and the refusal of a file with open messages', (
   assert.deepEqual(roundState({texts, outputs, registry, verdicts, written}).get('show it').map(circuit => [circuit.status, circuit.strategies.join('+')]).sort(), [['accepted', ''], ['waiting', 'alpha'], ['waiting', 'beta']])
   assert.deepEqual(said('move it'), [['accepted', 'agreement', 'alpha+beta']])
   assert.deepEqual(said('lift it'), [['accepted', 'judge', 'alpha+beta']], 'an agreed circuit that a judge read is accepted by the judge')
-  assert.deepEqual(said('turn it'), [['rejected', 'judge', 'alpha+vss'], ['rejected', 'judge', 'beta']], 'a judge who rejected the circuit of a label has the last word')
+  assert.deepEqual(said('turn it'), [['rejected', 'judge', 'alpha+hmm-rules'], ['rejected', 'judge', 'beta']], 'a judge who rejected the circuit of a label has the last word')
   assert.deepEqual(said('hide it'), [['accepted', 'judge', 'alpha'], ['waiting', null, 'beta']])
   assert.deepEqual(said('drop it'), [['accepted', 'judge', 'beta+old+older'], ['accepted', 'judge', 'old'], ['waiting', null, 'alpha']])
-  assert.deepEqual(said('show it'), [['accepted', 'agreement', 'beta+vss'], ['accepted', 'written', ''], ['waiting', null, 'alpha']])
+  assert.deepEqual(said('show it'), [['accepted', 'agreement', 'beta+hmm-rules'], ['accepted', 'written', ''], ['waiting', null, 'alpha']])
   assert.deepEqual(said('bend it'), [['accepted', 'written', '']])
 
   // the label first; with no label, the accepted circuit most strategies wrote
@@ -879,7 +884,7 @@ test('the circuit of a message, and the refusal of a file with open messages', (
   assert.deepEqual(counts, {agreement: 2, judge: 3, written: 1, open: 1})
   assert.deepEqual(rows.map(([message, sop, source, by]) => [message, sop.split('\n').length, source, by]), [
     ['move it', 2, 'alpha+beta', 'agreement'], ['drop it', 1, 'old', 'judge'], ['lift it', 2, 'alpha+beta', 'judge'], ['turn it', 1, '', ''],
-    ['hide it', 2, 'alpha', 'judge'], ['show it', 1, 'beta+vss', 'agreement'], ['bend it', 2, 'judge', 'written']])
+    ['hide it', 2, 'alpha', 'judge'], ['show it', 1, 'beta+hmm-rules', 'agreement'], ['bend it', 2, 'judge', 'written']])
   assert.equal(rows[3][1], '')
   // a message the round does not know is open
   assert.deepEqual(syntacticRows([{record: 1, text: 'a new message'}], state, labels).open, ['a new message'])
@@ -889,7 +894,7 @@ test('a syntactic file: cells with several lines, commas and quotes', () => {
   assert.deepEqual(SYNTACTIC_HEADER, ['text', 'sop', 'source', 'accepted_by'])
   assert.deepEqual(['plain', 'a, b', 'say "hi"', 'two\nlines', ' edge', '', null].map(csvCell), ['plain', '"a, b"', '"say ""hi"""', '"two\nlines"', '" edge"', '', ''])
   const circuit = '@c1 syntax.clause form=imperative verb="put" complement=$n1\n@n1 syntax.nominal dependent="the" head="box"\n@r1 syntax.relation marker="next to" from=$c1 to=$n2\n@n2 syntax.nominal head="it"'
-  const rows = [['put the box next to it', circuit, 'vss+z3', 'agreement'], ['say "hi", then stop', '@c1 syntax.clause form=fragment discourse="say"', 'judge', 'written'], ['an open one', '', '', '']]
+  const rows = [['put the box next to it', circuit, 'hmm-rules+z3', 'agreement'], ['say "hi", then stop', '@c1 syntax.clause form=fragment discourse="say"', 'judge', 'written'], ['an open one', '', '', '']]
   for (const newline of ['\n', '\r\n']) {
     const content = writeCsv(SYNTACTIC_HEADER, rows, newline)
     assert.equal(content.split(newline)[0], 'text,sop,source,accepted_by')
@@ -1150,7 +1155,7 @@ test('what the syntactic files hold is not kept a second time', () => {
   const labels = readLabels(join(dataset, 'syntactic'))
 
   // the labels file: every line must be the circuit of its message in the syntactic files
-  const label = (message, sop, source = 'vss') => ({text: message, label: sop, core: coreOf(message, sop), run: 'earlier', source, previous: null})
+  const label = (message, sop, source = 'hmm-rules') => ({text: message, label: sop, core: coreOf(message, sop), run: 'earlier', source, previous: null})
   const same = [label('move it', other('move')), label('drop it', full('drop')), label('turn it', full('turn'))]
   assert.deepEqual(checkLabelsFile(same, labels), {lines: 3, same: 3, differ: []}, 'the same circuit by another hand, and another source, are no difference')
   const differing = checkLabelsFile([...same, label('lift it', full('lift')), label('hide it', full('hide')), label('gone', '@c1 syntax.clause form=fragment discourse="gone"')], labels)
@@ -1268,18 +1273,18 @@ test('a label the judge now rejects is replaced by another accepted circuit, or 
   const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
   const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
   const item = (n, message, sop, sources, grade) => ({n, text: message, sop: normalForm(message, sop).sop, core: normalForm(message, sop).core, sources, grade})
-  const label = (message, sop, accepted_by = 'judge', source = 'vss') => [message, labelLine({text: message, label: sop, source, accepted_by})]
+  const label = (message, sop, accepted_by = 'judge', source = 'hmm-rules') => [message, labelLine({text: message, label: sop, source, accepted_by})]
   const labels = new Map([label('move it', full('move')), label('drop it', full('drop')), label('lift it', full('lift')), label('turn it', flat('turn'), 'agreement', 'alpha+beta+gamma'),
     label('bend it', full('bend')), label('show it', full('show'))])
   const rejudged = [
-    item(1, 'move it', full('move'), ['vss'], 'L3'), item(2, 'move it', flat('move'), ['spacy'], 'L8'),   // the label rejected, another circuit of the same judging accepted
-    item(3, 'drop it', full('drop'), ['vss'], 'L3'),                                                    // the label rejected, another accepted circuit elsewhere
-    item(4, 'lift it', full('lift'), ['vss'], 'L1'),                                                    // the label rejected, nothing else accepted
+    item(1, 'move it', full('move'), ['hmm-rules'], 'L3'), item(2, 'move it', flat('move'), ['spacy'], 'L8'),   // the label rejected, another circuit of the same judging accepted
+    item(3, 'drop it', full('drop'), ['hmm-rules'], 'L3'),                                                    // the label rejected, another accepted circuit elsewhere
+    item(4, 'lift it', full('lift'), ['hmm-rules'], 'L1'),                                                    // the label rejected, nothing else accepted
     item(5, 'turn it', flat('turn'), ['alpha', 'beta', 'gamma'], 'L8'),                                 // a label settled by agreement, accepted now
-    item(6, 'hide it', flat('hide'), ['vss'], 'L8'),                                                    // no label, accepted now
-    item(7, 'bend it', flat('bend'), ['vss'], 'L8'),                                                    // another label, still accepted: it stays
-    item(8, 'show it', full('show'), ['vss'], 'L8')]                                                    // the label accepted again by a judge: nothing changes
-  const elsewhere = {'drop it': [{sop: normalForm('drop it', full('drop')).sop, core: normalForm('drop it', full('drop')).core, sources: ['vss'], accepted_by: 'judge'},
+    item(6, 'hide it', flat('hide'), ['hmm-rules'], 'L8'),                                                    // no label, accepted now
+    item(7, 'bend it', flat('bend'), ['hmm-rules'], 'L8'),                                                    // another label, still accepted: it stays
+    item(8, 'show it', full('show'), ['hmm-rules'], 'L8')]                                                    // the label accepted again by a judge: nothing changes
+  const elsewhere = {'drop it': [{sop: normalForm('drop it', full('drop')).sop, core: normalForm('drop it', full('drop')).core, sources: ['hmm-rules'], accepted_by: 'judge'},
     {sop: normalForm('drop it', flat('drop')).sop, core: normalForm('drop it', flat('drop')).core, sources: ['spacy', 'z3'], accepted_by: 'judge'}]}
   const result = rejudgedLabelChanges(labels, rejudged, text => elsewhere[text] ?? [])
   assert.deepEqual([result.replaced, result.cleared, result.confirmed, result.filled], [2, 1, 1, 1])
@@ -1288,13 +1293,13 @@ test('a label the judge now rejects is replaced by another accepted circuit, or 
     ['drop it', normalForm('drop it', flat('drop')).sop, 'spacy+z3', 'judge'],                         // never the rejected circuit itself
     ['lift it', '', '', ''],
     ['turn it', flat('turn'), 'alpha+beta+gamma', 'judge'],
-    ['hide it', normalForm('hide it', flat('hide')).sop, 'vss', 'judge']])
+    ['hide it', normalForm('hide it', flat('hide')).sop, 'hmm-rules', 'judge']])
 
   // the other accepted circuits of a message: the run's judge first, then agreement in the run, then the registry
   const registry = emptyRegistry()
   addToRegistry(registry, judged('drop it', flat('drop'), 'accepted', {source: 'spacy+z3'}), 'old.jsonl')
   addToRegistry(registry, judged('drop it', full('drop'), 'rejected', {grade: 'L3'}), 'old.jsonl')
-  const items = [{...item(1, 'drop it', full('drop'), ['vss']), grade: undefined}, item(2, 'drop it', '@c1 syntax.clause form=imperative verb="drop" discourse="it"', ['prolog'])]
+  const items = [{...item(1, 'drop it', full('drop'), ['hmm-rules']), grade: undefined}, item(2, 'drop it', '@c1 syntax.clause form=imperative verb="drop" discourse="it"', ['prolog'])]
   const verdicts = runVerdicts(items, [{n: 1, grade: 'L8', note: ''}, {n: 2, grade: 'L8', note: ''}],
     [{text: 'drop it', sop: normalForm('drop it', '@c1 syntax.clause form=fragment discourse="drop" discourse="it"').sop, core: normalForm('drop it', '@c1 syntax.clause form=fragment discourse="drop" discourse="it"').core, sources: ['a', 'b', 'c']}])
   assert.deepEqual(acceptedCircuitsOf('drop it', verdicts, registry).map(circuit => [circuit.sources.join('+'), circuit.accepted_by]), [['prolog', 'judge'], ['a+b+c', 'agreement'], ['spacy+z3', 'judge']],
@@ -1303,7 +1308,7 @@ test('a label the judge now rejects is replaced by another accepted circuit, or 
   // an emptied label is written as empty cells: the message has no label again
   const dir = join(mkdtempSync(join(tmpdir(), 'syntax-rejudge-labels-')), 'syntactic')
   mkdirSync(join(dir, 'things'), {recursive: true})
-  writeFileSync(join(dir, 'things/a.csv'), writeCsv(SYNTACTIC_HEADER, [['lift it', full('lift'), 'vss', 'judge'], ['rest here', '', '', '']]))
+  writeFileSync(join(dir, 'things/a.csv'), writeCsv(SYNTACTIC_HEADER, [['lift it', full('lift'), 'hmm-rules', 'judge'], ['rest here', '', '', '']]))
   const read = readLabels(dir)
   assert.deepEqual(writeLabels(read, new Map([['lift it', {text: 'lift it', label: '', source: '', accepted_by: ''}]])), {rows: 1, files: ['things/a.csv'], missing: []})
   assert.equal(readFileSync(join(dir, 'things/a.csv'), 'utf8'), 'text,sop,source,accepted_by\nlift it,,,\nrest here,,,\n')
@@ -1319,11 +1324,11 @@ test('judging again from start to publication: packets after the old ones, the r
   const registry = join(folder, 'registry'), syntactic = join(folder, 'syntactic'), labelsFile = join(syntactic, 'things/a.csv')
   mkdirSync(join(syntactic, 'things'), {recursive: true})
   mkdirSync(registry, {recursive: true})
-  writeFileSync(labelsFile, writeCsv(SYNTACTIC_HEADER, [['move it', '', '', ''], ['drop it', '', '', ''], ['bend it', normal('bend it', full('bend')), 'vss', 'judge'],
-    ['fold it', normal('fold it', full('fold')), 'vss', 'judge'], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'agreement'], ['hide it', '', '', ''], ['rest here', '', '', '']]))
+  writeFileSync(labelsFile, writeCsv(SYNTACTIC_HEADER, [['move it', '', '', ''], ['drop it', '', '', ''], ['bend it', normal('bend it', full('bend')), 'hmm-rules', 'judge'],
+    ['fold it', normal('fold it', full('fold')), 'hmm-rules', 'judge'], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'agreement'], ['hide it', '', '', ''], ['rest here', '', '', '']]))
   // a sample known from the registry only: its judgments stand in fixed-sample.jsonl
   writeFileSync(join(registry, 'fixed-sample.jsonl'), [judged('bend it', normal('bend it', full('bend')), 'accepted', {run: 'fixed-sample'}),
-    judged('bend it', normal('bend it', flat('bend')), 'accepted', {run: 'fixed-sample', source: 'vss+spacy'}), judged('fold it', normal('fold it', full('fold')), 'accepted', {run: 'fixed-sample'}),
+    judged('bend it', normal('bend it', flat('bend')), 'accepted', {run: 'fixed-sample', source: 'hmm-rules+spacy'}), judged('fold it', normal('fold it', full('fold')), 'accepted', {run: 'fixed-sample'}),
     judged('hide it', normal('hide it', flat('hide')), 'rejected', {run: 'fixed-sample', note: "'it' is no modifier"})].map(line => JSON.stringify(line)).join('\n') + '\n')
   const node = (tool, ...args) => spawnSync(process.execPath, [join(tools, tool), ...args], {encoding: 'utf8', env: {...process.env, SOP_KNOWLEDGE_DIR: '/nowhere'}})
 
@@ -1396,7 +1401,7 @@ test('judging again from start to publication: packets after the old ones, the r
   assert.equal(made.status, 0, made.stderr)
   assert.match(made.stdout, /4 for \S*rejudge-fixed-sample\. 4 circuits are sent to a judge again\.\nTheir decision now: 3 accepted, 1 rejected; 3 have a registry line[\s\S]*packet-1\.jsonl \(4\)/u)
   assert.deepEqual(readJsonl(join(own, 'key/items.jsonl')).map(one => [one.n, one.text, one.sources.join('+'), one.rejudge.against, one.rejudge.before.by, 'of' in one.rejudge]),
-    [[1, 'bend it', 'vss', 'fixed-sample.jsonl', 'judge', false], [2, 'fold it', 'vss', 'fixed-sample.jsonl', 'judge', false], [3, 'hide it', 'vss', 'fixed-sample.jsonl', 'judge', false],
+    [[1, 'bend it', 'hmm-rules', 'fixed-sample.jsonl', 'judge', false], [2, 'fold it', 'hmm-rules', 'fixed-sample.jsonl', 'judge', false], [3, 'hide it', 'hmm-rules', 'fixed-sample.jsonl', 'judge', false],
       [4, 'turn it', 'alpha+beta+gamma', null, 'agreement', false]])
   assert.deepEqual(readJsonl(join(own, 'key/labels-before.jsonl')).map(line => [line.text, line.accepted_by]), [['bend it', 'judge'], ['fold it', 'judge'], ['turn it', 'agreement']])
   assert.deepEqual(readdirSync(join(own, 'judging')).sort(), ['RULES.md', 'check.mjs', 'packet-1.jsonl'])
@@ -1411,8 +1416,8 @@ test('judging again from start to publication: packets after the old ones, the r
   assert.equal(lookup(after, 'hide it', normalForm('hide it', flat('hide')).core).verdict, 'accepted')
   assert.equal(lookup(after, 'bend it', normalForm('bend it', full('bend')).core).verdict, 'rejected')
   assert.equal(readFileSync(labelsFile, 'utf8'), writeCsv(SYNTACTIC_HEADER, [['move it', normal('move it', flat('move')), 'beta', 'judge'], ['drop it', normal('drop it', full('drop')), 'alpha+beta', 'judge'],
-    ['bend it', normal('bend it', flat('bend')), 'vss+spacy', 'judge'], ['fold it', '', '', ''], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'judge'],
-    ['hide it', normal('hide it', flat('hide')), 'vss', 'judge'], ['rest here', '', '', '']]))
+    ['bend it', normal('bend it', flat('bend')), 'hmm-rules+spacy', 'judge'], ['fold it', '', '', ''], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'judge'],
+    ['hide it', normal('hide it', flat('hide')), 'hmm-rules', 'judge'], ['rest here', '', '', '']]))
 
   // none of this touched the syntactic files of the dataset
   assert.equal(datasetFiles(), datasetBefore)
@@ -1420,7 +1425,7 @@ test('judging again from start to publication: packets after the old ones, the r
 
 test('the new items of a judgment made again: numbered after the last one, taken once per circuit', () => {
   const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
-  const where = (message, sop, more = {}) => ({kind: 'registry', text: message, sop, sources: ['vss'], before: {verdict: 'accepted', grade: 'L8', note: '', by: 'judge'}, ...more})
+  const where = (message, sop, more = {}) => ({kind: 'registry', text: message, sop, sources: ['hmm-rules'], before: {verdict: 'accepted', grade: 'L8', note: '', by: 'judge'}, ...more})
   const located = [{entry: {file: 'a.jsonl', n: 1, text: 'move it', settled_case: 'case 1'}, where: where('move it', full('move'))},
     {entry: {file: 'a.jsonl', n: 2, text: 'move it'}, where: where('move it', full('move'))},                          // the same circuit twice
     {entry: {file: 'a.jsonl', n: 3, text: 'drop it'}, where: where('drop it', 'not a circuit')},
@@ -1431,4 +1436,45 @@ test('the new items of a judgment made again: numbered after the last one, taken
   assert.deepEqual(result.problems, ['a.jsonl:3 holds no valid circuit of its message'], 'an entry of another folder with a problem is not reported here')
   assert.equal(rejudgeItems([...items, ...result.added], located.slice(0, 1), emptyRegistry(), {rules: 'r1'}).again, 1)
   assert.equal(rejudgeItems([...items, ...result.added], located.slice(0, 1), emptyRegistry(), {rules: 'r2'}).added.length, 1, 'new rules send the circuit again')
+})
+
+test('a renamed strategy: old run folders, registry lines and labels that use its old name count under its name now', () => {
+  assert.deepEqual(strategyAliases, {vss: 'hmm-rules'})
+  assert.deepEqual(['vss', 'hmm-rules', 'spacy', undefined].map(strategyName), ['hmm-rules', 'hmm-rules', 'spacy', undefined])
+  assert.deepEqual(['vss', 'spacy+vss', 'judge', '', 'vssx+avss'].map(sourceNow), ['hmm-rules', 'spacy+hmm-rules', 'judge', '', 'vssx+avss'], 'whole names only, in their order')
+  const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const write = (dir, name, rows) => writeFileSync(join(dir, name + '.jsonl'), rows.map(one => JSON.stringify(one)).join('\n') + '\n')
+  // an old folder: vss.jsonl, listed in summary.json under the old name
+  const old = mkdtempSync(join(tmpdir(), 'syntax-renamed-'))
+  write(old, 'vss', [row('1', 'move it', flat('move'))])
+  write(old, 'spacy', [row('1', 'move it', flat('move'))])
+  writeFileSync(join(old, 'summary.json'), JSON.stringify({strategies: {vss: {file: 'vss.jsonl'}, spacy: {file: 'spacy.jsonl'}}}))
+  assert.deepEqual(readOutputs(old).map(output => [output.strategy, output.rows.length]), [['hmm-rules', 1], ['spacy', 1]])
+  assert.equal(outputFile(old, 'hmm-rules'), join(old, 'vss.jsonl'))
+  assert.equal(outputFile(old, 'vss'), join(old, 'vss.jsonl'))
+  // run again under the name now: its file counts, and the old one is left where it is
+  write(old, 'hmm-rules', [row('1', 'move it', flat('lift'))])
+  assert.deepEqual(readOutputs(old).map(output => [output.strategy, output.rows[0].sop]), [['hmm-rules', flat('lift')], ['spacy', flat('move')]])
+  assert.equal(outputFile(old, 'vss'), join(old, 'hmm-rules.jsonl'))
+  const bare = mkdtempSync(join(tmpdir(), 'syntax-renamed-'))
+  write(bare, 'vss', [row('1', 'move it', flat('move'))])
+  assert.deepEqual(readOutputs(bare).map(output => output.strategy), ['hmm-rules'], 'a folder with no summary.json')
+  // the items and the agreed circuits of an old run
+  mkdirSync(join(old, 'key'))
+  write(join(old, 'key'), 'items', [{n: 1, text: 'move it', sop: flat('move'), core: coreOf('move it', flat('move')), sources: ['spacy', 'vss']}])
+  write(join(old, 'key'), 'agreement', [{text: 'move it', sop: flat('move'), core: coreOf('move it', flat('move')), sources: ['spacy', 'vss'], families: ['parser', 'vss']}])
+  assert.deepEqual(readItems(old)[0].sources, ['hmm-rules', 'spacy'])
+  assert.deepEqual([readAgreement(old)[0].sources, readAgreement(old)[0].families], [['hmm-rules', 'spacy'], ['hmm-rules', 'parser']])
+  // registry lines and labels
+  const registry = emptyRegistry()
+  addToRegistry(registry, judged('move it', flat('move'), 'accepted', {source: 'vss+spacy'}))
+  assert.equal(lookup(registry, 'move it', coreOf('move it', flat('move'))).source, 'hmm-rules+spacy')
+  assert.equal(labelLine({text: 'move it', label: flat('move'), source: 'spacy+vss', accepted_by: 'agreement'}).source, 'spacy+hmm-rules')
+  // families: an old name given or declared
+  assert.equal(familyFinder({vss: ['vss'], parser: ['spacy']})('hmm-rules'), 'hmm-rules')
+  assert.equal(familyFinder()('vss'), 'hmm-rules')
+  // agreed.mjs with the old name over an old folder
+  const done = spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(bare, 'out.jsonl'), '--strategies', 'vss,spacy', old], {encoding: 'utf8'})
+  assert.equal(done.status, 0, done.stderr)
+  assert.deepEqual(readJsonl(join(bare, 'out.jsonl')).map(line => line.text), [])
 })

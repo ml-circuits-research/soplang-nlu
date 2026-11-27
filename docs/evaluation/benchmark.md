@@ -70,19 +70,19 @@ and so more precise, but no paired test was run.
 run is L9 and is never judged. Most labels of the dataset were settled by
 [agreement](agreement.md). Under the `relaxed` key, which ignores where a phrase with a linking
 word starts ([three keys](agreement.md#written-alike-three-keys)), the circuit of the formalizer
-named by `--prefer vss` stood for the group, so VSS's reading became the label
+named by `--prefer hmm-rules` stood for the group, so the reading of hmm-rules became the label
 ([T2](../project/tool-decisions.md#t2)). Two effects followed at the first
 judging (commit `9f57aa3`):
 
-- VSS collected L9 on most messages that had a label before the run, with no judge reading them in
+- hmm-rules collected L9 on most messages that had a label before the run, with no judge reading them in
   that run.
-- VSS had no message at L10. On a labelled message its circuit usually was the label. The circuits
+- hmm-rules had no message at L10. On a labelled message its circuit usually was the label. The circuits
   of the other formalizers often differed from it, for example in where a phrase starts, so they
   needed a judge and landed at L10 when accepted.
 
 An example is "make a bar chart of the projects by name please"
 ([Read judged circuits](judged-examples.md#example-4-accepted-with-an-ambiguity-mark)). Its label
-before the run was VSS's reading, settled by agreement: L9 for VSS. A judge accepted another reading,
+before the run was the reading of hmm-rules, settled by agreement: L9 for hmm-rules. A judge accepted another reading,
 written by prolog, spacy and z3: L10 for them, and that reading replaced the label.
 
 So report a GOAL together with the split between the messages that had a label before the run and
@@ -102,7 +102,7 @@ the mechanism.
 
 [Run the benchmark](../guides/run-benchmark.md), then [Judge a packet](../guides/judge-a-packet.md).
 The options of each tool: [Benchmark tools](../reference/run-tools.md). A first hands-on run:
-[Measure VSS on 20 messages](first-measurement.md).
+[Measure hmm-rules on 20 messages](first-measurement.md).
 
 ## Standard, new here, particular
 
@@ -112,4 +112,4 @@ The options of each tool: [Benchmark tools](../reference/run-tools.md). A first 
 | New here | GOAL as defined here, judged by the project's rule; publishing every accepted circuit as the label of its message; labels frozen per run. |
 | Particular | The sample is drawn from the WebMeet messages. |
 
-Next: [Measure VSS on 20 messages](first-measurement.md) · Up: [Evaluation and labels](README.md)
+Next: [Measure hmm-rules on 20 messages](first-measurement.md) · Up: [Evaluation and labels](README.md)

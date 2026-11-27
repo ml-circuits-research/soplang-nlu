@@ -8,9 +8,9 @@ A [formalizer](../formalizers/README.md) reads one message and writes one [circu
 
 ## Set up
 
-### vss
+### hmm-rules
 
-Nothing beyond Node.js. The trained model is part of the repository: `strategies/vss/model/model.json`. The option `vssModel` of `open` loads another model file.
+Nothing beyond Node.js. The trained model is part of the repository: `strategies/hmm-rules/model/model.json`. The option `model` of `open` loads another model file (the old option name `vssModel` is still accepted). The strategy was called `vss` until 2026-11-27; the old export `vss` and the package path `soplang-nlu/strategies/vss` still work.
 
 ### spacy
 
@@ -59,9 +59,9 @@ Write a file inside the checkout, for example `try.mjs`, and run it with `node t
 
 ```js
 import {createReader} from 'soplang-nlu'
-import {vss} from 'soplang-nlu/strategies/vss'
+import {hmmRules} from 'soplang-nlu/strategies/hmm-rules'
 
-const reader = await createReader({strategy: vss})
+const reader = await createReader({strategy: hmmRules})
 try {
   const text = 'Move the blue box towards the yellow circle.'
   const result = await reader.propose(text)
@@ -72,7 +72,7 @@ try {
 }
 ```
 
-With the VSS code of commit `c080ce8` it prints the lines below. The output can change as VSS improves.
+With the hmm-rules code of commit `c080ce8` it prints the lines below. The output can change as hmm-rules improves.
 
 ```text
 @c1 syntax.clause form=imperative verb="Move" complement=$n1
@@ -85,7 +85,7 @@ What `propose` returns:
 
 | Field | Meaning |
 | --- | --- |
-| `candidates` | At most one entry, and only when the circuit passed the check of the schema: `{sop, check}`, plus any field the formalizer adds (VSS adds `confidence`). |
+| `candidates` | At most one entry, and only when the circuit passed the check of the schema: `{sop, check}`, plus any field the formalizer adds (hmm-rules adds `confidence`). |
 | `error` | `null`, or why there is no candidate: the formalizer's own error, a failed check, or no circuit. |
 | `rejected` | The circuit that failed the check, with its findings. |
 | `candidateCount` | 0 or 1. |
@@ -107,8 +107,8 @@ From the `soplang-nlu` folder:
 
 ```sh
 node --input-type=module -e "
-import {vss} from './strategies/vss/index.mjs'
-const engine = await vss.open()
+import {hmmRules} from './strategies/hmm-rules/index.mjs'
+const engine = await hmmRules.open()
 const text = 'could you increase the mouth by 10 percent?'
 console.log((await engine.analyse(text)).analyses[0].sop)"
 ```
@@ -120,7 +120,7 @@ This calls the formalizer's engine directly, so the reader's check of the circui
 ```sh
 S=eval-results/2026-11-27-syntax-benchmark-random
 node tests/benchmark/syntax/run.mjs <scratch>/try \
-  --only vss --limit 50 --sample $S/sample.json.gz
+  --only hmm-rules --limit 50 --sample $S/sample.json.gz
 ```
 
 `run.mjs` writes into the folder it is given:
@@ -133,20 +133,20 @@ node tests/benchmark/syntax/run.mjs <scratch>/try \
 
 Leave out `--limit` to run the whole sample. Every option is in [Benchmark tools](../reference/run-tools.md). What to consider about speed: [Speed and cost](../formalizers/speed.md).
 
-## Trace VSS, and switch rules off
+## Trace hmm-rules, and switch rules off
 
 ```sh
 node --input-type=module -e "
 import {readFileSync} from 'node:fs'
-import {createVssReader} from './strategies/vss/index.mjs'
-const file = 'strategies/vss/model/model.json'
+import {createHmmRulesReader} from './strategies/hmm-rules/index.mjs'
+const file = 'strategies/hmm-rules/model/model.json'
 const model = JSON.parse(readFileSync(file, 'utf8'))
 const options = {schema: 'syntax', trace: true}
-const reader = createVssReader(model, options)
+const reader = createHmmRulesReader(model, options)
 console.log(reader.analyse('move the box').analyses[0].sop)"
 ```
 
-With `trace: true` the reader prints, before the circuit, the [station](../vss/stations.md) of each word (the word class VSS learned) and its doubts (positions where the reader rules a station out and reads again). For example: `first stations move/predicate the/determiner box/noun | doubts []`. The rules drawn from the calendar files carry a letter each; the option `without: 'A,G'` switches off rules A and G, to measure what each one does. All options: [VSS commands and options](../vss/options.md). A message followed step by step: [Follow one message through VSS](../vss/tutorial-one-message.md).
+With `trace: true` the reader prints, before the circuit, the [station](../hmm-rules/stations.md) of each word (the word class hmm-rules learned) and its doubts (positions where the reader rules a station out and reads again). For example: `first stations move/predicate the/determiner box/noun | doubts []`. The rules drawn from the calendar files carry a letter each; the option `without: 'A,G'` switches off rules A and G, to measure what each one does. All options: [hmm-rules commands and options](../hmm-rules/options.md). A message followed step by step: [Follow one message through hmm-rules](../hmm-rules/tutorial-one-message.md).
 
 ## Pitfalls
 

@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
-const {createVssReader} = await import(root + 'strategies/vss/src/reader.mjs')
-const model = JSON.parse(readFileSync(root + 'strategies/vss/model/model.json', 'utf8'))
+const {createVssReader} = await import(root + 'strategies/hmm-rules/src/reader.mjs')
+const model = JSON.parse(readFileSync(root + 'strategies/hmm-rules/model/model.json', 'utf8'))
 const t0 = performance.now()
 const reader = createVssReader(model, {schema: 'syntax'})
 console.log('open ms', performance.now() - t0)
