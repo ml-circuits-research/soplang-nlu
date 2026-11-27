@@ -202,6 +202,41 @@ export function emitSyntax(text, tokens, wires, knows) {
     if (before?.type === 'syntax.nominal') relation(before, name, null)
     else (before?.type === 'syntax.clause' ? before : clause).slots.push({key: 'complement', ref: name.id})
   }
+  // "items Plan and Review", "header Name and rows Alpha and Beta": a noun with its name, listed with further bare
+  // names, heads a list of names. The names are the things listed, and the noun is tied to that list.
+  const capital = span => /^\p{Lu}/u.test(words[span[0]].text)
+  const wireOf = id => [...out.values()].find(wire => wire.id === id)
+  const bareName = wire => wire?.type === 'syntax.nominal' && wire.slots.every(slot => slot.span && capital(slot.span))
+  const namesOf = wire => {
+    const head = wire?.type === 'syntax.nominal' ? wire.slots.find(slot => slot.key === 'head') : null
+    if (!head?.span || capital(head.span)) return null
+    const named = wire.slots.filter(slot => slot.key === 'dependent' && slot.span && slot.span[0] > head.span[1]).sort((a, b) => a.span[0] - b.span[0])
+    return named.length && named[0].span[0] === head.span[1] + 1 && named.every((slot, k) => capital(slot.span) && (!k || slot.span[0] === named[k - 1].span[1] + 1)) ? named : null
+  }
+  for (const join of [...out.values()]) {
+    if (join.type !== 'syntax.coordination') continue
+    const conjuncts = join.slots.filter(slot => slot.key === 'conjunct')
+    let at = -1
+    for (let i = conjuncts.length - 2; i >= 0 && bareName(wireOf(conjuncts[i + 1].ref)); i--) if (namesOf(wireOf(conjuncts[i].ref))) { at = i; break }
+    if (at < 0) continue
+    const noun = wireOf(conjuncts[at].ref), named = namesOf(noun)
+    const name = {id: 'm' + ++made, type: 'syntax.nominal', slots: [{key: 'head', span: [named[0].span[0], named.at(-1).span[1]]}]}
+    noun.slots = noun.slots.filter(slot => !named.includes(slot))
+    out.set(name.id, name)
+    if (at === 0) {
+      // the whole list is the list of names: what pointed at it points at the noun
+      conjuncts[0].ref = name.id
+      for (const other of out.values()) if (other !== join) for (const slot of other.slots) if (slot.ref === join.id) slot.ref = noun.id
+      relation(noun, join, null)
+    } else {
+      // the names form a list of their own; the noun stays in the first list
+      const moved = conjuncts.slice(at + 1), joining = join.slots.filter(slot => slot.key === 'conjunction' && slot.span && slot.span[0] > name.slots[0].span[1])
+      const inner = {id: 'j' + ++made, type: 'syntax.coordination', slots: [{key: 'conjunct', ref: name.id}, ...moved, ...joining]}
+      join.slots = join.slots.filter(slot => !moved.includes(slot) && !joining.includes(slot))
+      out.set(inner.id, inner)
+      relation(noun, inner, null)
+    }
+  }
   // "new calendar named Work": a naming participle right after a thing, with only the name after it, describes the
   // thing; the thing did not give the name
   for (const wire of [...out.values()]) {
