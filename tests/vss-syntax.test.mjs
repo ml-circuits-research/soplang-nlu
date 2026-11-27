@@ -61,3 +61,16 @@ test('a message with no verb is a fragment', async () => {
   assert.match(sop, /syntax\.clause form=fragment/)
   assert.doesNotMatch(sop, /verb=/)
 })
+
+test('a shared verb is stated with ellipsis, and thanks after "and" shares nothing', async () => {
+  const gapped = await read('make the second box blue and the first one green')
+  assert.match(gapped, /syntax\.clause form=fragment modifier="green" complement=\$n2 ellipsis=\$c1/)
+  assert.doesNotMatch(await read('move the box, and thanks'), /ellipsis/)
+})
+
+test('two phrases with their own linking words are joined, and a negation stays on its relation', async () => {
+  const sop = await read('put it near Ben but not behind Jo')
+  assert.match(sop, /syntax\.coordination conjunction="but" conjunct=\$r1 conjunct=\$r2/)
+  assert.match(sop, /@r2 syntax\.relation negation="not" marker="behind" from=\$c1 to=\$n3/)
+  assert.doesNotMatch(sop, /syntax\.clause[^\n]*negation/)
+})

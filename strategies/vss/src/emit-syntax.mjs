@@ -121,7 +121,8 @@ export function emitSyntax(text, tokens, wires, knows) {
     const main = clauses.find(other => other !== clause && other.slots.some(slot => slot.key === 'verb') && firstWord(other) > firstWord(clause)) ??
       clauses.filter(other => other !== clause && firstWord(other) < firstWord(clause)).at(-1)
     if (main) relation(main, clause, span)
-    else add(clause, 'discourse', span)
+    // alone in its message ("where is the title?"), the word modifies its own clause
+    else add(clause, 'modifier', span)
   }
   // a question word stands where its grammar puts it
   for (const [clause, span] of pendingQuestions) {

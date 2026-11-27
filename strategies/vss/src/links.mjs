@@ -496,6 +496,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const {objects, frontier} = state
     const opened = []
     let lastEntity = state.lastEntity, pendingCue = null, pendingJoin = [], adverbForCue = null
+    // the relation made last, a joiner waiting to join the next relation to it, and a negation waiting for its relation
+    let lastRelation = null, relationJoin = null, relationNegation = null
     // a fragment that repeats the pattern of a clause shares that clause's verb
     const acts = verb ?? clause.gapOf?.verb
     const predicative = acts && context.linkOf(tokens[acts.predicate[0]].word) === 'predicative'
@@ -523,6 +525,25 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           settle()
           const relation = relate(null, pendingCue, made, adverbForCue)
           attach(relation, clause, lastEntity, pendingCue, unit)
+          if (relationNegation) { put(relation, 'negation', relationNegation.first, relationNegation.last); relationNegation = null }
+          if (relationJoin) {
+            // "near Ben but not behind Jo": the second phrase starts where the first does, and the two are joined
+            const start = relationJoin.with.slots.find(slot => slot[0] === 'from')[1]
+            relation.slots.find(slot => slot[0] === 'from')[1] = start
+            const mark = relation.slots.findIndex(slot => slot[0] === 'attachment')
+            if (mark >= 0 && !relationJoin.with.slots.some(slot => slot[0] === 'attachment')) relation.slots.splice(mark, 1)
+            let join = relationJoin.with.group
+            if (!join) {
+              join = relationJoin.with.group = wire('k', 'nlu.coordination')
+              join.slots.push(['kind', null], ['member', '$' + relationJoin.with.id])
+            }
+            relation.group = join
+            join.slots.push(['member', '$' + relation.id])
+            for (const joiner of relationJoin.joiners) put(join, 'cue', joiner.first, joiner.last)
+            join.slots[0][1] = context.kindOf('coordination', tokens[relationJoin.joiners.at(-1).last].word)
+            relationJoin = null
+          }
+          lastRelation = relation
           // the thing this one is placed by: the entity the relation starts at, or the clause's own thing
           const start = relation.slots.find(slot => slot[0] === 'from')[1]
           unit.placedBy = start === '$' + target.id ? objects[0] ?? clause.subject ?? null
@@ -670,6 +691,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         pendingJoin.push(unit)
         continue
       }
+      // "near Ben but not behind Jo": a conjunction before a phrase with its own cue joins the two relations
+      const cueAhead = unit.type === 'cue' ? i : unit.type === 'negation' && next?.type === 'cue' ? i + 1 : -1
+      if (context.open !== false && cueAhead >= 0 && lastRelation && !pendingCue && region[cueAhead + 1]?.type === 'entity' &&
+          pendingJoin.some(joiner => joiner.type === 'conjunction')) {
+        relationJoin = {with: lastRelation, joiners: pendingJoin}
+        pendingJoin = []
+      }
       settle()
       if (pendingCue) {
         // a cue with nothing to point at moves with the verb
@@ -710,6 +738,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (act) own.slots.push(['speech_act', act])
         if (own !== target && region[i - 1]?.type === 'separator' && target.slots.at(-1)?.[0] === 'separator') own.slots.push(target.slots.pop())
       } else if (unit.type === 'filler') put(target, 'filler', unit.first, unit.last)
+      // "not behind Jo": a negation right before a phrase with a cue negates that relation alone
+      else if (unit.type === 'negation' && context.open !== false && next?.type === 'cue' && region[i + 2]?.type === 'entity') relationNegation = unit
       else if (unit.type === 'negation') put(target, 'negation', unit.first, unit.last)
       else if (unit.type === 'marker' || unit.type === 'question') put(target, has(target, unit.type) ? 'unresolved' : unit.type, unit.first, unit.last)
       else put(target, 'unresolved', unit.first, unit.last)
