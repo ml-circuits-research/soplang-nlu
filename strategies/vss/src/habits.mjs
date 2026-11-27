@@ -3,19 +3,25 @@
 import {observe} from './observe.mjs'
 import {readRoutes} from './routes.mjs'
 import {buildUnits} from './units.mjs'
+import {createMemory} from './meaning.mjs'
 
 const bump = (table, key, by = 1) => { table[key] = (table[key] ?? 0) + by }
 const bump2 = (table, a, b) => { bump(table[a] ??= {}, b) }
 
 export function learnHabits(opened, texts) {
-  const {legend, book, index, lexicon} = opened
+  const {legend, book, index, lexicon, meanings} = opened
+  const memory = createMemory(meanings.dimensions || 1)
+  const meant = unit => meanings.vector(headKey(tokens_, unit))
+  let tokens_ = null
   const names = legend.stations.map(station => station.as ?? station.name)
   const conditions = new Set(legend.kinds.filter(kind => kind.unit === 'relation' && kind.kind === 'condition').flatMap(kind => kind.cues))
   const heads = {}, qualities = {}
+  const targets = new Map()
   const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}
   for (const text of texts) {
     const tokens = observe(text, legend.compounds)
     if (!tokens.length) continue
+    tokens_ = tokens
     const stations = readRoutes(book, legend, index, tokens).stations.map(station => names[station])
     const units = buildUnits(tokens, stations, lexicon)
     const head = unit => headKey(tokens, unit)
@@ -36,16 +42,22 @@ export function learnHabits(opened, texts) {
         if (!unit.pronoun && head(unit) && next?.type === 'verb' && next.form && !next.auxiliary.length && units[i - 1]?.type !== 'cue') {
           bump2(said, tokens[next.predicate[0]].word, head(unit))
           bump(saidTotal, head(unit))
+          memory.add('v:' + tokens[next.predicate[0]].word, 'said', meant(unit))
         }
         // an entity no verb governs can only hold its own cue
         if (!unit.pronoun && head(unit)) bump(everyNoun, head(unit))
         if (!governed && !unit.pronoun && head(unit)) {
           bump(nounTotal, head(unit))
-          if (next?.type === 'cue' && after?.type === 'entity') bump2(noun, head(unit), tokens[next.last].word)
+          if (next?.type === 'cue' && after?.type === 'entity') {
+            bump2(noun, head(unit), tokens[next.last].word)
+            memory.add('n:' + head(unit), tokens[next.last].word, meant(after))
+          }
         } else if (governed && !unit.pronoun && head(unit) && next?.type === 'cue' && after?.type === 'entity') {
           // the verb or the entity may hold this cue: the case is settled below
           const key = governed + '\0' + head(unit) + '\0' + tokens[next.last].word
           doubtful.set(key, (doubtful.get(key) ?? 0) + 1)
+          const target = headKey(tokens, after)
+          if (target) { const full = key + '\0' + target; targets.set(full, (targets.get(full) ?? 0) + 1) }
         }
       } else if (unit.type === 'complement') {
         // after a cue the bare word is the thing pointed at; elsewhere it says what something is like
@@ -55,8 +67,9 @@ export function learnHabits(opened, texts) {
         const predicate = tokens[unit.predicate[0]].word
         bump(verbTotal, predicate)
         // a cue right after the verb, or after a pronoun object, can only belong to the verb
-        if (next?.type === 'cue' && after?.type === 'entity') bump2(verb, predicate, tokens[next.last].word)
-        else if (next?.type === 'entity' && next.pronoun && after?.type === 'cue' && third?.type === 'entity') bump2(verb, predicate, tokens[after.last].word)
+        if (next?.type === 'cue' && after?.type === 'entity') { bump2(verb, predicate, tokens[next.last].word); memory.add('v:' + predicate, tokens[next.last].word, meant(after)) }
+        else if (next?.type === 'entity' && next.pronoun && after?.type === 'cue' && third?.type === 'entity') { bump2(verb, predicate, tokens[after.last].word); memory.add('v:' + predicate, tokens[after.last].word, meant(third)) }
+        if (next?.type === 'entity' && !next.pronoun) memory.add('v:' + predicate, 'object', meant(next))
         // "make it blue": a verb that says what its object becomes (counted where the object is plain)
         if (next?.type === 'entity' && (next.pronoun || next.determiner?.length)) {
           bump(withObject, predicate)
@@ -122,6 +135,15 @@ export function learnHabits(opened, texts) {
     }
     attach = tables(verbs, nouns, everyNoun)
   }
+  // the doubtful cases enter the memory by the share the counts gave each side
+  const settled = attachment(attach)
+  for (const [key, count] of targets) {
+    const [predicate, head, cue, target] = key.split('\0')
+    const share = 1 / (1 + Math.exp(-settled(predicate, head, cue)))
+    const filler = meanings.vector(target)
+    memory.add('v:' + predicate, cue, filler, count * share)
+    memory.add('n:' + head, cue, filler, count * (1 - share))
+  }
   const prune = table => Object.fromEntries(Object.entries(table).map(([word, cues]) =>
     [word, Object.fromEntries(Object.entries(cues).filter(([, count]) => count >= 1).map(([cue, count]) => [cue, Number(count.toFixed(1))]))]).filter(([, cues]) => Object.keys(cues).length))
   const keep = (totals, table) => Object.fromEntries(Object.entries(totals).filter(([word, count]) => count >= 2 || table[word]))
@@ -133,7 +155,8 @@ export function learnHabits(opened, texts) {
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
   const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
   const phrasal = Object.fromEntries(Object.entries(moves).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 3)]).filter(([, list]) => list.length))
-  return {nominal, takesClause, takesQuality, gives, asks, phrasal, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach}
+  return {nominal, takesClause, takesQuality, gives, asks, phrasal, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
+    memory: meanings.dimensions ? memory.store() : null}
 }
 
 /** What an entity is counted under: its head word, or its class when it is a name or verbatim content. */
@@ -142,10 +165,26 @@ export function headKey(tokens, unit) {
 }
 
 // Positive: the relation starts at the clause. Negative: at the entity before the cue.
-export function attachment(stats) {
+// `near(word)` gives words used like this one, with their similarity: a word seen too rarely
+// to have habits of its own borrows the habits of its neighbours in the semantic space.
+export function attachment(stats, near = () => []) {
   if (!stats) return () => 1
-  const smooth = 5
-  const rate = (table, totals, word, cue, prior) => ((table[word]?.[cue] ?? 0) + smooth * prior) / ((totals[word] ?? 0) + smooth)
+  const smooth = 5, enough = 20
+  const own = (table, totals, word, cue) => (table[word]?.[cue] ?? 0) / (totals[word] || 1)
+  const rate = (table, totals, word, cue, prior) => {
+    const seen = totals[word] ?? 0
+    let lean = prior
+    if (seen < enough) {
+      let sum = 0, weight = 0
+      for (const [other, similarity] of near(word)) {
+        if ((totals[other] ?? 0) < enough || similarity <= 0) continue
+        sum += similarity * own(table, totals, other, cue)
+        weight += similarity
+      }
+      if (weight > 0) lean = sum / weight
+    }
+    return ((table[word]?.[cue] ?? 0) + smooth * lean) / (seen + smooth)
+  }
   return (verb, head, cue) => {
     const verbPrior = (stats.verbCue[cue] ?? 0) / stats.verbAll, nounPrior = (stats.nounCue[cue] ?? 0) / stats.nounAll
     const byVerb = rate(stats.verb, stats.verbTotal, verb, cue, verbPrior)

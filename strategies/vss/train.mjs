@@ -61,14 +61,20 @@ const model = {
   }),
   trained: {messages: texts.length, tokens: total, iterations, minCount, options}
 }
-model.habits = learnHabits(openModel(model), texts)
-console.log(`habits: ${Object.keys(model.habits.nominal).length} words told apart as thing or quality, ` +
-  `${model.habits.takesClause.length} verbs that take a clause (${model.habits.takesClause.join(' ')}), ` +
-  `${Object.keys(model.habits.attach.verb).length} verbs and ${Object.keys(model.habits.attach.noun).length} nouns with cue habits`)
-// the semantic space holds the words that head entities: the ones the linker compares
-const wanted = new Set(Object.keys(model.habits.attach.nounTotal).filter(word => !word.startsWith('~')))
-model.meanings = learnMeanings(legend, index, symbols, texts, wanted)
+// the semantic space first: a vector for every word seen often enough, from its neighbours
+const seen = new Float64Array(symbols.length)
+for (const symbol of corpus.symbols) seen[symbol]++
+const wanted = new Set(symbols.filter((symbol, id) => seen[id] >= 10 && /^\p{L}/u.test(symbol) && !legend.places.get(symbol)?.confined))
+model.meanings = learnMeanings(legend, index, symbols, texts, wanted, {dimensions: Number(args.dimensions ?? 128), minCount: 10})
 console.log(`meanings: ${model.meanings.words.length} words in ${model.meanings.dimensions} dimensions`)
+// then the habits of words and what fills which role, read off the text the routes now explain
+const habits = learnHabits(openModel(model), texts)
+model.memory = habits.memory
+delete habits.memory
+model.habits = habits
+console.log(`habits: ${Object.keys(model.habits.nominal).length} words told apart as thing or quality, ` +
+  `${Object.keys(model.habits.attach.verb).length} verbs and ${Object.keys(model.habits.attach.noun).length} nouns with cue habits; ` +
+  `memory of ${model.memory?.keys.length ?? 0} governing words`)
 mkdirSync(dirname(out), {recursive: true})
 writeFileSync(out, JSON.stringify(model))
 console.log(`wrote ${out} (${(JSON.stringify(model).length / 1e6).toFixed(2)} MB) in ${((Date.now() - started) / 1000).toFixed(1)} s`)

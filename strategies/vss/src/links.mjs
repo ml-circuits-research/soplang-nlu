@@ -241,8 +241,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         }
         let described = clause.modifies
         const placed = described.placedBy
-        if (placed && !placed.pronoun && placed !== described &&
-            context.describes(clause.predicate, headWord(placed)) >= context.describes(clause.predicate, headWord(described))) described = placed
+        const said = thing => context.describes(clause.predicate, headWord(thing)) + context.suits(clause.predicate, headWord(thing))
+        if (placed && !placed.pronoun && placed !== described && said(placed) >= said(described)) described = placed
         const relation = wire('r', 'nlu.relation')
         relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(described).id], ['to', '$' + clause.wire.id])
         return

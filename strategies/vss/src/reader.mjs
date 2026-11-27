@@ -8,7 +8,8 @@ import {buildUnits} from './units.mjs'
 import {linkUnits} from './links.mjs'
 import {emit} from './emit.mjs'
 import {attachment, headKey} from './habits.mjs'
-import {openMeanings} from './meaning.mjs'
+import {openMeanings, openMemory} from './meaning.mjs'
+import {identity, bind, bundleInto, normalise, dot, DIMENSIONS} from './space.mjs'
 
 const AMBIGUOUS = 0.7
 
@@ -33,13 +34,26 @@ export function openModel(model, options = {}) {
   const stationIndex = new Map(legend.stations.map(station => [station.name, station.index]))
   const isKnown = word => index.has(word) && !legend.places.get(word)?.confined
   const habits = model.habits ?? {}
+  const meanings = openMeanings(options.meanings === false ? null : model.meanings)
   const together = new Set(habits.together ?? [])
+  // a verb seen too rarely to show a habit borrows it from the verbs used like it
+  const borrowed = (list, word) => {
+    if (list?.includes(word)) return true
+    if (options.transfer !== true || (habits.verbTotal?.[word] ?? 0) >= 20) return false
+    let yes = 0, all = 0
+    for (const [other, similarity] of meanings.nearest(word, 12)) {
+      if ((habits.verbTotal?.[other] ?? 0) < 20 || similarity <= 0) continue
+      all += similarity
+      if (list?.includes(other)) yes += similarity
+    }
+    return all > 0 && yes / all > 0.5
+  }
   const lexicon = {
     nominal: word => habits.nominal?.[word] === 1 ? true : habits.nominal?.[word] === 0 ? false : undefined,
-    takesClause: word => habits.takesClause?.includes(word) ?? false,
-    takesQuality: word => habits.takesQuality?.includes(word) ?? false,
-    gives: word => habits.gives?.includes(word) ?? false,
-    asks: word => habits.asks?.includes(word) ?? false,
+    takesClause: word => borrowed(habits.takesClause, word),
+    takesQuality: word => borrowed(habits.takesQuality, word),
+    gives: word => borrowed(habits.gives, word),
+    asks: word => borrowed(habits.asks, word),
     phrasal: (verb, particle) => habits.phrasal?.[verb]?.includes(particle) ?? false,
     // is the word more often a thing than something done?
     thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
@@ -59,8 +73,23 @@ export function openModel(model, options = {}) {
     if (!cues.length) kinds.set(unit + '\0', kind)
     for (const cue of cues) kinds.set(unit + '\0' + cue, kind)
   }
+  // The build of an entity as one vector: every slot it has, bound to the class of its filler.
+  // Two entities built alike ("a large yellow cat", "a small brown dog") have near vectors.
+  const built = (tokens, unit) => {
+    const sum = new Float32Array(DIMENSIONS)
+    const add = (slot, filler) => bundleInto(sum, bind(identity('slot:' + slot), identity('filler:' + filler)))
+    if (unit.determiner?.length) add('determiner', tokens[unit.determiner[0]].word)
+    if (unit.quantity?.length) add('quantity', 'some')
+    ;(unit.modifier ?? []).forEach((_, k) => add('modifier', String(k)))
+    ;(unit.compound ?? []).forEach((_, k) => add('compound', String(k)))
+    add('core', unit.pronoun ? 'pronoun' : unit.literal ? 'literal' : unit.name && !unit.head ? 'name' : 'head')
+    return normalise(sum)
+  }
+  const build = (tokens, left, right) => dot(built(tokens, left), built(tokens, right))
+  const memory = openMemory(options.memory === false ? null : model.memory)
+  const counted = attachment(options.attachment === false ? null : habits.attach, options.transfer !== true ? undefined : word => meanings.nearest(word, 12))
+  const weight = options.memoryWeight ?? 2
   const joiners = new Set(legend.kinds.filter(kind => kind.joins === 'clause').flatMap(kind => kind.cues))
-  const meanings = openMeanings(options.meanings === false ? null : model.meanings)
   let opening = null
   const context = {
     legend, lexicon, meanings, gapping: options.gapping,
@@ -68,16 +97,29 @@ export function openModel(model, options = {}) {
     // two entities are alike when their heads are used alike and they are introduced alike
     alike: (tokens, left, right) => {
       opening = unit => unit.determiner?.length ? tokens[unit.determiner[0]].word : unit.pronoun ? '~pronoun' : unit.name && !unit.head ? '~name' : '~bare'
-      return meanings.similarity(headKey(tokens, left), headKey(tokens, right)) + (opening(left) === opening(right) ? 0.3 : 0)
+      const mode = options.alike ?? 'structure'
+      if (mode === 'nearest') return 0
+      const opened = opening(left) === opening(right) ? 0.3 : 0
+      if (mode === 'opener') return opened
+      const meant = meanings.similarity(headKey(tokens, left), headKey(tokens, right))
+      if (mode === 'meaning') return meant + opened
+      // structure: each entity as the bundle of its slots, each bound to what fills it
+      return meant + build(tokens, left, right)
     },
     linkOf: word => legend.links.get(word),
     kindOf: (unit, cue, strict = false) => cue === null ? kinds.get(unit + '\0')
       : kinds.get(unit + '\0' + cue) ?? (strict || unit !== 'coordination' ? (unit === 'relation' ? undefined : null) : 'additive'),
-    attach: attachment(options.attachment === false ? null : habits.attach),
+    // where a relation starts: what the counts say of the verb and of the thing with this cue,
+    // and how well the target suits that role of each in the memory
+    attach: (verb, head, cue, target) => {
+      const filler = target ? meanings.vector(target) : null
+      return counted(verb, head, cue) + weight * (memory.fit('v:' + verb, cue, filler) - memory.fit('n:' + head, cue, filler))
+    },
+    suits: (verb, thing) => memory.fit('v:' + verb, 'said', meanings.vector(thing)),
     // how often the text says this verb form of this thing (per occurrence of the thing)
     describes: (form, head) => (habits.describes?.[form]?.[head] ?? 0) / ((habits.attach?.nounTotal?.[head] ?? 0) + 5)
   }
-  return {legend, book, index, context, lexicon, meanings}
+  return {legend, book, index, context, lexicon, meanings, memory}
 }
 
 export function createVssReader(model, options = {}) {

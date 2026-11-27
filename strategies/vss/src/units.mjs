@@ -77,6 +77,16 @@ export function buildUnits(tokens, stations, lexicon) {
     units.push({type: SINGLE.has(station) ? station : 'other', first: i, last: i})
     i++
   }
+  // "Box A": a grammar word written with a capital right after a thing is part of its name
+  for (let k = 1; k < units.length; k++) {
+    const letter = units[k], thing = units[k - 1]
+    if (letter.type !== 'other' || letter.first !== letter.last || thing.type !== 'entity' || thing.pronoun || thing.last !== letter.first - 1) continue
+    if (tokens[letter.first].text === tokens[letter.first].text.toLowerCase()) continue
+    thing.name = thing.name ? [thing.name[0], letter.first] : [letter.first, letter.first]
+    thing.last = letter.first
+    units.splice(k, 1)
+    k--
+  }
   // "all the arrows": a word that could stand alone joins the determiner of what follows it
   for (let k = 0; k + 1 < units.length; k++) {
     const lone = units[k], next = units[k + 1]
@@ -142,18 +152,23 @@ export function buildUnits(tokens, stations, lexicon) {
     let j = start
     const determiner = [], quantity = [], degree = [], modifier = [], core = []
     while (at(j) === 'determiner') determiner.push(j++)
+    // "the ones", "one of those": a determiner before a word that stands for a thing
+    if (determiner.length && at(j) === 'pronoun') return {type: 'entity', first: start, last: j, determiner, pronoun: [j, j]}
+    let quoted = -1
     for (; j < n; j++) {
       const station = stations[j]
       if (station === 'quantity') (core.length ? core : quantity).push(j)
       else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree')) degree.push(j)
       else if (station === 'modifier' && !core.length) modifier.push(j)
       else if (station === 'noun' || station === 'name') core.push(j)
+      else if (station === 'literal' && quoted < 0 && (determiner.length || modifier.length || core.length)) quoted = j      // the "eyes" part
       else break
     }
     // a counted thing whose word was read as a bare quality is still the head
     if (!core.length && quantity.length && at(j) === 'complement') core.push(j++)
     if (j === start) return null
     const entity = {type: 'entity', first: start, last: j - 1, determiner, quantity, degree, modifier: [], compound: []}
+    if (quoted >= 0) entity.literal = [quoted, quoted]
     const attribute = position => {
       const word = tokens[position].word
       const named = tokens[position].shape === 'capital' || tokens[position].shape === 'upper'
@@ -190,6 +205,7 @@ export function buildUnits(tokens, stations, lexicon) {
       entity.quantity = []
       return entity
     }
+    if (quoted >= 0) return entity
     if (determiner.length && !modifier.length && !degree.length) {
       // a determiner standing alone refers by itself
       if (determiner.length === 1 && lexicon.canBe(tokens[start].word, 'pronoun')) {
