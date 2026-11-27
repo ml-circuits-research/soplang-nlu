@@ -32,7 +32,9 @@ export function observe(text, compounds = new Map(), variants = null) {
       raw[i + k] && canon(fold(raw[i + k].text)) === part && (k === 0 || raw[i + k].start === raw[i + k - 1].end || /^\s+$/u.test(text.slice(raw[i + k - 1].end, raw[i + k].start)))))
     if (joined) {
       const j = i + joined.length - 1
-      out.push({text: text.slice(raw[i].start, raw[j].end), start: raw[i].start, end: raw[j].end, word: joined.join(' '), shape: 'lower', first: raw[i].first, last: raw[j].last})
+      // written with a capital inside a sentence, the compound keeps that mark: it may be a name or quoted words
+      const written = shapeOf(raw[i].text, initial)
+      out.push({text: text.slice(raw[i].start, raw[j].end), start: raw[i].start, end: raw[j].end, word: joined.join(' '), shape: written === 'capital' ? 'capital' : 'lower', first: raw[i].first, last: raw[j].last})
       i = j
       continue
     }
@@ -46,6 +48,7 @@ export function observe(text, compounds = new Map(), variants = null) {
 }
 
 // What is written as one word is one token: "soft-focus", "Q1-Q4", "260,180".
+const ADDRESS = new Set(['.', '/', ':', '@', '_', '#', '?', '=', '&', '~', '%'])
 function joinWritten(text, tokens) {
   const out = []
   const wordLike = token => /^[\p{L}\p{N}]/u.test(token.text)
@@ -53,6 +56,18 @@ function joinWritten(text, tokens) {
     let j = i
     while (wordLike(tokens[j]) && tokens[j + 2] && wordLike(tokens[j + 2]) && tokens[j].end === tokens[j + 1].start && tokens[j + 1].end === tokens[j + 2].start &&
            (tokens[j + 1].text === '-' || tokens[j + 1].text === ',' && /^\p{N}+$/u.test(tokens[j].text) && /^\p{N}/u.test(tokens[j + 2].text))) j += 2
+    // an address ("example.com/prices", "https://example.com"): parts written with no space between them, joined by
+    // the marks of addresses. A full stop joins only what goes on in small letters or digits, so a sentence end does not.
+    let k = j, addressed = false
+    for (;;) {
+      let m = k + 1
+      while (tokens[m] && ADDRESS.has(tokens[m].text) && tokens[m].start === tokens[m - 1].end) m++
+      if (m === k + 1 || m > k + 4 || !tokens[m] || !wordLike(tokens[m]) || !wordLike(tokens[k]) || tokens[m].start !== tokens[m - 1].end) break
+      const marks = tokens.slice(k + 1, m).map(token => token.text).join('')
+      if (marks === '.' && /^[\p{Ll}\p{N}]/u.test(tokens[m].text) || marks === '://') addressed = true
+      k = m
+    }
+    if (addressed) j = k
     out.push(j > i ? {text: text.slice(tokens[i].start, tokens[j].end), start: tokens[i].start, end: tokens[j].end, first: i, last: j}
       : {...tokens[i], first: i, last: i})
     i = j

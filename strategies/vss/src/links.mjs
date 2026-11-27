@@ -750,7 +750,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       // "after Thanks": a word that can link a clause or a thing links the thing that follows it when no verb does
       if (context.open !== false && unit.type === 'marker' && unit.first === unit.last && next?.type === 'entity' && lexicon.canBe(word(unit), 'cue')) pendingCue = unit
       else if (unit.type === 'cue') {
-        const moves = verb && !objects.length && i === 0 && unit.first === unit.last && lexicon.phrasal(clause.predicate, tokens[unit.first].word)
+        // "sort out the text size": the word moves with the verb and the thing after it is what the verb acts on. Not so
+        // after a form of "be", which acts on nothing, nor where the clause already has what is asked about in front
+        // ("what meetings do I have on Monday"): there the word links.
+        const moves = verb && !objects.length && !clause.asked && !has(target, 'direct_object') && i === 0 && unit.first === unit.last && unit.first > verb.predicate[0] &&
+          context.linkOf(clause.predicate) !== 'predicative' && lexicon.phrasal(clause.predicate, tokens[unit.first].word) &&
+          // a word that links things as readily as it follows verbs ("focus on the event") moves with the verb only when
+          // the pair was seen with its object between the two words ("turn the legend on")
+          (!lexicon.linksThings || !lexicon.linksThings(tokens[unit.first].word) || lexicon.separable(clause.predicate, tokens[unit.first].word))
         if (moves && next?.type === 'entity') put(target, 'particle', unit.first, unit.last)      // "sort out the text size"
         else if (next?.type === 'entity') pendingCue = unit
         else put(target, verb && (i === 0 || region[i - 1].type === 'entity' && objects.length === 1) ? 'particle' : 'adverb', unit.first, unit.last)
@@ -892,6 +899,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
   // Which earlier entity a new one is listed with: the one most like it, the nearest on a tie.
   function partner(entity, frontier) {
     let best = frontier.at(-1), bestScore = -Infinity
+    // "items Plan and Review": a bare name is listed with the name that stands right before the joining word
+    if (best && entity.name && !entity.head && !entity.determiner?.length && ['capital', 'upper'].includes(tokens[best.last].shape) && best.last < entity.first) return best
     frontier.forEach((candidate, order) => {
       if (candidate.group && candidate !== frontier.at(-1) && frontier.slice(order + 1).some(later => later.group === candidate.group)) return
       const score = context.alike(tokens, candidate, entity) + 0.02 * order / frontier.length

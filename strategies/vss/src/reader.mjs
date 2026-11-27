@@ -63,6 +63,9 @@ export function openModel(model, options = {}) {
     for (const stem of stemsOf(word, plural)) thing = Math.max(thing, habits.kinds?.[stem]?.[1] ?? 0)
     return {verb, thing, quality: own[2]}
   }
+  // how often each linking word was seen, beyond doubt, after a thing and after a verb
+  const cueTotals = table => { const totals = {}; for (const word in table ?? {}) for (const cue in table[word]) totals[cue] = (totals[cue] ?? 0) + table[word][cue]; return totals }
+  const afterThings = cueTotals(habits.attachSure?.noun), afterVerbs = cueTotals(habits.attachSure?.verb)
   const lexicon = {
     kindsOf,
     // seen as a verb where the structure left no doubt, itself or the word it is a form of
@@ -79,6 +82,12 @@ export function openModel(model, options = {}) {
     grades: word => (legend.places.get(word)?.stations.has(stationIndex.get('degree')) ?? false) ||
       legend.stations[stationIndex.get('adverb')].suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix)),
     phrasal: (verb, particle) => habits.phrasal?.[verb]?.includes(particle) ?? false,
+    // "sort it out": the pair was seen with what it acts on standing between its two words
+    // does the word link things as readily as it follows verbs: "on", "in", unlike "up" or "out"
+    linksThings: word => (afterThings[word] ?? 0) >= 3 && afterThings[word] >= 0.4 * (afterThings[word] + (afterVerbs[word] ?? 0)),
+    // is the word one of those whose places the language fixes
+    listed: word => legend.places.has(word),
+    separable: (verb, particle) => habits.separable?.[verb]?.includes(particle) ?? false,
     // is the word more often a thing than something done?
     thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
     together: (left, right) => together.has(left + ' ' + right),
@@ -95,6 +104,11 @@ export function openModel(model, options = {}) {
     },
     // does the word say how a thing is: a graded form of a known word, or a word the fixed frames
     // showed as a quality far more often than as a thing
+    // "longer", "smallest": a form with a grading ending of a word the text knows, not shown mostly as the name of a thing
+    gradedForm: word => {
+      const graded = legend.forms.find(form => form.name === 'graded'), seen = kindsOf(word)
+      return !!graded && stemsOf(word, graded.endings).some(isKnown) && seen.thing < 3 * Math.max(1, seen.quality)
+    },
     saysHow: word => {
       const graded = legend.forms.find(form => form.name === 'graded')
       if (graded && stemsOf(word, graded.endings).some(isKnown) && kindsOf(word).thing === 0) return true
@@ -204,6 +218,8 @@ export function createVssReader(model, options = {}) {
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
   const exclaimStations = new Set(legend.stations.filter(station => ['expression', 'filler'].includes(station.name)).map(station => station.index))
   const otherStations = new Set(legend.stations.filter(station => station.key !== 'predicate').map(station => station.index))
+  // every place but the one of a word that grades
+  const notDegreeStations = new Set(legend.stations.filter(station => station.name !== 'degree').map(station => station.index))
   // every place but the one of the word a thing is named by
   const notHeadStations = new Set(legend.stations.filter(station => !(station.unit === 'entity' && station.key === 'head')).map(station => station.index))
   // the stations that say how a thing is, and the verb stations: a word kept off both names a thing
@@ -250,7 +266,7 @@ export function createVssReader(model, options = {}) {
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     // what a doubt keeps a word off, and whether that is news: a word can be doubted more than once, for different reasons
-    const barred = ({not, is}) => is === 'verb' ? otherStations : is === 'head' ? notHeadStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
+    const barred = ({not, is}) => is === 'verb' ? otherStations : is === 'head' ? notHeadStations : is === 'degree' ? notDegreeStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
     const fresh = doubt => {
       const have = tried.get(doubt.position), more = barred(doubt)
       if (!have) return true
@@ -278,7 +294,8 @@ export function createVssReader(model, options = {}) {
       const listed = legend.places.get(tokens[t].word)
       if (verbStations.has(station) && listed && seen.verb < 3 && ![...listed.stations].some(place => verbStations.has(place)) &&
           [...listed.stations].some(place => ['cue', 'adverb'].includes(legend.stations[place].name))) return [{position: t, not: 'verb'}]
-      if (thingStations.has(station) && leans === 'verb' && seen.thing === 0 && seen.quality === 0) return [{position: t, not: 'thing'}]
+      // the routes alone say little of a rare word: it must also have been seen as a verb where the structure left no doubt
+      if (thingStations.has(station) && leans === 'verb' && seen.verb >= 1 && seen.thing === 0 && seen.quality === 0) return [{position: t, not: 'thing'}]
       return []
     })
     first.doubts.push(...leaning())
@@ -295,7 +312,7 @@ export function createVssReader(model, options = {}) {
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
     if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null,
-      quality: word => lexicon.saysHow(word) && !legend.places.has(word)}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
+      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label'}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way

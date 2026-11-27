@@ -209,6 +209,48 @@ export function buildUnits(tokens, stations, lexicon) {
     if (!lexicon.formOf || stations[t] !== 'predicate' || lexicon.formOf(tokens[t].word) !== 'past' || stations[t + 1] !== 'noun') continue
     if (stations[t - 1] === 'pronoun' && lexicon.canBe(tokens[t - 1].word, 'determiner') && ['predicate', 'following'].includes(stations[t - 2])) units.doubts.push({position: t, not: 'verb'})
   }
+  // "way longer": a word that can grade, right before a graded form, grades it; it names no thing
+  for (let t = 0; t + 1 < tokens.length; t++) {
+    if (!lexicon.gradedForm || !lexicon.canBe(tokens[t].word, 'degree') || !lexicon.gradedForm(tokens[t + 1].word)) continue
+    if (stations[t] === 'noun') units.doubts.push({position: t, is: 'degree'})
+    // the graded form is then no name of a thing either
+    if (stations[t + 1] === 'noun') units.doubts.push({position: t + 1, not: 'head'})
+  }
+  // "a falcon high above the hill": before a linking word, the last word of a thing that the text did not show as a
+  // thing, but showed saying how things are, is not what the thing is named by; it says where or how
+  for (let k = 0; k + 1 < units.length; k++) {
+    const unit = units[k], head = unit.head?.[0] ?? -9
+    if (!lexicon.leans || unit.type !== 'entity' || units[k + 1].type !== 'cue' || head !== unit.last || head === unit.first) continue
+    if (!(unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1))) continue
+    const seen = lexicon.kindsOf(tokens[head].word)
+    if (tokens[head].shape === 'lower' && seen.thing < 3 && seen.quality >= 1 && seen.quality >= seen.verb) units.doubts.push({position: head, not: 'head'})
+  }
+  // "book retro at 15:30": right after a verb that does not say what its object becomes, a lone word that the text
+  // did not show as saying how things are is what the verb acts on
+  for (let k = 0; k + 1 < units.length; k++) {
+    // also after a counted thing: "schedule a 60 minutes retro", where the count measures the word after it
+    const measured = units[k + 1]?.type === 'entity' && units[k + 1].quantity?.length && units[k + 1].determiner?.length && units[k + 2]?.first === units[k + 1].last + 1
+    const verb = units[k], next = measured ? units[k + 2] : units[k + 1]
+    if (!lexicon.listed || verb.type !== 'verb' || next?.type !== 'complement' || next.first !== next.last || next.degree?.length) continue
+    // only for a command: after a thing that does something, the lone word says how that thing is ("the view stays open")
+    if (units[k - 1]?.type === 'entity') continue
+    const word = tokens[next.first].word
+    // (the verb must be one the text showed as a verb: after a doubtful one nothing follows from it)
+    if (tokens[next.first].shape === 'lower' && lexicon.kindsOf(tokens[verb.predicate[0]].word).verb >= 3 && !lexicon.takesQuality(tokens[verb.predicate[0]].word) && !lexicon.saysHow(word) && !lexicon.listed(word) && !lexicon.formOf(word))
+      units.doubts.push({position: next.first, is: 'head'})
+  }
+  // "Leadership looks tiny", "Lee asked to sync": the first word of a sentence, never shown as a verb, before the
+  // s-form of a known verb, or its past form with no thing after it, is the one who does it
+  for (let t = 0; t + 1 < tokens.length; t++) {
+    if (!lexicon.listed || tokens[t].shape !== 'initial' || !['predicate', 'following'].includes(stations[t]) || lexicon.kindsOf(tokens[t].word).verb > 0) continue
+    const next = tokens[t + 1].word
+    if (tokens[t + 1].shape !== 'lower' || lexicon.kindsOf(next).verb < 3) continue
+    if (lexicon.sForm(next) || lexicon.formOf(next) === 'past' && !['noun', 'name', 'modifier', 'quantity', 'determiner'].includes(stations[t + 2])) units.doubts.push({position: t, not: 'verb'}, {position: t + 1, is: 'verb'})
+  }
+  // "a paragraph saying Thank you": a capital inside a sentence marks a name or quoted words; such a word is not said in passing
+  for (let t = 1; t < tokens.length; t++) {
+    if (['expression', 'filler'].includes(stations[t]) && tokens[t].shape === 'capital' && !['separator', 'terminator', 'expression', 'filler'].includes(stations[t - 1])) units.doubts.push({position: t, not: 'expression'})
+  }
   // "so it no longer cuts through the box": a word that stands for a thing, then words that say when or how,
   // then the s-form of a known verb: that form is the verb of the first. The same right after a word that opens a clause.
   for (let k = 0; k + 1 < units.length; k++) {
@@ -286,6 +328,8 @@ export function buildUnits(tokens, stations, lexicon) {
   return units
 
   function readEntity(start) {
+    // "these two": a word that can open a thing, before a count with no noun after it, opens the counted thing
+    if (stations[start] === 'pronoun' && lexicon.leans && lexicon.canBe(tokens[start].word, 'determiner') && at(start + 1) === 'quantity' && !NOMINAL.has(at(start + 2))) stations[start] = 'determiner'
     if (stations[start] === 'pronoun') return {type: 'entity', first: start, last: start, pronoun: [start, start]}
     if (stations[start] === 'literal') {
       let j = start + 1
@@ -316,12 +360,24 @@ export function buildUnits(tokens, stations, lexicon) {
       else if (station === 'modifier' && !core.length && lexicon.leans && j > start && stations[j - 1] === 'modifier' && lexicon.pluralThing(tokens[j - 1].word) &&
                lexicon.saysHow(tokens[j].word)) break
       else if (station === 'modifier' && !core.length) modifier.push(j)
+      // "the Introduction heading level 2", "the eyes scale 1.5": a noun with its number or value after it begins a thing
+      // of its own, unless the text showed it standing together with the noun before it
+      else if (station === 'noun' && core.length && determiner.length && lexicon.leans && stations[core.at(-1)] === 'noun' && j === core.at(-1) + 1 &&
+               (tokens[j + 1]?.shape === 'number' || at(j + 1) === 'literal') && !lexicon.together(tokens[j - 1].word, tokens[j].word)) break
       else if (station === 'noun' || station === 'name') core.push(j)
       else if (station === 'literal' && quoted < 0 && (determiner.length || modifier.length || core.length)) quoted = j      // the "eyes" part
       else break
     }
     // a counted thing whose word was read as a bare quality is still the head
     if (!core.length && quantity.length && at(j) === 'complement') core.push(j++)
+    // "a little longer": a word that opens a thing and a word that grades, before a graded form, grade it together;
+    // no thing is named
+    if (!core.length && !quantity.length && determiner.length && lexicon.gradedForm) {
+      const found = [...degree, ...modifier].sort((a, b) => a - b)
+      const [grading, graded] = found.length === 1 && at(j) === 'complement' ? [found[0], j] : found.length === 2 && modifier.includes(found[1]) ? found : [-1, -1]
+      if (graded >= 0 && lexicon.canBe(tokens[grading].word, 'degree') && lexicon.gradedForm(tokens[graded].word))
+        return {type: 'complement', first: start, last: graded, degree: [...determiner, grading], value: [graded, graded]}
+    }
     if (j === start) return null
     const entity = {type: 'entity', first: start, last: j - 1, determiner, quantity, degree, modifier: [], compound: []}
     if (quoted >= 0) entity.literal = [quoted, quoted]

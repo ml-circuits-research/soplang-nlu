@@ -17,7 +17,7 @@ export function learnHabits(opened, texts) {
   const conditions = new Set(legend.kinds.filter(kind => kind.unit === 'relation' && kind.kind === 'condition').flatMap(kind => kind.cues))
   const heads = {}, qualities = {}
   const targets = new Map()
-  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}, tells = {}, titles = {}, sureVerbs = {}
+  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}, splits = {}, tells = {}, titles = {}, sureVerbs = {}
   for (const text of texts) {
     const tokens = observe(text, legend.compounds, legend.variants)
     if (!tokens.length) continue
@@ -81,6 +81,8 @@ export function learnHabits(opened, texts) {
         const lone = next?.type === 'entity' ? after : next
         const last = next?.type === 'entity' ? third : after
         if ((lone?.type === 'adverb' || lone?.type === 'cue') && lone.first === lone.last && legend.links.get(tokens[lone.first].word) === 'particle' && last?.type !== 'entity') bump2(moves, predicate, tokens[lone.first].word)
+        // "sort it out", "turn the legend on": with what it acts on between the two words, the pair is one verb that takes an object
+        if (next?.type === 'entity' && (after?.type === 'adverb' || after?.type === 'cue') && after.first === after.last && legend.links.get(tokens[after.first].word) === 'particle' && third?.type !== 'entity') bump2(splits, predicate, tokens[after.first].word)
         // "need you to make": a verb whose object is the one who does what follows "to"
         if (next?.pronoun && after?.type === 'marker' && legend.links.get(tokens[after.last].word) === 'infinitive' && third?.type === 'verb') bump(tells, predicate)
         // "call it Bob": a verb that gives its object a name
@@ -168,7 +170,8 @@ export function learnHabits(opened, texts) {
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
   const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
   const phrasal = Object.fromEntries(Object.entries(moves).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 3)]).filter(([, list]) => list.length))
-  return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, anchored: Object.keys(sureVerbs).filter(word => sureVerbs[word] >= 2), attachSure: sure, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
+  const separable = Object.fromEntries(Object.entries(splits).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 2)]).filter(([, list]) => list.length))
+  return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, separable, anchored: Object.keys(sureVerbs).filter(word => sureVerbs[word] >= 2), attachSure: sure, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
     memory: meanings.dimensions ? memory.store() : null}
 }
 

@@ -41,6 +41,10 @@ export function emitSyntax(text, tokens, wires, knows) {
   const firstWord = wire => Math.min(...wire.slots.filter(slot => slot.span).map(slot => slot.span[0]), Infinity)
   const lastWord = wire => Math.max(...wire.slots.filter(slot => slot.span).map(slot => slot.span[1]), -1)
   const pendingMarkers = [], pendingQuestions = [], completes = [], relationAdverbs = [], strays = []
+  // "a paragraph saying Thank you": words said to the listener, written with a capital right after another word of
+  // the sentence, are mentioned, not said: they stand as a name
+  const mentions = []
+  const mentioned = span => !!span && span[0] > 0 && /^\p{Lu}/u.test(words[span[0]].text) && /^\s+$/u.test(text.slice(words[span[0] - 1].end, words[span[0]].start))
 
   for (const wire of out.values()) {
     const source = wire.source
@@ -51,7 +55,15 @@ export function emitSyntax(text, tokens, wires, knows) {
       wire.slots.push({key: 'form', value: acts ? form : 'fragment'})
       for (const slot of source.slots) {
         const [key, value] = slot
-        if (CLAUSE[key]) add(wire, CLAUSE[key], quoted(slot))
+        if (CLAUSE[key] === 'discourse' && mentioned(quoted(slot))) mentions.push([wire, quoted(slot)])
+        else if (key === 'degree') {
+          // "a little longer": words that grade together are one run
+          // (the word that opens such a run, "a", comes over with no place of its own)
+          const span = quoted(slot), grading = wire.slots.findLast(one => one.grading)
+          if (span && grading && grading.span[1] + 1 === span[0]) { grading.span = [grading.span[0], span[1]]; grading.grading = 'run' }
+          else if (span) wire.slots.push({key: 'modifier', span, grading: 'run'})
+        } else if (key === 'unresolved') { const span = quoted(slot); if (span) wire.slots.push({key: 'modifier', span, grading: 'opener'}) }
+        else if (CLAUSE[key]) add(wire, CLAUSE[key], quoted(slot))
         else if (key === 'subject') wire.slots.push({key: 'subject', ref: ref(value).id})
         else if (THINGS.has(key)) wire.slots.push({key: 'complement', ref: ref(value).id})
         else if (key === 'clausal_complement') completes.push([wire, ref(value)])
@@ -177,6 +189,34 @@ export function emitSyntax(text, tokens, wires, knows) {
     const used = [...out.values()].some(other => other !== wire && other.slots.some(slot => slot.ref === wire.id))
     if (wire.slots.length === 1 && !used) out.delete(wire.id)
   }
+  const holderOf = index => [...out.values()].find(wire => wire.slots.some(slot => slot.span && slot.span[0] <= index && index <= slot.span[1]))
+  for (const [clause, span] of mentions) {
+    const before = holderOf(span[0] - 1), slot = before?.slots.find(one => one.span && one.span[0] <= span[0] - 1 && span[0] - 1 <= one.span[1])
+    // after another word said in passing, it is said in passing too ("ok Thanks")
+    if (slot?.key === 'discourse') { clause.slots.push({key: 'discourse', span}); continue }
+    const name = {id: 'm' + ++made, type: 'syntax.nominal', slots: [{key: 'head', span}]}
+    out.set(name.id, name)
+    if (before?.type === 'syntax.nominal') relation(before, name, null)
+    else (before?.type === 'syntax.clause' ? before : clause).slots.push({key: 'complement', ref: name.id})
+  }
+  // "new calendar named Work": a naming participle right after a thing, with only the name after it, describes the
+  // thing; the thing did not give the name
+  for (const wire of [...out.values()]) {
+    if (wire.type !== 'syntax.clause' || wire.slots[0].value !== 'declarative' || wire.slots.some(slot => slot.key === 'auxiliary' || slot.key === 'negation')) continue
+    const verb = wire.slots.find(slot => slot.key === 'verb'), subject = wire.slots.find(slot => slot.key === 'subject')
+    const complements = wire.slots.filter(slot => slot.key === 'complement')
+    if (!verb?.span || !subject || complements.length !== 1 || verb.span[0] !== verb.span[1] || !knows.naming?.(words[verb.span[0]].text.toLowerCase())) continue
+    const thing = [...out.values()].find(other => other.id === subject.ref), name = [...out.values()].find(other => other.id === complements[0].ref)
+    if (thing?.type !== 'syntax.nominal' || name?.type !== 'syntax.nominal' || lastWord(thing) !== verb.span[0] - 1 || firstWord(name) !== verb.span[0] + 1) continue
+    if (!/^\p{Lu}/u.test(words[firstWord(name)].text) && !/["'“‘]$/u.test(text.slice(0, words[firstWord(name)].start))) continue
+    wire.slots[0].value = 'nonfinite'
+    wire.slots.splice(wire.slots.indexOf(subject), 1)
+    relation(thing, wire, null)
+    if (![...out.values()].some(other => other.type !== 'syntax.relation' && other.slots.some(slot => slot.ref === thing.id))) {
+      const holder = {id: 'f' + ++made, type: 'syntax.clause', slots: [{key: 'form', value: 'fragment'}, {key: 'complement', ref: thing.id}]}
+      out.set(holder.id, holder)
+    }
+  }
   // a fragment that holds only words said in passing ("next,", "hey,") joins the clause after it, or the one before
   for (const wire of [...out.values()]) {
     if (wire.type !== 'syntax.clause' || wire.slots[0].value !== 'fragment' || wire.slots.length < 2) continue
@@ -206,5 +246,5 @@ export function emitSyntax(text, tokens, wires, knows) {
     if (!home) { home = {id: 'c0', type: 'syntax.clause', slots: [{key: 'form', value: 'fragment'}]}; kept.push(home); live.push(home) }
     home.slots.push({key: 'discourse', span: [index, index]})
   }
-  return writeCircuit(text, kept.map(({id, type, slots}) => ({id, type, slots})))
+  return writeCircuit(text, kept.map(({id, type, slots}) => ({id, type, slots: slots.map(({grading, ...slot}) => slot)})))
 }

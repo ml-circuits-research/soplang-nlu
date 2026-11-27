@@ -32,6 +32,8 @@ export function shapeOf(surface, sentenceInitial) {
     return 'code'                                   // 3px, 2nd, 10am
   }
   if (!isWord.test(surface)) return 'mark'
+  // an address stands as written, like quoted words
+  if (/[\p{L}\p{N}][.\/:@][\p{L}\p{N}\/]/u.test(surface)) return 'quote'
   if (/^[\p{N}]+,[\p{N}.,]+$/u.test(surface)) return 'number'
   if (/[\p{N}_]/u.test(surface)) return 'code'       // g1, node_2
   if (surface.length > 1 && surface === surface.toUpperCase()) return 'upper'
