@@ -228,7 +228,7 @@ A formalizer therefore writes repeated words in the order of the message. It doe
 
 `@n1` is written first, so it claims the first "the" and the first "box". Writing `@n2` before `@n1` would swap which box is the complement of "put".
 
-Known limit. Suppose wire X claims the first "a" and the second "b", and wire Y claims the second "a" and the first "b". Neither order of X and Y satisfies both. `writeCircuit` refuses such a circuit with an error, so every case is counted. How often it occurs has not been measured yet.
+Known limit. Suppose one coordination holds the first and the third "and" of a message and another holds the second. No order of the two wires gives each value its own occurrence, because a value always takes the earliest free one. The circuit cannot say which "and" belongs to which wire, and it does not need to: two values that hold the same word are the same in the circuit. `writeCircuit` then writes the wires in the order of the message; the rule gives the first wire the first and the second "and" and the other wire the third. Every word is still covered once, and the circuit is valid. It refuses a circuit only when even this order leaves a word uncovered. Measured: this happens in 2 to 8 of 1,831 messages, depending on the formalizer, mostly with "and", "then" and "right".
 
 ## Rule 2. Ambiguous attachment
 
@@ -485,7 +485,7 @@ In short: the schema is a dependency analysis in the style of UD, coarsened to t
 4. **`modifier` merges adverbs and adjectives.** "make it red" and "move it slowly" look alike.
 5. **`dependent` merges determiners, numerals and adjectives.** A layer that needs the count must find it among the dependents.
 6. **The scope of a coordination has no mark for ambiguity.** A formalizer must choose which earlier wire the coordination joins. Attachment has a mark and coordination scope has none.
-7. **Rule 1 cannot write crossing claims.** See its known limit.
+7. **Rule 1 cannot say which occurrence of a repeated word a value holds when claims cross.** The circuit stays valid and the two values are the same word; see the known limit of Rule 1.
 8. **A required head costs acceptance.** Earlier judging let any choice of head pass when the group was right. Under this version a wrong head is an error. Measured by identity with an accepted circuit, comparing the head changes the result for 4 of the 1,831 messages. The effect on judged acceptance is not known.
 9. **The question word has no key.** The next layer finds it by the word itself.
 
