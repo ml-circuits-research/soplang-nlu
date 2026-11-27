@@ -197,8 +197,8 @@ async function request(dir,label,rows){
     '--model',model,'--max-turns','1','--time-limit',String(limit),'--output','text','--prompt-file',base+'.prompt.txt']:
     [...callArgs.slice(0,-1),schemaForRequest,'-o',raw,'-']
   const child=spawn(useVibe?vibe:codex,args,{cwd:emptyDir,stdio:['pipe','pipe','pipe']})
-  let diagnostics='', output=''
-  child.stdout.setEncoding('utf8').on('data',chunk=>{if(useVibe)output+=chunk})
+  let diagnostics='', responseOutput=''
+  child.stdout.setEncoding('utf8').on('data',chunk=>{if(useVibe)responseOutput+=chunk})
   child.stderr.setEncoding('utf8').on('data',chunk=>diagnostics+=chunk)
   child.stdin.on('error',()=>{})
   child.stdin.end(useVibe?undefined:prompt)
@@ -209,7 +209,7 @@ async function request(dir,label,rows){
     child.once('error',error=>resolve(error.message))
     child.once('close',code=>resolve(code))
   }).finally(()=>clearTimeout(timer))
-  if(useVibe)await save(raw,output)
+  if(useVibe)await save(raw,responseOutput)
   const body=await get(raw)
   await save(base+'.log',diagnostics)
   if(body!==undefined)await rename(raw,base+'.response.json')
