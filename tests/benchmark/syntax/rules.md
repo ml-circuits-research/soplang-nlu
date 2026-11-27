@@ -85,6 +85,12 @@ Give L8, or the first of L1 to L6 that applies.
 - Two bare nouns side by side after a marker ("with id neck", "type radar"): either may be the `head`.
 - A fixed phrase of time or manner ("from now on", "after that", "for now", "side by side", "at once") may be held whole as a `modifier`.
 - A participle that names or describes ("a group called g2", "a bird facing left") is the `verb` of a nonfinite clause tied to the thing. Written as the `marker` of a relation between the thing and its name, it also passes.
+- A command needs its verb. When the first word of a message with no other verb can be a noun or a verb ("book design review", "schedule the kickoff"), it is the `verb`; held as a noun in a fragment, the command is lost: L1.
+- Words that grade a graded word ("a bit longer", "way shorter", "a little smaller") are `modifier` words of the clause, as one run or word by word; "a bit" or "a little" may also stand as a nominal of its own (a measure). A nominal whose `head` is the graded word ("a bit longer" with head "longer") or the lone grading word ("way") fails: L3.
+- Words said to the listener that are mentioned as content ("a paragraph saying Thank you", "add the paragraph Please review") are that content: a nominal, or a clause tied to the word of saying. Held as `discourse`, the content is lost: L2.
+- A day, an hour or a length of time set off by commas after a phrase with a marker ("book the sync at 16:00, Friday, for 60 minutes") belongs to the clause: a relation from the clause with no marker passes, and so does a coordination with the time before it. A coordination with what the verb acts on states a second thing acted on: L3.
+- "left of the hill", "right of the road": "left of" may be one `marker`, or "left" a nominal or a clause `modifier` with the relation marked "of" starting at the clause or at "left". A relation marked "of" that starts at the thing placed ("a gazelle of the hill") fails: L3.
+- A clause that opens with a question word after a verb of telling or asking ("tell me which events are scheduled") must be tied to that verb's clause; any relation is enough. Untied it is L6.
 
 ## What you write
 
