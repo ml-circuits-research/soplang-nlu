@@ -1,0 +1,44 @@
+# The syntactic layer. A reading splits a message into facts and things, gives every word one
+# place in one wire, and ties the wires. It says nothing that needs the meaning of the words:
+# which thing is given and which receives, whether a word names a result or a manner, what a
+# cue means. Those belong to the layers that read these wires with context.
+@syntax core.module name=syntax version=1 exports=fact exports=thing exports=link exports=list
+
+# One fact: something asked for, stated or asked about. A mention names things and shows no
+# action. A dependent fact is a verb form that describes and has no form of its own ("facing left").
+@syntax.fact core.type of=syntax.fact closed=true
+@syntax.fact.kind core.slot of=syntax.fact key=kind enum=command enum=statement enum=question enum=mention enum=dependent required=true present=true
+# The verb, and the other words of its group: helping verbs, "not", "to", a particle ("tidy up").
+@syntax.fact.action core.slot of=syntax.fact key=action kind=string
+@syntax.fact.helper core.slot of=syntax.fact key=helper kind=string many=true
+# Who or what does it, when the words show it. The other things the fact involves directly.
+@syntax.fact.doer core.slot of=syntax.fact key=doer kind=ref type=syntax.thing type=syntax.list
+@syntax.fact.thing core.slot of=syntax.fact key=thing kind=ref type=syntax.thing type=syntax.list many=true
+# Words that say how, how much or with what result ("blue", "slightly", "again").
+@syntax.fact.how core.slot of=syntax.fact key=how kind=string many=true
+# The word that asks ("what", "which", "how many").
+@syntax.fact.asks core.slot of=syntax.fact key=asks kind=string
+# Small words and marks that belong to the fact and have no place of their own ("please", "then", ",", "?").
+@syntax.fact.word core.slot of=syntax.fact key=word kind=string many=true
+
+# One thing: the words that characterise it. The head names it; a pronoun, a name, a number
+# or a quoted text can be the head.
+@syntax.thing core.type of=syntax.thing closed=true
+@syntax.thing.head core.slot of=syntax.thing key=head kind=string
+@syntax.thing.describing core.slot of=syntax.thing key=describing kind=string many=true
+
+# A tie between two wires. cue: the linking words say how ("on", "next to", "'s", "because").
+# completes: a fact completes another fact ("want to move it"). describes: a fact or a thing
+# says something of a thing ("the bird facing left"). open: the wires stand together and no
+# word says how ("x 120"). A link with a cue starts at a thing, or at the fact when the words
+# do not settle which of its things holds the phrase.
+@syntax.link core.type of=syntax.link closed=true
+@syntax.link.kind core.slot of=syntax.link key=kind enum=cue enum=completes enum=describes enum=open required=true present=true
+@syntax.link.from core.slot of=syntax.link key=from kind=ref type=syntax.fact type=syntax.thing type=syntax.list required=true present=true
+@syntax.link.to core.slot of=syntax.link key=to kind=ref type=syntax.fact type=syntax.thing type=syntax.list required=true present=true
+@syntax.link.cue core.slot of=syntax.link key=cue kind=string many=true
+
+# Wires put side by side ("a blanket, a basket and a boy"; "do this, then that").
+@syntax.list core.type of=syntax.list closed=true
+@syntax.list.member core.slot of=syntax.list key=member kind=ref type=syntax.fact type=syntax.thing type=syntax.link many=true required=true present=true
+@syntax.list.cue core.slot of=syntax.list key=cue kind=string many=true

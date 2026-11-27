@@ -18,6 +18,8 @@ import {dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {createComparer} from './compare.mjs'
 import {createVssReader} from './src/reader.mjs'
+import {createCore} from './core.mjs'
+import {toSyntax} from './src/syntax.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const [command, runArg, ...rest] = process.argv.slice(2)
@@ -29,6 +31,12 @@ const sampleFile = resolve(args.sample ?? resolve(here, '../../eval-results/2026
 const registryDir = join(dataset, 'annotations/nlu/v1/judged')
 const standard = args.standard ?? 'plausible'
 const {describe, sameGraph} = await createComparer(knowledgeDir)
+// --schema syntax compares and shows readings in the small syntax schema: two circuits are the same when
+// their syntactic core is the same, and the judge sees each circuit rewritten in that schema
+const {coreOf} = await createCore(knowledgeDir)
+const syntactic = args.schema === 'syntax'
+const alike = (text, a, b) => { if (!syntactic) return sameGraph(a, b); const core = coreOf(text, a); return core !== null && core === coreOf(text, b) }
+const shown = sop => syntactic ? toSyntax(sop) : sop
 const lines = file => readFileSync(file, 'utf8').split('\n').filter(line => line.trim()).map(line => JSON.parse(line))
 
 // ---- what the dataset says of a text today
@@ -76,15 +84,15 @@ if (command === 'prepare') {
   for (const {id, text} of sample) {
     const readings = reader.analyse(text).analyses.map(analysis => analysis.sop)
     const known = registry.get(text) ?? {accepted: [], rejected: []}
-    const state = readings.map(sop => known.accepted.some(other => sameGraph(sop, other.sop)) ? 'accepted'
-      : known.rejected.find(other => sameGraph(sop, other.sop))?.grade ?? 'new')
+    const state = readings.map(sop => known.accepted.some(other => alike(text, sop, other.sop)) ? 'accepted'
+      : known.rejected.find(other => alike(text, sop, other.sop))?.grade ?? 'new')
     // an unjudged dataset circuit that is the same graph as ours still needs the judge: agreement is not acceptance
     const existing = (unjudged.get(text) ?? []).filter(other => !known.accepted.some(seen => seen.sop === other.sop) && !known.rejected.some(seen => seen.sop === other.sop))
     const row = {id, text, readings, state, hadAccepted: known.accepted.length > 0, open: readings.map(openMarks)}
     if (state.includes('new')) {
       row.n = packet.length + 1
-      packet.push({n: row.n, text, vss: readings.filter((_, k) => state[k] === 'new'), existing: existing.slice(0, Number(args.existing ?? 1)).map(other => other.sop), write: known.accepted.length === 0})
-      row.existing = existing.slice(0, Number(args.existing ?? 1))
+      packet.push({n: row.n, text, vss: readings.filter((_, k) => state[k] === 'new').map(shown), existing: syntactic ? [] : existing.slice(0, Number(args.existing ?? 1)).map(other => other.sop), write: known.accepted.length === 0})
+      row.existing = syntactic ? [] : existing.slice(0, Number(args.existing ?? 1))
       row.judging = readings.map((_, k) => k).filter(k => state[k] === 'new')
     }
     rows.push(row)
