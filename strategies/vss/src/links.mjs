@@ -146,6 +146,15 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           : late?.type === 'entity' && late.head && late.head[0] === late.last ? late.last : -1
         if (context.open !== false && at >= 0 && (list[i - 1]?.type === 'question' || list[i - 2]?.type === 'question') &&
             lexicon.kindsOf(tokens[at].word).verb >= 3) doubts.push({position: at, is: 'verb'})
+        // (rule A) "Could Main work as the name", "does the design critique overlap": a helping verb that needs a bare
+        // verb ("do" and the modal verbs), opening its clause before a group of words with no verb after it, takes the
+        // last word of that group as its verb when that word can be one
+        const subjectGroup = list[i + 1]
+        if (context.trial?.('A') && context.tagged(tokens[own.at(-1)].word, 'needsbare') && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(list[i - 1]?.type)) &&
+            list[k]?.type !== 'verb' && !subjectGroup.pronoun && subjectGroup.last > subjectGroup.first && (subjectGroup.head?.[0] ?? subjectGroup.name?.[1]) === subjectGroup.last &&
+            tokens[subjectGroup.last].shape === 'lower' && lexicon.kindsOf(tokens[subjectGroup.last].word).verb >= 1 && !lexicon.sForm(tokens[subjectGroup.last].word)) {
+          doubts.push({position: subjectGroup.last, is: 'verb'})
+        }
         // "have" helps a form that says what was done; before a bare verb it makes its object do something
         const perfect = context.linkOf(tokens[own.at(-1)].word) === 'perfect' && list[k]?.type === 'verb' && list[k].form !== 'past'
         if (list[k]?.type === 'verb' && list[k] !== unit && !perfect) {
@@ -197,6 +206,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const teller = list[i - 3]?.type === 'verb' ? tokens[list[i - 3].predicate[0]].word : null
         if (list[i - 2]?.type === 'entity' && teller && (list[i - 2].pronoun || lexicon.directs(teller))) { clause.subject = list[i - 2]; clause.start = i - 2 }
         else if (list[i - 2]?.type === 'entity') clause.purposeOf = list[i - 2]      // "a button to close the window"
+      } else if (context.trial?.('B') && previous?.type === 'cue' && previous.first === previous.last && bare && verb.form === 'progressive') {
+        // (rule B) "by removing it": the linking word before an -ing form ties the clause of that form to what stands before it
+        clause.marker = previous
+        previous.type = 'marker'
+        clause.start = i - 1
       } else if (previous?.type === 'entity' && bare && verb.form && !(verb.form === 'past' && opensClause(list, i - 1)) &&
                  // "they made": after a word that can only be the doer, a past form is the verb of its own clause
                  !(context.open !== false && verb.form === 'past' && previous.pronoun && context.linkOf(tokens[previous.pronoun[0]].word) === 'subject')) {
@@ -278,7 +292,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       let region = list.slice(clause.index + 1, end).filter(unit => unit !== verb.asked), returned = []
       if (clause.role === 'modifier') {
         // what a participle says about a thing ends at the next separator; the list it stood in goes on
-        const cut = clause.modifiesHost ? -1 : region.findIndex(unit => unit.type === 'separator')
+        const cut = clause.modifiesHost && !context.trial?.('W') ? -1 : region.findIndex(unit => unit.type === 'separator')
         const host = made.findLast(other => other.fragment && !other.gapOf || other.role === 'main')
         if (cut >= 0 && host && region.slice(cut).some(unit => unit.type === 'entity')) { returned = region.slice(cut); region = region.slice(0, cut) }
         clause.returnTo = host
@@ -614,11 +628,29 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           // meaning and in build, is not one more of what the verb acts on. It belongs to the clause, and the words
           // do not say how.
           const likeness = Math.max(...(level.length ? level : frontier).map(thing => context.alike(tokens, thing, unit)))
-          const aside = commaOnly && verb && objects.length > 0 && !unit.determiner?.length && !unit.pronoun && frontier.at(-1)?.holder?.[0] === 'to' && likeness < UNLIKE
-          if (aside) {
+          // (also right after what the verb acts on: "reschedule Review, 2026-11-18 at 10:00")
+          const aside = commaOnly && verb && objects.length > 0 && !unit.determiner?.length && !unit.pronoun && likeness < UNLIKE
+          // "for Ana, Mihai and me": a series that a joining word closes begins with the thing right before its first comma,
+          // also when that thing ends a phrase with a linking word
+          let seriesU = false
+          if (context.trial?.('U') && commaOnly && !unit.pronoun) {
+            let closed = false
+            for (let j = i + 1; j < region.length && !closed; j++) {
+              if (region[j].type === 'conjunction') closed = region[j + 1]?.type === 'entity' || region[j + 1]?.type === 'complement'
+              else if (!['separator', 'entity'].includes(region[j].type)) break
+            }
+            seriesU = closed && region[i - 2] === frontier.at(-1) && frontier.at(-1)?.holder?.[0] === 'to'
+          }
+          const asideW = false
+          if (seriesU) coordinate(frontier.at(-1), unit, pendingJoin)
+          else if (aside || asideW) {
             const relation = wire('r', 'nlu.relation')
-            relation.slots.push(['kind', 'open'], ['from', '$' + target.id], ['to', '$' + entityWire(unit).id])
+            const before = frontier.at(-1)
+            // "a new person, Jamal": a bare name right after a thing that a determiner opens names that thing
+            const names = asideW && !aside && before?.holder?.[0] !== 'to' && before?.determiner?.length && unit.name && !unit.head && !unit.determiner?.length
+            relation.slots.push(['kind', 'open'], ['from', '$' + (names ? entityWire(before).id : target.id)], ['to', '$' + entityWire(unit).id])
             unit.holder = relation.slots[2]
+            unit.aside = true
           } else coordinate(partner(unit, level.length ? level : frontier), unit, pendingJoin)
           pendingJoin = []
         } else {

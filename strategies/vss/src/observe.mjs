@@ -41,7 +41,9 @@ export function observe(text, compounds = new Map(), variants = null) {
     const shape = shapeOf(raw[i].text, initial)
     // a word written with a capital inside a sentence is not the same symbol as its plain form
     const plain = fold(raw[i].text)
-    const word = (shape === 'capital' || shape === 'upper') && !compounds.listed?.has(plain) ? raw[i].text.replace(/’/gu, "'") : canon(plain)
+    // (rule L) a capital inside a sentence keeps a word apart from the listed word it is spelt like, when the language
+    // lists that word only as one more use of an open word ("Second", "Left", "Last"), not as a grammar word
+    const word = (shape === 'capital' || shape === 'upper') && (!compounds.listed?.has(plain) || shape === 'capital' && compounds.keepCapital?.has(plain)) ? raw[i].text.replace(/’/gu, "'") : canon(plain)
     out.push({...raw[i], word, shape})
   }
   return out

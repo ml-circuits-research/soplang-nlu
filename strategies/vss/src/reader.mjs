@@ -87,6 +87,8 @@ export function openModel(model, options = {}) {
     linksThings: word => (afterThings[word] ?? 0) >= 3 && afterThings[word] >= 0.4 * (afterThings[word] + (afterVerbs[word] ?? 0)),
     // does the verb take a thing and what that thing does, with no "to" ("let it go"): the word or the word it is a form of
     makesDo: word => [word, ...stemsOf(word, legend.endings)].some(form => legend.tags.get(form)?.has('makesdo')),
+    // does a list of the legend give the word this mark
+    tagged: (word, tag) => legend.tags.get(word)?.has(tag) ?? false,
     // is the word one of those whose places the language fixes
     listed: word => legend.places.has(word),
     separable: (verb, particle) => habits.separable?.[verb]?.includes(particle) ?? false,
@@ -204,10 +206,23 @@ export function openModel(model, options = {}) {
   return {legend, book, index, context, lexicon, meanings, memory}
 }
 
+// How often the text must have shown a word as a thing, and never as a verb, before its ending no longer makes it one
+// ("meeting" 104 times; "coming" 6 times, by chance).
+const SURELY_A_THING = 20
 export function createVssReader(model, options = {}) {
   const opened = openModel(model, options)
   const {legend, book, index, context, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
+  // The rules drawn from the calendar files carry a letter each; `without` ("A,G") switches some off, to measure what one does.
+  const withoutRules = new Set(String(options.without ?? '').split(',').filter(Boolean))
+  const T = name => !withoutRules.has(name)
+  lexicon.trial = T
+  // (rule L) the listed words that no list confines and that are not said in passing
+  if (T('L')) {
+    const passing = new Set(legend.stations.filter(station => ['expression', 'filler', 'determiner', 'pronoun', 'cue', 'conjunction', 'auxiliary', 'predicate', 'negation', 'marker', 'question', 'quantity'].includes(station.name)).map(station => station.index))
+    legend.compounds.keepCapital = new Set([...legend.places].filter(([word, place]) => !place.confined && !word.includes(' ') && ![...place.stations].some(station => passing.has(station))).map(([word]) => word))
+  }
+  context.trial = T
   const openers = new Set(model.openers ?? [])
   // the outside of an occurrence, compared with what each station's occurrences look like
   const occurrences = createOccurrences(legend)
@@ -231,6 +246,8 @@ export function createVssReader(model, options = {}) {
   const qualityStations = new Set(legend.stations.filter(station => station.key === 'predicate' || ['modifier', 'result_complement', 'degree'].includes(station.key)).map(station => station.index))
   // the stations that name what an entity is, and the verb stations: a word kept off both says how something is
   const headStations = new Set(legend.stations.filter(station => station.key === 'predicate' || station.unit === 'entity' && ['head', 'name'].includes(station.key)).map(station => station.index))
+  const notNameStations = new Set(legend.stations.filter(station => station.name !== 'name').map(station => station.index))
+  const notModifierStations = new Set(legend.stations.filter(station => station.name !== 'modifier').map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
   // What the routes learned of a word across the whole text: a thing nearly everywhere, a verb
   // nearly everywhere, or neither.
@@ -271,7 +288,7 @@ export function createVssReader(model, options = {}) {
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     // what a doubt keeps a word off, and whether that is news: a word can be doubted more than once, for different reasons
-    const barred = ({not, is}) => is === 'verb' ? otherStations : is === 'head' ? notHeadStations : is === 'degree' ? notDegreeStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
+    const barred = ({not, is}) => is === 'name' ? notNameStations : is === 'modifier' ? notModifierStations : is === 'verb' ? otherStations : is === 'head' ? notHeadStations : is === 'degree' ? notDegreeStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
     const fresh = doubt => {
       const have = tried.get(doubt.position), more = barred(doubt)
       if (!have) return true
@@ -293,6 +310,10 @@ export function createVssReader(model, options = {}) {
       if (tried.has(t) || !['lower', 'initial'].includes(tokens[t].shape)) return []
       const leans = lexicon.leans(tokens[t].word), seen = lexicon.kindsOf(tokens[t].word)
       if (verbStations.has(station) && leans === 'thing' && seen.verb === 0) return [{position: t, not: 'verb'}]
+      // (rule G) a word the text showed as a thing and never as a verb is no verb, whatever its ending, unless a form
+      // of "be" or a word that can only be a subject stands right before it ("we are meeting Ana")
+      if (T('G') && verbStations.has(station) && seen.verb === 0 && seen.thing >= SURELY_A_THING && seen.thing >= 3 * seen.quality &&
+          !(t > 0 && ['predicative', 'subject'].includes(legend.links.get(tokens[t - 1].word)))) return [{position: t, not: 'verb'}]
       // a word shown only as saying how things are, never as a verb, is not the action
       if (verbStations.has(station) && seen.verb === 0 && seen.quality >= 3 && seen.quality > seen.thing) return [{position: t, not: 'verb'}]
       // a word the legend lists as a linking word or an adverb is a verb only where the text showed it as one beyond doubt

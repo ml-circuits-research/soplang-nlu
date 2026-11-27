@@ -145,6 +145,78 @@ export function buildUnits(tokens, stations, lexicon) {
     group.first = lead.first
     units.splice(k, 1)
   }
+  const T = lexicon.trial ?? (() => false)
+  // (rule T1) "next Tuesday", "last week": a word that selects, right before a bare name or noun, stands in that thing
+  for (let k = 0; T('T') && k + 1 < units.length; k++) {
+    const lone = units[k], next = units[k + 1]
+    if (!['adverb', 'complement'].includes(lone.type) || lone.first !== lone.last || lone.degree?.length || lexicon.linkOf?.(tokens[lone.first].word) !== 'selects') continue
+    // (right after a verb the word says how or when the verb is done: "which comes first Monday or Tuesday")
+    if (units[k - 1]?.type === 'verb') continue
+    if (next.type !== 'entity' || next.pronoun || next.literal || next.determiner?.length || next.first !== lone.last + 1) continue
+    next.modifier = [lone.first, ...next.modifier ?? []]
+    next.first = lone.first
+    units.splice(k, 1)
+  }
+  // (rule T2) "tomorrow morning": a word for a day, right before a bare noun, forms one thing with it
+  for (let k = 0; T('T') && k + 1 < units.length; k++) {
+    const day = units[k], next = units[k + 1]
+    if (day.type !== 'adverb' || day.first !== day.last || !lexicon.tagged(tokens[day.first].word, 'day')) continue
+    if (next.type !== 'entity' || next.pronoun || next.literal || next.determiner?.length || next.quantity?.length || next.first !== day.last + 1 || next.first !== next.last || !next.head || tokens[next.first].shape !== 'lower') continue
+    next.compound = [day.first, ...next.compound ?? []]
+    next.first = day.first
+    units.splice(k, 1)
+  }
+  // (rule T3) "tomorrow's Standup": only a thing takes the possessive "'s"; the word before it owns the thing after it
+  for (let k = 0; T('T') && k + 2 < units.length; k++) {
+    const owner = units[k], mark = units[k + 1], owned = units[k + 2]
+    if (owner.type !== 'adverb' || owner.first !== owner.last || mark.type !== 'possessive' || owned.type !== 'entity' || owned.pronoun || mark.first !== owner.last + 1 || owned.first !== mark.last + 1) continue
+    const possessor = {type: 'entity', first: owner.first, last: owner.last, determiner: [], quantity: [], degree: [], modifier: [], compound: [], head: [owner.first, owner.first]}
+    owned.possessor = possessor
+    owned.possessiveMarker = mark.first
+    owned.first = owner.first
+    units.splice(k, 2)
+  }
+  // (rule L) "the title Second", "a meeting Second Pass": a word written with a capital inside a sentence is a name,
+  // also when it is spelt like a word the language lists as saying how or which
+  for (let t = 1; T('L') && t < tokens.length; t++) {
+    if (tokens[t].shape !== 'capital' || !['complement', 'adverb', 'modifier', 'degree'].includes(stations[t])) continue
+    if (['separator', 'terminator'].includes(stations[t - 1]) || !lexicon.listed?.(tokens[t].word)) continue
+    units.doubts.push({position: t, is: 'name'})
+  }
+  // (rule O) "Sam is travelling", "Work should be Studio": a finite helping verb has its subject before it. The word
+  // that opens the clause, with only bare nouns between it and that verb, is the subject, not a command
+  for (let t = 0; T('O') && t + 1 < tokens.length; t++) {
+    if (!['predicate', 'following'].includes(stations[t]) || t > 0 && !['separator', 'terminator', 'conjunction', 'filler', 'expression'].includes(stations[t - 1])) continue
+    if (lexicon.canBe(tokens[t].word, 'auxiliary') || lexicon.makesDo?.(tokens[t].word) || lexicon.takesClause(tokens[t].word) || lexicon.asks(tokens[t].word)) continue
+    let j = t + 1
+    while (j < tokens.length && ['noun', 'name', 'modifier', 'complement'].includes(stations[j])) j++
+    // (with bare nouns between, only a word the text never showed as a verb: "delete events Lee has declined" stays a command)
+    if (j > t + 1 && lexicon.kindsOf(tokens[t].word).verb > 0) continue
+    if (j < tokens.length && lexicon.tagged(tokens[j].word, 'finite') && ['auxiliary', 'predicate', 'following'].includes(stations[j])) units.doubts.push({position: t, not: 'quality'})
+  }
+  // (rule B) "by removing it", "thanks for sorting the sync": right after a linking word, the -ing form of a known verb
+  // with a thing after it is the verb of a clause of its own
+  for (let t = 1; T('B') && t + 1 < tokens.length; t++) {
+    if (stations[t - 1] !== 'cue' || ['predicate', 'following'].includes(stations[t]) || lexicon.formOf(tokens[t].word) !== 'progressive') continue
+    const seen = lexicon.kindsOf(tokens[t].word)
+    // (what follows must be a thing in its own right: a pronoun, a thing that a determiner opens, a name; or one of these after a
+    // word that moves with the verb. A bare noun may form one thing with the -ing word: "moving costs")
+    const own = position => ['pronoun', 'determiner'].includes(stations[position]) || stations[position] === 'name' && ['capital', 'upper'].includes(tokens[position]?.shape)
+    if (seen.verb >= 3 && seen.thing === 0 && (own(t + 1) || ['cue', 'adverb'].includes(stations[t + 1]) && own(t + 2))) units.doubts.push({position: t, is: 'verb'})
+  }
+  // (rule G2) "wipe Intro meeting", "system design": right after a thing, a lone word that the text showed as a thing
+  // and never as a verb, far more often than as a quality, names the thing
+  for (let k = 1; T('G') && k < units.length; k++) {
+    const thing = units[k - 1], lone = units[k], verb = units.slice(0, k).findLast(unit => unit.type === 'verb')
+    if (thing.type !== 'entity' || thing.pronoun || thing.literal || lone.type !== 'complement' || lone.first !== lone.last || lone.degree?.length || lone.first !== thing.last + 1) continue
+    const seen = lexicon.kindsOf(tokens[lone.first].word)
+    if (tokens[lone.first].shape !== 'lower' || lexicon.listed(tokens[lone.first].word) || seen.verb > 0 || seen.thing < 20 || seen.thing < 10 * seen.quality) continue
+    // (a word that says how much a counted thing measures stays what it is: "one hour long")
+    if (thing.quantity?.length || thing.literal) continue
+    // (a thing that a determiner opens is complete: the word after it says how it is, "show the labels temporary")
+    if (thing.determiner?.length) continue
+    units.doubts.push({position: lone.first, is: 'head'})
+  }
   // "it would be nice", "after Thanks": right after a form of "be" or a linking word, a word listed as an exclamation is no exclamation
   for (let k = 1; k < units.length; k++) {
     const said = units[k], before = units[k - 1]
@@ -327,7 +399,9 @@ export function buildUnits(tokens, stations, lexicon) {
   for (const unit of units) {
     if (unit.type !== 'entity') continue
     const head = unit.head?.[0] ?? -9
-    if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    // (rule G: not a word the text showed as a thing and never as a verb: "a prep meeting")
+    const thingOnly = T('G') && head >= 0 && lexicon.kindsOf(tokens[head].word).verb === 0 && lexicon.kindsOf(tokens[head].word).thing >= 20
+    if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word) && !thingOnly) units.doubts.push({position: head, not: 'thing'})
     // "…, heading toward the bridge": a bare -ing form of a known verb right before a cue or an adverb says what something does
     else if (lexicon.leans && unit.first === unit.last && head === unit.first && lexicon.formOf(tokens[head].word) === 'progressive' &&
              lexicon.kindsOf(tokens[head].word).verb >= 3 && ['cue', 'adverb'].includes(units[units.indexOf(unit) + 1]?.type) &&
