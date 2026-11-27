@@ -1,8 +1,8 @@
 # Syntax work status
 
-Generated 2026-11-27 19:04 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 6f11cb6 (12 uncommitted paths) · webmeet-dataset 7f8346b. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
+Generated 2026-11-27 19:26 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 9b2831e (13 uncommitted paths) · webmeet-dataset 596ff1d. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
 
-> **Since the build of 2026-11-27 18:52** (8c9ed93): 2 new commits in soplang-nlu.
+> **Since the build of 2026-11-27 19:04** (6f11cb6): registry 12,310 → 12,743 circuits; dataset messages with a circuit 62,066 → 83,619; 2 new commits in soplang-nlu; 1 new commit in webmeet-dataset.
 
 1. [What this project does](#what-this-project-does)
 2. [Working on now](#working-on-now)
@@ -17,7 +17,7 @@ Generated 2026-11-27 19:04 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 
 ## What this project does
 
-**At a glance:** **86.8%** GOAL of the best strategy (spacy): share of the 1,831 benchmark messages whose circuit a judge accepts · **75.5%** GOAL of VSS, our own reader and the main focus · **33.8%** of the dataset's 183,497 messages have a circuit (62,066)
+**At a glance:** **86.8%** GOAL of the best strategy (spacy): share of the 1,831 benchmark messages whose circuit a judge accepts · **75.5%** GOAL of VSS, our own reader and the main focus · **45.6%** of the dataset's 183,497 messages have a circuit (83,619)
 
 A **formalizer** (here called a **[strategy](#glossary)**) reads one English message alone, with no context and no knowledge base, and writes its syntactic **[circuit](#glossary)** in the `syntax` schema: the clauses, the nominals (the words that describe one thing), the relations between them and the coordinations, with every word of the message in exactly one place. The strategies are compared on one **[benchmark](#glossary)**: 1,831 messages, 1% of the dataset, drawn at random. A **[judge](#glossary)** reads every circuit without knowing which strategy wrote it, and accepts or rejects it. **GOAL** is the share of messages whose circuit is accepted (levels L8, L9 and L10, [below](#the-benchmark-live)); the aim is over 99%. Accepted circuits become the **[labels](#glossary)** of the dataset, which the strategies are measured and trained on. Terms are explained in the [Glossary](#glossary).
 
@@ -53,13 +53,13 @@ Read line by line, each line one wire:
 
 **Why VSS is the focus, although spaCy scores higher.** VSS needs only Node.js, its model is one file of 3.3 MB, it reads a message in 0.42 ms (median) on one CPU core, and it learns from raw text, so it is a reader we own and can extend, and it could run in a browser once a small loader is written. spaCy needs Python and a transformer of 500.7 MB and takes 51 ms per message. It stays as the strongest second voice: when two strategies that read from different sources write the same circuit, the label is settled with no judge ([Agreement](#agreement-between-vss-and-spacy)).
 
-**Who the judges are.** Language-model agents (claude-opus-5-5: 11,984 circuits read so far) that follow written rules (`tests/benchmark/syntax/rules.md`). How often two judges, or a judge and a person, agree on this schema has not been measured yet.
+**Who the judges are.** Language-model agents (claude-opus-5-5: 12,417 circuits read so far) that follow written rules (`tests/benchmark/syntax/rules.md`). How often two judges, or a judge and a person, agree on this schema has not been measured yet.
 
 More to read: [How VSS works](vss-architecture.html) · [The syntax work of 2026-11-27: decisions and insights](syntax-work-2026-11-27.html) · [How circuits are evaluated and the dataset converted](syntax-evaluation-and-conversion.html) · [The syntax schema and its rules](syntax-schema.md) · [The working journal (also below)](../improvements-ideas.md) · [The benchmark table as table.mjs writes it](../eval-results/2026-11-27-syntax-benchmark-random/table.md).
 
 ## Working on now
 
-*Written by hand; last saved 2026-11-27 19:04. The numbers are in the computed sections below.*
+*Written by hand; last saved 2026-11-27 19:26. The numbers are in the computed sections below.*
 
 Updated by hand with every step; the numbers are in the sections this text links to.
 
@@ -86,22 +86,29 @@ Updated by hand with every step; the numbers are in the sections this text links
   conventions, because most labels so far are VSS's agreement circuits; they need judged examples from the hard
   part of the dataset first.
 
+- **The dataset grew to 45.6%** (83,619 of 183,497 messages have an accepted circuit; 33.8% before): VSS and
+  spaCy in their current versions ran again over the 217 files of the batch conversion, agreement was settled
+  with the wider key, a judge read a random 2% of the new agreed circuits (431 of 433 accepted), and the empty
+  cells were filled ([Dataset](#the-dataset)). On the way a fault of the write step was found and fixed: a file
+  where one labelled message had got another circuit was skipped whole (commit `9b2831e`).
+
 **Running at this moment**
 
 - **VSS rules, next round.** The largest group first: the finite verb found by agreement with its subject
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **The 2% audit of the refilled conversion.** VSS and spaCy in their current versions ran again over the 217
-  files of the batch conversion, and agreement was settled with the wider key: 79,746 messages now have an
-  agreed circuit (about 58,000 before). A judge reads 433 of the new agreed circuits; then the cells are
-  written ([Dataset](#the-dataset)).
+- **spaCy, second round of general repairs** in the layer that writes its circuits, on the about 241
+  benchmark circuits judges still reject (scene lists, gapping, grading words, clauses untied across ";").
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Write the cells of the refilled conversion once the audit holds.
-3. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
+2. Judge the benchmark circuits that the spaCy repairs change; record the new GOAL.
+3. Rerun VSS over the conversion after each round of rules and settle again (each gain fills cells without a
+   judge, with a 2% audit).
+4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
+5. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
    it is rejected.
 
 **Not measured yet** (what a reviewer will ask)
@@ -188,7 +195,7 @@ A circuit may mark a phrase with `attachment=ambiguous` when the words do not sa
 
 </details>
 
-**About this run.** `2026-11-27-syntax-benchmark-random`: 1,831 messages drawn at random from the whole dataset (seed and method in `sample.lock.json`), every circuit of every strategy judged. Judged in this run: 7,306 circuits. Before the run, 593 of the 1,831 messages had a label. The [registry](#glossary) of judged circuits holds 12,310 circuits of 6,111 messages: 11,984 read by claude-opus-5-5, and 326 agreement circuits recorded with no judge: 306 agreement labels that the benchmark publication replaced, kept as accepted readings, in `2026-11-27-benchmark-random-replaced-agreement.jsonl`; 20 second agreed circuits of a conversion round, an open point of the journal, in `2026-11-27-round-02.jsonl`.
+**About this run.** `2026-11-27-syntax-benchmark-random`: 1,831 messages drawn at random from the whole dataset (seed and method in `sample.lock.json`), every circuit of every strategy judged. Judged in this run: 7,306 circuits. Before the run, 593 of the 1,831 messages had a label. The [registry](#glossary) of judged circuits holds 12,743 circuits of 6,541 messages: 12,417 read by claude-opus-5-5, and 326 agreement circuits recorded with no judge: 306 agreement labels that the benchmark publication replaced, kept as accepted readings, in `2026-11-27-benchmark-random-replaced-agreement.jsonl`; 20 second agreed circuits of a conversion round, an open point of the journal, in `2026-11-27-round-02.jsonl`.
 
 ## Progress over time
 
@@ -297,17 +304,17 @@ Start-up comes from `summary.json`, which `run.mjs` writes when it runs a strate
 
 ## The dataset
 
-Counted now from the 238 files of `webmeet-dataset/syntactic/` (commit 7f8346b). Each row of a file is one message with its circuit (the label) in the column `sop`, or an empty cell while no circuit is settled. The column `accepted_by` says how the circuit was accepted: **agreement** (strategies that read the message from different sources wrote the same circuit; no judge read it), **judge** (a judge read and accepted it), **written** (a judge wrote it because no strategy's circuit was acceptable). The area is the first folder of the file.
+Counted now from the 238 files of `webmeet-dataset/syntactic/` (commit 596ff1d). Each row of a file is one message with its circuit (the label) in the column `sop`, or an empty cell while no circuit is settled. The column `accepted_by` says how the circuit was accepted: **agreement** (strategies that read the message from different sources wrote the same circuit; no judge read it), **judge** (a judge read and accepted it), **written** (a judge wrote it because no strategy's circuit was acceptable). The area is the first folder of the file.
 
 | Area | Share with a circuit | With a circuit | Messages | Files | by agreement | by a judge | written by a judge | open (no circuit) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| calendar | 45.6% | 2,354 | 5,158 | 14 | 1,399 | 937 | 18 | 2,804 |
-| diagram | 29.4% | 22,573 | 76,875 | 91 | 20,915 | 1,657 | 1 | 54,302 |
-| document | 19.2% | 2,101 | 10,948 | 19 | 1,699 | 389 | 13 | 8,847 |
-| drawing | 38.7% | 35,038 | 90,516 | 114 | 32,921 | 2,117 | 0 | 55,478 |
-| **All** | **33.8%** | **62,066** | **183,497** | **238** | **56,934** | **5,100** | **32** | **121,431** |
+| calendar | 77.0% | 3,974 | 5,158 | 14 | 2,988 | 968 | 18 | 1,184 |
+| diagram | 40.3% | 30,977 | 76,875 | 91 | 29,161 | 1,815 | 1 | 45,898 |
+| document | 53.8% | 5,895 | 10,948 | 19 | 5,416 | 466 | 13 | 5,053 |
+| drawing | 47.3% | 42,773 | 90,516 | 114 | 40,498 | 2,275 | 0 | 47,743 |
+| **All** | **45.6%** | **83,619** | **183,497** | **238** | **78,063** | **5,524** | **32** | **99,878** |
 
-62,066 of 183,497 messages have a circuit (33.8%): 56,934 by agreement, 5,100 accepted by a judge, 32 written by a judge. No message appears twice.
+83,619 of 183,497 messages have a circuit (45.6%): 78,063 by agreement, 5,524 accepted by a judge, 32 written by a judge. No message appears twice.
 
 ## Agreement between VSS and spaCy
 
@@ -347,26 +354,26 @@ Where both circuits were accepted, the schema allows more than one reading (whic
 | --- | ---: |
 | Conversion folders | 217 |
 | Circuits settled by agreement | 80,009 |
-| Read by a judge as a control | 1,163 (1.5%) |
-| … accepted | 1,153 |
-| … rejected | 10 (0.86%) |
+| Read by a judge as a control | 1,596 (2.0%) |
+| … accepted | 1,584 |
+| … rejected | 12 (0.75%) |
 
-The records count 1,163 audit circuits read (1,153 accepted, 10 rejected), and these are the figures shown. The journal and commit `a09047d` give 1,154 read and 10 rejected, a count the records do not reproduce. The judges read the audit circuits in pooled packets (`eval-results/conversion-audit`), together with other circuits of the conversion folders; 433 sent to a judge still have no verdict.
+The records count 1,596 audit circuits read (1,584 accepted, 12 rejected), and these are the figures shown. The journal and commit `a09047d` give 1,154 read and 10 rejected, a count the records do not reproduce. The judges read the audit circuits in pooled packets (`eval-results/conversion-audit`), together with other circuits of the conversion folders.
 
-**Why the dataset has 56,934 agreement labels, not 80,009.** Where the 80,009 agreed circuits stand in the dataset now:
+**Why the dataset has 78,063 agreement labels, not 80,009.** Where the 80,009 agreed circuits stand in the dataset now:
 
 | Agreed circuits of the batch conversion | Count |
 | --- | ---: |
-| Still the label, marked as settled by agreement | 56,634 |
-| Still the label, now marked as accepted by a judge (read in the audit and accepted) | 1,147 |
-| Replaced by another circuit (337 of them on benchmark messages, when the benchmark was published) | 663 |
-| No circuit in the dataset now (the cell was emptied) | 21,565 |
+| Still the label, marked as settled by agreement | 77,763 |
+| Still the label, now marked as accepted by a judge (read in the audit and accepted) | 1,571 |
+| Replaced by another circuit (337 of them on benchmark messages, when the benchmark was published) | 664 |
+| No circuit in the dataset now (the cell was emptied) | 11 |
 
 The other 300 agreement labels of the dataset were settled outside these folders.
 
 ## Journal
 
-The working journal, `improvements-ideas.md`, written by hand at each stage (last saved 2026-11-27 19:04): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
+The working journal, `improvements-ideas.md`, written by hand at each stage (last committed 2026-11-27 19:04): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
 
 > **Its numbers can be older than this page.** Parts of the journal, such as the table under "Where things stand", keep the figures of the time they were written. Where they differ from the computed sections above, the computed ones are current.
 
@@ -574,6 +581,8 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 **soplang-nlu**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/soplang-nlu/commits)).
 
+- 2026-11-27 19:26 [`9b2831e`](https://github.com/ml-circuits-research/soplang-nlu/commit/9b2831e) round.mjs write: a file with open cells is completed cell by cell; existing circuits stay
+- 2026-11-27 19:04 [`90adc96`](https://github.com/ml-circuits-research/soplang-nlu/commit/90adc96) Status: the learned prototypes, the refilled conversion and its audit
 - 2026-11-27 19:04 [`6f11cb6`](https://github.com/ml-circuits-research/soplang-nlu/commit/6f11cb6) Two learned methods for syntax circuits, measured and not adopted (experiments/syntax-learned)
 - 2026-11-27 18:52 [`5b4dacd`](https://github.com/ml-circuits-research/soplang-nlu/commit/5b4dacd) Status: the wider agreement key
 - 2026-11-27 18:52 [`8c9ed93`](https://github.com/ml-circuits-research/soplang-nlu/commit/8c9ed93) Journal: the wider agreement key, the current table, what runs and what comes next
@@ -582,12 +591,12 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 18:46 [`82cbdb0`](https://github.com/ml-circuits-research/soplang-nlu/commit/82cbdb0) Status page in docs (generated): docs/status.html and docs/STATUS.md from node docs/status/build.mjs
 - 2026-11-27 18:30 [`51606f5`](https://github.com/ml-circuits-research/soplang-nlu/commit/51606f5) Documentation (HTML, reviewed): the VSS reader's architecture, the decisions and insights of the syntax work of 2026-11-27, and how syntactic labels are made and measured
 - 2026-11-27 18:25 [`c205ab6`](https://github.com/ml-circuits-research/soplang-nlu/commit/c205ab6) Journal: VSS at 75.5% on the benchmark after the study prototypes
-- 2026-11-27 18:24 [`1809b31`](https://github.com/ml-circuits-research/soplang-nlu/commit/1809b31) Benchmark: verdicts on the 183 new VSS circuits after the study prototypes (83fce90), packets 45-46
-- 2026-11-27 18:14 [`954da81`](https://github.com/ml-circuits-research/soplang-nlu/commit/954da81) batch-run.sh: a mode that runs the files of the batch conversion again after the strategies improved
 
 <details>
 <summary>20 older commits of soplang-nlu</summary>
 
+- 2026-11-27 18:24 [`1809b31`](https://github.com/ml-circuits-research/soplang-nlu/commit/1809b31) Benchmark: verdicts on the 183 new VSS circuits after the study prototypes (83fce90), packets 45-46
+- 2026-11-27 18:14 [`954da81`](https://github.com/ml-circuits-research/soplang-nlu/commit/954da81) batch-run.sh: a mode that runs the files of the batch conversion again after the strategies improved
 - 2026-11-27 18:13 [`83fce90`](https://github.com/ml-circuits-research/soplang-nlu/commit/83fce90) VSS: the measured prototypes of the lever study
 - 2026-11-27 18:04 [`0f9b5c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/0f9b5c3) Benchmark: verdicts on the 225 new VSS circuits (fa46cb7), packets 43-44
 - 2026-11-27 18:02 [`ba22103`](https://github.com/ml-circuits-research/soplang-nlu/commit/ba22103) Journal: agreement between VSS and spaCy measured by area; 515 of 1,218 disagreements are two accepted readings, so a wider agreement key is being built
@@ -606,13 +615,12 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 17:03 [`8d8fa71`](https://github.com/ml-circuits-research/soplang-nlu/commit/8d8fa71) A working journal of the plan: where the syntax work stands, what is in progress, next steps and ideas
 - 2026-11-27 16:56 [`dd562c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/dd562c3) VSS: the frame fixes the verb, and embedded questions state
 - 2026-11-27 16:51 [`e52bfc8`](https://github.com/ml-circuits-research/soplang-nlu/commit/e52bfc8) Benchmark tools: labels are read from and written to the dataset's syntactic files; no labels file, no agreement lines in the registry
-- 2026-11-27 16:39 [`9f57aa3`](https://github.com/ml-circuits-research/soplang-nlu/commit/9f57aa3) Benchmark on the random 1% sample: all 35 packets judged (5,858 circuits of five strategies)
-- 2026-11-27 16:30 [`1c0b4f6`](https://github.com/ml-circuits-research/soplang-nlu/commit/1c0b4f6) VSS: rules from the analysis of the diagram and document files about where a nominal ends
 
 </details>
 
 **webmeet-dataset**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/webmeet-dataset/commits)).
 
+- 2026-11-27 19:26 [`596ff1d`](https://github.com/ml-circuits-research/webmeet-dataset/commit/596ff1d) Syntactic labels: 83,619 of 183,497 messages have a circuit (45.6%, was 33.8%)
 - 2026-11-27 17:45 [`7f8346b`](https://github.com/ml-circuits-research/webmeet-dataset/commit/7f8346b) Registry: 306 agreement circuits that the benchmark publication replaced as labels, kept as accepted readings
 - 2026-11-27 16:57 [`6e81e6c`](https://github.com/ml-circuits-research/webmeet-dataset/commit/6e81e6c) Syntactic layer: labels from the judged 1% benchmark (1,470 messages)
 - 2026-11-27 16:51 [`95e7739`](https://github.com/ml-circuits-research/webmeet-dataset/commit/95e7739) Remove duplicated data: the syntactic files are the only store of labels; the registry keeps only what a judge read or wrote
@@ -622,11 +630,11 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 14:39 [`0124ab9`](https://github.com/ml-circuits-research/webmeet-dataset/commit/0124ab9) Syntactic layer: the first 17 files (575 messages) from conversion round 1
 - 2026-11-27 14:34 [`aff01cb`](https://github.com/ml-circuits-research/webmeet-dataset/commit/aff01cb) Semantic layer: partial work of an earlier session, kept for the record
 - 2026-11-27 14:07 [`66e68b2`](https://github.com/ml-circuits-research/webmeet-dataset/commit/66e68b2) Syntax annotations: how agreement and written circuits are recorded
-- 2026-11-27 13:47 [`9d87f2b`](https://github.com/ml-circuits-research/webmeet-dataset/commit/9d87f2b) Split the dataset into semantic/ and syntactic/
 
 <details>
 <summary>20 older commits of webmeet-dataset</summary>
 
+- 2026-11-27 13:47 [`9d87f2b`](https://github.com/ml-circuits-research/webmeet-dataset/commit/9d87f2b) Split the dataset into semantic/ and syntactic/
 - 2026-11-27 13:46 [`b85fe78`](https://github.com/ml-circuits-research/webmeet-dataset/commit/b85fe78) Judged nlu readings: the last 59 verdicts of 2026-11-27 (kept for the record; the nlu schema is no longer used)
 - 2026-11-27 13:45 [`e0a20ad`](https://github.com/ml-circuits-research/webmeet-dataset/commit/e0a20ad) Syntax labels: 1,160 circuits accepted by judges on the fixed sample become labels; 671 rejected circuits recorded
 - 2026-11-27 13:33 [`5c45966`](https://github.com/ml-circuits-research/webmeet-dataset/commit/5c45966) Syntax registry: reference circuits rewritten from nlu are kept apart and no longer count as accepted
@@ -646,7 +654,6 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 09:12 [`c1e12a2`](https://github.com/ml-circuits-research/webmeet-dataset/commit/c1e12a2) Convert WebMeet raw drafts for short-diagram-nodes-12-01-f56cea4f1dd7 via deepseek-v4-1-flash-1017
 - 2026-11-27 09:08 [`db718d3`](https://github.com/ml-circuits-research/webmeet-dataset/commit/db718d3) Convert WebMeet raw drafts for short-diagram-nodes-12-00-d83d91f22581 via deepseek-v4-1-flash-1017
 - 2026-11-27 09:01 [`b337a2f`](https://github.com/ml-circuits-research/webmeet-dataset/commit/b337a2f) Convert WebMeet raw drafts for short-diagram-nodes-11-00-70846b49f0e1 via deepseek-v4-1-flash-1017
-- 2026-11-27 09:00 [`29ec7a6`](https://github.com/ml-circuits-research/webmeet-dataset/commit/29ec7a6) Convert WebMeet raw drafts for short-diagram-nodes-09-00-0df4f7bac65c via deepseek-v4-1-flash-1017
 
 </details>
 
@@ -689,4 +696,4 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 ---
 
-Built in 10.0 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.
+Built in 14.2 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.

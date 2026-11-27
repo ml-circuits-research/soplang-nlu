@@ -25,22 +25,29 @@ Updated by hand with every step; the numbers are in the sections this text links
   conventions, because most labels so far are VSS's agreement circuits; they need judged examples from the hard
   part of the dataset first.
 
+- **The dataset grew to 45.6%** (83,619 of 183,497 messages have an accepted circuit; 33.8% before): VSS and
+  spaCy in their current versions ran again over the 217 files of the batch conversion, agreement was settled
+  with the wider key, a judge read a random 2% of the new agreed circuits (431 of 433 accepted), and the empty
+  cells were filled ([Dataset](#dataset)). On the way a fault of the write step was found and fixed: a file
+  where one labelled message had got another circuit was skipped whole (commit `9b2831e`).
+
 **Running at this moment**
 
 - **VSS rules, next round.** The largest group first: the finite verb found by agreement with its subject
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **The 2% audit of the refilled conversion.** VSS and spaCy in their current versions ran again over the 217
-  files of the batch conversion, and agreement was settled with the wider key: 79,746 messages now have an
-  agreed circuit (about 58,000 before). A judge reads 433 of the new agreed circuits; then the cells are
-  written ([Dataset](#dataset)).
+- **spaCy, second round of general repairs** in the layer that writes its circuits, on the about 241
+  benchmark circuits judges still reject (scene lists, gapping, grading words, clauses untied across ";").
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Write the cells of the refilled conversion once the audit holds.
-3. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
+2. Judge the benchmark circuits that the spaCy repairs change; record the new GOAL.
+3. Rerun VSS over the conversion after each round of rules and settle again (each gain fills cells without a
+   judge, with a 2% audit).
+4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
+5. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
    it is rejected.
 
 **Not measured yet** (what a reviewer will ask)
