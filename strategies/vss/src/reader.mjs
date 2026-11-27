@@ -10,6 +10,7 @@ import {emit} from './emit.mjs'
 import {attachment, headKey} from './habits.mjs'
 import {openMeanings, openMemory} from './meaning.mjs'
 import {identity, bind, bundleInto, normalise, dot, DIMENSIONS} from './space.mjs'
+import {createOccurrences, matchPrototypes} from './occurrence.mjs'
 
 const AMBIGUOUS = 0.7
 
@@ -137,6 +138,17 @@ export function createVssReader(model, options = {}) {
   const {legend, book, index, context, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
   const openers = new Set(model.openers ?? [])
+  // the outside of an occurrence, compared with what each station's occurrences look like
+  const occurrences = createOccurrences(legend)
+  let prototypes = null
+  if (model.occurrence && options.occurrence !== false) {
+    const binary = atob(model.occurrence.vectors)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    const floats = new Float32Array(bytes.buffer), size = model.occurrence.dimensions
+    prototypes = {centre: floats.subarray(0, size), prototypes: legend.stations.map((_, k) => floats.subarray((k + 1) * size, (k + 2) * size))}
+  }
+  const sharp = options.occurrenceWeight ?? 4
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
   function analyse(text) {
@@ -148,7 +160,13 @@ export function createVssReader(model, options = {}) {
     if (options.openers !== false && cut >= 1 && cut <= 2 && openers.has(tokens.slice(0, cut).map(token => token.word).join(' '))) {
       for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word)) tried.set(position, verbStations)
     }
-    let {stations, confidence} = readRoutes(book, legend, index, tokens, tried)
+    // a second opinion on every word from the outside of its occurrence
+    let lift = null
+    if (prototypes) {
+      const matches = tokens.map((_, t) => matchPrototypes(prototypes, occurrences.outside(tokens, t)))
+      lift = (t, s) => Math.exp(sharp * matches[t][s])
+    }
+    let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift)
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
       const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)
@@ -160,7 +178,7 @@ export function createVssReader(model, options = {}) {
     for (let again = 0; again < 3 && first.doubts.length; again++) {
       for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : thingStations)
       const banned = new Map(tried)
-      ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned))
+      ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift))
       first = read(new Set())
     }
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence)}]

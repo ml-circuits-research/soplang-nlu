@@ -269,24 +269,24 @@ export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen =
  * The best station sequence of one message and, per token, the posterior of the chosen
  * station (its margin of confidence).
  */
-export function readRoutes(book, legend, index, tokens, banned = new Map()) {
+export function readRoutes(book, legend, index, tokens, banned = new Map(), lift = null) {
   const stations = [], confidence = []
   for (const [from, to] of sentencesOf(legend, tokens)) {
     const bans = new Map([...banned].filter(([position]) => position >= from && position < to).map(([position, set]) => [position - from, set]))
-    const part = readSentence(book, legend, index, tokens.slice(from, to), bans)
+    const part = readSentence(book, legend, index, tokens.slice(from, to), bans, lift ? (t, s) => lift(from + t, s) : null)
     stations.push(...part.stations)
     confidence.push(...part.confidence)
   }
   return {stations, confidence}
 }
 
-function readSentence(book, legend, index, tokens, bans) {
+function readSentence(book, legend, index, tokens, bans, lift) {
   const n = legend.stations.length, v = book.symbols.length, k = SHAPES.length
   const length = tokens.length
   if (!length) return {stations: [], confidence: []}
   const symbols = tokens.map(token => symbolOf(index, legend, token))
   const forms = tokens.map(token => isFormShape(token.shape) ? -1 : shapeIndex(token.shape))
-  const emit = (t, s) => bans.get(t)?.has(s) ? 0 : book.emission[book.base[s] * v + symbols[t]] * (forms[t] < 0 ? 1 : book.shape[book.base[s] * k + forms[t]])
+  const emit = (t, s) => bans.get(t)?.has(s) ? 0 : book.emission[book.base[s] * v + symbols[t]] * (forms[t] < 0 ? 1 : book.shape[book.base[s] * k + forms[t]]) * (lift ? lift(t, s) : 1)
   const score = new Float64Array(length * n).fill(-Infinity), back = new Int32Array(length * n)
   const alpha = new Float64Array(length * n), beta = new Float64Array(length * n), scale = new Float64Array(length)
   for (let t = 0; t < length; t++) {

@@ -12,6 +12,8 @@ import {openModel} from './src/reader.mjs'
 import {learnHabits} from './src/habits.mjs'
 import {learnMeanings, openMeanings} from './src/meaning.mjs'
 import {findVariants} from './src/variants.mjs'
+import {createOccurrences, learnPrototypes} from './src/occurrence.mjs'
+import {readRoutes} from './src/routes.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const args = Object.fromEntries(process.argv.slice(2).join(' ').split(/\s*--/u).filter(Boolean).map(pair => pair.split(/\s+/u)))
@@ -88,6 +90,19 @@ const model = {
     return row
   }),
   trained: {messages: texts.length, tokens: total, iterations, minCount, options}
+}
+// what the outside of an occurrence says about its station: prototypes from the confident readings
+{
+  const opened = openModel(model)
+  const occurrences = createOccurrences(legend)
+  const learned = learnPrototypes(legend, occurrences, function* () {
+    for (const tokens of messages) if (tokens.length) yield {tokens, ...readRoutes(opened.book, legend, opened.index, tokens)}
+  })
+  const bytes = new Uint8Array(new Float32Array([...learned.centre, ...learned.prototypes.flatMap(prototype => [...prototype])]).buffer)
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  model.occurrence = {dimensions: occurrences.dimensions, vectors: btoa(binary)}
+  console.log(`occurrence prototypes from ${learned.counts.reduce((a, b) => a + b, 0)} confident occurrences`)
 }
 // the semantic space first: a vector for every word seen often enough, from its neighbours
 const seen = new Float64Array(symbols.length)
