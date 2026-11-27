@@ -454,6 +454,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             j = head - 1
             break
           }
+          // "until its edge meets the edge": a word that can link a clause as well as a thing links the clause
+          // when a verb in -s needs the thing after it as its subject
+          if (context.open !== false && before?.type === 'cue' && before.first === before.last && lexicon.canBe(word(before), 'marker') &&
+              !verb.auxiliary.length && lexicon.sForm(clause.predicate)) {
+            clause.subject = list[head]
+            clause.chain = chain
+            clause.marker = before
+            before.type = 'marker'
+            j = list.indexOf(before) - 1
+            break
+          }
           if (before && ['verb', 'cue', 'entity', 'complement'].includes(before.type)) break
           clause.subject = list[head]
           clause.chain = chain

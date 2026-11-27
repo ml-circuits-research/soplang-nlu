@@ -82,6 +82,11 @@ export function openModel(model, options = {}) {
     thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
     together: (left, right) => together.has(left + ' ' + right),
     canBe: (word, station) => legend.places.get(word)?.stations.has(stationIndex.get(station)) ?? false,
+    // a verb form in -s: it is said of a subject and never opens a command
+    sForm: word => {
+      const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
+      return stemsOf(word, endings).some(stem => (habits.kinds?.[stem]?.[0] ?? 0) >= 3)
+    },
     // does the word say how a thing is: a graded form of a known word, or a word the fixed frames
     // showed as a quality far more often than as a thing
     saysHow: word => {

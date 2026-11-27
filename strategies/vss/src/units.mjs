@@ -136,6 +136,16 @@ export function buildUnits(tokens, stations, lexicon) {
   }
   // "a girl waving": a form of a verb that closes an entity after its noun was not a thing
   units.doubts = []
+  // "where the path bends": a word that opens a clause needs a verb. When only one group of words follows
+  // it, the last word of the group is that verb if it can be one.
+  for (let k = 0; k + 1 < units.length; k++) {
+    const opener = units[k], group = units[k + 1], after = units[k + 2]
+    if (!lexicon.sForm || opener.type !== 'marker' || lexicon.linkOf(tokens[opener.last].word) === 'infinitive') continue
+    if (group.type !== 'entity' || group.pronoun || !group.head || group.head[0] !== group.last || group.head[0] === group.first) continue
+    if (after && !['terminator', 'separator', 'conjunction'].includes(after.type)) continue
+    const head = group.head[0], word = tokens[head].word
+    if (tokens[head].shape === 'lower' && (lexicon.sForm(word) || lexicon.kindsOf(word).verb >= 3)) units.doubts.push({position: head, is: 'verb'})
+  }
   for (const unit of units) {
     if (unit.type !== 'entity') continue
     const head = unit.head?.[0] ?? -9
