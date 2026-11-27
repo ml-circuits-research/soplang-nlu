@@ -4,9 +4,9 @@
 
 This page: how many messages of each area of the dataset have a circuit, and how each circuit was accepted. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [The dataset](../STATUS.md#the-dataset) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [The dataset](../STATUS.md#the-dataset) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
-Counted now from the 238 files of `webmeet-dataset/syntactic/` (commit 055a115). Each row of a file is one message with its circuit (the label) in the column `sop`, or an empty cell while no circuit is settled. The column `accepted_by` says how the circuit was accepted: **agreement** (strategies that read the message from different sources wrote the same circuit; no judge read it), **judge** (a judge read and accepted it), **written** (a judge wrote it because no strategy's circuit was acceptable). The area is the first folder of the file.
+Counted now from the 238 files of `webmeet-dataset/syntactic/` (commit c6b11f6). Each row of a file is one message with its circuit (the label) in the column `sop`, or an empty cell while no circuit is settled. The column `accepted_by` says how the circuit was accepted: **agreement** (strategies that read the message from different sources wrote the same circuit; no judge read it), **judge** (a judge read and accepted it), **written** (a judge wrote it because no strategy's circuit was acceptable). The area is the first folder of the file.
 
 | Area | Messages |
 | --- | --- |

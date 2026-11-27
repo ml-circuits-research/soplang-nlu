@@ -4,7 +4,7 @@
 
 This page: every judged measurement of GOAL over time, newest first, with its commit and what changed, and how sure the numbers are. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Progress over time](../STATUS.md#progress-over-time) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [Progress over time](../STATUS.md#progress-over-time) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 Each item is one judged measurement, written by hand into `docs/status/history.json` when its verdicts are in. Items marked *trial* are experiments on a copy of hmm-rules, then named vss (the [lever trials](../reference/glossary.md#trials-and-training)), not strategies. The oldest item was measured on other messages than the benchmark, so it is not comparable with the others.
 

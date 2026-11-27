@@ -4,9 +4,9 @@
 
 This page: the current numbers of the project, computed from the repositories at every build: scores, speed, the dataset, agreement, and what runs now. It is the only page of the documentation that holds current numbers, with the pages under status/ that it links. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
 
-> **Since the build of 2026-11-27 22:14** (7ffdbd4): distilbert 77.3% → 76.8%; hmm-rules new in the table at 79.0%; prolog 61.7% → 61.6%; z3 59.3% → 59.0%; registry 12,862 → 13,006 circuits; dataset messages with a circuit 89,855 → 89,863; 5 new commits in soplang-nlu; 2 new commits in webmeet-dataset.
+> **Since the build of 2026-11-27 22:51** (94b3036): 1 new commit in soplang-nlu; 1 new commit in webmeet-dataset.
 
 1. [How to read this page](#how-to-read-this-page)
 2. [At a glance](#at-a-glance)
@@ -45,7 +45,7 @@ GOAL is the share of the 1,831 benchmark messages whose circuit is accepted ([Le
 
 ## Working on now
 
-*Written by hand; last saved 2026-11-27 22:47. Where it differs from the computed sections, the computed ones are current.*
+*Written by hand; last saved 2026-11-27 22:55. Where it differs from the computed sections, the computed ones are current.*
 
 Written by hand at each step. It holds no scores on purpose, so that it cannot contradict the computed
 sections of this page. Each judged step, with its score: [Progress over time](#progress-over-time).
@@ -71,7 +71,7 @@ sections of this page. Each judged step, with its score: [Progress over time](#p
   with the verdicts they contradict (commit `7ffdbd4`).
 - **Two learned methods, measured and not adopted**: a transition-based parser trained on the labels,
   and spaCy fine-tuned on the judged circuits (`experiments/syntax-learned/README.md`).
-- **rvss** (folder `strategies/strict-vss/`): the design of a separate formalizer that reads through a
+- **rvss** (folder `strategies/rvss/`): the design of a separate formalizer that reads through a
   vector-symbolic sentence state, and its first measurements (commit `f5be34c`;
   [Formalizers](formalizers/README.md)).
 - **The strategy `vss` renamed `hmm-rules`** (2026-11-27): a hidden Markov model plus rules, not a
@@ -81,15 +81,25 @@ sections of this page. Each judged step, with its score: [Progress over time](#p
   measured, kept runnable and still a voice in agreement for their own family, but not improved now;
   rvss is being built ([Formalizers](formalizers/README.md)).
 
-**Next, in order** (the journal, "Next steps"; items 1, 2 and 4 were written before hmm-rules and
-DistilBERT became experimental)
+**Running now** (2026-11-27, night)
 
-1. Commit the next hmm-rules round once checked; judge only the benchmark circuits that changed.
-2. After each round of rules, run hmm-rules again over the conversion, settle with the wider key, audit 2%,
-   fill the empty cells.
-3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one
-   most strategies wrote), and a fixer writes it when it is rejected.
-4. Retrain DistilBERT as the labels grow (benchmark held out) and measure.
+- **The rvss sprint**: spaCy run over every message of the dataset as training data for rvss (a "silver"
+  set, kept apart from the labels); training sets and the rvss move sequences; an evaluation harness;
+  then rvss built and trained on the GPU (placement, moves under teacher forcing, free running), aiming to
+  reproduce spaCy with a smaller and faster model, measured on the benchmark and checked by a reviewer.
+- **A silver audit**: every spaCy circuit of the open messages gets a suspicion score from cheap signals
+  (disagreement with hmm-rules and DistilBERT, length, structure); a judge reads a stratified random sample
+  per suspicion level, to know how clean spaCy's circuits are before large language models clean the rest.
+- **spaCy, a sixth round of general repairs** on the circuits judges still reject.
+- **Documentation of rvss as an HMM plus a VSA memory**, with what research on HMMs, hierarchical HMMs,
+  grammar induction and vector-symbolic sequence memory says for its design (section docs/rvss/).
+
+**Next, in order**
+
+1. Read rvss's first measurements against spaCy (accuracy, speed, size); decide the next milestone.
+2. Clean the spaCy circuits of the suspicious levels with judges that rewrite rejected circuits; publish
+   what they accept as labels.
+3. A fresh random benchmark sample, since the current one has been used to find faults.
 
 **Not measured yet** (what a reviewer will ask)
 
@@ -152,7 +162,7 @@ Time per message in one process, from the benchmark run, fastest first by mean t
 
 ## The dataset
 
-Counted now from `webmeet-dataset/syntactic/` (commit 055a115): 89,863 of 183,497 messages have a circuit (49.0%): 84,186 by agreement, 5,645 accepted by a judge, 32 written by a judge. No message appears twice. What the three ways of acceptance mean: [The dataset](evaluation/dataset.md).
+Counted now from `webmeet-dataset/syntactic/` (commit c6b11f6): 89,863 of 183,497 messages have a circuit (49.0%): 84,186 by agreement, 5,645 accepted by a judge, 32 written by a judge. No message appears twice. What the three ways of acceptance mean: [The dataset](evaluation/dataset.md).
 
 **More:** [Dataset labels by area](status/dataset.md): how many messages of each area of the dataset have a circuit, and how each circuit was accepted.
 
@@ -166,7 +176,7 @@ Counted now from `webmeet-dataset/syntactic/` (commit 055a115): 89,863 of 183,49
 
 ## Journal
 
-The working journal, `improvements-ideas.md`, written by hand at each stage (last saved 2026-11-27 22:49): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
+The working journal, `improvements-ideas.md`, written by hand at each stage (last committed 2026-11-27 22:54): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
 
 The file has wide tables, so it is best read on a computer: [improvements-ideas.md](../improvements-ideas.md). The page linked below is a copy made at every build, with those tables written as lists.
 
@@ -176,13 +186,13 @@ The file has wide tables, so it is best read on a computer: [improvements-ideas.
 
 The 3 newest commits of **soplang-nlu**:
 
+- 2026-11-27 22:54 [`94baeb1`](https://github.com/ml-circuits-research/soplang-nlu/commit/94baeb1) Rename vss to hmm-rules (an HMM learned from raw text plus general rules, not a vector-symbolic reader); hmm-rules and distilbert experimental
 - 2026-11-27 22:51 [`94b3036`](https://github.com/ml-circuits-research/soplang-nlu/commit/94b3036) strict-vss renamed rvss (recursive VSS), as the owner decided
 - 2026-11-27 22:51 [`8e218ba`](https://github.com/ml-circuits-research/soplang-nlu/commit/8e218ba) rvss design, third revision (written as strategies/strict-vss/DESIGN.md before the folder move)
-- 2026-11-27 22:35 [`5d2faec`](https://github.com/ml-circuits-research/soplang-nlu/commit/5d2faec) Re-judgment verdicts (benchmark packet 57, rounds 1-2, fixed sample, conversion) and the benchmark table after publication
 
 **More:** [Recent commits](status/commits.md): the last 30 commits of soplang-nlu and of webmeet-dataset, newest first.
 
-Built in 14.8 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`; "uncommitted paths" counts the entries of `git status`, where a new folder counts once.
+Built in 14.7 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`; "uncommitted paths" counts the entries of `git status`, where a new folder counts once.
 
 ---
 

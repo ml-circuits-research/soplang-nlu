@@ -4,7 +4,7 @@
 
 This page: how often hmm-rules and spaCy write the same circuit on the benchmark, by area and over time, what the judges said where they differ, the audit of the batch conversion, and where the agreed circuits stand in the dataset. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Agreement between hmm-rules and spaCy](../STATUS.md#agreement-between-hmm-rules-and-spacy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [Agreement between hmm-rules and spaCy](../STATUS.md#agreement-between-hmm-rules-and-spacy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 Two strategies that read a message from different sources (hmm-rules from raw text, spaCy from a parser trained on treebanks) and write the same circuit are very likely right. This is how most labels of the dataset were made. **Same circuit**: equal after the [normal form](../reference/glossary.md#project-terms) (wire names and order do not matter). **Up to attachment**: the same circuit except where a phrase with a linking word ("on", "of", "for") starts, which the judges' rules let be the clause or a nominal of it (the journal says "up to the start of marked relations"). Under it: how many of these agreed circuits the judges accepted, rejected, or have not read.
 

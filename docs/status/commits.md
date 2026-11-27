@@ -4,10 +4,11 @@
 
 This page: the last 30 commits of soplang-nlu and of webmeet-dataset, newest first. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Recent work](../STATUS.md#recent-work) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [Recent work](../STATUS.md#recent-work) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 **soplang-nlu**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/soplang-nlu/commits)).
 
+- 2026-11-27 22:54 [`94baeb1`](https://github.com/ml-circuits-research/soplang-nlu/commit/94baeb1) Rename vss to hmm-rules (an HMM learned from raw text plus general rules, not a vector-symbolic reader); hmm-rules and distilbert experimental
 - 2026-11-27 22:51 [`94b3036`](https://github.com/ml-circuits-research/soplang-nlu/commit/94b3036) strict-vss renamed rvss (recursive VSS), as the owner decided
 - 2026-11-27 22:51 [`8e218ba`](https://github.com/ml-circuits-research/soplang-nlu/commit/8e218ba) rvss design, third revision (written as strategies/strict-vss/DESIGN.md before the folder move)
 - 2026-11-27 22:35 [`5d2faec`](https://github.com/ml-circuits-research/soplang-nlu/commit/5d2faec) Re-judgment verdicts (benchmark packet 57, rounds 1-2, fixed sample, conversion) and the benchmark table after publication
@@ -17,8 +18,8 @@ Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 - 2026-11-27 22:01 [`aef741e`](https://github.com/ml-circuits-research/soplang-nlu/commit/aef741e) Pooled 2% audit of the third refill of the conversion: 114 of 119 accepted
 - 2026-11-27 21:54 [`9408a8d`](https://github.com/ml-circuits-research/soplang-nlu/commit/9408a8d) History: VSS after c080ce8
 - 2026-11-27 21:54 [`0dd21c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/0dd21c3) Benchmark: verdicts on the 33 new VSS circuits after c080ce8, packet 56
-- 2026-11-27 21:49 [`c080ce8`](https://github.com/ml-circuits-research/soplang-nlu/commit/c080ce8) VSS: lists after 'with' and colons, dashes setting a part aside, -ing verbs after verbs that take them (learned), and more
 
+- 2026-11-27 21:49 [`c080ce8`](https://github.com/ml-circuits-research/soplang-nlu/commit/c080ce8) VSS: lists after 'with' and colons, dashes setting a part aside, -ing verbs after verbs that take them (learned), and more
 - 2026-11-27 21:43 [`aac8dc2`](https://github.com/ml-circuits-research/soplang-nlu/commit/aac8dc2) History: spaCy after 0f20f16
 - 2026-11-27 21:43 [`c4e5db7`](https://github.com/ml-circuits-research/soplang-nlu/commit/c4e5db7) Benchmark: verdicts on the 18 new spaCy circuits after the fifth round (0f20f16), packet 55
 - 2026-11-27 21:39 [`0f20f16`](https://github.com/ml-circuits-research/soplang-nlu/commit/0f20f16) spaCy writer: a fifth round of general repairs
@@ -38,10 +39,10 @@ Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 - 2026-11-27 20:12 [`ef0d42b`](https://github.com/ml-circuits-research/soplang-nlu/commit/ef0d42b) Benchmark: verdicts on the 45 new VSS circuits after 71f0dd2, packet 51
 - 2026-11-27 20:05 [`71f0dd2`](https://github.com/ml-circuits-research/soplang-nlu/commit/71f0dd2) VSS: subject-verb agreement learned from the text, fronted clauses, comma-set nominals, 'one' as head
 - 2026-11-27 20:04 [`5b7a1b7`](https://github.com/ml-circuits-research/soplang-nlu/commit/5b7a1b7) docs/README.md: a guided tour from zero, second iteration
-- 2026-11-27 19:49 [`656ade9`](https://github.com/ml-circuits-research/soplang-nlu/commit/656ade9) docs/README.md rewritten as an index for a reader new to the project
 
 **webmeet-dataset**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/webmeet-dataset/commits)).
 
+- 2026-11-27 22:54 [`c6b11f6`](https://github.com/ml-circuits-research/webmeet-dataset/commit/c6b11f6) Syntactic labels: the source name vss rewritten to hmm-rules (87,946 cells), as the strategy was renamed
 - 2026-11-27 22:35 [`055a115`](https://github.com/ml-circuits-research/webmeet-dataset/commit/055a115) Re-judgments under the ten new settled cases published: 144 circuits, 46 accepted, 98 rejected
 - 2026-11-27 22:28 [`45cbc92`](https://github.com/ml-circuits-research/webmeet-dataset/commit/45cbc92) Registry README: the 'supersedes' field of a re-judgment
 - 2026-11-27 22:01 [`0a01d23`](https://github.com/ml-circuits-research/webmeet-dataset/commit/0a01d23) Syntactic labels: 89,855 of 183,497 messages have a circuit (49.0%, was 45.6%)
@@ -51,8 +52,8 @@ Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 - 2026-11-27 16:51 [`95e7739`](https://github.com/ml-circuits-research/webmeet-dataset/commit/95e7739) Remove duplicated data: the syntactic files are the only store of labels; the registry keeps only what a judge read or wrote
 - 2026-11-27 16:13 [`0b58c84`](https://github.com/ml-circuits-research/webmeet-dataset/commit/0b58c84) Syntactic layer: every file now exists, with 60,914 of 183,497 messages settled (33%)
 - 2026-11-27 15:03 [`7be6e99`](https://github.com/ml-circuits-research/webmeet-dataset/commit/7be6e99) Syntactic layer: four more files (598 messages) from conversion round 2
-- 2026-11-27 14:40 [`d44ab91`](https://github.com/ml-circuits-research/webmeet-dataset/commit/d44ab91) No file over 1,000 messages: 49 large semantic files split into 187 parts; a script keeps the two layers mirrored
 
+- 2026-11-27 14:40 [`d44ab91`](https://github.com/ml-circuits-research/webmeet-dataset/commit/d44ab91) No file over 1,000 messages: 49 large semantic files split into 187 parts; a script keeps the two layers mirrored
 - 2026-11-27 14:39 [`0124ab9`](https://github.com/ml-circuits-research/webmeet-dataset/commit/0124ab9) Syntactic layer: the first 17 files (575 messages) from conversion round 1
 - 2026-11-27 14:34 [`aff01cb`](https://github.com/ml-circuits-research/webmeet-dataset/commit/aff01cb) Semantic layer: partial work of an earlier session, kept for the record
 - 2026-11-27 14:07 [`66e68b2`](https://github.com/ml-circuits-research/webmeet-dataset/commit/66e68b2) Syntax annotations: how agreement and written circuits are recorded
@@ -72,7 +73,6 @@ Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplan
 - 2026-11-27 09:30 [`66ac027`](https://github.com/ml-circuits-research/webmeet-dataset/commit/66ac027) Convert WebMeet raw drafts for short-diagram-nodes-12-05-7f270dd21764 via deepseek-v4-1-flash-1017
 - 2026-11-27 09:26 [`24fd6ad`](https://github.com/ml-circuits-research/webmeet-dataset/commit/24fd6ad) Convert WebMeet raw drafts for short-diagram-nodes-12-04-462d36166e59 via deepseek-v4-1-flash-1017
 - 2026-11-27 09:20 [`b49668f`](https://github.com/ml-circuits-research/webmeet-dataset/commit/b49668f) Convert WebMeet raw drafts for short-diagram-nodes-12-03-7bd9ddb0809d via deepseek-v4-1-flash-1017
-- 2026-11-27 09:16 [`b593521`](https://github.com/ml-circuits-research/webmeet-dataset/commit/b593521) Convert WebMeet raw drafts for short-diagram-nodes-12-02-3a35af7dbeb7 via deepseek-v4-1-flash-1017
 
 ---
 

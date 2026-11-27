@@ -34,15 +34,25 @@ sections of this page. Each judged step, with its score: [Progress over time](#p
   measured, kept runnable and still a voice in agreement for their own family, but not improved now;
   rvss is being built ([Formalizers](formalizers/README.md)).
 
-**Next, in order** (the journal, "Next steps"; items 1, 2 and 4 were written before hmm-rules and
-DistilBERT became experimental)
+**Running now** (2026-11-27, night)
 
-1. Commit the next hmm-rules round once checked; judge only the benchmark circuits that changed.
-2. After each round of rules, run hmm-rules again over the conversion, settle with the wider key, audit 2%,
-   fill the empty cells.
-3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one
-   most strategies wrote), and a fixer writes it when it is rejected.
-4. Retrain DistilBERT as the labels grow (benchmark held out) and measure.
+- **The rvss sprint**: spaCy run over every message of the dataset as training data for rvss (a "silver"
+  set, kept apart from the labels); training sets and the rvss move sequences; an evaluation harness;
+  then rvss built and trained on the GPU (placement, moves under teacher forcing, free running), aiming to
+  reproduce spaCy with a smaller and faster model, measured on the benchmark and checked by a reviewer.
+- **A silver audit**: every spaCy circuit of the open messages gets a suspicion score from cheap signals
+  (disagreement with hmm-rules and DistilBERT, length, structure); a judge reads a stratified random sample
+  per suspicion level, to know how clean spaCy's circuits are before large language models clean the rest.
+- **spaCy, a sixth round of general repairs** on the circuits judges still reject.
+- **Documentation of rvss as an HMM plus a VSA memory**, with what research on HMMs, hierarchical HMMs,
+  grammar induction and vector-symbolic sequence memory says for its design (section docs/rvss/).
+
+**Next, in order**
+
+1. Read rvss's first measurements against spaCy (accuracy, speed, size); decide the next milestone.
+2. Clean the spaCy circuits of the suspicious levels with judges that rewrite rejected circuits; publish
+   what they accept as labels.
+3. A fresh random benchmark sample, since the current one has been used to find faults.
 
 **Not measured yet** (what a reviewer will ask)
 

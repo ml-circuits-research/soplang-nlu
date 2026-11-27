@@ -4,7 +4,7 @@
 
 This page: a copy of the working journal improvements-ideas.md, made at every build, with its wide tables written as lists so that it reads on a phone. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Journal](../STATUS.md#journal) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [Journal](../STATUS.md#journal) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 > **Its numbers can be older than the status page.** Parts of the journal, such as the table under "Where things stand", keep the figures of the time they were written. Where they differ from the computed sections of the status page, the computed ones are current.
 
@@ -82,7 +82,7 @@ messages, where it does worse.
   labels that say `vss` are read as `hmm-rules` through one alias table (`strategyAliases` in
   tests/benchmark/syntax/lib.mjs); the dataset's `source` cells now say `hmm-rules`. spaCy is the one active
   strategy; hmm-rules, DistilBERT, Prolog and Z3 are experimental (measured, kept runnable, not improved for
-  now); the real vector-symbolic reader, `rvss` (strategies/strict-vss), is being built.
+  now); the real vector-symbolic reader, `rvss` (strategies/rvss), is being built.
 - spaCy: general repairs in the layer that writes its circuits (commit a55e33f): capitalised verb forms
   inside a sentence are names, the first word of a verbless clause before a determiner is its verb, embedded
   questions state, "let's", "everything else", "from now on", numbers joined by a preposition, adjectives

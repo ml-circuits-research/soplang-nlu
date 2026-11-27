@@ -4,7 +4,7 @@
 
 This page: the levels of every strategy on the benchmark, which version of each strategy the table reads, the accepted circuits that leave an attachment open, and the facts of the run. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [The benchmark, live](../STATUS.md#the-benchmark-live) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [The benchmark, live](../STATUS.md#the-benchmark-live) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 **Each strategy**, in messages of the benchmark: GOAL with its 95% interval; accepted (L8–L10), rejected (L1–L6), no circuit (L0), waiting for a judge; and the count at every level.
 

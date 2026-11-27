@@ -4,7 +4,7 @@
 
 This page: the time per message, start-up, model size, runtime and training of every strategy, as measured in the benchmark run. Kind: Reference.
 
-Generated 2026-11-27 22:51 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94b3036 (147 uncommitted paths) · webmeet-dataset 055a115 (236 uncommitted paths). The main figures are in [Speed and cost per strategy](../STATUS.md#speed-and-cost-per-strategy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
+Generated 2026-11-27 22:55 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 94baeb1 (2 uncommitted paths) · webmeet-dataset c6b11f6. The main figures are in [Speed and cost per strategy](../STATUS.md#speed-and-cost-per-strategy) on the status page; the terms are explained in the [Glossary](../reference/glossary.md).
 
 Measured while the benchmark ran (`run.mjs`): each strategy in a process of its own, on the same machine, one message at a time. Each figure is the wall-clock time of one call to the strategy's `propose` function: from handing over the message until the circuit comes back, including the call into Python or Prolog where there is one, and not including start-up (loading the model, paid once per process). The figures come from the milliseconds recorded for every message in the strategy files of the run, the same files the GOAL is computed from. Every figure is for one process. "Messages per second" and "Whole dataset" (the time for all 183,497 messages) come from the mean; "90% within" is the time 90% of messages stay under.
 
