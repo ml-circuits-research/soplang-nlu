@@ -64,6 +64,7 @@ Tolerance covers the uncertain part only. Everything the words make clear must b
 - "of" after a thing says what that thing is of. A relation with cue "of" that starts at the clause instead is L3, unless it is marked `attachment=open`.
 - A verbless message or segment ("pie radius smaller", "legend on the right") is a fragment. A noun made its imperative predicate is L1.
 - A phrase tied to the thing right before it passes when grammar allows it, even where knowledge of the world would choose another host ("for 45 seconds with mode temporary"). It fails only when the words themselves rule that host out.
+- A conjunction may join the thing after it with any earlier thing of the same clause that grammar allows ("profit by ship mode and customer segment": with "ship mode" or with "profit"). It fails when it joins a thing with a word that is not a thing, or reaches into another clause.
 - Two things separated only by a comma may be held as a coordination. Whether the second renames or describes the first is for the next layer.
 - A word that says how a thing is, kept inside that thing's entity as a `modifier`, passes ("pie radius smaller" as one entity). The grouping is kept.
 - Inside one entity, which word is the `head` and which are `compound` or `modifier` is representation. It fails only when a word of another thing or of the action is pulled into the entity.
