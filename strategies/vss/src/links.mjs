@@ -250,7 +250,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (context.open !== false && clause.role === 'complement' && bare && !verb.form && lexicon.kindsOf(clause.predicate).verb === 0 &&
           tokens[verb.predicate[0]].shape === 'lower') doubts.push({position: verb.predicate[0], not: 'verb'})
       // "keep the axis labels larger": the verb of a clause that completes another verb is never a form in -s
-      if (context.open !== false && clause.role === 'complement' && bare && lexicon.sForm(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
+      // (with a word that stands for a thing right before it, the form in -s is the verb of a full clause: "make sure it fits")
+      if (context.open !== false && clause.role === 'complement' && bare && lexicon.sForm(clause.predicate) && !previous?.pronoun) doubts.push({position: verb.predicate[0], not: 'verb'})
       clauses.push(clause)
     }
     clauses.forEach((clause, k) => { if (k && clause.start <= clauses[k - 1].index) clause.start = clauses[k - 1].index + 1 })

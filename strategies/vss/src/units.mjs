@@ -251,6 +251,37 @@ export function buildUnits(tokens, stations, lexicon) {
   for (let t = 1; t < tokens.length; t++) {
     if (['expression', 'filler'].includes(stations[t]) && tokens[t].shape === 'capital' && !['separator', 'terminator', 'expression', 'filler'].includes(stations[t - 1])) units.doubts.push({position: t, not: 'expression'})
   }
+  // "a short planning meeting tomorrow", "a watering can below the tree": a thing that a determiner opens must be named.
+  // When its last word is an -ing form and a lone verb with nothing to act on follows, that "verb" is the name.
+  for (let k = 0; k + 1 < units.length; k++) {
+    const thing = units[k], verb = units[k + 1], after = units[k + 2]
+    if (!lexicon.formOf || thing.type !== 'entity' || !thing.determiner?.length || thing.head?.[0] !== thing.last || verb.type !== 'verb') continue
+    if (verb.first !== verb.last || verb.first !== thing.last + 1 || after?.type === 'entity' || lexicon.formOf(tokens[thing.last].word) !== 'progressive') continue
+    units.doubts.push({position: verb.first, is: 'head'})
+  }
+  // "use curved connectors": right after a verb that is no helper, a past form before a noun describes the noun
+  for (let t = 1; t + 1 < tokens.length; t++) {
+    if (!lexicon.formOf || stations[t] !== 'predicate' && stations[t] !== 'following' || lexicon.formOf(tokens[t].word) !== 'past' || stations[t + 1] !== 'noun') continue
+    if (['predicate', 'following'].includes(stations[t - 1]) && !lexicon.canBe(tokens[t - 1].word, 'auxiliary') && !lexicon.formOf(tokens[t - 1].word)) units.doubts.push({position: t, not: 'verb'})
+  }
+  // "turn italic off": a bare verb form does not follow another verb directly, unless that verb makes something do
+  // something ("let it go", "help move it"); the second word says what or how
+  for (let t = 1; t < tokens.length; t++) {
+    if (!lexicon.takesClause || !['predicate', 'following'].includes(stations[t]) || !['predicate', 'following'].includes(stations[t - 1])) continue
+    const first = tokens[t - 1].word, second = tokens[t].word
+    if (lexicon.formOf(second) || lexicon.sForm(second) || lexicon.canBe(first, 'auxiliary') || lexicon.kindsOf(first).verb < 3) continue
+    // after a verb that says what its object becomes, a word the text showed saying how things are is that, not a second verb
+    const seen = lexicon.kindsOf(second)
+    if (lexicon.takesQuality(first) && seen.quality >= 3 && seen.quality >= seen.verb) units.doubts.push({position: t, not: 'verb'})
+    else if (!lexicon.takesClause(first) && !lexicon.directs(first)) units.doubts.push({position: t, not: 'verb'})
+  }
+  // "describe my calendar entries": after a thing, a lone word in the plural form that the language lists nowhere names the thing
+  for (let k = 1; k < units.length; k++) {
+    const thing = units[k - 1], lone = units[k]
+    if (!lexicon.listed || thing.type !== 'entity' || thing.pronoun || lone.type !== 'complement' || lone.first !== lone.last || lone.degree?.length || lone.first !== thing.last + 1) continue
+    const word = tokens[lone.first].word
+    if (tokens[lone.first].shape === 'lower' && /[^s]s$/u.test(word) && !lexicon.listed(word) && !lexicon.saysHow(word) && lexicon.kindsOf(word).verb === 0) units.doubts.push({position: lone.first, is: 'head'})
+  }
   // "so it no longer cuts through the box": a word that stands for a thing, then words that say when or how,
   // then the s-form of a known verb: that form is the verb of the first. The same right after a word that opens a clause.
   for (let k = 0; k + 1 < units.length; k++) {
