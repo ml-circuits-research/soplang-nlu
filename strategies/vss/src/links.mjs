@@ -642,7 +642,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         for (const position of unit.degree) put(target, 'degree', position)
         // a quality right after a thing that the verb does not hold describes that thing ("with outline gold")
         const ofClause = lastEntity && (objects.includes(lastEntity) || lastEntity.group && objects.some(other => other.group === lastEntity.group))
-        if ((!acts || context.open !== false && !ofClause) && lastEntity && region[i - 1] === lastEntity && !unit.degree.length && !lastEntity.pronoun) {
+        // a verb that takes a quality claims the quality that closes its clause ("do the dots on the line wider")
+        const wanted = acts && lexicon.takesQuality(tokens[acts.predicate[0]].word) && !has(target, 'result_complement')
+        if ((!acts || context.open !== false && !ofClause && !wanted) && lastEntity && region[i - 1] === lastEntity && !unit.degree.length && !lastEntity.pronoun) {
           for (let position = unit.value[0]; position <= unit.value[1]; position++) put(entityWire(lastEntity), 'modifier', position)
         } else if (!acts || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
         else { put(target, 'result_complement', ...unit.value); tail = objects.length ? 'quality' : null }

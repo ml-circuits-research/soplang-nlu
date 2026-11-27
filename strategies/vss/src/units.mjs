@@ -129,6 +129,9 @@ export function buildUnits(tokens, stations, lexicon) {
     if (unit.type !== 'entity') continue
     const head = unit.head?.[0] ?? -9
     if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    // "the dashed line wider": a word that says how a thing is, closing an entity after its noun, is not what the entity names
+    else if (lexicon.saysHow && head > unit.first && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1)) &&
+             lexicon.kindsOf(tokens[head - 1].word).thing >= 3 && lexicon.saysHow(tokens[head].word)) units.doubts.push({position: head, not: 'head'})
     // "the two lines differ": an entity that nothing holds, ending in a word never seen as a
     // thing after a word that is one, with no verb after it: the last word is the verb
     if (head > unit.first && lexicon.kindsOf && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1))) {

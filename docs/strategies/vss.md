@@ -87,9 +87,12 @@ node strategies/vss/judged.mjs publish <run-folder> --standard plausible --tag <
 
 Two standards are recorded. `strict` asks for the full reading a careful reader gives. `plausible` follows [the judging rules](../../strategies/vss/judging-rules.md): a faithful partial reading passes when it marks what it leaves open, and a rejection must quote the words and the wrong statement about them.
 
-| Run | Standard | L1 | L2 | L3 | L6 | L7 | L8 | L10 | L8 or better |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Model at `03f9abe`, six Opus judges | strict | 317 | 5 | 501 | 6 | 33 | 893 | 76 | 52.9% |
+| Run | Standard | L1 | L2 | L3 | L6 | L7 | L8 | L9 | L10 | L8 + L9 + L10 | Complete |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Model at `03f9abe`, six Opus judges | strict | 317 | 5 | 501 | 6 | 33 | 893 | 0 | 76 | 52.9% | 52.9% |
+| Model at `346876e` with open marks, four Opus judges on the 912 texts not yet accepted | plausible | 287 | 0 | 425 | 18 | 3 | 164 | 919 | 15 | 60.0% | 55.3% |
+
+L9 counts the texts whose every reading has the same graph as a circuit the dataset already held as accepted. Complete counts the texts at L8 or better whose readings leave nothing open.
 
 The judges also graded 747 circuits the dataset held for these texts: 588 were acceptable and 159 were not. They wrote 589 circuits for texts where nothing was acceptable. Every text of the sample now has an accepted circuit in the dataset.
 
