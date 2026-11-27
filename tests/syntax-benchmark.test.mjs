@@ -1,6 +1,7 @@
 // The benchmark of the `syntax` schema: the normal form of a circuit, the registry of judged
-// circuits, the packets for a judge, the check of verdict files, the levels and GOAL, the
-// agreement between strategies, and one run from start to table with stub strategies.
+// circuits, the labels of the messages, the packets for a judge, the check of verdict files, the
+// levels and GOAL, the agreement between strategies, the random sample, and runs from start to
+// table with stub strategies.
 // Run with SOP_KNOWLEDGE_DIR unset: nothing here may need a knowledge repository.
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -12,7 +13,9 @@ import {join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {coreOf, validateSyntax, writeCircuit} from '../lib/index.mjs'
 import {normalForm, withCores, emptyRegistry, addToRegistry, lookup, collectItems, packetsOf, runVerdicts, levelOf, tableOf, renderTable,
-  agreementOf, renderAgreement, readJsonl, readJson, LEVELS} from './benchmark/syntax/lib.mjs'
+  agreementOf, renderAgreement, chooseLabels, updateLabels, readLabels, writeLabels, readArguments, readSample, readJsonl, readJson, LEVELS,
+  defaultLabelsFile, defaultRegistryDir, labelsFileOf} from './benchmark/syntax/lib.mjs'
+import {messagesOfCsv, distinctMessages, drawSample} from './benchmark/syntax/sample.mjs'
 import {checkVerdicts, quotesTheMessage} from './benchmark/syntax/check.mjs'
 import {errorKind, takeOver} from './benchmark/syntax/run.mjs'
 import {convert} from './benchmark/syntax/convert-nlu.mjs'
@@ -80,14 +83,16 @@ test('the registry is looked up by message and core', () => {
   assert.equal(lookup(registry, text, null), undefined)
 })
 
-test('a judge\'s line counts before a line rewritten from an nlu reference', () => {
-  const converted = judged(text, verbReading, 'accepted', {run: 'convert-nlu:old-run', source: 'reference'})
-  const byJudge = judged(text, sameByAnotherHand, 'rejected', {grade: 'L3', run: 'later', source: 'reference'})
-  for (const order of [[converted, byJudge], [byJudge, converted]]) {
-    const registry = emptyRegistry()
-    for (const line of order) addToRegistry(registry, line)
-    assert.equal(lookup(registry, text, normalForm(text, verbReading).core).verdict, 'rejected')
-  }
+test('the registry holds only what a judge decided: a line without a verdict is ignored', () => {
+  const registry = emptyRegistry()
+  // a reference circuit rewritten from the nlu schema has no verdict in this schema
+  assert.equal(addToRegistry(registry, {text, sop: verbReading, core: coreOf(text, verbReading), source: 'reference', nlu: {judge: 'x', run: 'y', writtenBy: 'vss'}}), false)
+  assert.equal(lookup(registry, text, normalForm(text, verbReading).core), undefined)
+  // the first line read for a circuit counts
+  addToRegistry(registry, judged(text, verbReading, 'rejected', {grade: 'L3'}))
+  addToRegistry(registry, judged(text, sameByAnotherHand, 'accepted'))
+  assert.equal(lookup(registry, text, normalForm(text, verbReading).core).verdict, 'rejected')
+  assert.deepEqual([registry.rows, registry.ignored], [2, 1])
 })
 
 test('packets hold each unjudged circuit once and hide who wrote it', () => {
@@ -121,14 +126,35 @@ test('packets hold each unjudged circuit once and hide who wrote it', () => {
   assert.deepEqual(again.items.find(item => item.text === 'thanks').sources, ['beta', 'delta', 'gamma'])
 })
 
-test('a reference rewritten from nlu can be sent to the judge with the circuits that differ from it', () => {
-  const registry = emptyRegistry()
-  addToRegistry(registry, judged(text, verbReading, 'accepted', {run: 'convert-nlu:old-run', source: 'reference'}))
-  const outputs = [{strategy: 'alpha', rows: withCores([row('1', text, nounReading)])}, {strategy: 'beta', rows: withCores([row('1', text, sameByAnotherHand)])}]
-  assert.deepEqual(collectItems(outputs, registry).items.map(item => item.sources), [['alpha']])
-  const audited = collectItems(outputs, registry, {auditReferences: true}).items
-  assert.deepEqual(audited.map(item => item.sources).sort(), [['alpha'], ['reference']])
-  assert.doesNotMatch(JSON.stringify(packetsOf(audited)), /reference|alpha/u)
+test('every circuit accepted in a run becomes the label of its message', () => {
+  const circuit = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const item = (n, message, sop, sources) => ({n, text: message, sop: normalForm(message, sop).sop, core: normalForm(message, sop).core, sources})
+  // one label per message: the circuit most strategies wrote, then the first
+  const accepted = [item(1, 'move it', flat('move'), ['alpha']), item(2, 'move it', circuit('move'), ['beta', 'gamma']),
+    item(4, 'drop it', circuit('drop'), ['alpha']), item(3, 'drop it', flat('drop'), ['beta']), item(5, 'lift it', circuit('lift'), ['alpha'])]
+  assert.deepEqual([...chooseLabels(accepted)].map(([message, chosen]) => [message, chosen.n]), [['move it', 2], ['drop it', 3], ['lift it', 5]])
+
+  const labels = new Map()
+  assert.deepEqual(updateLabels(labels, accepted, 'run-1'), {set: 3, first: 3, replaced: 0})
+  assert.deepEqual(labels.get('move it'), {text: 'move it', label: circuit('move'), core: coreOf('move it', circuit('move')), run: 'run-1', source: 'beta+gamma', previous: null})
+  assert.equal(labels.get('drop it').label, flat('drop'))
+  // a later run: a new accepted circuit replaces the label whatever it was, and names the one it replaced
+  const later = [item(1, 'move it', flat('move'), ['delta']), item(2, 'lift it', circuit('lift'), ['delta']), item(3, 'turn it', circuit('turn'), ['delta'])]
+  assert.deepEqual(updateLabels(labels, later, 'run-2'), {set: 2, first: 1, replaced: 1})
+  assert.deepEqual(labels.get('move it'), {text: 'move it', label: flat('move'), core: coreOf('move it', flat('move')), run: 'run-2', source: 'delta', previous: coreOf('move it', circuit('move'))})
+  assert.equal(labels.get('lift it').run, 'run-1', 'the same circuit again leaves the label as it is')
+  assert.equal(labels.get('turn it').previous, null)
+
+  // the file: one line per message, read back with the same cores
+  const file = join(mkdtempSync(join(tmpdir(), 'syntax-benchmark-')), 'labels.jsonl')
+  assert.equal(readLabels(file).size, 0)
+  writeLabels(file, labels)
+  const lines = readJsonl(file)
+  assert.deepEqual(lines.map(line => Object.keys(line)), Array(4).fill(['text', 'label', 'core', 'run', 'source', 'previous']))
+  assert.deepEqual(lines.map(line => line.text), ['move it', 'drop it', 'lift it', 'turn it'])
+  for (const line of lines) assert.equal(line.core, coreOf(line.text, line.label))
+  assert.deepEqual([...readLabels(file)], [...labels])
 })
 
 test('the check of a verdict file', () => {
@@ -151,42 +177,79 @@ test('the check of a verdict file', () => {
   assert.equal(quotesTheMessage("the 'dog' is wrong", text), false)
 })
 
-test('levels and GOAL from the registry and the verdicts of the run', () => {
+test('levels and GOAL from the labels, the registry and the verdicts of the run', () => {
   const circuit = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
   const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const label = (message, sop) => [message, {text: message, label: sop, core: normalForm(message, sop).core, run: 'earlier', source: 'vss', previous: null}]
+  // before the run: three messages have a label; the registry holds what judges decided
+  const labels = new Map([label('move it', circuit('move')), label('lift it', circuit('lift')), label('turn it', circuit('turn'))])
   const registry = emptyRegistry()
-  addToRegistry(registry, judged('move it', circuit('move'), 'accepted'))                                       // L9 for who writes it
-  addToRegistry(registry, judged('drop it', flat('drop'), 'rejected', {grade: 'L3'}))                           // L3 from the registry
-  addToRegistry(registry, judged('lift it', flat('lift'), 'rejected', {grade: 'L3', source: 'reference'}))      // a reference a judge rejected
-  addToRegistry(registry, judged('lift it', circuit('lift'), 'accepted'))                                       // L10: accepted, reference rejected
-  const rows = withCores([row('1', 'move it', circuit('move')), row('2', 'drop it', flat('drop')), row('3', 'lift it', circuit('lift')),
-    row('4', 'turn it', circuit('turn')), row('5', 'hide it', flat('hide')), row('6', 'show it', circuit('show')), row('7', 'bend it', null, 'no circuit'), row('8', 'fold it', broken),
-    row('9', text, openReading)])
+  for (const [message, line] of labels) addToRegistry(registry, judged(message, line.label, 'accepted'))
+  addToRegistry(registry, judged('lift it', flat('lift'), 'accepted'))                    // accepted earlier, not the label
+  addToRegistry(registry, judged('drop it', flat('drop'), 'rejected', {grade: 'L3'}))     // rejected earlier
+  const rows = withCores([
+    row('1', 'move it', circuit('move')),   // equal to the label: L9
+    row('2', 'lift it', flat('lift')),      // already accepted, not the label: L8 with no judge
+    row('3', 'drop it', flat('drop')),      // already rejected: its grade
+    row('4', 'turn it', flat('turn')),      // a judge accepts it in this run and the message had another label: L10
+    row('5', 'hide it', circuit('hide')),   // a judge accepts it and the message had no label: L8
+    row('6', 'show it', flat('show')),      // a judge rejects it
+    row('7', 'bend it', circuit('bend')),   // no judge yet
+    row('8', 'fold it', null, 'no circuit'), row('9', 'tear it', broken),
+    row('10', text, openReading)])
   const outputs = [{strategy: 'alpha', rows}]
   const {items} = collectItems(outputs, registry)
-  assert.deepEqual(items.map(item => item.text), ['turn it', 'hide it', 'show it', text])
-  // the judge of this run reads three of the four waiting circuits
-  const verdicts = runVerdicts(items, [{n: 1, grade: 'L8', note: ''}, {n: 2, grade: 'L5', note: "'it'"}, {n: 4, grade: 'L8', note: ''}, {n: 77, grade: 'L8', note: ''}])
-  assert.deepEqual(rows.map(line => levelOf(line, registry, verdicts)), ['L9', 'L3', 'L10', 'L8', 'L5', 'waiting', 'L0', 'L0', 'L8'])
-  assert.deepEqual(rows.map(line => levelOf(line, registry)), ['L9', 'L3', 'L10', 'waiting', 'waiting', 'waiting', 'L0', 'L0', 'waiting'])
-  const [line] = tableOf(outputs, registry, verdicts)
-  assert.deepEqual(line.levels, {L0: 2, L1: 0, L2: 0, L3: 1, L4: 0, L5: 1, L6: 0, L7: 0, L8: 2, L9: 1, L10: 1})
-  assert.deepEqual([line.messages, line.waiting, line.accepted, line.ambiguous], [9, 1, 4, 1])
-  assert.equal(line.goal, 4 / 9)          // of all messages: a waiting message is not counted as accepted
-  assert.equal(line.atMost, 5 / 9)        // when the waiting circuit is accepted too
+  assert.deepEqual(items.map(item => item.text), ['turn it', 'hide it', 'show it', 'bend it', text])
+  const verdicts = runVerdicts(items, [{n: 1, grade: 'L8', note: ''}, {n: 2, grade: 'L8', note: ''}, {n: 3, grade: 'L5', note: "'it'"}, {n: 5, grade: 'L8', note: ''}, {n: 77, grade: 'L8', note: ''}])
+  assert.deepEqual(rows.map(line => levelOf(line, registry, verdicts, labels)), ['L9', 'L8', 'L3', 'L10', 'L8', 'L5', 'waiting', 'L0', 'L0', 'L8'])
+  // before any judge has worked
+  assert.deepEqual(rows.map(line => levelOf(line, registry, new Map(), labels)), ['L9', 'L8', 'L3', 'waiting', 'waiting', 'waiting', 'waiting', 'L0', 'L0', 'waiting'])
+  // with no labels, nothing is L9 or L10: what the registry holds as accepted is L8
+  assert.deepEqual(rows.map(line => levelOf(line, registry, verdicts)), ['L8', 'L8', 'L3', 'L8', 'L8', 'L5', 'waiting', 'L0', 'L0', 'L8'])
+  const [line] = tableOf(outputs, registry, verdicts, labels)
+  assert.deepEqual(line.levels, {L0: 2, L1: 0, L2: 0, L3: 1, L4: 0, L5: 1, L6: 0, L7: 0, L8: 3, L9: 1, L10: 1})
+  assert.deepEqual([line.messages, line.waiting, line.accepted, line.ambiguous], [10, 1, 5, 1])
+  assert.equal(line.goal, 5 / 10)         // of all messages: a waiting message is not counted as accepted
+  assert.equal(line.atMost, 6 / 10)       // when the waiting circuit is accepted too
   const shown = renderTable([line], {notRun: [['z3', 'not ported']]})
   assert.match(shown, /\| Strategy \| Messages \| L0 \| L1 \| L2 \| L3 \| L4 \| L5 \| L6 \| L7 \| L8 \| L9 \| L10 \| waiting \| GOAL \|/u)
-  assert.match(shown, /\| alpha \| 9 \| 2 \| 0 \| 0 \| 1 \| 0 \| 1 \| 0 \| 0 \| 2 \| 1 \| 1 \| 1 \| 44\.4% \|/u)
-  assert.match(shown, /\| alpha \| 1 \| 44\.4% \| 55\.6% \|/u)
-  assert.match(shown, /\| alpha \| 4 \| 1 \| 25\.0% \|/u)
+  assert.match(shown, /\| alpha \| 10 \| 2 \| 0 \| 0 \| 1 \| 0 \| 1 \| 0 \| 0 \| 3 \| 1 \| 1 \| 1 \| 50\.0% \|/u)
+  assert.match(shown, /\| alpha \| 1 \| 50\.0% \| 60\.0% \|/u)
+  assert.match(shown, /\| alpha \| 5 \| 1 \| 20\.0% \|/u)
   assert.match(shown, /z3 \(not ported\)/u)
-  // a reference rejected by the judge of this run opens L10 as well
-  const audit = collectItems(outputs, (() => { const before = emptyRegistry(); addToRegistry(before, judged('turn it', flat('turn'), 'accepted', {run: 'convert-nlu:x', source: 'reference'})); return before })(), {auditReferences: true})
-  const turn = audit.items.filter(item => item.text === 'turn it')
-  assert.deepEqual(turn.map(item => item.sources).sort(), [['alpha'], ['reference']])
-  const auditVerdicts = runVerdicts(audit.items, turn.map(item => ({n: item.n, grade: item.sources[0] === 'reference' ? 'L3' : 'L8', note: "'it'"})))
-  assert.equal(levelOf(rows[3], emptyRegistry(), auditVerdicts), 'L10')
   assert.equal(LEVELS.length, 11)
+})
+
+test('a random sample of the dataset: distinct texts, a seeded order, exclusions', () => {
+  const csv = 'text,sop,sop1\r\nmove it,"@a x\n@b y",\r\n"say ""hi"", then stop",@a x,@b y\r\n\r\n"two\nlines",@a x\r\nmove it,@a x\r\n'
+  assert.deepEqual(messagesOfCsv(csv), [{record: 1, text: 'move it'}, {record: 2, text: 'say "hi", then stop'}, {record: 3, text: 'two\nlines'}, {record: 4, text: 'move it'}])
+  assert.throws(() => messagesOfCsv('sop,text\nx,y\n'), /first column/u)
+  const {messages, rows} = distinctMessages([{file: 'a/one.csv', content: csv}, {file: 'b/two.csv', content: 'text,sop\nmove it,@a x\ndrop it,@a x\n'}])
+  assert.equal(rows, 6)
+  assert.deepEqual(messages.map(message => message.id), ['a/one.csv#1', 'a/one.csv#2', 'a/one.csv#3', 'b/two.csv#2'])
+
+  const all = Array.from({length: 1000}, (_, index) => ({id: 'f.csv#' + (index + 1), text: 'message ' + index}))
+  const sample = drawSample(all, {seed: 'one', share: 0.05})
+  assert.equal(sample.length, 50)
+  assert.equal(new Set(sample.map(message => message.text)).size, 50)
+  assert.deepEqual(drawSample([...all].reverse(), {seed: 'one', share: 0.05}), sample, 'the same seed draws the same sample, whatever the order of the files')
+  assert.notDeepEqual(drawSample(all, {seed: 'two', share: 0.05}), sample)
+  assert.notDeepEqual(sample.map(message => message.id), [...sample].sort((a, b) => a.id.localeCompare(b.id)).map(message => message.id), 'the order is the order drawn')
+  // excluded messages are never drawn, and the sample keeps its size
+  const excluded = new Set(sample.slice(0, 20).map(message => message.text))
+  const fresh = drawSample(all, {seed: 'one', share: 0.05, excluded})
+  assert.equal(fresh.length, 50)
+  assert.equal(fresh.some(message => excluded.has(message.text)), false)
+  assert.deepEqual(fresh.slice(0, 30), sample.slice(20))
+  assert.throws(() => drawSample(all, {seed: 'one', share: 1, excluded}), /Only 980 messages are left/u)
+  assert.throws(() => drawSample(all, {seed: 'one', share: 0}), /share/u)
+  // several files after --exclude, and a sample file that is not gzipped
+  assert.deepEqual(readArguments(['out.gz', '--share', '0.1', '--exclude', 'a.gz', 'b.gz', '--seed', 's'], ['exclude']), {words: ['out.gz'], named: {share: '0.1', exclude: ['a.gz', 'b.gz'], seed: 's'}})
+  const folder = mkdtempSync(join(tmpdir(), 'syntax-benchmark-'))
+  writeFileSync(join(folder, 'plain.json'), JSON.stringify([{id: '1', text: 'a', references: ['x']}]))
+  writeFileSync(join(folder, 'packed.json.gz'), gzipSync(JSON.stringify([{id: '1', text: 'a', references: ['x']}])))
+  assert.deepEqual(readSample(join(folder, 'plain.json')), [{id: '1', text: 'a'}])
+  assert.deepEqual(readSample(join(folder, 'packed.json.gz')), [{id: '1', text: 'a'}])
 })
 
 test('agreement between strategies, by the core of their circuits', () => {
@@ -311,7 +374,12 @@ test('an nlu circuit is rewritten by the rules of the specification', () => {
 })
 
 test('one run from start to table, with stub strategies and a registry of its own', () => {
+  // the labels of the dataset stand beside its registry; a registry named for a trial brings its own labels
+  assert.equal(labelsFileOf(), defaultLabelsFile)
+  assert.equal(labelsFileOf(defaultRegistryDir), defaultLabelsFile)
+  const datasetLabels = existsSync(defaultLabelsFile) ? readFileSync(defaultLabelsFile, 'utf8') : null
   const folder = mkdtempSync(join(tmpdir(), 'syntax-benchmark-'))
+  const labelsFile = join(folder, 'labels.jsonl')
   const run = join(folder, 'run'), registry = join(folder, 'registry'), sampleFile = join(folder, 'sample.json.gz'), strategies = join(folder, 'strategies.mjs')
   const sample = ['move it', 'forget it', 'throw it', 'crash it', 'skip it', 'drop it'].map((message, index) => ({id: 'm' + index, text: message, references: ['never read']}))
   writeFileSync(sampleFile, gzipSync(JSON.stringify(sample)))
@@ -328,6 +396,7 @@ const reader = write => ({schema: 'syntax', async open() { return {async analyse
 }, async close() {}}}})
 export const careful = {name: 'careful', ...reader(full)}
 export const hasty = {name: 'hasty', ...reader((verb, thing) => verb === 'drop' ? flat(verb, thing) : full(verb, thing))}
+export const bold = {name: 'bold', ...reader((verb, thing) => verb === 'move' ? flat(verb, thing) : full(verb, thing))}
 export const old = {name: 'old', async open() { return {async analyse() { return {analyses: []} }, async close() {}} }}
 export const closed = {name: 'closed', schema: 'syntax', async open() { throw new Error('no model') }}
 `)
@@ -390,8 +459,18 @@ export const closed = {name: 'closed', schema: 'syntax', async open() { throw ne
   for (const line of stored) assert.equal(line.core, coreOf(line.text, line.sop))
   assert.equal(node('judge-publish.mjs', run, '--tag', 'round-1', '--registry', registry).status, 1, 'a tag is never overwritten')
   assert.equal(fullNumber !== flatNumber, true)
+  // every accepted circuit is now the label of its message; the labels before the run are kept in the run folder
+  assert.match(published.stdout, /Labels: 2 messages got the circuit accepted in this run as their label \(2 had no label, 0 had another one\)/u)
+  const labelled = readJsonl(labelsFile)
+  assert.deepEqual(labelled.map(line => Object.keys(line)), Array(2).fill(['text', 'label', 'core', 'run', 'source', 'previous']))
+  assert.deepEqual(labelled.map(line => [line.text, line.run, line.source, line.previous]), [['move it', 'round-1', 'careful+hasty', null], ['drop it', 'round-1', 'careful', null]])
+  for (const line of labelled) {
+    assert.equal(line.label, stored.find(other => other.text === line.text && other.verdict === 'accepted').sop)
+    assert.equal(line.core, coreOf(line.text, line.label))
+  }
+  assert.equal(readFileSync(join(run, 'key', 'labels-before.jsonl'), 'utf8'), '')
 
-  // judged in this run: L8. The table does not change when the verdicts are published.
+  // judged in this run, and the messages had no label: L8. The table does not change when the verdicts are published.
   const table = node('table.mjs', run, '--registry', registry)
   assert.equal(table.status, 0, table.stderr)
   assert.deepEqual(levels('careful').levels, {L0: 4, L1: 0, L2: 0, L3: 0, L4: 0, L5: 0, L6: 0, L7: 0, L8: 2, L9: 0, L10: 0})
@@ -402,7 +481,7 @@ export const closed = {name: 'closed', schema: 'syntax', async open() { throw ne
   assert.equal(agreement.status, 0, agreement.stderr)
   assert.match(agreement.stdout, /All 2 strategies wrote the same circuit \| 1 \| 16\.7% \| 1 \| 0 \| 0 \|/u)
 
-  // a later run reuses the files and needs no judge: what was judged is now L9
+  // a later run reuses the files and needs no judge: a circuit equal to the label is L9
   const later = join(folder, 'later')
   assert.equal(node('run.mjs', later, '--strategies', strategies, '--sample', sampleFile, '--reuse', run, '--only', 'careful,hasty').status, 0)
   assert.equal(readJson(join(later, 'summary.json')).strategies.hasty.status, 'reused')
@@ -412,6 +491,39 @@ export const closed = {name: 'closed', schema: 'syntax', async open() { throw ne
   assert.equal(node('table.mjs', later, '--registry', registry).status, 0)
   const laterLevels = readJson(join(later, 'table.json')).strategies
   assert.deepEqual(laterLevels.map(line => [line.strategy, line.levels.L9, line.levels.L3, line.levels.L8, line.waiting]), [['careful', 2, 0, 0, 0], ['hasty', 1, 1, 0, 0]])
+  assert.match(readFileSync(join(later, 'table.md'), 'utf8'), /Before the run, 2 of the 6 messages had a label/u)
+
+  // a third run: another strategy writes another circuit for "move it", and a judge accepts it
+  const third = join(folder, 'third'), onlyBold = join(folder, 'strategies-bold.mjs')
+  writeFileSync(onlyBold, `export const strategyModules = {bold: ['./stub.mjs', 'bold']}\n`)
+  assert.equal(node('run.mjs', third, '--strategies', onlyBold, '--sample', sampleFile).status, 0)
+  const thirdPrepared = node('judge-prepare.mjs', third, '--registry', registry)
+  assert.match(thirdPrepared.stdout, /\| bold \| 6 \| 4 \| 1 \| 0 \| 0 \| 1 \|/u)      // one circuit equal to the label, one for the judge
+  const [replacing] = readJsonl(join(third, 'judging', 'packet-1.jsonl'))
+  assert.deepEqual([replacing.n, replacing.text], [1, 'move it'])
+  writeFileSync(join(third, 'judging', 'verdicts-1.jsonl'), '{"n": 1, "grade": "L8", "note": ""}\n')
+  assert.equal(node('table.mjs', third, '--registry', registry).status, 0)
+  const thirdLevels = () => readJson(join(third, 'table.json')).strategies[0].levels
+  assert.deepEqual(thirdLevels(), {L0: 4, L1: 0, L2: 0, L3: 0, L4: 0, L5: 0, L6: 0, L7: 0, L8: 0, L9: 1, L10: 1})
+  const replaced = node('judge-publish.mjs', third, '--tag', 'round-2', '--judge', 'test-judge', '--registry', registry)
+  assert.equal(replaced.status, 0, replaced.stderr)
+  assert.match(replaced.stdout, /Labels: 1 messages got the circuit accepted in this run as their label \(0 had no label, 1 had another one\)/u)
+  const relabelled = readJsonl(labelsFile)
+  assert.deepEqual(relabelled.map(line => [line.text, line.run, line.source, line.previous]), [['move it', 'round-2', 'bold', labelled[0].core], ['drop it', 'round-1', 'careful', null]])
+  assert.equal(relabelled[0].label, replacing.sop)
+  // the tables of the three runs stay as they were: each run is compared with the labels it found
+  for (const folderOfRun of [run, later, third]) assert.equal(node('table.mjs', folderOfRun, '--registry', registry).status, 0)
+  assert.deepEqual(thirdLevels(), {L0: 4, L1: 0, L2: 0, L3: 0, L4: 0, L5: 0, L6: 0, L7: 0, L8: 0, L9: 1, L10: 1})
+  assert.deepEqual([levels('careful').levels.L8, levels('careful').levels.L9, levels('careful').levels.L10], [2, 0, 0])
+  assert.deepEqual(readJson(join(later, 'table.json')).strategies.map(line => line.levels.L9), [2, 1])
+  // a fourth run finds the new labels: the older accepted circuit of "move it" is still accepted, and is not the label
+  const fourth = join(folder, 'fourth')
+  assert.equal(node('run.mjs', fourth, '--strategies', strategies, '--sample', sampleFile, '--reuse', run, '--only', 'careful').status, 0)
+  assert.equal(node('table.mjs', fourth, '--registry', registry).status, 0)
+  assert.deepEqual(readJson(join(fourth, 'table.json')).strategies[0].levels, {L0: 4, L1: 0, L2: 0, L3: 0, L4: 0, L5: 0, L6: 0, L7: 0, L8: 1, L9: 1, L10: 0})
+
+  // none of this touched the labels of the dataset
+  assert.equal(existsSync(defaultLabelsFile) ? readFileSync(defaultLabelsFile, 'utf8') : null, datasetLabels)
 })
 
 test('a strategy that hangs loses one message and the run goes on', () => {

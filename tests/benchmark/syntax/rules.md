@@ -80,7 +80,11 @@ Give L8, or the first of L1 to L6 that applies.
 - A participle or a subordinate clause tied to nothing is L6. Any relation to its clause or to the nominal it describes is enough.
 - A number or a name right after a noun ("block 2", "x 120", "the node Intro") may be a `dependent` in that noun's nominal, or a nominal of its own tied to the noun by a relation without a marker. Both pass. Left tied to nothing, it is L6.
 - A word that grades a linking word ("right behind", "just above") may be a `modifier` of the clause the relation belongs to.
-- "And", "Then" or "So" at the start of a message, with nothing before it to join, is a `discourse` word.
+- "And", "Then" or "So" at the start of a message, with nothing before it to join, is a `discourse` word. So is a conjunction between two `modifier` words of one clause ("flat and dry"): the schema has no wire for that pair.
+- A quantity phrase before a noun ("a pair of trees", "a couple of boxes", "all of the cushions", "every one of the clouds") may be held as `dependent` words of that noun.
+- Two bare nouns side by side after a marker ("with id neck", "type radar"): either may be the `head`.
+- A fixed phrase of time or manner ("from now on", "after that", "for now", "side by side", "at once") may be held whole as a `modifier`.
+- A participle that names or describes ("a group called g2", "a bird facing left") is the `verb` of a nonfinite clause tied to the thing. Written as the `marker` of a relation between the thing and its name, it also passes.
 
 ## What you write
 

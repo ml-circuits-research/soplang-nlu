@@ -1,6 +1,8 @@
-// Runs every ported strategy over the fixed sample and writes one file per strategy.
-//   node tests/benchmark/syntax/run.mjs <run-folder> [--only a,b] [--limit n] [--reuse <folder>]
-//        [--timeout <seconds>] [--jobs n] [--options <file>] [--sample <file>] [--strategies <file>]
+// Runs every ported strategy over a sample of messages and writes one file per strategy.
+//   node tests/benchmark/syntax/run.mjs <run-folder> [--sample <file>] [--only a,b] [--limit n] [--reuse <folder>]
+//        [--timeout <seconds>] [--jobs n] [--options <file>] [--strategies <file>]
+// --sample <file>: a JSON array of {id, text}, gzipped or not, such as sample.mjs writes. Without it,
+// the earlier fixed sample eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz.
 // <run-folder>/<strategy>.jsonl   one line per message: {id, text, sop, error, ms}
 // <run-folder>/summary.json       per strategy: messages, valid circuits, errors by kind, median ms
 // A strategy takes part when its exported object declares `schema: 'syntax'`; the others are
@@ -75,7 +77,7 @@ async function child() {
 
 // ---- the run
 async function parent() {
-  if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/run.mjs <run-folder> [--only a,b] [--limit n] [--reuse <folder>]'); process.exit(2) }
+  if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/run.mjs <run-folder> [--sample <file>] [--only a,b] [--limit n] [--reuse <folder>]'); process.exit(2) }
   const runDir = resolve(words[0])
   mkdirSync(join(runDir, 'logs'), {recursive: true})
   const sample = readSample(sampleSource).slice(0, limit)

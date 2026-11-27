@@ -1,10 +1,12 @@
 // Evaluation only: rewrites the `nlu` circuits that judges accepted into `syntax` circuits and
-// writes them into the registry of judged syntax circuits as reference circuits.
-//   node tests/benchmark/syntax/convert-nlu.mjs [--registry <folder>] [--nlu <folder>] [--knowledge <folder>]
-//        [--out reference-nlu-v1.jsonl] [--report <file>] [--dry]
+// writes them as reference circuits, for comparison.
+//   node tests/benchmark/syntax/convert-nlu.mjs [--out <file>] [--nlu <folder>] [--knowledge <folder>] [--report <file>] [--dry]
 // It follows the table "How it relates to the `nlu` schema" of docs/syntax-schema.md and the rules of
 // that document. A circuit is rewritten only when the rules settle every word; the others are left
 // out and counted with the reason. Rejected `nlu` circuits are skipped.
+// The file is written beside the registry of judged circuits, not into it: no judge has read these
+// circuits in the `syntax` schema, so they are neither accepted nor labels, and no level counts them.
+// A line is {text, sop, core, source: "reference", nlu: {judge, run, writtenBy}}.
 // This is the one tool of the syntax benchmark that reads the old checker and, through it, the
 // knowledge repository: the old checker gives the position of each quoted value in the message.
 // No formalizer may depend on this file.
@@ -12,7 +14,7 @@ import {existsSync, readdirSync} from 'node:fs'
 import {join, resolve, relative} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
 import {wordsOf, writeCircuit, validateSyntax} from '../../../lib/syntax.mjs'
-import {readArguments, readJsonl, writeJsonl, normalForm, defaultRegistryDir, packageRoot} from './lib.mjs'
+import {readArguments, readJsonl, writeJsonl, normalForm, packageRoot} from './lib.mjs'
 
 /** A circuit the rules do not settle: left out, with the reason. */
 export class NotConverted extends Error {}
@@ -244,10 +246,10 @@ export function placeValues(text, wires, placements, tokens) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const {named} = readArguments(process.argv.slice(2))
-  const registryDir = resolve(named.registry ?? defaultRegistryDir)
-  const nluDir = resolve(named.nlu ?? join(registryDir, '../../../nlu/v1/judged'))
+  const annotations = join(packageRoot, '../webmeet-dataset/annotations')
+  const nluDir = resolve(named.nlu ?? join(annotations, 'nlu/v1/judged'))
   const knowledgeDir = resolve(named.knowledge ?? join(packageRoot, '../sop-knowledge-worlds'))
-  const outFile = join(registryDir, typeof named.out === 'string' ? named.out : 'reference-nlu-v1.jsonl')
+  const outFile = resolve(typeof named.out === 'string' ? named.out : join(annotations, 'syntax/v1/reference/reference-nlu-v1.jsonl'))
   // the old checker, loaded here only: it reads the SOP parser of the knowledge repository
   const {createAnalysisValidator, sourceTokenMatches} = await import('../../../lib/check-analysis.mjs')
   const validate = await createAnalysisValidator({knowledgeDir})
@@ -274,9 +276,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
           if (seenCore.has(judged.text + '\0' + normal.core)) { same++; continue }
           seenCore.add(judged.text + '\0' + normal.core)
           covered.add(judged.text)
-          rows.push({text: judged.text, sop: normal.sop, core: normal.core, verdict: 'accepted', grade: 'L8',
-            note: `rewritten by rule from an nlu circuit that a judge accepted (written by ${reading.source}); not yet read by a judge in the syntax schema`,
-            judge: judged.judge ?? 'unknown', run: 'convert-nlu:' + (judged.run ?? name.replace(/\.jsonl$/u, '')), source: 'reference'})
+          rows.push({text: judged.text, sop: normal.sop, core: normal.core, source: 'reference',
+            nlu: {judge: judged.judge ?? 'unknown', run: judged.run ?? name.replace(/\.jsonl$/u, ''), writtenBy: reading.source}})
         } catch (error) {
           if (!(error instanceof NotConverted)) throw error
           reasons.set(error.message, (reasons.get(error.message) ?? 0) + 1)

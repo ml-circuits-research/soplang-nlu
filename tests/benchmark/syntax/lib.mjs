@@ -1,5 +1,6 @@
 // The shared parts of the syntax benchmark: the normal form of a circuit, the registry of judged
-// circuits, the packets for a judge, the levels and the agreement between strategies.
+// circuits, the labels of the messages, the packets for a judge, the levels and the agreement
+// between strategies.
 // Nothing here reads a knowledge repository or the `nlu` schema.
 import {readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync} from 'node:fs'
 import {gunzipSync} from 'node:zlib'
@@ -12,6 +13,9 @@ const here = dirname(fileURLToPath(import.meta.url))
 export const packageRoot = resolve(here, '../../..')
 export const sampleFile = join(packageRoot, 'eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz')
 export const defaultRegistryDir = resolve(packageRoot, '../webmeet-dataset/annotations/syntax/v1/judged')
+export const defaultLabelsFile = resolve(packageRoot, '../webmeet-dataset/annotations/syntax/v1/labels.jsonl')
+/** The labels file stands beside the folder of judged circuits, so a registry named for a trial brings its own labels. */
+export const labelsFileOf = (registryDir = defaultRegistryDir, named) => resolve(typeof named === 'string' ? named : join(registryDir, '..', 'labels.jsonl'))
 export const LEVELS = Array.from({length: 11}, (_, level) => 'L' + level)
 export const GRADES = ['L8', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
 export const GOAL_LEVELS = ['L8', 'L9', 'L10']
@@ -22,19 +26,24 @@ export const writeJsonl = (file, rows) => { mkdirSync(dirname(file), {recursive:
 export const readJson = file => JSON.parse(readFileSync(file, 'utf8'))
 export const writeJson = (file, value) => { mkdirSync(dirname(file), {recursive: true}); writeFileSync(file, JSON.stringify(value, null, 2) + '\n') }
 
-/** The fixed sample: [{id, text}]. Whatever else the file holds for a message is left out. */
+/** A sample: [{id, text}], from a JSON array that may be gzipped. Whatever else the file holds for a message is left out. */
 export function readSample(file = sampleFile) {
-  return JSON.parse(gunzipSync(readFileSync(file))).map(({id, text}) => ({id, text}))
+  const bytes = readFileSync(file)
+  return JSON.parse(bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes).map(({id, text}) => ({id, text}))
 }
 
-/** Command line: positional words and --name value pairs; a --name with no value is true. */
-export function readArguments(argv) {
+/**
+ * Command line: positional words and --name value pairs; a --name with no value is true.
+ * @param several names that take every word up to the next --name, as a list
+ */
+export function readArguments(argv, several = []) {
   const words = [], named = {}
   for (let at = 0; at < argv.length; at++) {
     if (!argv[at].startsWith('--')) { words.push(argv[at]); continue }
-    const next = argv[at + 1]
-    if (next === undefined || next.startsWith('--')) named[argv[at].slice(2)] = true
-    else { named[argv[at].slice(2)] = next; at++ }
+    const name = argv[at].slice(2), next = argv[at + 1]
+    if (several.includes(name)) { named[name] = []; while (argv[at + 1] !== undefined && !argv[at + 1].startsWith('--')) named[name].push(argv[++at]) }
+    else if (next === undefined || next.startsWith('--')) named[name] = true
+    else { named[name] = next; at++ }
   }
   return {words, named}
 }
@@ -123,20 +132,15 @@ export function withCores(rows) {
 }
 
 // ---- the registry of judged circuits
-// One line per judged circuit: {text, sop, core, verdict, grade, note, judge, run, source}.
-// A row written by the converter of older `nlu` references (run "convert-nlu…") was never read by a
-// judge in this schema: a judge's row for the same circuit counts before it.
-export const isConverted = row => String(row?.run ?? '').startsWith('convert-nlu')
-export const sourcesOf = row => String(row?.source ?? '').split('+')
-
+// One line per circuit a judge read in this schema: {text, sop, core, verdict, grade, note, judge, run, source}.
+// The first line read for a circuit counts; judge-publish.mjs never writes a second one.
 export function emptyRegistry() { return {files: [], rows: 0, ignored: 0, byText: new Map()} }
 export function addToRegistry(registry, row) {
   const normal = normalForm(row.text, row.sop)
   if (!normal?.core || !['accepted', 'rejected'].includes(row.verdict)) { registry.ignored++; return false }
   registry.rows++
   const circuits = registry.byText.get(row.text) ?? registry.byText.set(row.text, new Map()).get(row.text)
-  const seen = circuits.get(normal.core)
-  if (!seen || (isConverted(seen) && !isConverted(row))) circuits.set(normal.core, {...row, core: normal.core})
+  if (!circuits.has(normal.core)) circuits.set(normal.core, {...row, core: normal.core})
   return true
 }
 /** Reads every *.jsonl of the folder, in the order of their names. The core is computed again from the circuit. */
@@ -150,7 +154,52 @@ export function readRegistry(dir = defaultRegistryDir) {
   return registry
 }
 export const lookup = (registry, text, core) => core ? registry.byText.get(text)?.get(core) : undefined
-export const circuitsOf = (registry, text) => [...registry.byText.get(text)?.values() ?? []]
+
+// ---- the labels of the messages
+// One line per message: {text, label, core, run, source, previous}. The label is the accepted circuit
+// of the message, in normal form. `previous` is the core of the label it replaced, or null.
+/** The labels as Map text -> line. The core is computed again from the label; a line whose label is no valid circuit is left out. */
+export function readLabels(file = defaultLabelsFile) {
+  const labels = new Map()
+  if (!existsSync(file)) return labels
+  for (const line of readJsonl(file)) {
+    const normal = normalForm(line.text, line.label)
+    if (normal?.core) labels.set(line.text, {...line, core: normal.core})
+  }
+  return labels
+}
+export function writeLabels(file, labels) {
+  writeJsonl(file, [...labels.values()].map(({text, label, core, run, source, previous}) => ({text, label, core, run, source, previous})))
+}
+/**
+ * One label per message from the circuits a judge accepted in one run: the circuit most strategies
+ * wrote, then the first by its number.
+ * @param accepted items {n, text, sop, core, sources}
+ * @returns Map text -> item
+ */
+export function chooseLabels(accepted) {
+  const chosen = new Map()
+  for (const item of [...accepted].sort((a, b) => a.n - b.n)) {
+    const best = chosen.get(item.text)
+    if (!best || item.sources.length > best.sources.length) chosen.set(item.text, item)
+  }
+  return chosen
+}
+/**
+ * Every accepted circuit of a run becomes the label of its message, whatever label the message had.
+ * @param labels Map text -> line; changed in place
+ * @returns {set, first, replaced}: messages that got this run's label; how many had none; how many had another
+ */
+export function updateLabels(labels, accepted, run) {
+  let first = 0, replaced = 0
+  for (const [text, item] of chooseLabels(accepted)) {
+    const before = labels.get(text)
+    if (before?.core === item.core) continue
+    labels.set(text, {text, label: item.sop, core: item.core, run, source: item.sources.join('+'), previous: before?.core ?? null})
+    if (before) replaced++; else first++
+  }
+  return {set: first + replaced, first, replaced}
+}
 
 // ---- what needs a judge
 /**
@@ -158,11 +207,9 @@ export const circuitsOf = (registry, text) => [...registry.byText.get(text)?.val
  * of strategies wrote them.
  * @param outputs from readOutputs
  * @param earlier items of an earlier call for the same run: they keep their numbers
- * @param auditReferences also collect the converted reference circuits of every message that has a
- *   circuit to judge, so that a judge reads them in this schema
  * @returns {items, added}: every item is {n, text, sop, core, sources}; `added` are the new ones
  */
-export function collectItems(outputs, registry, {earlier = [], auditReferences = false} = {}) {
+export function collectItems(outputs, registry, {earlier = []} = {}) {
   const items = earlier.map(item => ({...item}))
   const known = new Map(items.map(item => [item.text + '\0' + item.core, item]))
   const texts = [], circuits = new Map()
@@ -176,9 +223,6 @@ export function collectItems(outputs, registry, {earlier = [], auditReferences =
   const added = []
   for (const text of texts) {
     const waiting = [...circuits.get(text)].filter(([core]) => !lookup(registry, text, core))
-    if (auditReferences && waiting.length) {
-      for (const row of circuitsOf(registry, text)) if (isConverted(row) && sourcesOf(row).includes('reference')) waiting.push([row.core, {sop: normalForm(text, row.sop).sop, sources: new Set(['reference'])}])
-    }
     // the order inside a message follows the circuits, never the strategies
     for (const [core, circuit] of waiting.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)) {
       const item = known.get(text + '\0' + core)
@@ -209,38 +253,36 @@ export function runVerdicts(items, verdicts) {
   }
   return found
 }
-/** Is a reference circuit of this message recorded as rejected, in the registry or by this run's judge? */
-export function referenceRejected(text, registry, verdicts = new Map()) {
-  return circuitsOf(registry, text).some(row => row.verdict === 'rejected' && sourcesOf(row).includes('reference')) ||
-    [...verdicts.get(text)?.values() ?? []].some(verdict => verdict.grade !== 'L8' && verdict.sources.includes('reference'))
-}
 /**
  * The level of one message for one strategy.
  *   L0        no valid circuit
- *   L1–L6     the judge's grade for a rejected circuit
- *   L8        accepted by a judge in this run
- *   L9        accepted and already in the registry: no judge was needed
- *   L10       accepted, while a reference circuit of the message is recorded as rejected
+ *   L1–L6     the circuit is rejected: the grade a judge gave it, in this run or in the registry
+ *   L8        the circuit is accepted and is not the label the message had: a judge accepted it in
+ *             this run and the message had no label, or the registry already held it as accepted
+ *   L9        the circuit is equal to the label the message had before the run: no judge was needed
+ *   L10       a judge accepted the circuit in this run and the message had another label before:
+ *             the label is replaced
  *   waiting   no judge has read the circuit yet
  * L7 is unused: a strategy returns one circuit.
+ * @param labelsBefore Map text -> {core}: the labels as they were before the run
  */
-export function levelOf(row, registry, verdicts = new Map()) {
+export function levelOf(row, registry, verdicts = new Map(), labelsBefore = new Map()) {
   if (!row.core) return 'L0'
+  const label = labelsBefore.get(row.text)
+  if (label?.core === row.core) return 'L9'
   const now = verdicts.get(row.text)?.get(row.core)
-  const before = now ? undefined : lookup(registry, row.text, row.core)
-  if (!now && !before) return 'waiting'
-  const grade = now ? now.grade : before.verdict === 'accepted' ? 'L8' : before.grade
-  if (grade !== 'L8') return grade
-  if (referenceRejected(row.text, registry, verdicts)) return 'L10'
-  return now ? 'L8' : 'L9'
+  if (now) return now.grade !== 'L8' ? now.grade : label ? 'L10' : 'L8'
+  const before = lookup(registry, row.text, row.core)
+  if (before) return before.verdict === 'accepted' ? 'L8' : before.grade
+  return 'waiting'
 }
 /** One row per strategy: the count of every level, the waiting ones, GOAL, and the accepted circuits that leave an attachment open. */
-export function tableOf(outputs, registry, verdicts = new Map()) {
+export function tableOf(outputs, registry, verdicts = new Map(), labelsBefore = new Map()) {
   return outputs.map(({strategy, rows}) => {
     const levels = Object.fromEntries(LEVELS.map(level => [level, 0]))
     let waiting = 0, ambiguous = 0
     for (const row of rows) {
-      const level = levelOf(row, registry, verdicts)
+      const level = levelOf(row, registry, verdicts, labelsBefore)
       if (level === 'waiting') { waiting++; continue }
       levels[level]++
       if (GOAL_LEVELS.includes(level) && / attachment=ambiguous(?= |$)/mu.test(row.sop)) ambiguous++
@@ -257,7 +299,7 @@ export function renderTable(table, {notRun = []} = {}) {
   for (const row of table) lines.push(`| ${row.strategy} | ${row.messages} | ${LEVELS.map(level => row.levels[level]).join(' | ')} | ${row.waiting} | ${percent(row.goal)} |`)
   const out = [lines.join('\n'), '',
     'GOAL is the share of all messages at L8, L9 or L10. A message whose circuit still waits for a judge has no level: it stands in the column "waiting" and is not counted in GOAL.',
-    'L0 no valid circuit. L1 to L6 a circuit rejected by a judge, with the judge\'s grade. L7 is unused, since a strategy returns one circuit. L8 accepted by a judge in this run. L9 accepted and already in the registry, so no judge was needed. L10 accepted, while a reference circuit of that message is recorded as rejected.']
+    'L0 no valid circuit. L1 to L6 a circuit rejected by a judge, with the judge\'s grade. L7 is unused, since a strategy returns one circuit. L8 an accepted circuit that is not the label the message had: a judge accepted it in this run and the message had no label, or the registry already held it as accepted. L9 the circuit is equal to the label the message had before the run, so no judge was needed. L10 a judge accepted the circuit in this run and the message had another label before, so the label is replaced.']
   if (table.some(row => row.waiting)) {
     out.push('', 'Circuits are still waiting for a judge, so GOAL is not final. It can only rise:', '',
       '| Strategy | Waiting | GOAL now | GOAL if every waiting circuit is accepted |', '| --- | ---: | ---: | ---: |',
@@ -327,6 +369,19 @@ export function renderAgreement(result) {
 // ---- the judging files of a run
 export const judgingDir = runDir => join(runDir, 'judging')
 export const itemsFile = runDir => join(runDir, 'key', 'items.jsonl')
+// the labels as they were before the run: a copy taken the first time the run is prepared or published
+export const labelsBeforeFile = runDir => join(runDir, 'key', 'labels-before.jsonl')
+/** Keeps the labels of this moment as the labels before the run, unless the run already has its copy. */
+export function keepLabelsBefore(runDir, labelsFile = defaultLabelsFile) {
+  if (existsSync(labelsBeforeFile(runDir))) return false
+  mkdirSync(dirname(labelsBeforeFile(runDir)), {recursive: true})
+  writeFileSync(labelsBeforeFile(runDir), existsSync(labelsFile) ? readFileSync(labelsFile) : '')
+  return true
+}
+/** The labels before the run: the run's copy, or the labels of this moment when the run has none yet. */
+export function readLabelsBefore(runDir, labelsFile = defaultLabelsFile) {
+  return readLabels(existsSync(labelsBeforeFile(runDir)) ? labelsBeforeFile(runDir) : labelsFile)
+}
 export function readItems(runDir) { return existsSync(itemsFile(runDir)) ? readJsonl(itemsFile(runDir)) : [] }
 /**
  * The verdicts of the run that pass the check of check.mjs: {verdicts: [{n, grade, note}], problems}.
