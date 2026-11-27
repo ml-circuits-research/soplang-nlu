@@ -38,6 +38,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       modifier: Array.from({length: last - first}, (_, k) => first + k), head: [last, last]}
   })
 
+  // "by product and region": a bare word listed after a thing is a thing as well
+  for (let i = 2; i < units.length; i++) {
+    const unit = units[i]
+    if (unit.type !== 'complement' || unit.degree.length || unit.value[0] !== unit.value[1]) continue
+    let j = i - 1
+    while (units[j]?.type === 'conjunction' || units[j]?.type === 'separator') j--
+    if (j === i - 1 || units[j]?.type !== 'entity' || !units.slice(j + 1, i).some(joiner => joiner.type === 'conjunction')) continue
+    units[i] = {type: 'entity', first: unit.first, last: unit.last, determiner: [], quantity: [], degree: [], compound: [], modifier: [], head: unit.value}
+  }
+
   // ---- entities
   const entityWire = unit => {
     if (unit.wire) return unit.wire
@@ -115,10 +125,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         clause.role = 'infinitive'
         clause.marker = previous
         clause.start = i - 1
-        if (list[i - 2]?.type === 'entity' && list[i - 3]?.type === 'verb') { clause.subject = list[i - 2]; clause.start = i - 2 }
+        const teller = list[i - 3]?.type === 'verb' ? tokens[list[i - 3].predicate[0]].word : null
+        if (list[i - 2]?.type === 'entity' && teller && (list[i - 2].pronoun || lexicon.directs(teller))) { clause.subject = list[i - 2]; clause.start = i - 2 }
+        else if (list[i - 2]?.type === 'entity') clause.purposeOf = list[i - 2]      // "a button to close the window"
       } else if (previous?.type === 'entity' && bare && verb.form && !(verb.form === 'past' && opensClause(list, i - 1))) {
         clause.role = 'modifier'
         clause.modifies = previous
+      } else if (previous?.type === 'verb' && bare && verb.form === 'progressive') {
+        clause.role = 'complement'                       // "try making …": what the verb before it is about
       } else if (previous?.type === 'separator' && bare && verb.form && clauses.some(other => other.role === 'main')) {
         clause.role = 'modifier'
         clause.modifiesHost = true
@@ -245,6 +259,12 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (placed && !placed.pronoun && placed !== described && said(placed) >= said(described)) described = placed
         const relation = wire('r', 'nlu.relation')
         relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(described).id], ['to', '$' + clause.wire.id])
+        return
+      }
+      if (clause.purposeOf) {
+        // what the thing is for
+        const relation = wire('r', 'nlu.relation')
+        relation.slots.push(['kind', 'purpose'], ['from', '$' + entityWire(clause.purposeOf).id], ['to', '$' + clause.wire.id])
         return
       }
       if (clause.role === 'infinitive' || clause.role === 'complement') {
@@ -520,7 +540,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         }
         // "…, then the girl to the left": what follows a joiner of clauses is a clause of its own
         const rest = region.slice(i + 1)
-        if (unit.type === 'conjunction' && context.joinsClauses(word(unit)) && rest.some(other => other.type !== 'separator') && !pendingCue) {
+        const led = rest.find(other => other.type !== 'separator' && other.type !== 'adverb' && other.type !== 'filler')
+        if (unit.type === 'conjunction' && context.joinsClauses(word(unit)) && led && ['entity', 'complement', 'expression'].includes(led.type) && !pendingCue) {
           settle()
           const fragment = fragmentClause()
           const join = wire('k', 'nlu.coordination')
@@ -550,7 +571,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         else put(target, moves ? 'particle' : 'adverb', unit.first, unit.last)
       } else if (unit.type === 'complement') {
         for (const position of unit.degree) put(target, 'degree', position)
-        if (!acts || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
+        if (!acts && lastEntity && region[i - 1] === lastEntity && !unit.degree.length && !lastEntity.pronoun) {
+          for (let position = unit.value[0]; position <= unit.value[1]; position++) put(entityWire(lastEntity), 'modifier', position)
+        } else if (!acts || has(target, 'result_complement')) put(target, 'adverb', ...unit.value)
         else { put(target, 'result_complement', ...unit.value); tail = objects.length ? 'quality' : null }
       } else if (unit.type === 'expression') {
         // a detached expression is an act of its own: it gets its own clause
@@ -584,16 +607,21 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
   // Where a relation starts: at the clause or at the entity just before the cue.
   function attach(relation, clause, entity, cue, target) {
     const slot = relation.slots.find(entry => entry[0] === 'from')
+    // "from largest to smallest": the second cue of a pair starts where the first did
+    const opener = context.pairOf(tokens[cue.last].word)
+    if (opener && entity?.via?.cue === opener) { slot[1] = entity.via.from; relation.cueWord = tokens[cue.last].word; target.via = {cue: tokens[cue.last].word, from: slot[1]}; return }
+    const done = () => { target.via = {cue: tokens[cue.last].word, from: slot[1]} }
     const toClause = '$' + clause.wire.id
-    if (!entity || entity.pronoun) { slot[1] = toClause; return }
+    if (!entity || entity.pronoun) { slot[1] = toClause; done(); return }
     const toEntity = '$' + entityWire(entity).id
-    if (clause.fragment && !clause.gapOf) { slot[1] = toEntity; return }
+    if (clause.fragment && !clause.gapOf) { slot[1] = toEntity; done(); return }
     // "240 by 160": a number placed against a number is one measure
-    if (entity.literal && target.literal) { slot[1] = toEntity; return }
+    if (entity.literal && target.literal) { slot[1] = toEntity; done(); return }
     const score = context.attach(clause.predicate, headWord(entity), tokens[cue.last].word, headWord(target))
     const id = decisions.length
     decisions.push({id, margin: Math.abs(score), cue: tokens[cue.last].word})
     slot[1] = (score >= 0) !== flips.has(id) ? toClause : toEntity
+    done()
   }
 
   // Which earlier entity a new one is listed with: the one most like it, the nearest on a tie.

@@ -73,7 +73,8 @@ export function readLegend(source) {
     name: wire.id.replace(/^forms\./u, ''), station: need(wire.attrs.station[0]), also: (wire.attrs.also ?? []).map(need), confine: wire.attrs.confine?.[0] === 'true',
     endings: wire.attrs.ending ?? []
   }))
-  return {stations, places, kinds, endings, forms, compounds, links}
+  const pairs = new Map(wires.filter(wire => wire.type === 'vss.pair').map(wire => [wire.attrs.second[0], wire.attrs.first[0]]))
+  return {stations, places, kinds, endings, forms, compounds, links, pairs}
 }
 
 const formShapes = new Set(['number', 'date', 'clock', 'code', 'mark', 'quote'])

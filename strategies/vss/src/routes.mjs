@@ -95,6 +95,10 @@ export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen =
   for (let symbol = 0; symbol < v; symbol++) {
     // a form built from another word of the text starts out where the legend says such forms stand
     const lean = new Float64Array(n).fill(1)
+    // a word that its ending admits at a closed station leans to that station
+    for (const station of legend.stations) {
+      if (free[symbol] && station.closed && station.suffixes.some(suffix => symbols[symbol].length > suffix.length + 2 && symbols[symbol].endsWith(suffix))) lean[station.index] = formLean
+    }
     for (const {station, endings, name} of legend.forms) {
       if (name !== 'plural' && builtWith(symbol, endings)) for (const other of active[symbol]) if (base[other] === base[station]) lean[other] = formLean
     }

@@ -11,9 +11,11 @@ export const SHAPES = ['lower', 'capital', 'upper']
  * Tokens with quoted passages and the legend's compounds joined:
  * [{text, start, end, word, shape, first, last}], first and last being source token positions.
  */
-export function observe(text, compounds = new Map()) {
+export function observe(text, compounds = new Map(), variants = null) {
   const raw = joinWritten(text, tokenize(text))
   const out = []
+  // a spelling variant is looked up as the word it is a spelling of; the text keeps its letters
+  const canon = word => variants?.get(word) ?? word
   for (let i = 0; i < raw.length; i++) {
     const closing = opening.get(raw[i].text)
     if (closing) {
@@ -26,8 +28,8 @@ export function observe(text, compounds = new Map()) {
       }
     }
     const initial = out.length === 0 || out.at(-1).shape === 'mark' && /[.!?]/u.test(out.at(-1).text)
-    const joined = (compounds.get(fold(raw[i].text)) ?? []).find(parts => parts.every((part, k) =>
-      raw[i + k] && fold(raw[i + k].text) === part && (k === 0 || raw[i + k].start === raw[i + k - 1].end || /^\s+$/u.test(text.slice(raw[i + k - 1].end, raw[i + k].start)))))
+    const joined = (compounds.get(canon(fold(raw[i].text))) ?? []).find(parts => parts.every((part, k) =>
+      raw[i + k] && canon(fold(raw[i + k].text)) === part && (k === 0 || raw[i + k].start === raw[i + k - 1].end || /^\s+$/u.test(text.slice(raw[i + k - 1].end, raw[i + k].start)))))
     if (joined) {
       const j = i + joined.length - 1
       out.push({text: text.slice(raw[i].start, raw[j].end), start: raw[i].start, end: raw[j].end, word: joined.join(' '), shape: 'lower', first: raw[i].first, last: raw[j].last})
@@ -37,7 +39,7 @@ export function observe(text, compounds = new Map()) {
     const shape = shapeOf(raw[i].text, initial)
     // a word written with a capital inside a sentence is not the same symbol as its plain form
     const plain = fold(raw[i].text)
-    const word = (shape === 'capital' || shape === 'upper') && !compounds.listed?.has(plain) ? raw[i].text.replace(/’/gu, "'") : plain
+    const word = (shape === 'capital' || shape === 'upper') && !compounds.listed?.has(plain) ? raw[i].text.replace(/’/gu, "'") : canon(plain)
     out.push({...raw[i], word, shape})
   }
   return out

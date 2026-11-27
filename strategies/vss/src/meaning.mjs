@@ -11,7 +11,7 @@ export function learnMeanings(legend, index, symbols, texts, wanted, {dimensions
   const counts = new Map(), totals = new Float64Array(v), contextTotals = new Float64Array(SIDES.length * v)
   let all = 0
   for (const text of texts) {
-    const ids = observe(text, legend.compounds).map(token => index.get(token.word) ?? -1)
+    const ids = observe(text, legend.compounds, legend.variants).map(token => index.get(token.word) ?? -1)
     ids.forEach((id, i) => {
       if (id < 0) return
       totals[id]++

@@ -96,6 +96,24 @@ export function buildUnits(tokens, stations, lexicon) {
     next.first = lone.first
     units.splice(k, 1)
   }
+  // "approximately 73 words": an adverb that grades stands with the measure after it
+  for (let k = 0; k + 1 < units.length; k++) {
+    const grade = units[k], measure = units[k + 1]
+    if (grade.type !== 'adverb' || grade.first !== grade.last || measure.type !== 'entity' || !(measure.literal || measure.quantity?.length)) continue
+    if (measure.first !== grade.last + 1 || !lexicon.grades(tokens[grade.first].word)) continue
+    measure.degree = [grade.first, ...measure.degree ?? []]
+    measure.first = grade.first
+    units.splice(k, 1)
+  }
+  // "name the x axis Month": after a verb that names things, the name is a thing of its own
+  for (let k = 1; k < units.length; k++) {
+    const thing = units[k], verb = units[k - 1]
+    if (thing.type !== 'entity' || verb.type !== 'verb' || !thing.head || !thing.name || !lexicon.names(tokens[verb.predicate[0]].word)) continue
+    const label = {type: 'entity', first: thing.name[0], last: thing.name[1], determiner: [], quantity: [], degree: [], modifier: [], compound: [], name: thing.name}
+    thing.last = thing.name[0] - 1
+    delete thing.name
+    units.splice(k + 1, 0, label)
+  }
   // "520 across and 410 down": a measure and the direction right after it are one group
   for (let k = 0; k + 1 < units.length; k++) {
     const measure = units[k], direction = units[k + 1]
@@ -108,9 +126,13 @@ export function buildUnits(tokens, stations, lexicon) {
   // "a girl waving": a form of a verb that closes an entity after its noun was not a thing
   units.doubts = []
   for (const unit of units) {
-    if (unit.type !== 'entity' || !unit.head || unit.name) continue
-    const head = unit.head[0]
-    if (unit.compound.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    if (unit.type !== 'entity') continue
+    const head = unit.head?.[0] ?? -9
+    if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    // "approximately 73 words": a word that grades, standing as a thing right before a number
+    for (let position = unit.first; position <= unit.last; position++) {
+      if (stations[position + 1] === 'quantity' && ['noun', 'modifier', 'name'].includes(stations[position]) && lexicon.grades(tokens[position].word) && !lexicon.canBe(tokens[position].word, 'degree')) units.doubts.push({position, not: 'thing'})
+    }
   }
   // "make the girl ginger": after a verb that says what its object becomes, a last word that
   // is a quality and was never seen standing with the word before it is that outcome.

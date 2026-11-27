@@ -16,6 +16,7 @@ const AMBIGUOUS = 0.7
 /** Dense tables from the stored model. */
 export function openModel(model, options = {}) {
   const legend = readLegend(model.legend)
+  legend.variants = new Map(Object.entries(model.variants ?? {}))
   const n = legend.stations.length, v = model.symbols.length
   const emission = new Float64Array(n * v)
   const active = model.emission.map((row, symbol) => {
@@ -48,12 +49,20 @@ export function openModel(model, options = {}) {
     }
     return all > 0 && yes / all > 0.5
   }
+  const anchored = new Set(habits.anchored ?? [])
   const lexicon = {
+    // seen as a verb where the structure left no doubt, itself or the word it is a form of
+    anchoredVerb: word => anchored.has(word) || stemsOf(word, legend.endings).some(stem => anchored.has(stem)),
     nominal: word => habits.nominal?.[word] === 1 ? true : habits.nominal?.[word] === 0 ? false : undefined,
     takesClause: word => borrowed(habits.takesClause, word),
     takesQuality: word => borrowed(habits.takesQuality, word),
     gives: word => borrowed(habits.gives, word),
     asks: word => borrowed(habits.asks, word),
+    directs: word => habits.directs?.includes(word) ?? false,
+    names: word => habits.names?.includes(word) ?? false,
+    // an adverb that grades what follows it: listed as a degree, or admitted as an adverb by its ending
+    grades: word => (legend.places.get(word)?.stations.has(stationIndex.get('degree')) ?? false) ||
+      legend.stations[stationIndex.get('adverb')].suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix)),
     phrasal: (verb, particle) => habits.phrasal?.[verb]?.includes(particle) ?? false,
     // is the word more often a thing than something done?
     thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
@@ -107,6 +116,7 @@ export function openModel(model, options = {}) {
       return meant + build(tokens, left, right)
     },
     linkOf: word => legend.links.get(word),
+    pairOf: word => legend.pairs.get(word),
     kindOf: (unit, cue, strict = false) => cue === null ? kinds.get(unit + '\0')
       : kinds.get(unit + '\0' + cue) ?? (strict || unit !== 'coordination' ? (unit === 'relation' ? undefined : null) : 'additive'),
     // where a relation starts: what the counts say of the verb and of the thing with this cue,
@@ -126,13 +136,19 @@ export function createVssReader(model, options = {}) {
   const opened = openModel(model, options)
   const {legend, book, index, context, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
+  const openers = new Set(model.openers ?? [])
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
   function analyse(text) {
-    const tokens = observe(text, legend.compounds)
+    const tokens = observe(text, legend.compounds, legend.variants)
     if (!tokens.length) return {analyses: []}
     const tried = new Map()
-    let {stations, confidence} = readRoutes(book, legend, index, tokens)
+    // an opener stands on its own: none of its words is the verb of what follows
+    const cut = tokens.findIndex(token => token.shape === 'mark' && /^[,:;!—–-]$/u.test(token.text))
+    if (options.openers !== false && cut >= 1 && cut <= 2 && openers.has(tokens.slice(0, cut).map(token => token.word).join(' '))) {
+      for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word)) tried.set(position, verbStations)
+    }
+    let {stations, confidence} = readRoutes(book, legend, index, tokens, tried)
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
       const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)

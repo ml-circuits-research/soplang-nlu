@@ -10,7 +10,8 @@ import {observe, isFormShape, shapeIndex} from './src/observe.mjs'
 import {buildVocabulary, symbolOf, learnRoutes} from './src/routes.mjs'
 import {openModel} from './src/reader.mjs'
 import {learnHabits} from './src/habits.mjs'
-import {learnMeanings} from './src/meaning.mjs'
+import {learnMeanings, openMeanings} from './src/meaning.mjs'
+import {findVariants} from './src/variants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const args = Object.fromEntries(process.argv.slice(2).join(' ').split(/\s*--/u).filter(Boolean).map(pair => pair.split(/\s+/u)))
@@ -23,7 +24,34 @@ const started = Date.now()
 const legendSource = readFileSync(resolve(here, args.legend ?? 'legend.sop'), 'utf8')
 const legend = readLegend(legendSource)
 const texts = readMessages(dataset)
-const messages = texts.map(text => observe(text, legend.compounds))
+let messages = texts.map(text => observe(text, legend.compounds))
+// Spelling variants first: a vector for every word from its neighbours, then every rare word
+// that is one edit from a common word and used like it is read as that word from here on.
+const wordCounts = new Map()
+for (const message of messages) for (const token of message) wordCounts.set(token.word, (wordCounts.get(token.word) ?? 0) + 1)
+const rough = [...wordCounts].filter(([word, count]) => count >= 3 && /^\p{L}/u.test(word)).map(([word]) => word)
+const roughIndex = new Map(rough.map((word, id) => [word, id]))
+const roughSpace = openMeanings(learnMeanings(legend, roughIndex, rough, texts, new Set(rough), {dimensions: 128, minCount: 5}))
+const variants = findVariants(wordCounts, roughSpace.similarity, roughSpace.has, word => legend.places.has(word))
+legend.variants = variants
+console.log(`${variants.size} spelling variants, such as ${[...variants].slice(0, 12).map(([from, to]) => from + '→' + to).join(' ')}`)
+messages = texts.map(text => observe(text, legend.compounds, variants))
+// Openers: a few words before a break that recur in front of many different continuations
+// stand on their own ("quick one: …", "one more thing — …"). Counted on the text alone.
+const breaks = token => token.shape === 'mark' && /^[,:;!—–-]$/u.test(token.text)
+const structural = new Set(['auxiliary', 'marker', 'infinitive', 'relative', 'negation', 'cue', 'conjunction'].map(name => legend.stations.find(station => station.name === name)?.index))
+const grammatical = token => token.shape === 'mark' || [...legend.places.get(token.word)?.stations ?? []].some(station => structural.has(station))
+const openings = new Map()
+for (const message of messages) {
+  const cut = message.findIndex(breaks)
+  if (cut < 1 || cut > 3 || cut + 2 >= message.length || message.slice(0, cut).some(grammatical)) continue
+  const key = message.slice(0, cut).map(token => token.word).join(' ')
+  const entry = openings.get(key) ?? openings.set(key, {count: 0, next: new Set()}).get(key)
+  entry.count++
+  entry.next.add(message[cut + 1].word + ' ' + message[cut + 2].word)
+}
+const openers = [...openings].filter(([, entry]) => entry.count >= 5 && entry.next.size >= 4).map(([key]) => key)
+console.log(`${openers.length} openers, such as ${openers.slice(0, 14).join(' | ')}`)
 const symbols = buildVocabulary(messages, minCount)
 const index = new Map(symbols.map((symbol, id) => [symbol, id]))
 let total = 0
@@ -48,7 +76,7 @@ const book = learnRoutes({legend, symbols, corpus, iterations, ...options, log: 
 const n = legend.stations.length, v = symbols.length
 const round = value => Number(value.toPrecision(5))
 const model = {
-  version: 1, legend: legendSource, symbols,
+  version: 1, legend: legendSource, symbols, variants: Object.fromEntries(variants), openers,
   transition: Array.from(book.transition, round), start: Array.from(book.start, round), end: Array.from(book.end, round),
   shape: Array.from(book.shape, round),
   emission: symbols.map((_, symbol) => {

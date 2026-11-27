@@ -19,7 +19,7 @@ const part = args.part ?? 'all'
 const {describe, sameGraph} = await createComparer(knowledgeDir)
 const without = new Set(String(args.without ?? '').split(',').filter(Boolean))
 const reader = createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')),
-  {meanings: !without.has('meanings'), attachment: !without.has('attachment'), alternatives: !without.has('alternatives'), gapping: !without.has('gapping'), transfer: args.transfer === 'on', alike: args.alike, memory: !without.has('memory'), memoryWeight: args.weight === undefined ? undefined : Number(args.weight)})
+  {meanings: !without.has('meanings'), attachment: !without.has('attachment'), alternatives: !without.has('alternatives'), gapping: !without.has('gapping'), transfer: args.transfer === 'on', alike: args.alike, memory: !without.has('memory'), openers: !without.has('openers'), memoryWeight: args.weight === undefined ? undefined : Number(args.weight)})
 // --against <option>: the same texts read with one mechanism switched off, to count what it wins and what it breaks
 const rival = args.against ? createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')), {[args.against]: false}) : null
 const duel = {better: [], worse: [], same: 0}

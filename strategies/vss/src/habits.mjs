@@ -13,16 +13,16 @@ export function learnHabits(opened, texts) {
   const memory = createMemory(meanings.dimensions || 1)
   const meant = unit => meanings.vector(headKey(tokens_, unit))
   let tokens_ = null
-  const names = legend.stations.map(station => station.as ?? station.name)
+  const stationNames = legend.stations.map(station => station.as ?? station.name)
   const conditions = new Set(legend.kinds.filter(kind => kind.unit === 'relation' && kind.kind === 'condition').flatMap(kind => kind.cues))
   const heads = {}, qualities = {}
   const targets = new Map()
-  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}
+  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}, tells = {}, titles = {}, sure = {}
   for (const text of texts) {
-    const tokens = observe(text, legend.compounds)
+    const tokens = observe(text, legend.compounds, legend.variants)
     if (!tokens.length) continue
     tokens_ = tokens
-    const stations = readRoutes(book, legend, index, tokens).stations.map(station => names[station])
+    const stations = readRoutes(book, legend, index, tokens).stations.map(station => stationNames[station])
     const units = buildUnits(tokens, stations, lexicon)
     const head = unit => headKey(tokens, unit)
     let governed = null
@@ -66,6 +66,8 @@ export function learnHabits(opened, texts) {
       } else if (unit.type === 'verb') {
         const predicate = tokens[unit.predicate[0]].word
         bump(verbTotal, predicate)
+        // a helping verb, a negation or "to" before it leaves no doubt that the word is a verb
+        if (unit.auxiliary.length || unit.negation.length || units[i - 1]?.type === 'marker' && legend.links.get(tokens[units[i - 1].last].word) === 'infinitive') bump(sure, predicate)
         // a cue right after the verb, or after a pronoun object, can only belong to the verb
         if (next?.type === 'cue' && after?.type === 'entity') { bump2(verb, predicate, tokens[next.last].word); memory.add('v:' + predicate, tokens[next.last].word, meant(after)) }
         else if (next?.type === 'entity' && next.pronoun && after?.type === 'cue' && third?.type === 'entity') { bump2(verb, predicate, tokens[after.last].word); memory.add('v:' + predicate, tokens[after.last].word, meant(third)) }
@@ -79,6 +81,10 @@ export function learnHabits(opened, texts) {
         const lone = next?.type === 'entity' ? after : next
         const last = next?.type === 'entity' ? third : after
         if ((lone?.type === 'adverb' || lone?.type === 'cue') && lone.first === lone.last && legend.links.get(tokens[lone.first].word) === 'particle' && last?.type !== 'entity') bump2(moves, predicate, tokens[lone.first].word)
+        // "need you to make": a verb whose object is the one who does what follows "to"
+        if (next?.pronoun && after?.type === 'marker' && legend.links.get(tokens[after.last].word) === 'infinitive' && third?.type === 'verb') bump(tells, predicate)
+        // "call it Bob": a verb that gives its object a name
+        if (next?.pronoun && after?.type === 'entity' && after.name && !after.head && !after.determiner?.length) bump(titles, predicate)
         // "give me a hand": a verb seen with a person and then a thing hands things over
         if (next?.pronoun && legend.links.get(tokens[next.pronoun[0]].word) === 'recipient' && after?.type === 'entity' && !after.pronoun) bump(hands, predicate)
         // "check if …", "tell me whether …", "see what …": a verb that takes a question
@@ -101,6 +107,8 @@ export function learnHabits(opened, texts) {
     else if (quality >= 3 && quality > thing) nominal[word] = 0
   }
   const takesQuality = Object.keys(becomes).filter(word => becomes[word] >= 3 && becomes[word] / withObject[word] >= 0.03)
+  const directs = Object.keys(tells).filter(word => tells[word] >= 3 && tells[word] / verbTotal[word] >= 0.01)
+  const names = Object.keys(titles).filter(word => titles[word] >= 3 && titles[word] / verbTotal[word] >= 0.01)
   const gives = Object.keys(hands).filter(word => hands[word] >= 3 && hands[word] / verbTotal[word] >= 0.01)
   const asks = Object.keys(wonders).filter(word => wonders[word] >= 3 && wonders[word] / verbTotal[word] >= 0.02)
   const takesClause = Object.keys(takes).filter(word => takes[word] >= 5 && takes[word] / verbTotal[word] >= 0.02)
@@ -155,7 +163,7 @@ export function learnHabits(opened, texts) {
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
   const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
   const phrasal = Object.fromEntries(Object.entries(moves).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 3)]).filter(([, list]) => list.length))
-  return {nominal, takesClause, takesQuality, gives, asks, phrasal, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
+  return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, anchored: Object.keys(sure).filter(word => sure[word] >= 2), together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
     memory: meanings.dimensions ? memory.store() : null}
 }
 
