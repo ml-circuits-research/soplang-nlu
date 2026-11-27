@@ -416,12 +416,20 @@ function write(roundDir, named) {
   console.log('| Syntactic file | Messages | By agreement | By a judge | Written by a judge | Open | |\n| --- | ---: | ---: | ---: | ---: | ---: | --- |')
   const report = []
   for (const target of targets) {
-    // A file written with open cells (--allow-open) may be completed later: the same messages in the same order, every
-    // circuit that was there kept as it is, and at least one empty cell filled. Anything else leaves the file alone.
+    // A file written with open cells (--allow-open) may be completed later: the same messages in the same order, and
+    // only its empty cells are filled. A circuit that is there already stays as it is, also when this round settled
+    // another one for that message (a round fills empty cells; replacing a label is the benchmark publication's job,
+    // judge-publish.mjs). A file with other messages, or another order, is left alone.
     const before = target.exists ? readCsv(readFileSync(target.target, 'utf8')).slice(1) : null
-    const completes = before !== null && before.length === target.rows.length && before.every((row, k) => row[0] === target.rows[k][0] && (!row[1] || row[1] === target.rows[k][1])) &&
-      before.some((row, k) => !row[1] && target.rows[k][1])
-    const status = !target.exists ? 'written' : completes ? 'completed: empty cells filled' : 'exists already: not written'
+    const aligned = before !== null && before.length === target.rows.length && before.every((row, k) => row[0] === target.rows[k][0])
+    if (aligned) {
+      target.rows = before.map((row, k) => row[1] ? row : target.rows[k])
+      target.counts = {agreement: 0, judge: 0, written: 0, open: 0}
+      for (const row of target.rows) target.counts[row[1] ? (row[3] in target.counts ? row[3] : 'judge') : 'open']++
+    }
+    const filled = aligned ? before.filter((row, k) => !row[1] && target.rows[k][1]).length : 0
+    const completes = aligned && filled > 0
+    const status = !target.exists ? 'written' : completes ? `completed: ${filled} empty cells filled` : aligned ? 'exists already: no empty cell to fill' : 'exists already, with other messages: not written'
     if (!target.exists) { mkdirSync(dirname(target.target), {recursive: true}); writeFileSync(target.target, writeCsv(SYNTACTIC_HEADER, target.rows, target.newline), {flag: 'wx'}) }
     else if (completes) writeFileSync(target.target, writeCsv(SYNTACTIC_HEADER, target.rows, target.newline))
     console.log(`| ${relative(where.dataset, target.target)} | ${target.rows.length} | ${target.counts.agreement} | ${target.counts.judge} | ${target.counts.written} | ${target.counts.open} | ${status}${target.changed ? '; the source file changed since the round started' : ''} |`)

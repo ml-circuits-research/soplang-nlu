@@ -1095,7 +1095,7 @@ export const gamma = reader('gamma', ['drop', 'push'], ['lift', 'show'])
   // an existing syntactic file is never written again, and the files are no source for a later round or sample
   const again = round('write', first, '--tag', 'round-1b')
   assert.equal(again.status, 0, again.stderr)
-  assert.match(again.stdout, /Registry: no judge decided anything new, so nothing is published[\s\S]*things\/small\.csv \| 6 .* exists already: not written/u)
+  assert.match(again.stdout, /Registry: no judge decided anything new, so nothing is published[\s\S]*things\/small\.csv \| 6 .* exists already: no empty cell to fill/u)
   assert.equal(readFileSync(join(dataset, 'syntactic/things/small.csv'), 'utf8'), small)
   assert.equal(existsSync(join(registry, 'round-1b.jsonl')), false)
   const next = round('plan', '--rounds', '2', '--min-messages', '5', '--rounds-dir', join(folder, 'no-rounds'))
