@@ -86,6 +86,8 @@ export function openModel(model, options = {}) {
     saysHow: word => {
       const graded = legend.forms.find(form => form.name === 'graded')
       if (graded && stemsOf(word, graded.endings).some(isKnown) && kindsOf(word).thing === 0) return true
+      // "bigger": a graded form of a word that itself says how things are
+      if (graded && stemsOf(word, graded.endings).some(stem => { const of = kindsOf(stem); return isKnown(stem) && of.quality >= 3 && of.quality >= of.thing })) return true
       const seen = kindsOf(word)
       return seen.quality >= 3 && seen.quality >= 3 * seen.thing
     },
@@ -187,6 +189,8 @@ export function createVssReader(model, options = {}) {
   }
   const sharp = options.occurrenceWeight ?? 4
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
+  // the stations that say how a thing is, and the verb stations: a word kept off both names a thing
+  const qualityStations = new Set(legend.stations.filter(station => station.key === 'predicate' || ['modifier', 'result_complement', 'degree'].includes(station.key)).map(station => station.index))
   // the stations that name what an entity is, and the verb stations: a word kept off both says how something is
   const headStations = new Set(legend.stations.filter(station => station.key === 'predicate' || station.unit === 'entity' && ['head', 'name'].includes(station.key)).map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
@@ -247,7 +251,7 @@ export function createVssReader(model, options = {}) {
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
     for (let again = 0; again < 3 && first.doubts.length; again++) {
-      for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : not === 'head' ? headStations : thingStations)
+      for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations)
       const banned = new Map(tried)
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))
       first = read(new Set())

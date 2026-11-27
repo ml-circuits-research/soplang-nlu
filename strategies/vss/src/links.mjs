@@ -564,6 +564,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
               relation.slots.push(['kind', 'apposition'], ['from', '$' + entityWire(objects.at(-1) ?? unit).id], ['to', '$' + made.id])
               unit.holder = relation.slots[2]
             }
+          } else if (settled && key === 'predicative_entity' && predicative && clause.question && clause.subject && !objects.length && target.slots.some(slot => slot[0] === 'subject')) {
+            // "what colour is the castle": the thing after "be" is what the question is about; the
+            // thing asked for stands before it
+            target.slots.find(slot => slot[0] === 'subject')[0] = 'predicative_entity'
+            role('subject', unit)
           } else if (settled) role(key, unit)
           else if (beside && value) {
             // "x 120", "id Id one": a value right after a thing stands with that thing; no word says how
@@ -649,6 +654,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           (i === 0 || region[i - 1].type === 'entity' && objects.length === 1 && lastEntity === objects[0])
         if (next?.type === 'cue' && region[i + 2]?.type === 'entity' && i > 0 && !moves) adverbForCue = unit
         else put(target, moves ? 'particle' : 'adverb', unit.first, unit.last)
+      } else if (unit.type === 'complement' && context.open !== false && predicative && clause.question && clause.subject && !objects.length &&
+                 unit.value[0] === unit.value[1] && !unit.degree.length && !lexicon.saysHow(tokens[unit.value[0]].word)) {
+        // "what colour is castle": a bare word after "be" that is not known to say how things are names the thing asked about
+        doubts.push({position: unit.value[0], not: 'quality'})
+        put(target, 'result_complement', ...unit.value)
       } else if (unit.type === 'complement') {
         for (const position of unit.degree) put(target, 'degree', position)
         // a quality right after a thing that the verb does not hold describes that thing ("with outline gold")
