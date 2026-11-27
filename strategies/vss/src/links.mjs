@@ -182,7 +182,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const teller = list[i - 3]?.type === 'verb' ? tokens[list[i - 3].predicate[0]].word : null
         if (list[i - 2]?.type === 'entity' && teller && (list[i - 2].pronoun || lexicon.directs(teller))) { clause.subject = list[i - 2]; clause.start = i - 2 }
         else if (list[i - 2]?.type === 'entity') clause.purposeOf = list[i - 2]      // "a button to close the window"
-      } else if (previous?.type === 'entity' && bare && verb.form && !(verb.form === 'past' && opensClause(list, i - 1))) {
+      } else if (previous?.type === 'entity' && bare && verb.form && !(verb.form === 'past' && opensClause(list, i - 1)) &&
+                 // "they made": after a word that can only be the doer, a past form is the verb of its own clause
+                 !(context.open !== false && verb.form === 'past' && previous.pronoun && context.linkOf(tokens[previous.pronoun[0]].word) === 'subject')) {
         clause.role = 'modifier'
         clause.modifies = previous
       } else if (previous?.type === 'verb' && bare && verb.form === 'progressive') {
@@ -434,6 +436,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             clause.subject = unit
             clause.marker = before
             j = head - 2
+            break
+          }
+          // "on Friday I need the chart": a clause whose verb has its own thing after it does not describe the thing
+          // before it; the pronoun is its subject and the clause starts there
+          if (context.open !== false && before?.type === 'entity' && !chain.length && unit.pronoun && !before.pronoun && list[i + 1]?.type === 'entity') {
+            clause.subject = unit
+            j = head - 1
             break
           }
           if (before?.type === 'entity' && !chain.length && unit.pronoun && !before.pronoun) {
