@@ -129,6 +129,10 @@ export function buildUnits(tokens, stations, lexicon) {
     if (unit.type !== 'entity') continue
     const head = unit.head?.[0] ?? -9
     if (unit.compound?.includes(head - 1) && stations[head - 1] === 'noun' && lexicon.formOf(tokens[head].word)) units.doubts.push({position: head, not: 'thing'})
+    // "…, heading toward the bridge": a bare -ing form of a known verb right before a cue or an adverb says what something does
+    else if (lexicon.leans && unit.first === unit.last && head === unit.first && lexicon.formOf(tokens[head].word) === 'progressive' &&
+             lexicon.kindsOf(tokens[head].word).verb >= 3 && ['cue', 'adverb'].includes(units[units.indexOf(unit) + 1]?.type) &&
+             ['separator', 'entity'].includes(units[units.indexOf(unit) - 1]?.type)) units.doubts.push({position: head, not: 'thing'})
     // "the dashed line wider": a word that says how a thing is, closing an entity after its noun, is not what the entity names
     else if (lexicon.saysHow && head > unit.first && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1)) &&
              lexicon.kindsOf(tokens[head - 1].word).thing >= 3 && lexicon.saysHow(tokens[head].word)) units.doubts.push({position: head, not: 'head'})
