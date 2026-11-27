@@ -152,6 +152,19 @@ export function buildUnits(tokens, stations, lexicon) {
     const copula = before.type === 'verb' && lexicon.linkOf(tokens[before.predicate[0]].word) === 'predicative'
     if (copula || before.type === 'cue' || before.type === 'marker' && lexicon.canBe(tokens[before.last].word, 'cue')) units.doubts.push({position: said.first, not: 'expression'})
   }
+  // "what's in the diagram": after a pronoun or a question word, a clitic that can be a form of "be" is that verb, not a possessive
+  for (let t = 1; t < tokens.length; t++) {
+    if (lexicon.linkOf && lexicon.canBe(tokens[t].word, 'possessive') && lexicon.linkOf(tokens[t].word) === 'predicative' && !['predicate', 'following', 'auxiliary'].includes(stations[t]) &&
+        ['pronoun', 'question'].includes(stations[t - 1])) units.doubts.push({position: t, is: 'verb'})
+  }
+  // "a chart that counts users": right after a word that opens a clause about a thing, a word that can be a verb is that verb
+  for (let k = 0; k + 1 < units.length; k++) {
+    const opener = units[k], next = units[k + 1]
+    if (!lexicon.linkOf || opener.type !== 'marker' || opener.first !== opener.last || lexicon.linkOf(tokens[opener.first].word) !== 'relative') continue
+    if (next.type !== 'entity' || next.pronoun || next.determiner?.length || tokens[next.first].shape !== 'lower') continue
+    const word = tokens[next.first].word
+    if (lexicon.sForm(word) || lexicon.kindsOf(word).verb >= 3) units.doubts.push({position: next.first, is: 'verb'})
+  }
   // "where they stand": a word that can only be a subject is followed by its verb
   for (let k = 0; k + 1 < units.length; k++) {
     const doer = units[k], next = units[k + 1]

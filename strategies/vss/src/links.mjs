@@ -292,7 +292,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           list[clause.index + 1]?.type === 'entity' ? 'interrogative'
         : verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
         // a form that says what was done, with no one doing it, is no command ("as drawn so far")
-        : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite' : 'imperative'
+        : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite'
+        // a verb in -s is said of something, also when its subject is not in the clause ("a chart that counts users")
+        : context.open !== false && !verb.auxiliary.length && lexicon.sForm(clause.predicate) ? 'declarative' : 'imperative'
       target.slots.push(['form', form])
       if (clause.marker) {
         // a marker joins two clauses as a relation; otherwise it stays on its own clause
