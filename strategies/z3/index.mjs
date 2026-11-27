@@ -1,6 +1,8 @@
-import {createReader} from './src/reader.mjs'
+import {open} from './src/syntax/reader.mjs'
 
+// One `syntax` circuit per message, read from the text alone. See src/syntax/.
 export const z3 = {
   name: 'z3',
-  open: createReader
+  schema: 'syntax',
+  open
 }
