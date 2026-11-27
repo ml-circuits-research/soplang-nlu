@@ -136,11 +136,28 @@ export function buildUnits(tokens, stations, lexicon) {
   }
   // "a girl waving": a form of a verb that closes an entity after its noun was not a thing
   units.doubts = []
+  // "no birds": a word that can stand before a noun as its determiner does so when a noun follows it at once
+  for (let k = 0; k + 1 < units.length; k++) {
+    const lead = units[k], group = units[k + 1]
+    if (!lexicon.leans || lead.type !== 'expression' || lead.first !== lead.last || !lexicon.canBe(tokens[lead.first].word, 'determiner')) continue
+    if (group.type !== 'entity' || group.pronoun || group.literal || group.determiner?.length || group.first !== lead.last + 1) continue
+    group.determiner = [lead.first]
+    group.first = lead.first
+    units.splice(k, 1)
+  }
+  // "where they stand": a word that can only be a subject is followed by its verb
+  for (let k = 0; k + 1 < units.length; k++) {
+    const doer = units[k], next = units[k + 1]
+    if (!lexicon.linkOf || doer.type !== 'entity' || !doer.pronoun || lexicon.linkOf(tokens[doer.pronoun[0]].word) !== 'subject') continue
+    if (next.type !== 'entity' || next.pronoun || next.first !== next.last || !next.head || tokens[next.first].shape !== 'lower') continue
+    const word = tokens[next.first].word
+    if (lexicon.kindsOf(word).verb >= 1 || lexicon.sForm(word) || lexicon.formOf(word)) units.doubts.push({position: next.first, is: 'verb'})
+  }
   // "where the path bends": a word that opens a clause needs a verb. When only one group of words follows
   // it, the last word of the group is that verb if it can be one.
   for (let k = 0; k + 1 < units.length; k++) {
     const opener = units[k], group = units[k + 1], after = units[k + 2]
-    if (!lexicon.sForm || opener.type !== 'marker' || lexicon.linkOf(tokens[opener.last].word) === 'infinitive') continue
+    if (!lexicon.linkOf || opener.type !== 'marker' || lexicon.linkOf(tokens[opener.last].word) === 'infinitive') continue
     if (group.type !== 'entity' || group.pronoun || !group.head || group.head[0] !== group.last || group.head[0] === group.first) continue
     if (after && !['terminator', 'separator', 'conjunction'].includes(after.type)) continue
     const head = group.head[0], word = tokens[head].word

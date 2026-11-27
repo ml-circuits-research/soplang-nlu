@@ -43,12 +43,14 @@ export function readLegend(source) {
     station.like = station.like === null ? null : need(station.like)
   }
   // word -> the stations that list it, and whether some list confines it
-  const places = new Map(), links = new Map()
+  const places = new Map(), links = new Map(), tags = new Map()
   for (const wire of wires.filter(wire => wire.type === 'vss.words')) {
     const station = need(wire.attrs.station[0])
     const open = wire.attrs.open?.[0] === 'true'
     for (const word of wire.attrs.word ?? []) {
       if (wire.attrs.link && !links.has(word)) links.set(word, wire.attrs.link[0])
+      // a word keeps its first link as the main one; `tags` holds every link the lists give it
+      if (wire.attrs.link) (tags.get(word) ?? tags.set(word, new Set()).get(word)).add(wire.attrs.link[0])
       const entry = places.get(word) ?? {stations: new Set(), confined: false}
       entry.stations.add(station)
       if (!open) entry.confined = true
@@ -86,7 +88,7 @@ export function readLegend(source) {
     }
   }
   const pairs = new Map(wires.filter(wire => wire.type === 'vss.pair').map(wire => [wire.attrs.second[0], wire.attrs.first[0]]))
-  return {stations, places, kinds, endings, forms, compounds, links, pairs}
+  return {stations, places, kinds, endings, forms, compounds, links, tags, pairs}
 }
 
 const formShapes = new Set(['number', 'date', 'clock', 'code', 'mark', 'quote'])

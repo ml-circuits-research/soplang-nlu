@@ -230,6 +230,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           clause.start = i
         }
       }
+      // "keep the axis labels larger": the verb of a clause that completes another verb is never a form in -s
+      if (context.open !== false && clause.role === 'complement' && bare && lexicon.sForm(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
       clauses.push(clause)
     }
     clauses.forEach((clause, k) => { if (k && clause.start <= clauses[k - 1].index) clause.start = clauses[k - 1].index + 1 })
@@ -239,7 +241,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const leading = list.slice(0, clauses.length ? clauses[0].start : list.length)
     const strays = []
     const polite = clauses.length ? leading.filter(unit => unit.type === 'filler') : []
-    if (leading.some(unit => !['separator', 'absorbed', 'filler'].includes(unit.type)) || leading.length && !clauses.length) {
+    // "with the bigger one on the left, put two clouds": phrases with their own linking words that stand before
+    // the first verb belong to its clause
+    const phrases = leading.filter(unit => !['separator', 'absorbed', 'filler'].includes(unit.type))
+    const fronted = context.open !== false && clauses.length > 0 && clauses[0].role === 'main' && phrases.length >= 2 && phrases.length % 2 === 0 &&
+      phrases.every((unit, k) => unit.type === (k % 2 ? 'entity' : 'cue'))
+    if (fronted) strays.push(...leading.filter(unit => unit.type === 'separator'))
+    else if (leading.some(unit => !['separator', 'absorbed', 'filler'].includes(unit.type)) || leading.length && !clauses.length) {
       const fragment = fragmentClause()
       made.push(fragment, ...fill(fragment, leading))
       polite.length = 0
@@ -277,7 +285,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         : asks ? 'interrogative'
         : clause.subject ? 'declarative'
         // "is it possible": a form of "be" with the one it is said of right after it asks
-        : context.open !== false && !verb.auxiliary.length && context.linkOf(clause.predicate) === 'predicative' && list[clause.index + 1]?.pronoun ? 'interrogative'
+        : context.open !== false && !verb.auxiliary.length && context.linkOf(clause.predicate) === 'predicative' && !context.tagged(clause.predicate, 'bare') &&
+          list[clause.index + 1]?.type === 'entity' ? 'interrogative'
         : verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
         // a form that says what was done, with no one doing it, is no command ("as drawn so far")
         : context.open !== false && verb.form === 'past' && !verb.auxiliary.length ? 'nonfinite' : 'imperative'
@@ -310,6 +319,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       for (const [cue, entity, from] of clause.chain ?? []) relate(entityWire(from), cue, entityWire(entity))
       // "Please, create …": a courtesy word before the first clause belongs to it
       while (polite.length) { const unit = polite.shift(); put(target, 'filler', unit.first, unit.last) }
+      if (fronted && k === 0) {
+        fill(clause, phrases)
+        Object.assign(clause.state, {lastEntity: null, tail: null})
+        clause.state.frontier.length = 0
+      }
       made.push(clause, ...fill(clause, region))
       if (returned.length) made.push(...fill(clause.returnTo, returned))
     })
@@ -591,7 +605,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             continue
           }
           const key = clause.fragment && !clause.gapOf ? (objects.length ? null : 'topic')
-            : predicative ? (objects.length || clause.subject ? 'predicative_entity' : 'subject')
+            // (a thing after "be" is the subject only where a main clause opens with "be": "is the box red")
+            : predicative ? (objects.length || clause.subject || context.open !== false && (clause.role !== 'main' || verb?.auxiliary.length) ? 'predicative_entity' : 'subject')
             : objects.length === 0 ? 'direct_object' : objects.length === 1 ? 'predicative_entity' : null
           // Two bare things after a verb: the first receives the second ("give the snowman a
           // smile") or the second says what the first becomes ("make the snowman a hero").
@@ -633,7 +648,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             target.slots.find(slot => slot[0] === 'subject')[0] = 'predicative_entity'
             role('subject', unit)
           } else if (settled) role(key, unit)
-          else if (beside && value) {
+          // (a thing right after a thing that the verb does not take itself stands with that thing: "with blocks one paragraph")
+          else if (beside && (value || !(objects.includes(lastEntity) || lastEntity.group && objects.some(other => other.group === lastEntity.group)))) {
             // "x 120", "id Id one": a value right after a thing stands with that thing; no word says how
             const relation = wire('r', 'nlu.relation')
             relation.slots.push(['kind', 'open'], ['from', '$' + entityWire(lastEntity).id], ['to', '$' + made.id])
@@ -729,6 +745,12 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       } else if (unit.type === 'complement' && context.open !== false && predicative && clause.question && clause.subject && !objects.length &&
                  unit.value[0] === unit.value[1] && !unit.degree.length && !lexicon.saysHow(tokens[unit.value[0]].word)) {
         // "what colour is castle": a bare word after "be" that is not known to say how things are names the thing asked about
+        doubts.push({position: unit.value[0], not: 'quality'})
+        put(target, 'result_complement', ...unit.value)
+      } else if (unit.type === 'complement' && context.open !== false && verb && i === 0 && !objects.length && !predicative && unit.value[0] === unit.value[1] &&
+                 !unit.degree.length && tokens[unit.value[0]].shape === 'lower' && lexicon.gives(clause.predicate) && !lexicon.takesQuality(clause.predicate) &&
+                 !lexicon.saysHow(tokens[unit.value[0]].word)) {
+        // "give neon around the kites": a verb that takes a thing and has none takes the bare word after it
         doubts.push({position: unit.value[0], not: 'quality'})
         put(target, 'result_complement', ...unit.value)
       } else if (unit.type === 'complement') {

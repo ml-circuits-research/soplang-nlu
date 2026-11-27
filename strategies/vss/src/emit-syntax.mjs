@@ -127,7 +127,9 @@ export function emitSyntax(text, tokens, wires, knows) {
   // a question word stands where its grammar puts it
   for (const [clause, span] of pendingQuestions) {
     if (!span) continue
-    const next = [...out.values()].find(wire => wire.type === 'syntax.nominal' && firstWord(wire) === span[1] + 1 && clause.slots.some(slot => slot.ref === wire.id))
+    // ("what colour": the word asks about the noun after it; before a pronoun it stands alone: "what we said")
+    const next = [...out.values()].find(wire => wire.type === 'syntax.nominal' && firstWord(wire) === span[1] + 1 && clause.slots.some(slot => slot.ref === wire.id) &&
+      !wire.source?.slots.some(slot => slot[0] === 'pronoun'))
     if (next) { add(next, 'dependent', span); continue }
     const word = text.slice(words[span[0]].start, words[span[1]].end).toLowerCase()
     if (span[0] === span[1] && knows.nominalQuestion(word)) {

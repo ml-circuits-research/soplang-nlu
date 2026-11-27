@@ -168,6 +168,7 @@ export function openModel(model, options = {}) {
       const count = !counted.verb ? 0 : kind === 'verb' ? counted.verb(word, cue) : counted.thing(word, cue)
       return count + weight * memory.fit((kind === 'verb' ? 'v:' : 'n:') + word, cue, filler)
     },
+    tagged: (word, tag) => legend.tags.get(word)?.has(tag) ?? false,
     hosts: options.hosts,
     // state what the words settle and mark the rest as open
     open: options.open !== false, openBelow: options.openBelow ?? 0.5,
@@ -252,6 +253,10 @@ export function createVssReader(model, options = {}) {
       if (tried.has(t) || tokens[t].shape !== 'lower') return []
       const leans = lexicon.leans(tokens[t].word), seen = lexicon.kindsOf(tokens[t].word)
       if (verbStations.has(station) && leans === 'thing' && seen.verb === 0) return [{position: t, not: 'verb'}]
+      // a word the legend lists as a linking word or an adverb is a verb only where the text showed it as one beyond doubt
+      const listed = legend.places.get(tokens[t].word)
+      if (verbStations.has(station) && listed && seen.verb < 3 && ![...listed.stations].some(place => verbStations.has(place)) &&
+          [...listed.stations].some(place => ['cue', 'adverb'].includes(legend.stations[place].name))) return [{position: t, not: 'verb'}]
       if (thingStations.has(station) && leans === 'verb' && seen.thing === 0 && seen.quality === 0) return [{position: t, not: 'thing'}]
       return []
     })
@@ -259,6 +264,7 @@ export function createVssReader(model, options = {}) {
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
     for (let again = 0; again < 3 && first.doubts.length; again++) {
+      if (options.trace) console.log('stations', stations.map((station, t) => tokens[t].word + '/' + names[station]).join(' '), '| doubts', JSON.stringify(first.doubts))
       for (const {position, not, is} of first.doubts) tried.set(position, is === 'verb' ? otherStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations)
       const banned = new Map(tried)
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))

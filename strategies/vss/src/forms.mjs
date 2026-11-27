@@ -7,9 +7,12 @@ export function stemsOf(word, endings) {
   const listed = endings.irregular?.get(word)
   if (listed) stems.push(listed)
   for (const ending of endings) {
-    if (!word.endsWith(ending) || word.length - ending.length < 3) continue
+    if (!word.endsWith(ending) || word.length - ending.length < 2) continue
     const base = word.slice(0, -ending.length)
-    stems.push(base, base + 'e')
+    // a stem keeps at least three letters: "using" is a form of "use", not of "us"
+    if (base.length >= 3) stems.push(base)
+    stems.push(base + 'e')
+    if (base.length < 3) continue
     if (base.length > 3 && base.at(-1) === base.at(-2)) stems.push(base.slice(0, -1))
     if (base.endsWith('i')) stems.push(base.slice(0, -1) + 'y')
   }
