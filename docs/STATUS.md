@@ -1,8 +1,8 @@
 # Syntax work status
 
-Generated 2026-11-27 18:52 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 8c9ed93 (10 uncommitted paths) · webmeet-dataset 7f8346b. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
+Generated 2026-11-27 19:04 (UTC+01:00) by `node docs/status/build.mjs` · soplang-nlu 6f11cb6 (12 uncommitted paths) · webmeet-dataset 7f8346b. The phone page with charts is [status.html](status.html); on GitHub that link shows its HTML source, so open the file in a browser to see the page.
 
-> **Since the build of 2026-11-27 18:42** (51606f5): 4 new commits in soplang-nlu.
+> **Since the build of 2026-11-27 18:52** (8c9ed93): 2 new commits in soplang-nlu.
 
 1. [What this project does](#what-this-project-does)
 2. [Working on now](#working-on-now)
@@ -59,7 +59,7 @@ More to read: [How VSS works](vss-architecture.html) · [The syntax work of 2026
 
 ## Working on now
 
-*Written by hand; last saved 2026-11-27 18:52. The numbers are in the computed sections below.*
+*Written by hand; last saved 2026-11-27 19:04. The numbers are in the computed sections below.*
 
 Updated by hand with every step; the numbers are in the sections this text links to.
 
@@ -80,26 +80,28 @@ Updated by hand with every step; the numbers are in the sections this text links
   of the batch conversion, VSS and spaCy now agree on 38.9% of messages instead of 31.7% (calendar: 56.0%
   instead of 10.6%), so more cells can be filled without a judge, with the usual 2% audit.
 
+- **Two learned methods, measured and not adopted** (`experiments/syntax-learned/README.md`): a
+  transition-based parser for VSS trained on the labels (55% known accepted, 63–76% estimated, below VSS), and
+  spaCy fine-tuned on the judged circuits (about break-even with the base model). Both mostly learn VSS's own
+  conventions, because most labels so far are VSS's agreement circuits; they need judged examples from the hard
+  part of the dataset first.
+
 **Running at this moment**
 
 - **VSS rules, next round.** The largest group first: the finite verb found by agreement with its subject
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **Refilling the dataset.** VSS and spaCy, in their current versions, run again over the 217 files of the
-  batch conversion; then the agreement is settled again, a judge reads 2% of the new agreed circuits, and
-  empty cells are filled ([Dataset](#the-dataset)).
-- **Two prototypes of general methods**, in scratch: a learned structure for VSS (a transition-based parser
-  with an averaged perceptron, in plain JavaScript, trained on the accepted circuits) and spaCy fine-tuned on
-  the judged circuits. The benchmark messages are held out of both; a reviewer checks the comparisons.
+- **The 2% audit of the refilled conversion.** VSS and spaCy in their current versions ran again over the 217
+  files of the batch conversion, and agreement was settled with the wider key: 79,746 messages now have an
+  agreed circuit (about 58,000 before). A judge reads 433 of the new agreed circuits; then the cells are
+  written ([Dataset](#the-dataset)).
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Settle the refilled conversion folders with the wider key, have a judge read 2%, fill the cells.
-3. Decide, on the prototypes' numbers, whether to build the learned structure for VSS and the fine-tuned
-   spaCy.
-4. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
+2. Write the cells of the refilled conversion once the audit holds.
+3. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
    it is rejected.
 
 **Not measured yet** (what a reviewer will ask)
@@ -344,32 +346,32 @@ Where both circuits were accepted, the schema allows more than one reading (whic
 | Audit of the batch conversion | Count |
 | --- | ---: |
 | Conversion folders | 217 |
-| Circuits settled by agreement | 58,103 |
-| Read by a judge as a control | 1,163 (2.0%) |
+| Circuits settled by agreement | 80,009 |
+| Read by a judge as a control | 1,163 (1.5%) |
 | … accepted | 1,153 |
 | … rejected | 10 (0.86%) |
 
-The records count 1,163 audit circuits read (1,153 accepted, 10 rejected), and these are the figures shown. The journal and commit `a09047d` give 1,154 read and 10 rejected, a count the records do not reproduce. The judges read the audit circuits in pooled packets (`eval-results/conversion-audit`), together with other circuits of the conversion folders.
+The records count 1,163 audit circuits read (1,153 accepted, 10 rejected), and these are the figures shown. The journal and commit `a09047d` give 1,154 read and 10 rejected, a count the records do not reproduce. The judges read the audit circuits in pooled packets (`eval-results/conversion-audit`), together with other circuits of the conversion folders; 433 sent to a judge still have no verdict.
 
-**Why the dataset has 56,934 agreement labels, not 58,103.** Where the 58,103 agreed circuits stand in the dataset now:
+**Why the dataset has 56,934 agreement labels, not 80,009.** Where the 80,009 agreed circuits stand in the dataset now:
 
 | Agreed circuits of the batch conversion | Count |
 | --- | ---: |
 | Still the label, marked as settled by agreement | 56,634 |
 | Still the label, now marked as accepted by a judge (read in the audit and accepted) | 1,147 |
-| Replaced by another circuit (all on benchmark messages, when the benchmark was published) | 312 |
-| No circuit in the dataset now (the cell was emptied) | 10 |
+| Replaced by another circuit (337 of them on benchmark messages, when the benchmark was published) | 663 |
+| No circuit in the dataset now (the cell was emptied) | 21,565 |
 
 The other 300 agreement labels of the dataset were settled outside these folders.
 
 ## Journal
 
-The working journal, `improvements-ideas.md`, written by hand at each stage (last committed 2026-11-27 18:52): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
+The working journal, `improvements-ideas.md`, written by hand at each stage (last saved 2026-11-27 19:04): where things stand, what is in progress, the next steps, ideas not yet tried and open points for the owner.
 
 > **Its numbers can be older than this page.** Parts of the journal, such as the table under "Where things stand", keep the figures of the time they were written. Where they differ from the computed sections above, the computed ones are current.
 
 <details>
-<summary>Open the journal (188 lines)</summary>
+<summary>Open the journal (197 lines)</summary>
 
 A working journal of the syntax-schema work: where things stand, what is being done now, and what could be done
 next. It is updated with every stage and committed with it, so the history of the plan stays in git.
@@ -491,6 +493,16 @@ messages, where it does worse.
   folders agreement rises from 31.7% to 38.9% of messages (calendar 10.6% to 56.0%). Two candidate kinds were
   dropped because judges rejected one of the variants.
 
+- Two learned methods tried and not adopted (experiments/syntax-learned/README.md):
+  - a transition-based parser with an averaged perceptron for VSS, trained on the labels: 55.3% known accepted
+    on the benchmark, 63–76% estimated in all (VSS 75.4%); it learns VSS's own conventions, because 91% of the
+    labels are agreement labels written by VSS;
+  - spaCy fine-tuned on the judged circuits: 64.6–66.4% known accepted with 30–33% unjudged, against 86.7% for
+    the base model; it fixes 48 rejected circuits and breaks none among those judged, but the rest looks
+    break-even.
+  Both need training signal from the hard part of the dataset (judged circuits, rejected ones as negatives)
+  before they can help; they may then serve as one more voice beside VSS and spaCy.
+
 ### In progress
 
 - VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
@@ -498,18 +510,17 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- Prototypes in scratch: a transition-based parser with an averaged perceptron for VSS (plain JavaScript),
-  and spaCy fine-tuned on the judged circuits; benchmark held out of both.
+- The 2% audit of the agreement circuits settled with the wider key on the 217 conversion folders (433
+  circuits, eval-results/conversion-audit-02), then the cells are written.
 
 ### Next steps, in order
 
 1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
    and the status page (docs/STATUS.md).
 2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
-3. Decide on the prototypes' numbers whether to build the learned structure and the fine-tuned spaCy.
-4. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
+3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
-5. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
+4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
 
 ### Ideas not yet tried (with the reason to expect a gain)
 
@@ -563,6 +574,8 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 **soplang-nlu**: the last 30 commits, newest first ([all](https://github.com/ml-circuits-research/soplang-nlu/commits)).
 
+- 2026-11-27 19:04 [`6f11cb6`](https://github.com/ml-circuits-research/soplang-nlu/commit/6f11cb6) Two learned methods for syntax circuits, measured and not adopted (experiments/syntax-learned)
+- 2026-11-27 18:52 [`5b4dacd`](https://github.com/ml-circuits-research/soplang-nlu/commit/5b4dacd) Status: the wider agreement key
 - 2026-11-27 18:52 [`8c9ed93`](https://github.com/ml-circuits-research/soplang-nlu/commit/8c9ed93) Journal: the wider agreement key, the current table, what runs and what comes next
 - 2026-11-27 18:51 [`c8d0a09`](https://github.com/ml-circuits-research/soplang-nlu/commit/c8d0a09) Agreement key 'variants': two circuits are alike also up to the choices the judges' rules let pass either way
 - 2026-11-27 18:47 [`ded2aa2`](https://github.com/ml-circuits-research/soplang-nlu/commit/ded2aa2) docs/README.md: the status page first
@@ -571,12 +584,12 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 18:25 [`c205ab6`](https://github.com/ml-circuits-research/soplang-nlu/commit/c205ab6) Journal: VSS at 75.5% on the benchmark after the study prototypes
 - 2026-11-27 18:24 [`1809b31`](https://github.com/ml-circuits-research/soplang-nlu/commit/1809b31) Benchmark: verdicts on the 183 new VSS circuits after the study prototypes (83fce90), packets 45-46
 - 2026-11-27 18:14 [`954da81`](https://github.com/ml-circuits-research/soplang-nlu/commit/954da81) batch-run.sh: a mode that runs the files of the batch conversion again after the strategies improved
-- 2026-11-27 18:13 [`83fce90`](https://github.com/ml-circuits-research/soplang-nlu/commit/83fce90) VSS: the measured prototypes of the lever study
-- 2026-11-27 18:04 [`0f9b5c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/0f9b5c3) Benchmark: verdicts on the 225 new VSS circuits (fa46cb7), packets 43-44
 
 <details>
 <summary>20 older commits of soplang-nlu</summary>
 
+- 2026-11-27 18:13 [`83fce90`](https://github.com/ml-circuits-research/soplang-nlu/commit/83fce90) VSS: the measured prototypes of the lever study
+- 2026-11-27 18:04 [`0f9b5c3`](https://github.com/ml-circuits-research/soplang-nlu/commit/0f9b5c3) Benchmark: verdicts on the 225 new VSS circuits (fa46cb7), packets 43-44
 - 2026-11-27 18:02 [`ba22103`](https://github.com/ml-circuits-research/soplang-nlu/commit/ba22103) Journal: agreement between VSS and spaCy measured by area; 515 of 1,218 disagreements are two accepted readings, so a wider agreement key is being built
 - 2026-11-27 17:59 [`9dc6866`](https://github.com/ml-circuits-research/soplang-nlu/commit/9dc6866) Journal: lever trials judged; correction: forced stations repair up to about 9 points, so better tagging is a real lever for VSS
 - 2026-11-27 17:59 [`9df0889`](https://github.com/ml-circuits-research/soplang-nlu/commit/9df0889) Lever trials judged (791 circuits): station prior, teacher evidence and oracle stations measured against the plain VSS copy
@@ -595,8 +608,6 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 - 2026-11-27 16:51 [`e52bfc8`](https://github.com/ml-circuits-research/soplang-nlu/commit/e52bfc8) Benchmark tools: labels are read from and written to the dataset's syntactic files; no labels file, no agreement lines in the registry
 - 2026-11-27 16:39 [`9f57aa3`](https://github.com/ml-circuits-research/soplang-nlu/commit/9f57aa3) Benchmark on the random 1% sample: all 35 packets judged (5,858 circuits of five strategies)
 - 2026-11-27 16:30 [`1c0b4f6`](https://github.com/ml-circuits-research/soplang-nlu/commit/1c0b4f6) VSS: rules from the analysis of the diagram and document files about where a nominal ends
-- 2026-11-27 16:29 [`59066d1`](https://github.com/ml-circuits-research/soplang-nlu/commit/59066d1) VSS: rules from the analysis of the calendar files, with their word marks in the legend
-- 2026-11-27 16:14 [`a09047d`](https://github.com/ml-circuits-research/soplang-nlu/commit/a09047d) Batch conversion: settle and write scripts, the pooled audit of agreed circuits (1,154 read, 10 rejected), and the strategies' circuits on the random 1% sample
 
 </details>
 
@@ -678,4 +689,4 @@ today/tomorrow, thanks). The steps that would make VSS a reusable engine with a 
 
 ---
 
-Built in 12.5 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.
+Built in 10.0 s from the repositories as they are, and from the hand-written files `docs/status/now.md` and `docs/status/history.json`. "Uncommitted paths" counts the entries of `git status`, where a new folder counts once.

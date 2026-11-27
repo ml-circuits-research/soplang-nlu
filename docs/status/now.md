@@ -19,26 +19,28 @@ Updated by hand with every step; the numbers are in the sections this text links
   of the batch conversion, VSS and spaCy now agree on 38.9% of messages instead of 31.7% (calendar: 56.0%
   instead of 10.6%), so more cells can be filled without a judge, with the usual 2% audit.
 
+- **Two learned methods, measured and not adopted** (`experiments/syntax-learned/README.md`): a
+  transition-based parser for VSS trained on the labels (55% known accepted, 63–76% estimated, below VSS), and
+  spaCy fine-tuned on the judged circuits (about break-even with the base model). Both mostly learn VSS's own
+  conventions, because most labels so far are VSS's agreement circuits; they need judged examples from the hard
+  part of the dataset first.
+
 **Running at this moment**
 
 - **VSS rules, next round.** The largest group first: the finite verb found by agreement with its subject
   ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
   number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
   measures and appositions set off by commas, numerals as heads, relative clauses.
-- **Refilling the dataset.** VSS and spaCy, in their current versions, run again over the 217 files of the
-  batch conversion; then the agreement is settled again, a judge reads 2% of the new agreed circuits, and
-  empty cells are filled ([Dataset](#dataset)).
-- **Two prototypes of general methods**, in scratch: a learned structure for VSS (a transition-based parser
-  with an averaged perceptron, in plain JavaScript, trained on the accepted circuits) and spaCy fine-tuned on
-  the judged circuits. The benchmark messages are held out of both; a reviewer checks the comparisons.
+- **The 2% audit of the refilled conversion.** VSS and spaCy in their current versions ran again over the 217
+  files of the batch conversion, and agreement was settled with the wider key: 79,746 messages now have an
+  agreed circuit (about 58,000 before). A judge reads 433 of the new agreed circuits; then the cells are
+  written ([Dataset](#dataset)).
 
 **Next, in order**
 
 1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. Settle the refilled conversion folders with the wider key, have a judge read 2%, fill the cells.
-3. Decide, on the prototypes' numbers, whether to build the learned structure for VSS and the fine-tuned
-   spaCy.
-4. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
+2. Write the cells of the refilled conversion once the audit holds.
+3. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
    it is rejected.
 
 **Not measured yet** (what a reviewer will ask)

@@ -145,9 +145,9 @@ messages, where it does worse.
 1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
    and the status page (docs/STATUS.md).
 2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
-4. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
+3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
-5. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
+4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
 
 ## Ideas not yet tried (with the reason to expect a gain)
 
