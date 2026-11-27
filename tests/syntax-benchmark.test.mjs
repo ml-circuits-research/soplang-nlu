@@ -14,7 +14,8 @@ import {fileURLToPath} from 'node:url'
 import {coreOf, validateSyntax, writeCircuit} from '../lib/index.mjs'
 import {normalForm, withCores, emptyRegistry, addToRegistry, lookup, collectItems, packetsOf, runVerdicts, levelOf, tableOf, renderTable,
   agreementOf, renderAgreement, chooseLabels, labelChanges, readLabels, writeLabels, labelLine, Labels, keepLabelsBefore, readLabelsBefore, readArguments, readSample,
-  readJsonl, readJson, LEVELS, defaultSyntacticDir, defaultRegistryDir, syntacticDirOf, readCsv, writeCsv, csvCell, rawRows, agreedCircuits, chooseAudit, packageRoot} from './benchmark/syntax/lib.mjs'
+  readJsonl, readJson, LEVELS, defaultSyntacticDir, defaultRegistryDir, syntacticDirOf, readCsv, writeCsv, csvCell, rawRows, agreedCircuits, chooseAudit, packageRoot,
+  relaxedCore, agreementKey, agreementKeysOf, writtenAlike, AGREEMENT_KEYS} from './benchmark/syntax/lib.mjs'
 import {checkLabelsFile, checkRegistryLines} from './benchmark/syntax/drop-duplicates.mjs'
 import {messagesOfCsv, distinctMessages, drawSample, messageFiles} from './benchmark/syntax/sample.mjs'
 import {pickFiles, planRounds, messagesOfFile, roundState, chooseCircuit, syntacticRows, SYNTACTIC_HEADER} from './benchmark/syntax/round.mjs'
@@ -720,6 +721,113 @@ test('a circuit written alike by strategies of two families is settled by agreem
   assert.deepEqual(outputs.map(output => levelOf(output.rows[1], registry, new Map(), written)), ['waiting', 'L9', 'L9', 'waiting'])
 })
 
+test('circuits that differ only where the judges\' rules let both ways pass share an agreement key', () => {
+  const same = (message, one, other) => {
+    const [a, b] = [agreementKey(message, one), agreementKey(message, other)]
+    assert.ok(a && b, `both circuits of "${message}" are valid`)
+    assert.equal(a, b, message)
+  }
+  const differ = (message, one, other) => {
+    const [a, b] = [agreementKey(message, one), agreementKey(message, other)]
+    assert.ok(a && b, `both circuits of "${message}" are valid`)
+    assert.notEqual(a, b, message)
+  }
+  assert.equal(agreementKey('move it', '@c1 syntax.clause form=imperative verb="move"'), null)      // "it" is not covered
+  // the start of a marked relation, as relaxedCore
+  same(text, verbReading, nounReading); same(text, verbReading, openReading); assert.equal(agreementKey(text, broken), null)
+  differ(text, verbReading, verbReading.replace(' dependent="red"', '').replace('verb="put"', 'verb="put" modifier="red"'))
+  // which clause holds a discourse word; a fragment of nothing but "Thanks"
+  same('Please, make fence purple. Thanks!',
+    '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" discourse="Thanks" complement=$n1\n@n1 syntax.nominal head="fence"',
+    '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" complement=$n1\n@n1 syntax.nominal head="fence"\n@c2 syntax.clause form=fragment discourse="Thanks"')
+  // a number right after a noun: a dependent, or a nominal of its own tied without a marker; not the head of the noun
+  const triangle = 'can you add a triangle 120?'
+  const asked = '@c1 syntax.clause form=interrogative auxiliary="can" verb="add" subject=$n1 complement=$n2\n@n1 syntax.nominal head="you"\n'
+  same(triangle, asked + '@n2 syntax.nominal dependent="a" head="triangle" dependent="120"',
+    asked + '@n2 syntax.nominal dependent="a" head="triangle"\n@n3 syntax.nominal head="120"\n@r1 syntax.relation from=$n2 to=$n3')
+  differ(triangle, asked + '@n2 syntax.nominal dependent="a" head="triangle" dependent="120"', asked + '@n2 syntax.nominal dependent="a" dependent="triangle" head="120"')
+  // a name of several words: whole in head, its last word as head, or a name and a number tied without a marker
+  const book = 'book Review on Work 5'
+  const booked = '@c1 syntax.clause form=imperative verb="book" complement=$n1\n@n1 syntax.nominal head="Review"\n@r1 syntax.relation marker="on" from=$c1 to=$n2\n'
+  same(book, booked + '@n2 syntax.nominal head="Work 5"', booked + '@n2 syntax.nominal dependent="Work" head="5"')
+  same(book, booked + '@n2 syntax.nominal head="Work 5"', booked + '@n2 syntax.nominal head="Work"\n@n3 syntax.nominal head="5"\n@r2 syntax.relation from=$n2 to=$n3')
+  // a name split into two nominals is no number after a noun; a head that mixes a noun with part of a name is no name
+  differ('add Core Hub', '@c1 syntax.clause form=imperative verb="add" complement=$n1\n@n1 syntax.nominal head="Core Hub"',
+    '@c1 syntax.clause form=imperative verb="add" complement=$n1\n@n1 syntax.nominal head="Core"\n@n2 syntax.nominal head="Hub"\n@r1 syntax.relation from=$n1 to=$n2')
+  const meeting = '@c1 syntax.clause form=imperative verb="make" complement=$n1\n@n1 syntax.nominal dependent="one" '
+  differ('make one meeting Intro Main', meeting + 'head="meeting" dependent="Intro" dependent="Main"', meeting + 'head="meeting Intro" dependent="Main"')
+  // a name of its own that is the start of a marked relation is not merged: the start would move to the noun
+  const slot = 'book Room 1 from 09:00 UTC for 15 minutes'
+  const room = '@c1 syntax.clause form=imperative verb="book" complement=$n1\n@n1 syntax.nominal head="Room 1"\n@r1 syntax.relation marker="from" from=$c1 to=$n2\n'
+  differ(slot, room + '@n2 syntax.nominal head="09:00" dependent="UTC"\n@r2 syntax.relation marker="for" from=$c1 to=$n3\n@n3 syntax.nominal dependent="15" head="minutes"',
+    room + '@n2 syntax.nominal head="09:00"\n@n4 syntax.nominal head="UTC"\n@r3 syntax.relation from=$n2 to=$n4\n@r2 syntax.relation marker="for" from=$n4 to=$n3\n@n3 syntax.nominal dependent="15" head="minutes"')
+  // "a bit": a measure nominal, or modifiers of the clause
+  same('make the markers a bit bigger', '@c1 syntax.clause form=imperative verb="make" modifier="bigger" complement=$n1 complement=$n2\n@n1 syntax.nominal dependent="the" head="markers"\n@n2 syntax.nominal dependent="a" head="bit"',
+    '@c1 syntax.clause form=imperative verb="make" modifier="a" modifier="bit" modifier="bigger" complement=$n1\n@n1 syntax.nominal dependent="the" head="markers"')
+  // a naming participle: a nonfinite clause tied to the thing, or the marker of a relation from the thing; not from another thing
+  const heading = '@c1 syntax.clause form=imperative verb="create" complement=$n1\n@n1 syntax.nominal dependent="a" head="heading"\n@n2 syntax.nominal head="Overview"\n'
+  same('create a heading named Overview', heading + '@c2 syntax.clause form=nonfinite verb="named" complement=$n2\n@r1 syntax.relation from=$n1 to=$c2', heading + '@r1 syntax.relation marker="named" from=$n1 to=$n2')
+  const oak = 'put a box by the tree called Oak'
+  const tree = '@c1 syntax.clause form=imperative verb="put" complement=$n1\n@n1 syntax.nominal dependent="a" head="box"\n@r1 syntax.relation marker="by" from=$c1 to=$n2\n@n2 syntax.nominal dependent="the" head="tree"\n@n3 syntax.nominal head="Oak"\n'
+  same(oak, tree + '@c2 syntax.clause form=nonfinite verb="called" complement=$n3\n@r2 syntax.relation from=$n2 to=$c2', tree + '@r2 syntax.relation marker="called" from=$n2 to=$n3')
+  differ(oak, tree + '@c2 syntax.clause form=nonfinite verb="called" complement=$n3\n@r2 syntax.relation from=$n2 to=$c2', tree + '@r2 syntax.relation marker="called" from=$n1 to=$n3')
+  // a quantity phrase before a noun: dependents of the noun, or a nominal with a relation marked "of"
+  same('add a pair of small ducks', '@c1 syntax.clause form=imperative verb="add" complement=$n1\n@n1 syntax.nominal dependent="a" dependent="pair" dependent="of" dependent="small" head="ducks"',
+    '@c1 syntax.clause form=imperative verb="add" complement=$n1\n@n1 syntax.nominal dependent="a" head="pair"\n@r1 syntax.relation marker="of" from=$n1 to=$n2\n@n2 syntax.nominal dependent="small" head="ducks"')
+  // "let's": the clause of "let" with "'s" as the subject of "add" or not, or discourse words of the clause of "add"
+  const lets = "let's add a piglet"
+  const letClause = '@c1 syntax.clause form=imperative verb="let" complement=$n1\n@n1 syntax.nominal head="\'s"\n@r1 syntax.relation from=$c1 to=$c2\n@n2 syntax.nominal dependent="a" head="piglet"\n'
+  same(lets, letClause + '@c2 syntax.clause form=nonfinite verb="add" subject=$n1 complement=$n2', letClause + '@c2 syntax.clause form=nonfinite verb="add" complement=$n2')
+  same(lets, letClause + '@c2 syntax.clause form=nonfinite verb="add" complement=$n2', '@c1 syntax.clause form=imperative discourse="let" discourse="\'s" verb="add" complement=$n1\n@n1 syntax.nominal dependent="a" head="piglet"')
+  // "left of": one marker, or "left" a modifier of the clause with "of" starting at the clause; not at the thing placed
+  const road = 'put the road just left of the lake'
+  const placed = '@c1 syntax.clause form=imperative verb="put" modifier="just" complement=$n1\n@n1 syntax.nominal dependent="the" head="road"\n@n2 syntax.nominal dependent="the" head="lake"\n'
+  same(road, placed + '@r1 syntax.relation marker="left of" from=$n1 to=$n2', placed.replace('modifier="just"', 'modifier="just" modifier="left"') + '@r1 syntax.relation marker="of" from=$c1 to=$n2')
+  differ(road, placed + '@r1 syntax.relation marker="left of" from=$n1 to=$n2', placed.replace('modifier="just"', 'modifier="just" modifier="left"') + '@r1 syntax.relation marker="of" from=$n1 to=$n2')
+  // a word that grades a place marker: in the marker, or a modifier of the clause
+  const bird = 'add a mockingbird up above the house'
+  const added = '@c1 syntax.clause form=imperative verb="add" complement=$n1\n@n1 syntax.nominal dependent="a" head="mockingbird"\n@n2 syntax.nominal dependent="the" head="house"\n'
+  same(bird, added + '@r1 syntax.relation marker="up above" from=$c1 to=$n2', added.replace('verb="add"', 'verb="add" modifier="up"') + '@r1 syntax.relation marker="above" from=$n1 to=$n2')
+  // coordinated relations: their order does not depend on the starts that are not compared (relaxedCore sorts before it relaxes)
+  const window = 'put the old wooden box above the lamp and below the big window'
+  const box = '@c1 syntax.clause form=imperative verb="put" complement=$n1\n@n1 syntax.nominal dependent="the" dependent="old" dependent="wooden" head="box"\n@n2 syntax.nominal dependent="the" head="lamp"\n@n3 syntax.nominal dependent="the" dependent="big" head="window"\n@k1 syntax.coordination conjunct=$r1 conjunct=$r2 conjunction="and"\n'
+  const fromClause = box + '@r1 syntax.relation marker="above" from=$c1 to=$n2\n@r2 syntax.relation marker="below" from=$n1 to=$n3', fromBox = box + '@r1 syntax.relation marker="above" from=$n1 to=$n2\n@r2 syntax.relation marker="below" from=$n1 to=$n3'
+  assert.notEqual(relaxedCore(coreOf(window, fromClause)), relaxedCore(coreOf(window, fromBox)))
+  same(window, fromClause, fromBox)
+  // what is compared for agreement
+  const one = {sop: verbReading, core: normalForm(text, verbReading).core}, other = {sop: nounReading, core: normalForm(text, nounReading).core}
+  assert.deepEqual([writtenAlike(text, one, other, 'core'), writtenAlike(text, one, other, 'relaxed'), writtenAlike(text, one, other, 'variants')], [false, true, true])
+  assert.equal(agreementKeysOf(text, one, 'variants').length, 2)
+  assert.deepEqual(AGREEMENT_KEYS, ['core', 'relaxed', 'variants'])
+})
+
+test('circuits written alike up to the choices the rules let pass are settled by agreement with the key "variants"', () => {
+  const message = 'Please, make fence purple. Thanks!'
+  const inOne = '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" discourse="Thanks" complement=$n1\n@n1 syntax.nominal head="fence"'
+  const apart = '@c1 syntax.clause form=imperative discourse="Please" verb="make" modifier="purple" complement=$n1\n@n1 syntax.nominal head="fence"\n@c2 syntax.clause form=fragment discourse="Thanks"'
+  const outputs = [{strategy: 'vss', rows: withCores([row('1', message, inOne), row('2', text, verbReading)])}, {strategy: 'spacy', rows: withCores([row('1', message, apart), row('2', text, nounReading)])}]
+  const familyOf = familyFinder({own: ['vss'], parser: ['spacy']})
+  // "core": nothing agrees; "relaxed": the start of "next to"; "variants": also the place of "Thanks", and VSS's circuit stands for both
+  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2).map(circuit => circuit.text), [])
+  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {relaxed: true, prefer: ['vss']}).map(circuit => circuit.text), [text])
+  assert.deepEqual(agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'relaxed', prefer: ['vss']}).map(circuit => circuit.text), [text])
+  const agreed = agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'variants', prefer: ['vss']})
+  assert.deepEqual(agreed.map(circuit => [circuit.text, circuit.sources, circuit.core]), [[message, ['spacy', 'vss'], normalForm(message, inOne).core], [text, ['spacy', 'vss'], normalForm(text, verbReading).core]])
+  assert.throws(() => agreedCircuits(outputs, emptyRegistry(), familyOf, 2, {key: 'loose'}), /Unknown agreement key/u)
+
+  // agreed.mjs over run folders, with each key
+  const dir = mkdtempSync(join(tmpdir(), 'syntax-agreed-'))
+  mkdirSync(join(dir, 'run'))
+  for (const {strategy, rows} of outputs) writeFileSync(join(dir, 'run', strategy + '.jsonl'), rows.map(({id, text: words, sop}) => JSON.stringify({id, text: words, sop})).join('\n') + '\n')
+  const agree = key => {
+    const done = spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, key + '.jsonl'), '--strategies', 'vss,spacy', ...(key === 'none' ? [] : ['--key', key]), join(dir, 'run')], {encoding: 'utf8'})
+    assert.equal(done.status, 0, done.stderr)
+    return readJsonl(join(dir, key + '.jsonl')).map(line => line.text)
+  }
+  assert.deepEqual([agree('none'), agree('core'), agree('relaxed'), agree('variants')], [[], [], [text], [message, text]])
+  assert.equal(spawnSync(process.execPath, [join(tools, 'agreed.mjs'), join(dir, 'x.jsonl'), '--strategies', 'vss,spacy', '--key', 'loose', join(dir, 'run')], {encoding: 'utf8'}).status, 2)
+})
+
 test('the circuit of a message, and the refusal of a file with open messages', () => {
   const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
   const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
@@ -883,9 +991,12 @@ export const gamma = reader('gamma', ['drop', 'push'], ['lift', 'show'])
   assert.deepEqual(Object.values(readJson(join(first, 'summary.json')).strategies).map(entry => [entry.status, entry.messages, entry.valid]), [['ran', 7, 6], ['ran', 7, 4], ['ran', 7, 4]])
 
   // settle: agreement of two families, the rest to the judge, with one agreed circuit in three for the audit
+  const unknownKey = round('settle', first, '--key', 'loose', '--strategies', strategies)
+  assert.deepEqual([unknownKey.status, existsSync(join(first, 'key'))], [2, false])
   const settled = round('settle', first, '--audit', '0.34', '--families', '2', '--strategies', strategies)
   assert.equal(settled.status, 0, settled.stderr)
   const counts = readJson(join(first, 'settle.json'))
+  assert.equal(counts.key, 'core')
   assert.deepEqual(counts.strategies, [{strategy: 'alpha', family: 'one'}, {strategy: 'beta', family: 'two'}, {strategy: 'gamma', family: 'two'}])
   assert.deepEqual(counts.circuits, {distinct: 8, alreadyAcceptedInTheRegistry: 1, alreadyRejectedInTheRegistry: 0, settledByAgreement: 3, agreedAndSentToAJudge: 1, sentToAJudge: 6, newPackets: 1})
   assert.deepEqual(counts.messagesWith, {aLabel: 0, aCircuitSettledByAgreement: 3, anAcceptedCircuitAlready: 1, noSettledCircuitYet: 3, noValidCircuitFromAnyStrategy: 1})

@@ -3,7 +3,7 @@
 //   node tests/benchmark/syntax/round.mjs plan [--rounds 3] [--min-messages 500] [--order size|name]
 //   node tests/benchmark/syntax/round.mjs start <round> [--min-messages 500] [--order size|name] [--files <tab/name.csv,…>]
 //   node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
-//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--relaxed] [--prefer vss] [--judge all|needed|audit] [--focus vss]
+//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--key core|relaxed|variants] [--relaxed] [--prefer vss] [--judge all|needed|audit] [--focus vss]
 //   (judges write <round>/judging/verdicts-<k>.jsonl)
 //   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100] [--now]
 //   (judges write <round>/rewriting/written-<k>.jsonl)
@@ -29,7 +29,7 @@ import {basename, dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
 import {coreOf} from '../../../lib/syntax.mjs'
 import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, messagesOfCsv, writeCsv, readCsv, readOutputs, readRegistry, addToRegistry, lookup,
-  readLabels, labelChanges, labelLine, SYNTACTIC_HEADER, collectItems, readItems, writeJudging, agreedCircuits, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
+  readLabels, labelChanges, labelLine, SYNTACTIC_HEADER, collectItems, readItems, writeJudging, agreedCircuits, AGREEMENT_KEYS, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
   keepLabelsBefore, readLabelsBefore, tableOf, renderTable, judgingDir, packageRoot} from './lib.mjs'
 import {readWritten, rewritingPackets} from './rewrite-check.mjs'
 
@@ -226,6 +226,11 @@ function start(roundDir, named) {
 }
 
 async function settle(roundDir, named) {
+  // --key: how circuits count as written alike. core (the default): the same core. relaxed (also --relaxed): circuits
+  // that differ only in where a phrase with a marker attaches. variants: also those that differ only in the other
+  // choices the judges' rules let pass either way (agreementKey in lib.mjs).
+  const compare = typeof named.key === 'string' ? named.key : named.relaxed ? 'relaxed' : 'core'
+  if (!AGREEMENT_KEYS.includes(compare)) { console.error(`--key is one of ${AGREEMENT_KEYS.join(', ')}.`); process.exit(2) }
   const files = roundFiles(roundDir), where = places(named, files)
   const outputs = readOutputs(roundDir)
   if (!outputs.length) { console.error(`No strategy file in ${roundDir}: run run.mjs first.`); process.exit(1) }
@@ -245,10 +250,9 @@ async function settle(roundDir, named) {
   // three families by default: on the first judged sample, circuits that only two families wrote alike were
   // rejected by the judge far more often than those of three
   const minFamilies = Number(named.families ?? 3)
-  // --relaxed: circuits that differ only in where a phrase with a marker attaches count as written alike; the circuit
-  // of the first strategy of --prefer stands for them
+  // circuits counted alike by --key: the circuit of the first strategy of --prefer stands for them
   const prefer = typeof named.prefer === 'string' ? named.prefer.split(',').map(name => name.trim()) : []
-  const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {relaxed: Boolean(named.relaxed), prefer, labels}), foundKeys = new Set(found.map(key))
+  const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {key: compare, prefer, labels}), foundKeys = new Set(found.map(key))
   const agreed = [...readAgreement(roundDir).filter(circuit => !foundKeys.has(key(circuit))).map(({audit: _, ...circuit}) => circuit), ...found]
   const audited = chooseAudit(agreed, audit, seed), agreedKeys = new Set(agreed.map(key))
   // --judge needed: a judge reads only what the conversion needs. For a message with no accepted circuit yet, that is
@@ -292,7 +296,7 @@ async function settle(roundDir, named) {
   const agreedTexts = new Set(agreed.map(circuit => circuit.text))
   const acceptedBefore = text => labels.has(text) || judgedBefore(text).some(row => row.verdict === 'accepted')
   const valid = new Set(outputs.flatMap(output => output.rows.filter(row => row.core).map(row => row.text)))
-  const settled = {round: files.round, audit, seed, strategies: outputs.map(output => ({strategy: output.strategy, family: familyOf(output.strategy)})),
+  const settled = {round: files.round, audit, seed, key: compare, strategies: outputs.map(output => ({strategy: output.strategy, family: familyOf(output.strategy)})),
     messages: texts.length,
     circuits: {
       distinct: new Set(outputs.flatMap(output => output.rows.filter(row => row.core).map(key))).size,
@@ -309,7 +313,7 @@ async function settle(roundDir, named) {
   writeJson(join(roundDir, 'settle.json'), settled)
 
   console.log(`${texts.length} messages, ${outputs.length} strategies of ${new Set(settled.strategies.map(one => one.family)).size} families: ${settled.strategies.map(one => `${one.strategy} (${one.family})`).join(', ')}.`)
-  console.log(`Settled by agreement of at least ${minFamilies} families: ${agreed.length} circuits, for ${agreedTexts.size} messages (${share(agreedTexts.size, texts.length)}). ${settled.circuits.agreedAndSentToAJudge} of them go to a judge all the same, to measure how often agreement is right.`)
+  console.log(`Settled by agreement of at least ${minFamilies} families${compare === 'core' ? '' : ` (written alike by the key ${compare})`}: ${agreed.length} circuits, for ${agreedTexts.size} messages (${share(agreedTexts.size, texts.length)}). ${settled.circuits.agreedAndSentToAJudge} of them go to a judge all the same, to measure how often agreement is right.`)
   console.log(`Already settled: ${settled.messagesWith.aLabel} messages have a label in the syntactic files. The registry holds ${settled.circuits.alreadyAcceptedInTheRegistry} accepted and ${settled.circuits.alreadyRejectedInTheRegistry} rejected circuits of these messages. ${settled.messagesWith.anAcceptedCircuitAlready} messages have an accepted circuit already.`)
   console.log(`For a judge: ${items.length} circuits (${earlier.length} prepared before, ${added.length} new). ${settled.messagesWith.noSettledCircuitYet} messages have no settled circuit yet; for ${settled.messagesWith.noValidCircuitFromAnyStrategy} messages no strategy wrote a valid circuit.`)
   console.log(packets.length ? `New packets: ${packets.map(([name, lines]) => `${name} (${lines})`).join(', ')} in ${relative(process.cwd(), judgingDir(roundDir))}` : 'No new packet.')

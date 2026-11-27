@@ -124,7 +124,9 @@ For every message the circuits of the formalizers are grouped by their core.
 - Every other circuit goes into `judging/packet-<k>.jsonl`, as in a benchmark.
 - A random share of the agreed circuits, 5% unless `--audit` says otherwise, goes to the judge as well. The judge does not see which they are. Their verdicts show how often agreement is right. When the judge rejects such a circuit, the judge's word counts.
 
-It writes `settle.json` with the counts and `key/agreement.jsonl` with the agreed circuits. Judges then work as in step 3 of a benchmark.
+`--key` says what "wrote alike" means: `core` (the default) the same core; `relaxed` (also `--relaxed`) the same core up to the start of every relation with a marker; `variants` also up to the other choices that the judges' rules let pass either way (see "Written alike up to what the rules let pass" below). With `relaxed` or `variants` the circuit of the first strategy of `--prefer` stands for the circuits counted alike. `batch-settle.sh` settles the conversion folders with `--key relaxed` unless it is given `--key variants`, and `agreed.mjs` takes the same `--key`.
+
+It writes `settle.json` with the counts (and the key) and `key/agreement.jsonl` with the agreed circuits. Judges then work as in step 3 of a benchmark.
 
 **4. Have the missing circuits written.**
 
@@ -203,6 +205,37 @@ The normal form (`normalForm` in `lib.mjs`) is needed for two reasons. The judge
 - a clause lists its subject, then its complements; a relation `from`, then `to`.
 
 The packets, the registry and the syntactic files hold circuits in this form.
+
+## Written alike up to what the rules let pass
+
+For settling by agreement, two circuits can count as written alike although their cores differ. `relaxedCore` leaves out the start of every relation with a marker, since the judges accept several starts. `agreementKey` goes further: it rewrites the circuit into one way for each choice that `rules.md` names as passing either way, and then takes the core with the starts left out. Under the key `variants`, two circuits are alike when their `relaxedCore` or their `agreementKey` is equal, so `variants` never counts fewer circuits alike than `relaxed`.
+
+| The choice | The rule in `rules.md` | The way the key keeps |
+| --- | --- | --- |
+| Which clause holds a discourse word; "Thanks!" as a fragment of its own | What is not judged: "Which clause holds a `discourse` word" | No clause; the fragment left empty is dropped |
+| A number or a name right after a noun | "may be a `dependent` in that noun's nominal, or a nominal of its own tied to the noun by a relation without a marker" | A dependent. Not when the noun is a capitalised word and the name is not a number ("Core Hub" cut in two), and not when the name's nominal is tied to anything else, such as the start of a relation with a marker |
+| A name of several words | "may stand whole in `head`, or with its last word as `head` and the others as `dependent`" | The run of words as the head, also with a number or a name after a one-word head. A head of several words is not extended to the right ("meeting Intro" + "Main" stays apart) |
+| "a bit", "a little" | "`modifier` words of the clause ...; "a bit" or "a little" may also stand as a nominal of its own (a measure)" | Modifiers of the clause, when the measure is a complement of it |
+| A naming participle: "called", "named", "titled", "entitled", "labelled" | "is the `verb` of a nonfinite clause tied to the thing. Written as the `marker` of a relation between the thing and its name, it also passes" | The marker; the start of that relation, the thing named, is compared |
+| A quantity phrase before a noun: "a pair of", "a couple of", "all of", "every one of" (the rule's examples only) | "may be held as `dependent` words of that noun" | Dependents of the noun |
+| "let's", "let us" | ""let" is the `verb`; "'s" or "us" ... may be the `subject` of the nonfinite clause ... Holding "let's" or "let us" as `discourse` words of an imperative clause of "add" also passes" | Discourse words of the imperative clause |
+| "left of", "right of"; a word that grades a place marker: "just above", "right behind", "up above" | ""left of" may be one `marker`, or "left" a nominal or a clause `modifier`"; "A word that grades a linking word ... may be a `modifier` of the clause the relation belongs to" | The word as a modifier of the clause; the relation marked "of" then starts at the clause |
+| The start of a relation with a marker | "the clause, or any nominal of that clause that grammar allows" | Left out, as `relaxedCore`; the order of coordinated relations does not depend on it. Kept for "of", which "starts at that nominal or at its clause, never at another nominal", and for the marker of a naming participle |
+
+Not rewritten, although judges accepted both ways in some messages, because `rules.md` does not name the choice: a word held as `modifier` or as `discourse`; a word after a nominal as its dependent or as a clause modifier; the nominal of "make X look Y" as a complement of "make" or not; the start of a relation without a marker that ends at a participle; two bare nouns with either as head (tried: judges rejected the first word as head in "Quarterly revenue", "order quantity", "Weekly review"); a noun before a name or a number held as its dependent (tried: judges rejected "120" as head of "a triangle 120").
+
+Measured on 2026-11-27 with judges' verdicts only (the registry without the lines of the judge "agreement", and the judging folders of the runs below), on the circuits as they stood at 18:23 and on the first runs that were judged in full:
+
+| Run | VSS and spaCy alike: `relaxed` → `variants` | Of the pairs added, both accepted / one accepted and one rejected / both rejected / not judged | All pairs of strategies: added, both accepted / one accepted and one rejected / both rejected |
+| --- | --- | --- | --- |
+| 1% benchmark | 624 → 807 of 1,831 | 182 / 0 / 1 / 0 | 800 / 1 / 21 |
+| 1% benchmark, first run | 575 → 708 | 132 / 0 / 1 / 0 | 733 / 0 / 28 |
+| round 01 | 354 → 388 of 575 | 34 / 0 / 0 / 0 | 684 / 24 / 28 |
+| round 01, first run of VSS | 319 → 356 | 34 / 0 / 3 / 0 | 289 / 7 / 11 |
+| round 02 | 287 → 343 of 590 | 30 / 0 / 0 / 26 | 371 / 0 / 0 (976 not judged) |
+| VSS lever trials | (VSS only) | | 16 / 0 / 0 |
+
+Every pair added with one circuit accepted and the other rejected was read. They come from seven messages: in five the rejection names a part that both circuits share ("set the Results heading level 3", "write a article titled Q3 results about the team offsite", two messages "add Planning ..., ID planning", "make the eyes scale 1.5"); one is a verdict given before the rule on naming participles existed ("create a heading named Overview"); one is a start of a relation with a marker that the words settle, which `relaxedCore` leaves out as well ("turn code on for characters 4 to 9 of Body"). The pairs where both circuits were rejected share the error the judge named; in three of them ("Bench flush", "Barn close", "r1 kind") both circuits put a word that is no part of the name into it, one as the head and one inside a whole head. Over all judged pairs of circuits of one message in the registry, one accepted and one rejected (9,415), `relaxedCore` makes 70 alike and `variants` 78; the eight added are the seven messages above and one more whose rejection names a part both circuits share ("I want the line drawn right to left ... while you're at it"). On the 217 conversion folders (182,324 messages, the first runs of VSS and spacy-direct), VSS and spaCy write alike 57,739 messages (31.7%) under `relaxed` and 70,834 (38.9%) under `variants`: calendar 10.6% → 56.0%, document 15.8% → 42.9%, diagram 28.3% → 33.4%, drawing 37.6% → 42.1%. Of the 13,095 messages added there, the registry holds a verdict on VSS's circuit for 694: 686 accepted, 8 rejected; seven of the eight are quantity phrases held as dependents ("a pair of trees"), rejected on the fixed sample before the rule that lets them pass was written, and one shares the error of spaCy's circuit.
 
 ## The files of a run folder
 
