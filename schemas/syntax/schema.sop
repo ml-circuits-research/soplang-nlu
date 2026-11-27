@@ -1,44 +1,49 @@
-# The syntactic layer. A reading splits a message into facts and things, gives every word one
-# place in one wire, and ties the wires. It says nothing that needs the meaning of the words:
-# which thing is given and which receives, whether a word names a result or a manner, what a
-# cue means. Those belong to the layers that read these wires with context.
-@syntax core.module name=syntax version=1 exports=fact exports=thing exports=link exports=list
+# The syntactic layer. A formalizer reads one message, with no context and no knowledge
+# worlds, and writes one circuit in this schema: it splits the message into clauses and
+# nominals, gives every word one place in one wire, and ties the wires. Whatever needs the
+# meaning of the words (who receives, what is the result, what a pronoun refers to) is left
+# to the layers that read the circuit afterwards. The names are the established terms of
+# grammar and of dependency syntax.
+@syntax core.module name=syntax version=3 exports=clause exports=nominal exports=relation exports=coordination
 
-# One fact: something asked for, stated or asked about. A mention names things and shows no
-# action. A dependent fact is a verb form that describes and has no form of its own ("facing left").
-@syntax.fact core.type of=syntax.fact closed=true
-@syntax.fact.kind core.slot of=syntax.fact key=kind enum=command enum=statement enum=question enum=mention enum=dependent required=true present=true
-# The verb, and the other words of its group: helping verbs, "not", "to", a particle ("tidy up").
-@syntax.fact.action core.slot of=syntax.fact key=action kind=string
-@syntax.fact.helper core.slot of=syntax.fact key=helper kind=string many=true
-# Who or what does it, when the words show it. The other things the fact involves directly.
-@syntax.fact.doer core.slot of=syntax.fact key=doer kind=ref type=syntax.thing type=syntax.list
-@syntax.fact.thing core.slot of=syntax.fact key=thing kind=ref type=syntax.thing type=syntax.list many=true
-# Words that say how, how much or with what result ("blue", "slightly", "again").
-@syntax.fact.how core.slot of=syntax.fact key=how kind=string many=true
-# The word that asks ("what", "which", "how many").
-@syntax.fact.asks core.slot of=syntax.fact key=asks kind=string
-# Small words and marks that belong to the fact and have no place of their own ("please", "then", ",", "?").
-@syntax.fact.word core.slot of=syntax.fact key=word kind=string many=true
+# A verb with what belongs to it, or a group of words with no verb (form=fragment).
+# nonfinite: the verb form cannot make a sentence by itself ("facing left", "delete it" after "to").
+@syntax.clause core.type of=syntax.clause closed=true
+@syntax.clause.form core.slot of=syntax.clause key=form enum=imperative enum=declarative enum=interrogative enum=fragment enum=nonfinite required=true present=true
+@syntax.clause.verb core.slot of=syntax.clause key=verb kind=string
+@syntax.clause.auxiliary core.slot of=syntax.clause key=auxiliary kind=string many=true
+@syntax.clause.negation core.slot of=syntax.clause key=negation kind=string many=true
+# The grammatical subject, when the words show one.
+@syntax.clause.subject core.slot of=syntax.clause key=subject kind=ref type=syntax.nominal type=syntax.coordination
+# The other nominals the verb takes: its objects and its predicative complement. In a
+# fragment: every nominal that is not the end of a relation.
+@syntax.clause.complement core.slot of=syntax.clause key=complement kind=ref type=syntax.nominal type=syntax.coordination many=true
+# Words that modify the clause and are neither nominals nor markers ("red", "slightly", "up").
+@syntax.clause.modifier core.slot of=syntax.clause key=modifier kind=string many=true
+# Words addressed to the listener, outside the grammar of the clause ("please", "hey", "thanks").
+@syntax.clause.discourse core.slot of=syntax.clause key=discourse kind=string many=true
+# On a fragment: the clause whose verb, auxiliaries and negation it shares ("make A blue and B green").
+@syntax.clause.ellipsis core.slot of=syntax.clause key=ellipsis kind=ref type=syntax.clause
 
-# One thing: the words that characterise it. The head names it; a pronoun, a name, a number
-# or a quoted text can be the head.
-@syntax.thing core.type of=syntax.thing closed=true
-@syntax.thing.head core.slot of=syntax.thing key=head kind=string
-@syntax.thing.describing core.slot of=syntax.thing key=describing kind=string many=true
+# A noun with the words that depend on it, or a word that stands where a noun could
+# (a pronoun, a name, a number). A lookup: it does not say which object is meant.
+@syntax.nominal core.type of=syntax.nominal closed=true
+@syntax.nominal.head core.slot of=syntax.nominal key=head kind=string required=true present=true
+@syntax.nominal.dependent core.slot of=syntax.nominal key=dependent kind=string many=true
 
-# A tie between two wires. cue: the linking words say how ("on", "next to", "'s", "because").
-# completes: a fact completes another fact ("want to move it"). describes: a fact or a thing
-# says something of a thing ("the bird facing left"). open: the wires stand together and no
-# word says how ("x 120"). A link with a cue starts at a thing, or at the fact when the words
-# do not settle which of its things holds the phrase.
-@syntax.link core.type of=syntax.link closed=true
-@syntax.link.kind core.slot of=syntax.link key=kind enum=cue enum=completes enum=describes enum=open required=true present=true
-@syntax.link.from core.slot of=syntax.link key=from kind=ref type=syntax.fact type=syntax.thing type=syntax.list required=true present=true
-@syntax.link.to core.slot of=syntax.link key=to kind=ref type=syntax.fact type=syntax.thing type=syntax.list required=true present=true
-@syntax.link.cue core.slot of=syntax.link key=cue kind=string many=true
+# A relation between two wires. marker: the word that marks it (a preposition, the
+# possessive "'s", a subordinator, the "to" of an infinitive). Without a marker the two
+# wires stand together and no word says how. attachment=ambiguous: the relation belongs to
+# the clause it starts at; whether it attaches to the verb or to one of the clause's
+# nominals is not settled.
+@syntax.relation core.type of=syntax.relation closed=true
+@syntax.relation.from core.slot of=syntax.relation key=from kind=ref type=syntax.clause type=syntax.nominal type=syntax.coordination required=true present=true
+@syntax.relation.to core.slot of=syntax.relation key=to kind=ref type=syntax.clause type=syntax.nominal type=syntax.coordination required=true present=true
+@syntax.relation.marker core.slot of=syntax.relation key=marker kind=string many=true
+@syntax.relation.negation core.slot of=syntax.relation key=negation kind=string many=true
+@syntax.relation.attachment core.slot of=syntax.relation key=attachment enum=ambiguous
 
-# Wires put side by side ("a blanket, a basket and a boy"; "do this, then that").
-@syntax.list core.type of=syntax.list closed=true
-@syntax.list.member core.slot of=syntax.list key=member kind=ref type=syntax.fact type=syntax.thing type=syntax.link many=true required=true present=true
-@syntax.list.cue core.slot of=syntax.list key=cue kind=string many=true
+# Wires joined side by side: nominals, clauses or relations.
+@syntax.coordination core.type of=syntax.coordination closed=true
+@syntax.coordination.conjunct core.slot of=syntax.coordination key=conjunct kind=ref type=syntax.clause type=syntax.nominal type=syntax.relation many=true required=true present=true
+@syntax.coordination.conjunction core.slot of=syntax.coordination key=conjunction kind=string many=true
