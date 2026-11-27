@@ -74,6 +74,25 @@ messages, where it does worse.
   like left/right in the VSS legend); all its other literal words are prepositions, pronouns, determiners
   and adverbs.
 
+- DistilBERT retrained on the current labels (syntax-v2, benchmark messages held out): 73.0% of development
+  messages equal the gold circuit (61.3% for the previous checkpoint). Its new benchmark circuits are being
+  judged together with the repaired spaCy's (packets 36-42 of the benchmark run).
+- Lever study for VSS (eval-results/2026-11-27-vss-levers-study, read-only, 7 agents). Findings:
+  - The faults left are a long tail: 17 rule groups of 5 to 32 messages each (of about 520 rejected); five
+    have measured prototypes (sentence ties, causative verb + object + bare verb, compound nouns, the opening
+    command verb, participles after a comma).
+  - With VSS's stations forced to those of an accepted circuit, at most +2.7 points: the faults are in how
+    VSS ties groups (units, links), not in the tagging of words.
+  - Learned levers, estimated on the benchmark: a station prior from the accepted circuits +1.4 points;
+    learned linker decisions +0.3; a table of evidence from spaCy and DistilBERT +1.1 to +6 (depends on unread
+    circuits); reranking VSS readings +0.1. Their trial circuits are being judged
+    (eval-results/2026-11-27-vss-lever-trials) to decide which to build.
+  - The judge's plan: first the measured rule prototypes, one commit each; then the structural rules; then
+    learned decisions where thresholds fail; station-level learning only if the trials justify it.
+- A publication that replaces an agreement label now keeps the replaced circuit in the registry as an accepted
+  reading (306 such circuits recovered from the benchmark publication); before, it was lost and later runs
+  sent it to a judge again.
+
 ## In progress
 
 - VSS: the remaining rules of the drawing analysis (a word grading a relation goes to the clause where the
