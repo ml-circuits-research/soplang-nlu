@@ -5,7 +5,7 @@
 //   node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
 //   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--judge all|needed] [--focus vss]
 //   (judges write <round>/judging/verdicts-<k>.jsonl)
-//   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100]
+//   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100] [--now]
 //   (judges write <round>/rewriting/written-<k>.jsonl)
 //   node tests/benchmark/syntax/round.mjs write <round> --tag <name> [--judge <model>] [--allow-open]
 //   node tests/benchmark/syntax/round.mjs report <round>
@@ -305,7 +305,9 @@ function rewritePrepare(roundDir, named) {
     const circuits = state.get(text)
     if (circuits.some(circuit => circuit.status === 'accepted') || known.has(text)) continue
     // a circuit no judge has read yet may still be accepted: the message is not for rewriting now
-    if (circuits.some(circuit => circuit.status === 'waiting')) { waiting++; continue }
+    // --now: do not wait for circuits that no judge will read (after settle --judge needed, the circuits of the other
+    // strategies are never sent); the judge writes the circuit of every message that has no accepted one
+    if (!named.now && circuits.some(circuit => circuit.status === 'waiting')) { waiting++; continue }
     added.push({n: earlier.length + added.length + 1, text, rejected: circuits.filter(circuit => circuit.status === 'rejected').map(circuit => ({sop: circuit.sop, note: circuit.note}))})
   }
   mkdirSync(folder, {recursive: true})
