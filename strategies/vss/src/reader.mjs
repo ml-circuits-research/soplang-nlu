@@ -146,6 +146,13 @@ export function openModel(model, options = {}) {
       if (mode === 'memory') return fit
       return counted(verb, head, cue) + weight * fit
     },
+    // how strongly the verb, or a thing, holds a relation with this cue to this target
+    holds: (kind, word, cue, target) => {
+      const filler = target ? meanings.vector(target) : null
+      const count = !counted.verb ? 0 : kind === 'verb' ? counted.verb(word, cue) : counted.thing(word, cue)
+      return count + weight * memory.fit((kind === 'verb' ? 'v:' : 'n:') + word, cue, filler)
+    },
+    hosts: options.hosts,
     suits: (verb, thing) => memory.fit('v:' + verb, 'said', meanings.vector(thing)),
     // how often the text says this verb form of this thing (per occurrence of the thing)
     describes: (form, head) => (habits.describes?.[form]?.[head] ?? 0) / ((habits.attach?.nounTotal?.[head] ?? 0) + 5)

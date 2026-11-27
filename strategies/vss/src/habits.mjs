@@ -198,10 +198,14 @@ export function attachment(stats, near = () => []) {
     }
     return ((table[word]?.[cue] ?? 0) + smooth * lean) / (seen + smooth)
   }
-  return (verb, head, cue) => {
+  const score = (verb, head, cue) => {
     const verbPrior = (stats.verbCue[cue] ?? 0) / stats.verbAll, nounPrior = (stats.nounCue[cue] ?? 0) / stats.nounAll
     const byVerb = rate(stats.verb, stats.verbTotal, verb, cue, verbPrior)
     const byNoun = rate(stats.noun, stats.nounTotal, head, cue, nounPrior)
     return Math.log((byVerb + 1e-6) / (byNoun + 1e-6))
   }
+  // the two sides on their own, so that several things can be weighed against the verb
+  score.verb = (verb, cue) => Math.log(rate(stats.verb, stats.verbTotal, verb, cue, (stats.verbCue[cue] ?? 0) / stats.verbAll) + 1e-6)
+  score.thing = (head, cue) => Math.log(rate(stats.noun, stats.nounTotal, head, cue, (stats.nounCue[cue] ?? 0) / stats.nounAll) + 1e-6)
+  return score
 }

@@ -442,7 +442,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           const relation = relate(null, pendingCue, made, adverbForCue)
           attach(relation, clause, lastEntity, pendingCue, unit)
           // the thing this one is placed by: the entity the relation starts at, or the clause's own thing
-          unit.placedBy = relation.slots.find(slot => slot[0] === 'from')[1] === '$' + target.id ? objects[0] ?? clause.subject : lastEntity
+          const start = relation.slots.find(slot => slot[0] === 'from')[1]
+          unit.placedBy = start === '$' + target.id ? objects[0] ?? clause.subject ?? null
+            : frontier.find(thing => thing.wire && '$' + thing.wire.id === start) ?? lastEntity
           tail = relation.slots.find(slot => slot[0] === 'from')[1] === '$' + target.id ? 'held' : null
           pendingCue = null
           adverbForCue = null
@@ -625,13 +627,43 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const toClause = '$' + clause.wire.id
     if (!entity || entity.pronoun) { slot[1] = toClause; done(); return }
     const toEntity = '$' + entityWire(entity).id
-    if (clause.fragment && !clause.gapOf) { slot[1] = toEntity; done(); return }
+    if (clause.fragment && !clause.gapOf) {
+      let best = entity, bestScore = -Infinity
+      const seen = new Set()
+      if (context.hosts !== false) for (let thing = entity; thing && !thing.pronoun && !seen.has(thing) && seen.size < 4; thing = thing.placedBy) {
+        seen.add(thing)
+        const score = context.holds('thing', headWord(thing), tokens[cue.last].word, headWord(target)) - 0.3 * (seen.size - 1)
+        if (score > bestScore) { bestScore = score; best = thing }
+      }
+      slot[1] = '$' + entityWire(best).id
+      relation.host = best
+      done()
+      return
+    }
     // "240 by 160": a number placed against a number is one measure
     if (entity.literal && target.literal) { slot[1] = toEntity; done(); return }
-    const score = context.attach(clause.predicate, headWord(entity), tokens[cue.last].word, headWord(target))
+    const cueWord = tokens[cue.last].word, aim = headWord(target)
+    if (context.hosts === false) {
+      const score = context.attach(clause.predicate, headWord(entity), cueWord, aim)
+      const id = decisions.length
+      decisions.push({id, margin: Math.abs(score), cue: cueWord})
+      slot[1] = (score >= 0) !== flips.has(id) ? toClause : toEntity
+      done()
+      return
+    }
+    // Every open host competes: the clause, the thing before the cue, and the things that one
+    // is itself placed by ("a boy with a happy face next to the table": face, then boy).
+    const hosts = [{ref: toClause, score: context.holds('verb', clause.predicate, cueWord, aim)}]
+    const seen = new Set()
+    for (let thing = entity; thing && !thing.pronoun && !seen.has(thing) && seen.size < 4; thing = thing.placedBy) {
+      seen.add(thing)
+      const key = headWord(thing)
+      if (key) hosts.push({ref: '$' + entityWire(thing).id, score: context.holds('thing', key, cueWord, aim)})
+    }
+    hosts.sort((a, b) => b.score - a.score)
     const id = decisions.length
-    decisions.push({id, margin: Math.abs(score), cue: tokens[cue.last].word})
-    slot[1] = (score >= 0) !== flips.has(id) ? toClause : toEntity
+    decisions.push({id, margin: hosts.length > 1 ? hosts[0].score - hosts[1].score : Infinity, cue: cueWord})
+    slot[1] = (flips.has(id) && hosts[1] ? hosts[1] : hosts[0]).ref
     done()
   }
 
