@@ -230,6 +230,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           clause.start = i
         }
       }
+      // "selected event": a form that says what was done, opening its clause right before a bare noun, describes that noun
+      if (context.open !== false && bare && verb.form === 'past' && !clause.subject && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(previous?.type)) &&
+          list[i + 1]?.type === 'entity' && !list[i + 1].determiner?.length && !list[i + 1].pronoun && list[i + 1].first === verb.last + 1) doubts.push({position: verb.predicate[0], not: 'verb'})
       // "keep the axis labels larger": the verb of a clause that completes another verb is never a form in -s
       if (context.open !== false && clause.role === 'complement' && bare && lexicon.sForm(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
       clauses.push(clause)
@@ -732,7 +735,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         put(target, verb ? 'particle' : 'adverb', pendingCue.first, pendingCue.last)
         pendingCue = null
       }
-      if (unit.type === 'cue') {
+      // "after Thanks": a word that can link a clause or a thing links the thing that follows it when no verb does
+      if (context.open !== false && unit.type === 'marker' && unit.first === unit.last && next?.type === 'entity' && lexicon.canBe(word(unit), 'cue')) pendingCue = unit
+      else if (unit.type === 'cue') {
         const moves = verb && !objects.length && i === 0 && unit.first === unit.last && lexicon.phrasal(clause.predicate, tokens[unit.first].word)
         if (moves && next?.type === 'entity') put(target, 'particle', unit.first, unit.last)      // "sort out the text size"
         else if (next?.type === 'entity') pendingCue = unit

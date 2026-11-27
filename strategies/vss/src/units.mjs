@@ -145,6 +145,13 @@ export function buildUnits(tokens, stations, lexicon) {
     group.first = lead.first
     units.splice(k, 1)
   }
+  // "it would be nice", "after Thanks": right after a form of "be" or a linking word, a word listed as an exclamation is no exclamation
+  for (let k = 1; k < units.length; k++) {
+    const said = units[k], before = units[k - 1]
+    if (!lexicon.linkOf || said.type !== 'expression' || said.first !== said.last || said.first !== before.last + 1) continue
+    const copula = before.type === 'verb' && lexicon.linkOf(tokens[before.predicate[0]].word) === 'predicative'
+    if (copula || before.type === 'cue' || before.type === 'marker' && lexicon.canBe(tokens[before.last].word, 'cue')) units.doubts.push({position: said.first, not: 'expression'})
+  }
   // "where they stand": a word that can only be a subject is followed by its verb
   for (let k = 0; k + 1 < units.length; k++) {
     const doer = units[k], next = units[k + 1]
@@ -236,11 +243,16 @@ export function buildUnits(tokens, stations, lexicon) {
       if (lexicon.leans && j > start && at(j + 1) === 'noun' && (station === 'quantity' || lexicon.canBe(tokens[j].word, 'quantity') || tokens[j].shape === 'number')) {
         const before = lexicon.kindsOf(tokens[j - 1].word)
         if (['noun', 'modifier'].includes(stations[j - 1]) && lexicon.linkOf(tokens[j - 1].word) !== 'selects' && before.thing >= 3 && before.thing >= 3 * before.quality) break
+        // "block 2 one space": after a thing with its number, a count begins the next thing
+        if (j - 1 > start && tokens[j - 1].shape === 'number') break
       }
       if (station === 'quantity') (core.length ? core : quantity).push(j)
       else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree')) degree.push(j)
       // a number word that the route took for a description still counts the thing ("the first three bars")
       else if (station === 'modifier' && !core.length && !quantity.length && lexicon.leans && (lexicon.canBe(tokens[j].word, 'quantity') || tokens[j].shape === 'number')) quantity.push(j)
+      // "the markers small circles": inside one thing a describing word does not follow a plural noun; it begins the next thing
+      else if (station === 'modifier' && !core.length && lexicon.leans && j > start && stations[j - 1] === 'modifier' && lexicon.pluralThing(tokens[j - 1].word) &&
+               lexicon.saysHow(tokens[j].word)) break
       else if (station === 'modifier' && !core.length) modifier.push(j)
       else if (station === 'noun' || station === 'name') core.push(j)
       else if (station === 'literal' && quoted < 0 && (determiner.length || modifier.length || core.length)) quoted = j      // the "eyes" part

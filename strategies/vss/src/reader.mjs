@@ -82,6 +82,11 @@ export function openModel(model, options = {}) {
     thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
     together: (left, right) => together.has(left + ' ' + right),
     canBe: (word, station) => legend.places.get(word)?.stations.has(stationIndex.get(station)) ?? false,
+    // the plural of a word seen as a thing
+    pluralThing: word => {
+      const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
+      return stemsOf(word, endings).some(stem => (habits.kinds?.[stem]?.[1] ?? 0) >= 3)
+    },
     // a verb form in -s: it is said of a subject and never opens a command
     sForm: word => {
       const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
@@ -196,6 +201,7 @@ export function createVssReader(model, options = {}) {
   }
   const sharp = options.occurrenceWeight ?? 4
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
+  const exclaimStations = new Set(legend.stations.filter(station => ['expression', 'filler'].includes(station.name)).map(station => station.index))
   const otherStations = new Set(legend.stations.filter(station => station.key !== 'predicate').map(station => station.index))
   // the stations that say how a thing is, and the verb stations: a word kept off both names a thing
   const qualityStations = new Set(legend.stations.filter(station => station.key === 'predicate' || ['modifier', 'result_complement', 'degree'].includes(station.key)).map(station => station.index))
@@ -240,10 +246,19 @@ export function createVssReader(model, options = {}) {
       known: word => lexicon.kindsOf(word).verb >= 3 ? (options.verbLead ?? 0) : 0
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
+    // what a doubt keeps a word off, and whether that is news: a word can be doubted more than once, for different reasons
+    const barred = ({not, is}) => is === 'verb' ? otherStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
+    const fresh = doubt => {
+      const have = tried.get(doubt.position), more = barred(doubt)
+      if (!have) return true
+      if ([...more].every(station => have.has(station))) return false
+      // never keep a word off every station
+      return legend.stations.some(station => !have.has(station.index) && !more.has(station.index))
+    }
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
       const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)
-      return {sop: emit(wires), wires, decisions, doubts: [...units.doubts, ...doubts].filter(doubt => !tried.has(doubt.position))}
+      return {sop: emit(wires), wires, decisions, doubts: [...units.doubts, ...doubts].filter(fresh)}
     }
     let first = read(new Set())
     // What the routes learned of a word across the whole text outweighs one doubtful path: a word that
@@ -263,9 +278,9 @@ export function createVssReader(model, options = {}) {
     first.doubts.push(...leaning())
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
-    for (let again = 0; again < 3 && first.doubts.length; again++) {
+    for (let again = 0; again < 4 && first.doubts.some(fresh); again++) {
       if (options.trace) console.log('stations', stations.map((station, t) => tokens[t].word + '/' + names[station]).join(' '), '| doubts', JSON.stringify(first.doubts))
-      for (const {position, not, is} of first.doubts) tried.set(position, is === 'verb' ? otherStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations)
+      for (const doubt of first.doubts.filter(fresh)) tried.set(doubt.position, new Set([...(tried.get(doubt.position) ?? []), ...barred(doubt)]))
       const banned = new Map(tried)
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))
       first = read(new Set())
