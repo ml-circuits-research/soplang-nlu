@@ -99,6 +99,15 @@ messages, where it does worse.
   reading (306 such circuits recovered from the benchmark publication); before, it was lost and later runs
   sent it to a judge again.
 
+- Agreement between VSS and spaCy on the benchmark sample, current versions: 23.2% of messages strictly,
+  33.5% up to where a relation starts (drawing 38%, diagram 32%, calendar 17%, document 8%); of the 613 agreed
+  circuits 603 accepted, 2 rejected. Where they differ (1,218 messages), both circuits were accepted in 515:
+  the schema allows several readings (which word heads a name, a number after a noun as dependent or as its
+  own nominal, modifier or discourse), and the agreement key counts them as different. A wider key that
+  treats the variations rules.md allows as the same could settle many more messages without a judge; an
+  agent is building and measuring it (false agreement checked on the judged pairs where only one circuit
+  was accepted).
+
 ## In progress
 
 - VSS: the remaining rules of the drawing analysis (a word grading a relation goes to the clause where the
