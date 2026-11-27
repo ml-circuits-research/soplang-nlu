@@ -1,5 +1,7 @@
 # spaCy direct
 
+This page describes the earlier projection into the `nlu` schema. The strategy now writes the `syntax` schema as part of the one strategy `spacy`; see [spaCy](spacy.md).
+
 `spacy-direct` projects one dependency analysis into an `nlu` SOP circuit. It shares the optional [dependency transport](neural-dependencies.md) with strategies that use the same pretrained syntax model. A caller can supply a shared `syntaxModel` or choose a local Python interpreter and spaCy model with `python` and `model`. The default model is `en_core_web_sm`.
 
 The projector maps dependency labels into clause roles, nominal modifiers, coordination, and directed attachment relations. It retains exact source evidence for each role and aligns atomic quoted text, numbers, dates, clocks, and contracted forms to source boundaries. Unsupported tokens use `unresolved`. Domain actions, object kinds, and colors are left unspecified.

@@ -3,8 +3,9 @@
 // A parser trained on edited prose reads a run of short requests ("set the axis, that's the
 // tweak; then drop the legend") as one sentence and hangs each clause on the next as its
 // complement or its adverbial clause. Each rule below states a fact of English clause syntax,
-// checks it on the parser's own tags and relations, and relabels the arc. No rule names a
-// word of the message. A relabelled clause is `parataxis`: set side by side with the other.
+// checks it on the parser's own tags and relations, and relabels or moves the arc. No rule names
+// a word of the message, except the linking word "then". A relabelled clause is `parataxis`: set
+// side by side with the other.
 const STRONG = /^[;:—–.!?]+$/u
 const SUBJECT = new Set(['nsubj', 'nsubjpass', 'expl', 'csubj', 'csubjpass'])
 // the relations that hang a clause on a verb, and those that hang it on a noun
@@ -56,15 +57,54 @@ export function repairClauses(units) {
     if (acrossStrong || frontedStatement) { unit.dep = 'parataxis'; changed++ }
   }
 
-  // 4. An adverb between a punctuation mark and the first word of a clause belongs to that clause,
-  //    whatever earlier verb the parser hung it on ("…, then make it red").
+  // 4. Only a main clause puts an auxiliary before its subject: "is anything overlapping the house?"
+  //    is a question. A clause so inverted that the parser hung across a punctuation mark on a word
+  //    before it, as a clause that completes or describes that word, is a question of its own.
+  for (const unit of units) {
+    if (!verbal(unit) || unit.head === unit.index || !['ccomp', 'xcomp', 'acl', 'relcl'].includes(unit.dep)) continue
+    const governor = units[unit.head], subject = subjectOf(unit)
+    if (governor.index > unit.index || !set(unit, governor) || !subject) continue
+    if (auxiliaries(unit).some(part => part.index < subject.index)) { unit.dep = 'parataxis'; changed++ }
+  }
+
+  // 5. An auxiliary stands before the verb it helps. One that the parser hung on a verb before it,
+  //    across a comma, with a subject of its own after it, is the verb of a tag ("drop in a tree,
+  //    would you"): an elliptical question set beside the clause.
+  for (const unit of units) {
+    if (!unit.word || unit.dep !== 'aux' || unit.lower === 'to' || unit.head === unit.index) continue
+    const verb = units[unit.head]
+    if (verb.index > unit.index || !set(verb, unit) || !under(unit).some(part => SUBJECT.has(part.dep) && part.index > unit.index)) continue
+    unit.dep = 'parataxis'
+    changed++
+  }
+
+  // 6. No comma stands between a subject and its verb. A nominal that the parser made the subject of
+  //    a base form standing after it across a comma ("a small cat on the bench, then make the boat
+  //    blue") is a group of words of its own, and the base form, left with no subject, commands.
   const first = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => first(part, depth + 1)))
+  const last = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => last(part, depth + 1)))
+  for (const unit of units) {
+    if (!unit.word || unit.dep !== 'nsubj' || unit.head === unit.index) continue
+    const verb = units[unit.head]
+    const base = verb.tag === 'VB' || ['VBD', 'VBN'].includes(verb.tag) && verb.lower === verb.lemma
+    if (!verbal(verb) || verb.index < unit.index || !base || auxiliaries(verb).length || introduced(verb)) continue
+    if (!between(units[last(unit)], verb).some(mark => !mark.word && mark.value === ',')) continue
+    unit.dep = 'dep'
+    changed++
+  }
+
+  // 7. An adverb between a punctuation mark and the first word of a clause belongs to that clause,
+  //    whatever earlier word the parser hung it on ("…, then make it red"). So does one before a
+  //    group of words with no verb that the parser set beside the earlier words ("…, then a small cat").
+  //    The linking word "then" opens the clause it stands before also with no mark before it
+  //    ("mirror the boat then blur the waterline").
+  const nominal = unit => ['NOUN', 'PROPN', 'PRON', 'NUM'].includes(unit.pos) && ['conj', 'dep', 'appos', 'parataxis'].includes(unit.dep)
   for (const unit of units) {
     if (unit.dep !== 'advmod' || unit.pos !== 'ADV' || !unit.word || under(unit).length) continue
     const governor = units[unit.head], before = units[unit.index - 1]
-    if (!verbal(governor) || governor.index > unit.index || !before || before.word) continue
-    const next = units.find(other => verbal(other) && other.index > unit.index && other !== governor &&
-      ['ROOT', 'conj', 'dep', 'parataxis', 'ccomp', 'advcl'].includes(other.dep) && first(other) === unit.index + 1)
+    if (governor.index > unit.index || !before || before.word && unit.lower !== 'then') continue
+    const next = units.find(other => other.index > unit.index && other !== governor && first(other) === unit.index + 1 &&
+      (verbal(other) && verbal(governor) && ['ROOT', 'conj', 'dep', 'parataxis', 'ccomp', 'advcl'].includes(other.dep) || nominal(other)))
     if (next) { unit.head = next.index; changed++ }
   }
   return changed

@@ -1,5 +1,7 @@
 # spaCy beam
 
+This page describes the earlier projection into the `nlu` schema. The strategy now writes the `syntax` schema as part of the one strategy `spacy`; see [spaCy](spacy.md).
+
 `spacy-beam` uses spaCy’s English dependency beam and the same SOP projection as [spaCy direct](spacy-direct.md). Select it by passing `spacyBeam` to `createReader`. The strategy requires a SOP knowledge directory to check source grounding before it selects alternatives.
 
 ```js

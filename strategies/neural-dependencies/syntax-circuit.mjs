@@ -108,6 +108,8 @@ const OBJECT = new Set(['dobj', 'obj', 'iobj', 'dative', 'attr', 'oprd'])
 const ARGUMENT = new Set([...SUBJECT, ...OBJECT, 'pobj'])
 // relations that hang a clause on another word
 const CLAUSAL = new Set(['advcl', 'ccomp', 'xcomp', 'relcl', 'acl', 'pcomp', 'parataxis', 'csubj', 'csubjpass'])
+// relations that make a clause part of another: every clausal relation but the one that sets it beside
+const EMBEDDED = new Set([...CLAUSAL].filter(dep => dep !== 'parataxis'))
 // dependents only a verb governs: a verb form that has one heads a clause wherever it stands
 const GOVERNED = new Set([...SUBJECT, ...OBJECT, 'aux', 'auxpass', 'agent', 'ccomp', 'xcomp', 'advcl', 'prt', 'acomp', 'neg'])
 // what a preposition governs
@@ -251,22 +253,33 @@ export function wiresOf(units) {
 
   // ----- the form of a clause ----------------------------------------------------------------
 
-  /** A verb form joined to another with no subject or auxiliary of its own shares those of the first. */
+  /**
+   * A verb form joined to another with no subject or auxiliary of its own shares those of the first.
+   * One with a word said to the listener in front of it ("…, so please reset it") addresses the
+   * listener by itself: a command, not a second verb of the first clause.
+   */
   function bare(unit) {
     const first = units[unit.head]
     const finite = tag => tag === 'VBP' || tag === 'VBZ' || tag === 'VBD'
     // the same verb form as the first: both stand under its auxiliary, its "to" or its subject
     return unit.dep === 'conj' && verbal(unit) && verbal(first) && (unit.tag === first.tag || finite(unit.tag) && finite(first.tag)) &&
-      !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux' || part.dep === 'auxpass' || part.dep === 'mark')
+      !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux' || part.dep === 'auxpass' || part.dep === 'mark' || part.dep === 'intj' && part.index < unit.index)
   }
   const independent = unit => verbal(unit) && (unit.head === unit.index || ['conj', 'parataxis', 'dep'].includes(unit.dep)) && heads(unit)
   /** Does a question mark close this clause? It closes the last independent clause before it. */
   function questionMarked(unit) {
     if (!independent(unit)) return false
-    const mark = units.slice(unit.index + 1).find(other => !other.word && [...other.value].some(sign => TERMINAL.has(sign)))
+    // a mark between a capitalised word and a small letter that goes on with the sentence ends no
+    // sentence: it belongs to a name ("connect Valid? to it")
+    const inName = mark => /^\p{Lu}/u.test(units[mark.index - 1]?.value ?? '') && units[mark.index + 1]?.word && /^\p{Ll}/u.test(units[mark.index + 1].value) &&
+      !['cc', 'intj'].includes(units[mark.index + 1].dep)
+    const mark = units.slice(unit.index + 1).find(other => !other.word && [...other.value].some(sign => TERMINAL.has(sign)) && !inName(other))
     if (!mark?.value.includes('?')) return false
     return !units.slice(unit.index + 1, mark.index).some(other => other.word && independent(other) && !bare(other))
   }
+  /** The index of the first and of the last word that hang on this unit, directly or not. */
+  const firstOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstOf(part, depth + 1)))
+  const lastOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => lastOf(part, depth + 1)))
   /** Is there a question word among the words of this clause that stand before its verb? */
   function questionWordBefore(unit) {
     const search = part => INTERROGATIVE.has(part.tag) || !heads(part) && under(part).some(search)
@@ -300,25 +313,37 @@ export function wiresOf(units) {
     const subject = parts.find(part => SUBJECT.has(part.dep) && !afterMainVerb(part, verb))
     if (parts.some(infinitiveTo)) return 'nonfinite'
     const tag = formTag(verb, subject, auxiliaries)
-    // a participle with no auxiliary, a bare infinitive that completes another verb, and a verb form
-    // that describes a noun with no subject of its own ("a calendar called Work")
-    if ((tag === 'VBG' || tag === 'VBN') && !auxiliaries.length) return 'nonfinite'
-    if (tag === 'VB' && !auxiliaries.length && (unit.dep === 'ccomp' || unit.dep === 'xcomp') && verbal(units[unit.head])) return 'nonfinite'
-    if (unit.dep === 'acl' && !subject && !auxiliaries.length) return 'nonfinite'
     // the first verb form of the group
     const lead = [...auxiliaries, verb].sort((a, b) => a.index - b.index)[0]
     const leading = lead === verb ? tag : lead.tag
+    // a participle with no auxiliary, a bare infinitive that completes another verb, also with an
+    // auxiliary in the base form ("let limousines be parked"), and a verb form that describes a noun
+    // with no subject of its own ("a calendar called Work")
+    if ((tag === 'VBG' || tag === 'VBN') && !auxiliaries.length) return 'nonfinite'
+    if (leading === 'VB' && (unit.dep === 'ccomp' || unit.dep === 'xcomp') && verbal(units[unit.head])) return 'nonfinite'
+    if (unit.dep === 'acl' && !subject && !auxiliaries.length) return 'nonfinite'
     // a clause opened by a question word that is the subject of another clause, or what a form of
     // "be" equates its subject with, is a relative clause without a noun ("what I want is…"): no question
     const fused = unit.dep === 'csubj' || unit.dep === 'ccomp' && units[unit.head].pos === 'AUX' && questionWordBefore(unit)
     if (!['relcl', 'advcl', 'acl'].includes(standing(unit)) && !opener(unit) && !fused) {
       // inversion: a tensed or modal verb form before the subject. A base form before it is no question ("let us go").
       if (subject && lead.index < subject.index && leading !== 'VB') {
-        const opening = parts.filter(part => part.index < lead.index).every(part => ['intj', 'cc', 'mark'].includes(part.dep))
+        // what opens the clause: joining and discourse words, and a clause set beside it ("drop in a tree, would you")
+        const opening = parts.filter(part => part.index < lead.index).every(part => ['intj', 'cc', 'mark', 'parataxis'].includes(part.dep))
         // an auxiliary inverts anywhere; of main verbs only a modal or "be" does, at the head of its clause or after a question word
         if (lead !== verb || (verb.tag === 'MD' || verb.lemma === 'be') && (opening || questionWordBefore(unit))) return 'interrogative'
       }
-      if (questionWordBefore(unit) || questionMarked(unit)) return 'interrogative'
+      // An embedded question keeps the order of a statement and asks nothing by itself: "tell me where
+      // it is", "put them back where they were". A question word asks in a clause that stands by itself,
+      // also when the parser hung it across a colon and a question mark closes it ("next ask: who leads
+      // on profit?"). Even there, with the order of a statement (its subject, which holds no question
+      // word, before the verb) and no question mark, it opens a relative clause ("— right where it was —").
+      const closing = units.slice(unit.index + 1).find(other => !other.word && [...other.value].some(sign => TERMINAL.has(sign)))
+      const asked = closing?.value.includes('?')
+      const embedded = EMBEDDED.has(standing(unit)) && !(BOUNDARY.has(units[firstOf(unit) - 1]?.value) && asked)
+      const asks = part => INTERROGATIVE.has(part.tag) || under(part).some(asks)
+      const statementOrder = subject && subject.index < lead.index && !asks(subject)
+      if (questionWordBefore(unit) && !embedded && !(statementOrder && !asked) || questionMarked(unit)) return 'interrogative'
     }
     if (subject && subject.index < lead.index) return 'declarative'
     // no subject before the verb: a base form commands ("move it", "do not move it", "get rid of
@@ -403,6 +428,11 @@ export function wiresOf(units) {
     const [early, late] = beside && from.unit.index > unit.index ? [unit, from.unit] : [from.unit, unit]
     const then = beside ? openingThen(early, late) : null
     if (then) reserved.add(then.index)
+    // an adverb directly before the word that introduces the clause grades that word ("exactly as I
+    // said", "right where it was"): as a word that grades a marker, it modifies the clause the relation stands in
+    const opening = Math.min(...markers.map(marker => marker.index))
+    const grading = !beside && home.type === 'clause' ? under(unit).find(part => part.index === opening - 1 && part.dep === 'advmod' && !under(part).length && !taken(part)) : null
+    if (grading) put(home, 'modifier', grading)
     const wire = clause(unit)
     if (!beside) return void relation(from, wire, markers, home)
     const group = join(from, wire)
@@ -552,7 +582,11 @@ export function wiresOf(units) {
     const dep = part.dep, before = part.index < head.index
     if (dep === 'cc' || dep === 'preconj') return joiner(part, head, home, 'discourse', home)
     if (dep === 'conj') return conjunct(head, wire, part, home, 'dependent')
-    if (dep === 'prep' || dep === 'agent' || dep === 'dative' && part.pos === 'ADP') return prepositional(part, wire, home)
+    if (dep === 'prep' || dep === 'agent' || dep === 'dative' && part.pos === 'ADP') {
+      // the phrases that describe a noun follow it: one set before it by a punctuation mark opens the clause ("From now on, data labels on")
+      const fronted = before && units.slice(lastOf(part) + 1, head.index).some(other => !other.word)
+      return prepositional(part, fronted ? home : wire, home)
+    }
     // a clause that describes the nominal hangs on it; an adverbial clause hangs on the clause the nominal stands in
     if (heads(part)) return subordinate(dep === 'advcl' || dep === 'parataxis' || dep === 'dep' ? home : wire, part, home)
     if (interjection(part)) return discourse(home, part)
@@ -573,7 +607,15 @@ export function wiresOf(units) {
     if (wire.marker && part.index < wire.marker.index && dep === 'advmod') return describe(home, part)
     // a nominal the parser made the subject of this one: both stand in the clause
     if (SUBJECT.has(dep)) return complement(home, nominal(part, home, 'complement'))
-    if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case')) return inside(wire, part)
+    // an adverb that opens the nominal and is set off from it by punctuation modifies the clause
+    // ("instead, a yellow column"); "then" after a punctuation mark joins the nominal to what stands before ("…, then a small cat")
+    if (before && dep === 'advmod' && !under(part).length && firstOf(head) === part.index) {
+      const mark = step => units[part.index + step]?.word === null
+      if (part.lower === 'then' && (mark(-1) || mark(1))) return joiner(part, head, home, 'modifier', home)
+      if (mark(1)) return describe(home, part, true)
+    }
+    // "else" after the pronoun or question word it belongs to is a word of that nominal ("everything else")
+    if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case' || part.lower === 'else')) return inside(wire, part)
     // before the head, hung on it by no relation of a nominal ("no shed, no car — a barn"): a nominal of its own in the clause
     if (before) return nominalHere(part) ? complement(home, nominal(part, home, 'complement')) : inside(wire, part)
     // after the head: a number or a name is a nominal of its own ("x 120"), tied with no marker
