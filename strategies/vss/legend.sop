@@ -16,6 +16,7 @@
 #   after    the only stations it may come after (`start` for the beginning of a sentence)
 #   ends     true for the station that closes a sentence
 #   as       the kind of unit the station forms, when it is not its own name
+#   clause   opens: a word here begins a new clause, so the clause before it is closed
 @st.determiner vss.station unit=entity key=determiner closed=true follows=determiner follows=quantity follows=degree follows=modifier follows=noun follows=name
 @st.quantity vss.station unit=entity key=quantity core=true closed=true shape=number follows=degree follows=modifier follows=noun
 @st.degree vss.station unit=entity key=degree closed=true follows=degree follows=modifier follows=complement
@@ -26,14 +27,14 @@
 @st.literal vss.station unit=entity key=literal core=true closed=true shape=quote shape=date shape=clock
 @st.possessive vss.station unit=entity key=possessive_marker closed=true follows=modifier follows=noun follows=name follows=quantity
 
-@st.question vss.station unit=clause key=question core=true closed=true follows=auxiliary follows=noun follows=modifier
+@st.question vss.station clause=opens unit=clause key=question core=true closed=true follows=auxiliary follows=noun follows=modifier
 @st.auxiliary vss.station unit=clause key=auxiliary core=true closed=true follows=auxiliary follows=negation follows=predicate
 @st.negation vss.station unit=clause key=negation core=true closed=true follows=predicate follows=auxiliary
-@st.marker vss.station unit=clause key=marker core=true closed=true follows=predicate follows=auxiliary follows=negation follows=pronoun follows=determiner
+@st.marker vss.station clause=opens unit=clause key=marker core=true closed=true follows=predicate follows=auxiliary follows=negation follows=pronoun follows=determiner
 # The word that introduces a verb completing another verb: only a verb can follow it.
-@st.infinitive vss.station unit=clause key=marker as=marker closed=true follows=predicate follows=negation follows=adverb follows=auxiliary
+@st.infinitive vss.station clause=opens unit=clause key=marker as=marker closed=true follows=predicate follows=negation follows=adverb follows=auxiliary
 # A word that ties a clause to the entity or the verb before it.
-@st.relative vss.station unit=clause key=marker as=marker closed=true opens=false after=noun after=name after=pronoun after=predicate after=following after=complement after=quantity after=literal after=adverb follows=auxiliary follows=predicate follows=negation follows=pronoun follows=determiner follows=name follows=noun follows=adverb follows=modifier follows=quantity
+@st.relative vss.station clause=opens unit=clause key=marker as=marker closed=true opens=false after=noun after=name after=pronoun after=predicate after=following after=complement after=quantity after=literal after=adverb follows=auxiliary follows=predicate follows=negation follows=pronoun follows=determiner follows=name follows=noun follows=adverb follows=modifier follows=quantity
 @st.predicate vss.station unit=clause key=predicate core=true after=start after=conjunction after=separator after=marker after=infinitive after=relative after=auxiliary after=negation after=adverb after=pronoun after=filler after=expression after=question after=name
 # A predicate that follows its subject stands in another neighbourhood than one that opens its clause.
 @st.following vss.station unit=clause key=predicate core=true like=predicate
@@ -41,11 +42,11 @@
 @st.adverb vss.station unit=clause key=adverb core=true closed=true suffix=ly
 @st.expression vss.station unit=clause key=expression core=true closed=true follows=expression
 @st.filler vss.station unit=clause key=filler core=true closed=true
-@st.separator vss.station unit=clause key=separator core=true shape=mark
-@st.terminator vss.station unit=clause key=terminator core=true closed=true ends=true
+@st.separator vss.station clause=opens unit=clause key=separator core=true shape=mark
+@st.terminator vss.station clause=opens unit=clause key=terminator core=true closed=true ends=true
 
 @st.cue vss.station unit=relation key=cue closed=true follows=cue follows=determiner follows=quantity follows=degree follows=modifier follows=noun follows=name follows=pronoun follows=literal follows=complement follows=adverb
-@st.conjunction vss.station unit=coordination key=cue core=true closed=true
+@st.conjunction vss.station clause=opens unit=coordination key=cue core=true closed=true
 
 # Words whose places the language fixes. A list confines its words to the stations that
 # list them. A list with open=true adds a place and confines nothing: its words keep every

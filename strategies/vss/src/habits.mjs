@@ -17,7 +17,7 @@ export function learnHabits(opened, texts) {
   const conditions = new Set(legend.kinds.filter(kind => kind.unit === 'relation' && kind.kind === 'condition').flatMap(kind => kind.cues))
   const heads = {}, qualities = {}
   const targets = new Map()
-  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}, tells = {}, titles = {}, sure = {}
+  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}, tells = {}, titles = {}, sureVerbs = {}
   for (const text of texts) {
     const tokens = observe(text, legend.compounds, legend.variants)
     if (!tokens.length) continue
@@ -67,7 +67,7 @@ export function learnHabits(opened, texts) {
         const predicate = tokens[unit.predicate[0]].word
         bump(verbTotal, predicate)
         // a helping verb, a negation or "to" before it leaves no doubt that the word is a verb
-        if (unit.auxiliary.length || unit.negation.length || units[i - 1]?.type === 'marker' && legend.links.get(tokens[units[i - 1].last].word) === 'infinitive') bump(sure, predicate)
+        if (unit.auxiliary.length || unit.negation.length || units[i - 1]?.type === 'marker' && legend.links.get(tokens[units[i - 1].last].word) === 'infinitive') bump(sureVerbs, predicate)
         // a cue right after the verb, or after a pronoun object, can only belong to the verb
         if (next?.type === 'cue' && after?.type === 'entity') { bump2(verb, predicate, tokens[next.last].word); memory.add('v:' + predicate, tokens[next.last].word, meant(after)) }
         else if (next?.type === 'entity' && next.pronoun && after?.type === 'cue' && third?.type === 'entity') { bump2(verb, predicate, tokens[after.last].word); memory.add('v:' + predicate, tokens[after.last].word, meant(third)) }
@@ -121,6 +121,10 @@ export function learnHabits(opened, texts) {
     verbCue: perCue(verbs), nounCue: perCue(nouns), verbAll: sum(verbTotal), nounAll: sum(nounTotals)
   })
   let attach = tables(verb, noun, nounTotal)
+  // the sure cases alone: a cue right after the verb or after a pronoun object ("move it to the
+  // left"), and a cue after a thing that no verb holds. Kept to compare with the settled tables.
+  const sure = {verb: structuredClone(verb), noun: structuredClone(noun), verbTotal: {...verbTotal}, nounTotal: {...nounTotal},
+    verbCue: attach.verbCue, nounCue: attach.nounCue, verbAll: attach.verbAll, nounAll: attach.nounAll}
   // The sure cases undercount the verb (its object usually stands in between), by an unknown
   // factor. The first round therefore keeps only what they say about each cue against the
   // others, and shifts it so that the doubtful cases split evenly overall.
@@ -164,7 +168,7 @@ export function learnHabits(opened, texts) {
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
   const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
   const phrasal = Object.fromEntries(Object.entries(moves).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 3)]).filter(([, list]) => list.length))
-  return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, anchored: Object.keys(sure).filter(word => sure[word] >= 2), together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
+  return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, anchored: Object.keys(sureVerbs).filter(word => sureVerbs[word] >= 2), attachSure: sure, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
     memory: meanings.dimensions ? memory.store() : null}
 }
 

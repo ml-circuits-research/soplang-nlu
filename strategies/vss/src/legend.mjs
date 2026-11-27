@@ -25,7 +25,7 @@ export function readLegend(source) {
     index, name: wire.id.replace(/^st\./u, ''), unit: wire.attrs.unit[0], key: wire.attrs.key[0],
     core: wire.attrs.core?.[0] === 'true', closed: wire.attrs.closed?.[0] === 'true',
     opens: wire.attrs.opens?.[0] !== 'false', ends: wire.attrs.ends?.[0] === 'true', as: wire.attrs.as?.[0] ?? null,
-    after: wire.attrs.after ?? null,
+    after: wire.attrs.after ?? null, clause: wire.attrs.clause?.[0] ?? null,
     like: wire.attrs.like?.[0] ?? null, shapes: wire.attrs.shape ?? [], suffixes: wire.attrs.suffix ?? [],
     follows: wire.attrs.follows ?? []
   }))

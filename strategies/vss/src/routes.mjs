@@ -300,18 +300,77 @@ export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen =
  * The best station sequence of one message and, per token, the posterior of the chosen
  * station (its margin of confidence).
  */
-export function readRoutes(book, legend, index, tokens, banned = new Map(), lift = null) {
+export function readRoutes(book, legend, index, tokens, banned = new Map(), lift = null, budget = null) {
   const stations = [], confidence = []
   for (const [from, to] of sentencesOf(legend, tokens)) {
     const bans = new Map([...banned].filter(([position]) => position >= from && position < to).map(([position, set]) => [position - from, set]))
-    const part = readSentence(book, legend, index, tokens.slice(from, to), bans, lift ? (t, s) => lift(from + t, s) : null)
+    const part = readSentence(book, legend, index, tokens.slice(from, to), bans, lift ? (t, s) => lift(from + t, s) : null, budget)
     stations.push(...part.stations)
     confidence.push(...part.confidence)
   }
   return {stations, confidence}
 }
 
-function readSentence(book, legend, index, tokens, bans, lift) {
+// The verb budget. A clause has one verb. A register runs along the sentence:
+//   0 nothing yet in this clause   1 a thing, no verb yet   2 the clause has its verb
+//   3 it has a verb that makes its object do something (one more bare verb may follow)
+// A verb station is open only where the budget allows it: before the clause has a verb, after
+// a verb of kind 3, or for a form that describes (a participle). Stations that open a clause
+// reset the register. The best path is searched over (station, register).
+function budgetPath(book, legend, symbols, tokens, emit, budget) {
+  const n = legend.stations.length, length = tokens.length, R = 4
+  const role = legend.stations.map(station => station.key === 'predicate' ? 'verb' : station.clause === 'opens' ? 'opens' : station.unit === 'entity' ? 'thing' : station.name === 'auxiliary' ? 'helps' : 'other')
+  const score = new Float64Array(length * n * R).fill(-Infinity), back = new Int32Array(length * n * R).fill(-1)
+  const step = (t, station, register) => {
+    // the register after this token, or -1 when the budget forbids the station here
+    const kind = role[station]
+    if (kind === 'opens') return 0
+    // a helping verb, or a word that can only be the doer, begins the verb group of a new clause
+    if (kind === 'helps' || kind === 'thing' && budget.doer(tokens[t].word)) return register >= 2 ? 1 : Math.max(register, kind === 'thing' ? 1 : register)
+    if (kind === 'thing') return register === 0 ? 1 : register
+    if (kind !== 'verb') return register
+    const word = tokens[t].word
+    if (register >= 2 && !(register === 3 && !budget.describes(word)) && !budget.describes(word)) return -1
+    if (register >= 2) return register === 3 && !budget.describes(word) ? (budget.makesDo(word) ? 3 : 2) : register
+    return budget.makesDo(word) ? 3 : 2
+  }
+  for (let t = 0; t < length; t++) {
+    for (const j of book.active[symbols[t]]) {
+      // where one verb must be chosen for the clause, a word known as a verb beyond doubt leads
+      const e = Math.log(emit(t, j) + 1e-300) + (role[j] === 'verb' ? budget.known(tokens[t].word) : 0)
+      if (t === 0) {
+        const r = step(0, j, 0)
+        if (r >= 0) score[j * R + r] = Math.log(book.start[j] + 1e-300) + e
+        continue
+      }
+      for (const i of book.active[symbols[t - 1]]) {
+        const move = Math.log(book.transition[i * n + j] + 1e-300) + e
+        for (let r0 = 0; r0 < R; r0++) {
+          const from = score[((t - 1) * n + i) * R + r0]
+          if (from === -Infinity) continue
+          const r = step(t, j, r0)
+          if (r < 0) continue
+          const at = (t * n + j) * R + r
+          if (from + move > score[at]) { score[at] = from + move; back[at] = i * R + r0 }
+        }
+      }
+    }
+  }
+  let best = -Infinity, state = -1
+  for (const i of book.active[symbols[length - 1]]) for (let r = 0; r < R; r++) {
+    const candidate = score[((length - 1) * n + i) * R + r] + Math.log(book.end[i] + 1e-300)
+    if (candidate > best) { best = candidate; state = i * R + r }
+  }
+  if (state < 0) return null
+  const path = new Array(length)
+  for (let t = length - 1; t >= 0; t--) {
+    path[t] = Math.floor(state / R)
+    state = back[(t * n + path[t]) * R + state % R]
+  }
+  return path
+}
+
+function readSentence(book, legend, index, tokens, bans, lift, budget) {
   const n = legend.stations.length, v = book.symbols.length, k = SHAPES.length
   const length = tokens.length
   if (!length) return {stations: [], confidence: []}
@@ -359,7 +418,16 @@ function readSentence(book, legend, index, tokens, bans, lift) {
     if (candidate > best) { best = candidate; state = i }
   }
   const stations = new Array(length), confidence = new Array(length)
+  const budgeted = budget ? budgetPath(book, legend, symbols, tokens, emit, budget) : null
   for (let t = length - 1; t >= 0; t--) {
+    if (budgeted) {
+      // the path that keeps the verb budget; confidence stays the unconstrained posterior
+      let norm = 0
+      for (const i of book.active[symbols[t]]) norm += alpha[t * n + i] * beta[t * n + i]
+      stations[t] = budgeted[t]
+      confidence[t] = norm > 0 ? alpha[t * n + budgeted[t]] * beta[t * n + budgeted[t]] / norm : 0
+      continue
+    }
     stations[t] = state
     let norm = 0
     for (const i of book.active[symbols[t]]) norm += alpha[t * n + i] * beta[t * n + i]

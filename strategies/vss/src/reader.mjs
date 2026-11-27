@@ -111,6 +111,8 @@ export function openModel(model, options = {}) {
   const memory = openMemory(options.memory === false ? null : model.memory)
   const counted = attachment(options.attachment === false ? null : habits.attach, options.transfer !== true ? undefined : word => meanings.nearest(word, 12))
   const weight = options.memoryWeight ?? 2
+  const sureOnly = attachment(habits.attachSure)
+  const mode = options.attachMode ?? 'current'
   const joiners = new Set(legend.kinds.filter(kind => kind.joins === 'clause').flatMap(kind => kind.cues))
   let opening = null
   const context = {
@@ -136,7 +138,13 @@ export function openModel(model, options = {}) {
     // and how well the target suits that role of each in the memory
     attach: (verb, head, cue, target) => {
       const filler = target ? meanings.vector(target) : null
-      return counted(verb, head, cue) + weight * (memory.fit('v:' + verb, cue, filler) - memory.fit('n:' + head, cue, filler))
+      const fit = memory.fit('v:' + verb, cue, filler) - memory.fit('n:' + head, cue, filler)
+      if (mode === 'clause') return 1
+      if (mode === 'entity') return -1
+      if (mode === 'substitution') return sureOnly(verb, head, cue)
+      if (mode === 'counts') return counted(verb, head, cue)
+      if (mode === 'memory') return fit
+      return counted(verb, head, cue) + weight * fit
     },
     suits: (verb, thing) => memory.fit('v:' + verb, 'said', meanings.vector(thing)),
     // how often the text says this verb form of this thing (per occurrence of the thing)
@@ -178,7 +186,14 @@ export function createVssReader(model, options = {}) {
       const matches = tokens.map((_, t) => matchPrototypes(prototypes, occurrences.outside(tokens, t)))
       lift = (t, s) => Math.exp(sharp * matches[t][s])
     }
-    let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift)
+    // one verb per clause, unless the verb before makes its object do something or the word describes
+    const budget = options.budget !== true ? null : {
+      makesDo: word => lexicon.takesClause(word) || lexicon.directs(word),
+      describes: word => lexicon.formOf(word) !== null,
+      doer: word => legend.links.get(word) === 'subject',
+      known: word => lexicon.kindsOf(word).verb >= 3 ? (options.verbLead ?? 1) : 0
+    }
+    let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     const read = flips => {
       const units = buildUnits(tokens, stations.map(station => names[station]), lexicon)
       const {wires, decisions, doubts} = linkUnits(text, tokens, units, context, flips)
@@ -190,7 +205,7 @@ export function createVssReader(model, options = {}) {
     for (let again = 0; again < 3 && first.doubts.length; again++) {
       for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : thingStations)
       const banned = new Map(tried)
-      ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift))
+      ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))
       first = read(new Set())
     }
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
