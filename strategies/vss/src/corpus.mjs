@@ -1,6 +1,6 @@
 // Unannotated text for learning: the messages of a dataset checkout, each one once.
 // Node only (file access); the reader itself never imports this module.
-import {readFileSync, readdirSync, statSync} from 'node:fs'
+import {existsSync, readFileSync, readdirSync, statSync} from 'node:fs'
 import {join} from 'node:path'
 
 function* csvRows(text) {
@@ -21,8 +21,10 @@ function* csvRows(text) {
 /** Distinct message texts of every `<folder>/*.csv` whose first column is `text`. */
 export function readMessages(dataset, folders = ['drawing', 'diagram', 'document', 'calendar']) {
   const texts = new Set()
+  // the messages live in `semantic/` since the dataset was split into a semantic and a syntactic layer
+  const root = existsSync(join(dataset, 'semantic')) ? join(dataset, 'semantic') : dataset
   for (const folder of folders) {
-    const directory = join(dataset, folder)
+    const directory = join(root, folder)
     for (const name of readdirSync(directory).sort()) {
       if (!name.endsWith('.csv') || !statSync(join(directory, name)).isFile()) continue
       let header = null
