@@ -73,7 +73,8 @@ export function openModel(model, options = {}) {
     gives: word => borrowed(habits.gives, word),
     asks: word => borrowed(habits.asks, word),
     directs: word => habits.directs?.includes(word) ?? false,
-    names: word => habits.names?.includes(word) ?? false,
+    // a verb that gives a name, in any of its forms ("call it Mo", "a group called g2")
+    names: word => Boolean(habits.names?.includes(word) || stemsOf(word, legend.endings).some(stem => habits.names?.includes(stem))),
     // an adverb that grades what follows it: listed as a degree, or admitted as an adverb by its ending
     grades: word => (legend.places.get(word)?.stations.has(stationIndex.get('degree')) ?? false) ||
       legend.stations[stationIndex.get('adverb')].suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix)),
@@ -287,7 +288,7 @@ export function createVssReader(model, options = {}) {
       first.doubts.push(...leaning())
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
-    if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal'}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
+    if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way

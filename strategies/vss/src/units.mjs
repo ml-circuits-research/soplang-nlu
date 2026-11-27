@@ -152,6 +152,14 @@ export function buildUnits(tokens, stations, lexicon) {
     const copula = before.type === 'verb' && lexicon.linkOf(tokens[before.predicate[0]].word) === 'predicative'
     if (copula || before.type === 'cue' || before.type === 'marker' && lexicon.canBe(tokens[before.last].word, 'cue')) units.doubts.push({position: said.first, not: 'expression'})
   }
+  // "left of the hill", "ahead of it": a single word right before "of" with a thing after it forms the linking phrase with it
+  for (let k = 0; k + 2 < units.length; k++) {
+    const side = units[k], link = units[k + 1], thing = units[k + 2]
+    if (!lexicon.linkOf || !['adverb', 'complement'].includes(side.type) || side.first !== side.last || thing.type !== 'entity') continue
+    if (link.type !== 'cue' || link.first !== link.last || link.first !== side.last + 1 || lexicon.linkOf(tokens[link.first].word) !== 'belongs') continue
+    link.first = side.first
+    units.splice(k, 1)
+  }
   // "what's in the diagram": after a pronoun or a question word, a clitic that can be a form of "be" is that verb, not a possessive
   for (let t = 1; t < tokens.length; t++) {
     if (lexicon.linkOf && lexicon.canBe(tokens[t].word, 'possessive') && lexicon.linkOf(tokens[t].word) === 'predicative' && !['predicate', 'following', 'auxiliary'].includes(stations[t]) &&

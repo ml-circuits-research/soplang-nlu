@@ -233,6 +233,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       // "selected event": a form that says what was done, opening its clause right before a bare noun, describes that noun
       if (context.open !== false && bare && verb.form === 'past' && !clause.subject && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(previous?.type)) &&
           list[i + 1]?.type === 'entity' && !list[i + 1].determiner?.length && !list[i + 1].pronoun && list[i + 1].first === verb.last + 1) doubts.push({position: verb.predicate[0], not: 'verb'})
+      // "leave it tidy": the verb of a clause that completes another verb must have been seen as a verb somewhere
+      if (context.open !== false && clause.role === 'complement' && bare && !verb.form && lexicon.kindsOf(clause.predicate).verb === 0 &&
+          tokens[verb.predicate[0]].shape === 'lower') doubts.push({position: verb.predicate[0], not: 'verb'})
       // "keep the axis labels larger": the verb of a clause that completes another verb is never a form in -s
       if (context.open !== false && clause.role === 'complement' && bare && lexicon.sForm(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
       clauses.push(clause)
@@ -284,7 +287,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const question = clause.question
       const last = k === clauses.length - 1
       const asks = Boolean(question || verb.inverted) || last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
-      const form = clause.role !== 'main' ? 'nonfinite'
+      const finite = verb.auxiliary.length > 0 || lexicon.sForm(clause.predicate) ||
+        Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject'
+      const form = clause.role !== 'main' ? (context.open !== false && clause.role === 'complement' && finite ? 'declarative' : 'nonfinite')
+        // a bare form in -ing describes; it makes no statement by itself ("a dog lying down")
+        : context.open !== false && verb.form === 'progressive' && !verb.auxiliary.length ? 'nonfinite'
         : asks ? 'interrogative'
         : clause.subject ? 'declarative'
         // "is it possible": a form of "be" with the one it is said of right after it asks
@@ -584,7 +591,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           adverbForCue = null
           unit.holder = relation.slots.find(slot => slot[0] === 'to')
         } else if (joinable) {
-          coordinate(partner(unit, frontier), unit, pendingJoin)
+          // a comma alone lists the new thing with the things of the clause, not with the end of a relation
+          const commaOnly = context.open !== false && pendingJoin.every(joiner => joiner.type === 'separator')
+          const level = commaOnly ? frontier.filter(thing => thing.holder?.[0] !== 'to') : []
+          coordinate(partner(unit, level.length ? level : frontier), unit, pendingJoin)
           pendingJoin = []
         } else {
           const broke = pendingJoin.find(joiner => joiner.type === 'separator')
@@ -760,6 +770,11 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // "give neon around the kites": a verb that takes a thing and has none takes the bare word after it
         doubts.push({position: unit.value[0], not: 'quality'})
         put(target, 'result_complement', ...unit.value)
+      } else if (unit.type === 'complement' && context.open !== false && acts && objects.length <= 1 && unit.value[0] === unit.value[1] && !unit.degree.length &&
+                 lexicon.names(clause.predicate) && (objects.length === 1 || verb?.form === 'past') && tokens[unit.value[0]].shape === 'lower') {
+        // "call it robot", "a square called park": what a naming verb gives is a name, a thing
+        doubts.push({position: unit.value[0], not: 'quality'})
+        put(target, 'result_complement', ...unit.value)
       } else if (unit.type === 'complement') {
         for (const position of unit.degree) put(target, 'degree', position)
         // a quality right after a thing that the verb does not hold describes that thing ("with outline gold")
@@ -779,6 +794,19 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (act) own.slots.push(['speech_act', act])
         if (own !== target && region[i - 1]?.type === 'separator' && target.slots.at(-1)?.[0] === 'separator') own.slots.push(target.slots.pop())
       } else if (unit.type === 'filler') put(target, 'filler', unit.first, unit.last)
+      // "black, not grey": after a break, a negation with a thing or a quality is a part of its own that shares the verb
+      else if (unit.type === 'negation' && context.open !== false && acts && region[i - 1]?.type === 'separator' && ['complement', 'entity'].includes(next?.type)) {
+        const host = clause.gapOf ?? clause
+        const fragment = fragmentClause()
+        fragment.gapOf = host
+        fragment.predicate = host.predicate
+        fragment.wire.shares = host.wire.id
+        put(fragment.wire, 'negation', unit.first, unit.last)
+        opened.push(fragment, ...fill(fragment, region.slice(i + 1)))
+        state.lastEntity = lastEntity
+        state.tail = tail
+        return opened
+      }
       // "not behind Jo": a negation right before a phrase with a cue negates that relation alone
       else if (unit.type === 'negation' && context.open !== false && next?.type === 'cue' && region[i + 2]?.type === 'entity') relationNegation = unit
       else if (unit.type === 'negation') put(target, 'negation', unit.first, unit.last)

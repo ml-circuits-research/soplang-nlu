@@ -39,7 +39,7 @@ export function emitSyntax(text, tokens, wires, knows) {
   }
   const clauses = [...out.values()].filter(wire => wire.type === 'syntax.clause')
   const firstWord = wire => Math.min(...wire.slots.filter(slot => slot.span).map(slot => slot.span[0]), Infinity)
-  const pendingMarkers = [], pendingQuestions = [], completes = [], relationAdverbs = []
+  const pendingMarkers = [], pendingQuestions = [], completes = [], relationAdverbs = [], strays = []
 
   for (const wire of out.values()) {
     const source = wire.source
@@ -56,8 +56,8 @@ export function emitSyntax(text, tokens, wires, knows) {
         else if (key === 'clausal_complement') completes.push([wire, ref(value)])
         else if (key === 'marker') pendingMarkers.push([wire, quoted(slot)])
         else if (key === 'question') pendingQuestions.push([wire, quoted(slot)])
-        // a separator or terminator that is a word ("&") still needs a place
-        else if (key === 'separator' || key === 'terminator') add(wire, 'discourse', quoted(slot))
+        // a separator or terminator that is a word ("&", "%") still needs a place
+        else if (key === 'separator' || key === 'terminator') { const span = quoted(slot); if (span) strays.push([wire, span]) }
       }
       if (source.shares && !acts) wire.slots.push({key: 'ellipsis', ref: out.get(source.shares).id})
     } else if (wire.type === 'syntax.nominal') {
@@ -119,7 +119,8 @@ export function emitSyntax(text, tokens, wires, knows) {
     const tie = [...out.values()].find(wire => wire.type === 'syntax.relation' && wire.slots.some(slot => slot.key === 'to' && slot.ref === clause.id) && !wire.slots.some(slot => slot.key === 'marker'))
     if (tie) { add(tie, 'marker', span); continue }
     const main = clauses.find(other => other !== clause && other.slots.some(slot => slot.key === 'verb') && firstWord(other) > firstWord(clause)) ??
-      clauses.filter(other => other !== clause && firstWord(other) < firstWord(clause)).at(-1)
+      clauses.filter(other => other !== clause && firstWord(other) < firstWord(clause)).at(-1) ??
+      clauses.find(other => other !== clause && firstWord(other) > firstWord(clause))
     if (main) relation(main, clause, span)
     // alone in its message ("where is the title?"), the word modifies its own clause
     else add(clause, 'modifier', span)
@@ -139,6 +140,25 @@ export function emitSyntax(text, tokens, wires, knows) {
       clause.slots.push({key: verbed && !clause.slots.some(slot => slot.key === 'subject') ? 'subject' : 'complement', ref: wire.id})
     } else add(clause, 'modifier', span)
   }
+  // "a group called g2": a verb form is no linking word. It is the verb of a clause that describes the thing.
+  for (const wire of [...out.values()]) {
+    if (wire.type !== 'syntax.relation') continue
+    const markers = wire.slots.filter(slot => slot.key === 'marker')
+    const end = wire.slots.find(slot => slot.key === 'to')
+    if (markers.length !== 1 || markers[0].span[0] !== markers[0].span[1] || out.get(end.ref)?.type !== 'syntax.nominal' && byId.get(end.ref)?.type !== 'syntax.nominal') continue
+    if (!knows.verbForm(text.slice(words[markers[0].span[0]].start, words[markers[0].span[0]].end).toLowerCase())) continue
+    const clause = {id: 'p' + ++made, type: 'syntax.clause', slots: [{key: 'form', value: 'nonfinite'}, {key: 'verb', span: markers[0].span}, {key: 'complement', ref: end.ref}]}
+    out.set(clause.id, clause)
+    clauses.push(clause)
+    wire.slots = wire.slots.filter(slot => slot.key !== 'marker' && slot.key !== 'attachment')
+    end.ref = clause.id
+  }
+  // a sign right after a number ("30%") belongs with that number; any other stray word is said to the listener
+  for (const [wire, span] of strays) {
+    const sign = !/[\p{L}\p{N}]/u.test(text.slice(words[span[0]].start, words[span[1]].end))
+    const owner = sign && span[0] > 0 ? [...out.values()].find(other => other.type === 'syntax.nominal' && other.slots.some(slot => slot.span && slot.span[1] === span[0] - 1)) : null
+    add(owner ?? wire, owner ? 'dependent' : 'discourse', span)
+  }
   // a coordination needs two conjuncts of one type; otherwise its words go to a clause
   for (const wire of [...out.values()]) {
     if (wire.type !== 'syntax.coordination') continue
@@ -155,6 +175,17 @@ export function emitSyntax(text, tokens, wires, knows) {
     if (wire.type !== 'syntax.clause') continue
     const used = [...out.values()].some(other => other !== wire && other.slots.some(slot => slot.ref === wire.id))
     if (wire.slots.length === 1 && !used) out.delete(wire.id)
+  }
+  // a fragment that holds only words said in passing ("next,", "hey,") joins the clause after it, or the one before
+  for (const wire of [...out.values()]) {
+    if (wire.type !== 'syntax.clause' || wire.slots[0].value !== 'fragment' || wire.slots.length < 2) continue
+    if (!wire.slots.slice(1).every(slot => slot.key === 'modifier' || slot.key === 'discourse')) continue
+    if ([...out.values()].some(other => other !== wire && other.slots.some(slot => slot.ref === wire.id))) continue
+    const others = [...out.values()].filter(other => other.type === 'syntax.clause' && other !== wire)
+    const home = others.filter(other => firstWord(other) > firstWord(wire)).sort((a, b) => firstWord(a) - firstWord(b))[0] ?? others.filter(other => firstWord(other) < firstWord(wire)).sort((a, b) => firstWord(b) - firstWord(a))[0]
+    if (!home) continue
+    home.slots.push(...wire.slots.slice(1))
+    out.delete(wire.id)
   }
   const kept = [...out.values()]
   // every word has a place: a word left over joins the clause it stands in
