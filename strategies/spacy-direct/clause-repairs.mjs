@@ -4,7 +4,8 @@
 // tweak; then drop the legend") as one sentence and hangs each clause on the next as its
 // complement or its adverbial clause. Each rule below states a fact of English clause syntax,
 // checks it on the parser's own tags and relations, and relabels or moves the arc. The only words a
-// rule names are function words: the linking words "then" and "so" and the "to" of an infinitive. A
+// rule names are function words: the linking words "then", "next" and "so", the articles "a" and "an",
+// and the "to" of an infinitive. A
 // relabelled clause is `parataxis`: set side by side with the other.
 const STRONG = /^[;:—–.!?]+$/u
 const SUBJECT = new Set(['nsubj', 'nsubjpass', 'expl', 'csubj', 'csubjpass'])
@@ -270,6 +271,21 @@ export function repairClauses(units) {
     unit.dep = 'dep'
     changed++
   }
+  //     So does a comma with a linking adverb of sequence after it, which opens the next clause: a noun that
+  //     brings in a new thing (an indefinite article or a numeral) before ", then", hung on the verb after it
+  //     as a bare adverb ("a little cat near the bench, then send the whole line one spot right"), is a group
+  //     of words of its own, not a measure of that verb.
+  for (const unit of units) {
+    if (!unit.word || unit.quoted || !['NOUN', 'PROPN'].includes(unit.pos) || unit.dep !== 'npadvmod' || unit.head <= unit.index) continue
+    if (!under(unit).some(part => part.index < unit.index && (['a', 'an'].includes(part.lower) || part.dep === 'nummod'))) continue
+    const verb = units[unit.head]
+    if (!verbal(verb)) continue
+    const comma = units.slice(last(unit) + 1, verb.index).find(mark => !mark.word && mark.value === ',')
+    const next = comma && units[comma.index + 1]
+    if (!next?.word || !['then', 'next'].includes(next.lower) || next.dep !== 'advmod' || under(next).length) continue
+    unit.dep = 'dep'
+    changed++
+  }
 
   // 12. A conjunction joins what stands on either side of it. A clause the parser made a second root of the
   //     sentence, opened by a conjunction after a comma with no mark between them that ends a sentence
@@ -293,6 +309,23 @@ export function repairClauses(units) {
   //     "picture" and "push"; "jumping" is what the man does. The conjunction between them goes with it.
   //     And a participle with no subject or auxiliary joined to a base form adds no command: it says how
   //     the command is done ("go for y numbers even, starting at 0"), a participle clause of that verb.
+  // 14. A subordinator or a relative word makes the clause it opens depend on another. A clause the parser
+  //     joined to another as a conjunct, with no conjunction of its own, set off by a punctuation mark and
+  //     opened by such a word ("…, because the first one looked wrong", "…, if it's easy", "— exactly where
+  //     the picture needs it"), hangs on the clause before it as an adverbial clause, marked by that word.
+  for (const unit of units) {
+    if (!verbal(unit) || unit.dep !== 'conj' || unit.head > unit.index) continue
+    // ("so" also joins two clauses side by side: rule 0 and the writer settle it)
+    const opener = under(unit).find(part => (part.dep === 'mark' || /^W/u.test(part.tag) && part.dep === 'advmod') && part.index < unit.index && part.lower !== 'so')
+    if (!opener || opener.index < unit.head || units.slice(unit.head + 1, unit.index).some(other => other.dep === 'cc' && [unit.head, unit.index].includes(other.head))) continue
+    // before the opener only words that grade it ("exactly where"); before them a punctuation mark
+    const start = first(unit), before = units[start - 1]
+    if (units.slice(start, opener.index).some(other => other.word && (other.dep !== 'advmod' || other.head !== opener.index && other.head !== unit.index))) continue
+    if (!before || before.word || !/^[,;:—–-]+$/u.test(before.value)) continue
+    unit.dep = 'advcl'
+    changed++
+  }
+
   const baseForm = unit => unit.tag === 'VB' && !auxiliaries(unit).length && !subjectOf(unit)
   const participle = unit => ['VBG', 'VBN'].includes(unit.tag) && !auxiliaries(unit).length
   for (const verb of units) {

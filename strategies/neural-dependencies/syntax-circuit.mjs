@@ -124,7 +124,7 @@ const NOMINAL = new Set(['NOUN', 'PROPN', 'PRON', 'NUM'])
 // modifier (Rule 5) and "to" the marker, so the class is given by its members. The longer ones
 // ("in front of", "on top of") need no entry: the parse reads them as a preposition, a noun
 // and "of".
-const TWO_WORD_PREPOSITIONS = new Set(['according to', 'ahead of', 'along with', 'apart from', 'as for', 'as of', 'as per', 'as to', 'aside from',
+export const TWO_WORD_PREPOSITIONS = new Set(['according to', 'ahead of', 'along with', 'apart from', 'as for', 'as of', 'as per', 'as to', 'aside from',
   'away from', 'because of', 'but for', 'close to', 'contrary to', 'due to', 'except for', 'inside of', 'instead of', 'irrespective of',
   'near to', 'next to', 'off of', 'out of', 'outside of', 'owing to', 'prior to', 'regardless of', 'subsequent to', 'such as', 'thanks to',
   'together with'])
@@ -415,7 +415,9 @@ export function wiresOf(units) {
     const clauses = [unit]
     for (const clause of clauses) clauses.push(...under(clause).filter(part => part.dep === 'conj' && verbal(part)))
     const parts = clauses.flatMap(clause => under(clause))
-    const first = parts.find(part => part.index < unit.index && INTERROGATIVE.has(part.tag) && part.tag !== 'WP$' && part.dep !== 'mark' && !under(part).length)
+    // (a word that grades it may stand before it: "exactly where the picture needs it")
+    const first = parts.find(part => part.index < unit.index && INTERROGATIVE.has(part.tag) && part.tag !== 'WP$' && part.dep !== 'mark' &&
+      under(part).every(inner => inner.dep === 'advmod' && inner.index < part.index && !under(inner).length))
     return first && !parts.some(part => part.index < first.index && part.dep !== 'mark' && part.dep !== 'cc') ? first : null
   }
   /** "then" as the first word of a clause that no conjunction joins to the clause before it: the joining word. */
@@ -603,12 +605,17 @@ export function wiresOf(units) {
     if (dep === 'cc' || dep === 'preconj') return joiner(part, head, home, 'discourse', home)
     if (dep === 'conj') return conjunct(head, wire, part, home, 'dependent')
     if (dep === 'prep' || dep === 'agent' || dep === 'dative' && part.pos === 'ADP') {
-      // the phrases that describe a noun follow it: one set before it by a punctuation mark opens the clause ("From now on, data labels on")
+      // the phrases that describe a noun follow it: one set before it by a punctuation mark opens the clause ("From now on, data
+      // labels on"), unless the noun is a later item of a list, which the phrase places ("…, above the sailboat, two small gulls")
       const fronted = before && units.slice(lastOf(part) + 1, head.index).some(other => !other.word)
-      return prepositional(part, fronted ? home : wire, home)
+      const item = ['conj', 'appos'].includes(head.dep) && head.head < head.index
+      return prepositional(part, fronted && !item ? home : wire, home)
     }
     // a clause that describes the nominal hangs on it; an adverbial clause hangs on the clause the nominal stands in
-    if (heads(part)) return subordinate(dep === 'advcl' || dep === 'parataxis' || dep === 'dep' ? home : wire, part, home)
+    // In a group of words with no verb, joined nominals each keep the adverbial clause that follows them ("how many
+    // removals until the row is down to half its length, and how many removals until half of the row is gone?")
+    const own = dep === 'advcl' && part.index > head.index && home.form === 'fragment' && (head.dep === 'conj' || under(head).some(other => other.dep === 'conj'))
+    if (heads(part)) return subordinate((dep === 'advcl' || dep === 'parataxis' || dep === 'dep') && !own ? home : wire, part, home)
     if (markedFragment(part, home)) return
     if (interjection(part)) return discourse(home, part)
     if (dep === 'poss') {
@@ -761,8 +768,10 @@ export function wiresOf(units) {
       else if (part.dep === 'conj') conjunct(unit, wire, part, home, 'modifier')
       else if (heads(part)) subordinate(home, part, home)
       else if (markedFragment(part, home)) continue
-      // a second nominal under the same marker, directly after the first ("at x 120"): it stands beside the first
-      else if (GOVERNED_BY_MARKER.has(part.dep) && nominalHere(part) && target.type === 'nominal' && part.index === last(object) + 1) relation(target, nominal(part, home, 'beside'), [], home)
+      // a second nominal under the same marker, directly after the first ("at x 120") or after a comma ("to 260,
+      // 240", a pair of numbers): it stands beside the first
+      else if (GOVERNED_BY_MARKER.has(part.dep) && nominalHere(part) && target.type === 'nominal' && (part.index === last(object) + 1 ||
+          part.index > last(object) + 1 && units.slice(last(object) + 1, part.index).every(mark => !mark.word && mark.value === ','))) relation(target, nominal(part, home, 'beside'), [], home)
       // a second preposition hung on this one ("at x 120, at y 90"): a second relation from the same start
       else if ((part.dep === 'prep' || part.pos === 'ADP') && markerChain(part).object) prepositional(part, start, home)
       else if (nominalHere(part)) complement(home, nominal(part, home, 'complement'))
