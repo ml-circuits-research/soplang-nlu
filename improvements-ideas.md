@@ -56,7 +56,8 @@ messages, where it does worse.
 ### Measured and dropped
 
 - Counting word kinds (verb, thing, quality) also from the accepted circuits: changes 41 of 1,831 benchmark
-  circuits with no net gain. VSS's faults are in how it ties groups, not in what it knows of single words.
+  circuits with no net gain. Word counts alone do not help; the tagging of words in context does (see the
+  lever trials below).
 - Relating "goes" to "go" in the stem rule: the retrained model shifted unrelated readings; dropped.
 - Families of strategies that read the same parse agree with each other on 77–100% of messages and repeat the
   same faults: agreement needs different sources.
@@ -81,12 +82,17 @@ messages, where it does worse.
   - The faults left are a long tail: 17 rule groups of 5 to 32 messages each (of about 520 rejected); five
     have measured prototypes (sentence ties, causative verb + object + bare verb, compound nouns, the opening
     command verb, participles after a comma).
-  - With VSS's stations forced to those of an accepted circuit, at most +2.7 points: the faults are in how
-    VSS ties groups (units, links), not in the tagging of words.
+  - With VSS's stations forced to those of an accepted circuit, the study first estimated at most +2.7 points
+    (it counted only circuits already judged). Once the new circuits were judged, 170 of the 401 rejected
+    messages tried with forced stations became acceptable: up to about +9 points. Correction: the tagging of
+    words matters much more than first thought.
   - Learned levers, estimated on the benchmark: a station prior from the accepted circuits +1.4 points;
     learned linker decisions +0.3; a table of evidence from spaCy and DistilBERT +1.1 to +6 (depends on unread
-    circuits); reranking VSS readings +0.1. Their trial circuits are being judged
-    (eval-results/2026-11-27-vss-lever-trials) to decide which to build.
+    circuits); reranking VSS readings +0.1.
+  - Trials judged (eval-results/2026-11-27-vss-lever-trials, 791 circuits, against the same copy of VSS):
+    plain 68.5%; station prior 69.8% (+1.3); DistilBERT evidence on the verb 70.7% (+2.2); DistilBERT evidence
+    on the roles of words 72.4% (+3.9). Evidence from a better tagger is a real lever; to keep VSS portable it
+    would be distilled into a table VSS reads, with no model at run time.
   - The judge's plan: first the measured rule prototypes, one commit each; then the structural rules; then
     learned decisions where thresholds fail; station-level learning only if the trials justify it.
 - A publication that replaces an agreement label now keeps the replaced circuit in the registry as an accepted
