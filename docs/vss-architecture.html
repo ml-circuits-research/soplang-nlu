@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The VSS reader: architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1d1f;
+  --muted: #5b5b63;
+  --accent: #1f5fa8;
+  --border: #d9d6cf;
+  --code-bg: #f1efe9;
+  --th-bg: #ece9e1;
+  --why-bg: #edf5eb;
+  --why-border: #4f8a45;
+  --note-bg: #fcf2e2;
+  --note-border: #b9822a;
+  --note-text: #8a5d14;
+  --step-bg: #ffffff;
+  --model-bg: #e6eef9;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16171a;
+    --fg: #e6e4df;
+    --muted: #a6a4ab;
+    --accent: #82b3ec;
+    --border: #3a3b41;
+    --code-bg: #212328;
+    --th-bg: #25272c;
+    --why-bg: #1b281c;
+    --why-border: #6fae63;
+    --note-bg: #2b2316;
+    --note-border: #d6a54c;
+    --note-text: #d6a54c;
+    --step-bg: #1d1f23;
+    --model-bg: #1b2534;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 1rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0.5rem 0 0.25rem; }
+h2 { font-size: 1.45rem; line-height: 1.3; margin: 2.6rem 0 0.8rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.5rem; }
+h4 { font-size: 1rem; margin: 1.2rem 0 0.4rem; }
+p, li { max-width: 60rem; }
+a { color: var(--accent); }
+.written { color: var(--muted); margin: 0 0 1rem; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+code { font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.25em; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 0.75rem 1rem; overflow-x: auto; font-size: 0.84rem; line-height: 1.45; border-radius: 6px; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.scroll { overflow-x: auto; margin: 0.8rem 0 1.2rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.4rem 0.55rem; border-bottom: 1px solid var(--border); }
+th { background: var(--th-bg); font-weight: 600; }
+td code { word-break: break-word; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.box { border-left: 4px solid; padding: 0.7rem 1rem; margin: 1.3rem 0; border-radius: 0 6px 6px 0; }
+.box p:first-of-type { margin-top: 0.2rem; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0.2rem; }
+.box.why { background: var(--why-bg); border-color: var(--why-border); }
+.box.note { background: var(--note-bg); border-color: var(--note-border); }
+.box .label { display: block; font-weight: 700; }
+nav.toc ol { padding-left: 1.4rem; columns: 2 18rem; column-gap: 2rem; }
+nav.toc li { break-inside: avoid; }
+.halves { display: grid; grid-template-columns: 1fr 10rem 1fr; gap: 1rem; align-items: start; margin: 1rem 0 1.5rem; }
+.lane h4 { margin: 0 0 0.5rem; }
+.step { background: var(--step-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.88rem; line-height: 1.4; }
+.step small { color: var(--muted); display: block; }
+.arrow { text-align: center; color: var(--muted); line-height: 1.1; font-size: 0.9rem; margin: 0.15rem 0; }
+.loop { border: 1px dashed var(--note-border); border-radius: 8px; padding: 0.5rem; margin: 0.2rem 0; }
+.loop > .tag { font-size: 0.8rem; color: var(--note-text); font-weight: 600; display: block; margin-bottom: 0.3rem; }
+.model { align-self: center; background: var(--model-bg); border: 2px solid var(--accent); border-radius: 8px; padding: 0.7rem; font-size: 0.86rem; text-align: center; }
+.model strong { display: block; font-size: 1rem; margin-bottom: 0.3rem; }
+.mark { font-weight: 700; white-space: nowrap; }
+.mark.t { color: var(--note-text); }
+.mark.n { color: var(--muted); }
+.small { font-size: 0.88rem; color: var(--muted); }
+dl.terms dt { font-weight: 600; margin-top: 0.6rem; }
+dl.terms dd { margin-left: 1.2rem; }
+@media (max-width: 46rem) {
+  .halves { grid-template-columns: 1fr; }
+  .model { align-self: stretch; }
+  h1 { font-size: 1.65rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>The VSS reader: architecture</h1>
+<p class="written">Written 2026-11-27</p>
+<p class="written">Related documents: <a href="syntax-work-2026-11-27.html">Decisions and insights of the syntax work, 2026-11-27</a> (what was decided that day and why, what was measured, what is open) and <a href="syntax-evaluation-and-conversion.html">How syntactic labels are made and measured</a> (levels, judges, benchmark, agreement, conversion of the dataset).</p>
+
+<p>This document explains how the VSS strategy of <code>soplang-nlu</code> reads one English message and writes its circuit in the <code>syntax</code> schema: what it learns from raw text, what is declared by hand, the order of the steps, and the rules the code holds. It is meant for a reviewer who has not read the code and wants to judge whether the design is sound, which parts are particular to the WebMeet dataset, and what it would take to make VSS a reusable engine. It describes <code>strategies/vss</code> at commit <code>fa46cb7</code> (17:49 that day, "VSS: the remaining rules of the drawing and diagram analyses, and rules found in the benchmark rejections"). The first version of this document was written from the working tree between 17:31 and 17:45, while another session was making the edits that <code>fa46cb7</code> then committed; it was revised after two reviews. Rules that first appeared in <code>fa46cb7</code> carry the mark "(fa46cb7)". Results are cited by the commit that recorded them; the later commits <code>8cd3377</code> (VSS run again on the benchmark), <code>45677bc</code> (lever study) and <code>5c87955</code> (verdicts on the rerun of spaCy and DistilBERT) are covered in sections <a href="#results">12</a> to <a href="#reuse">15</a>. At the time of the revision (about 18:00), a new set of uncommitted edits to <code>src/units.mjs</code>, <code>src/links.mjs</code> and <code>src/reader.mjs</code> had begun after <code>fa46cb7</code> (file times from 17:55 on). This document does not describe them, except for one change noted in section <a href="#r-decode">7.3</a>.</p>
+
+<nav class="toc" aria-label="Contents">
+<h2 id="contents" style="border-top:0;margin-top:1rem;padding-top:0">Contents</h2>
+<ol>
+<li><a href="#purpose">What VSS is for, and its constraints</a></li>
+<li><a href="#terms">Terms: the code's names, project terms, established terms</a></li>
+<li><a href="#files">Map of the files</a></li>
+<li><a href="#halves">The two halves: training and reading</a></li>
+<li><a href="#training">Training, step by step</a></li>
+<li><a href="#legend">The legend</a></li>
+<li><a href="#reading">Reading, step by step</a></li>
+<li><a href="#keys">From internal wire names to syntax keys</a></li>
+<li><a href="#rules">Catalogue of rules</a></li>
+<li><a href="#learned">What is learned and what is declared</a></li>
+<li><a href="#commands">How to train, test and measure</a></li>
+<li><a href="#results">Measured results</a></li>
+<li><a href="#changes">What changed since docs/strategies/vss.md</a></li>
+<li><a href="#limits">Known limits</a></li>
+<li><a href="#reuse">Steps towards a reusable engine</a></li>
+<li><a href="#sources">Sources</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="purpose">1. What VSS is for, and its constraints</h2>
+
+<p>VSS is one of the formalization strategies of <code>soplang-nlu</code>. A formalization strategy reads one message and writes a circuit: lines of SOP Lang (the project's declarative notation, one statement per line) that split the message into clauses and nominals, give every word one place, and tie the parts together. Each line is a <em>wire</em> (the SOP Lang term): an identifier such as <code>@c1</code>, a type such as <code>syntax.clause</code>, then <code>key=value</code> pairs, where a value is a quoted run of the message's words or a reference <code>$id</code> to another wire. The messages come from the WebMeet dataset (<code>webmeet-dataset</code>): commands and questions typed to an application that draws pictures, diagrams, charts, documents and calendar entries. The target is the <code>syntax</code> schema, version 3, defined in <code>docs/syntax-schema.md</code> and checked by <code>lib/syntax.mjs</code>.</p>
+
+<p>Plain words for the four wire types of the schema: a <em>clause</em> is one verb with what belongs to it (one command, statement or question), or a group of words with no verb (a <em>fragment</em>); a <em>nominal</em> is a noun with the words that depend on it, or a word that stands where a noun could (a pronoun, a name, a number); a <em>relation</em> ties two wires, usually through a linking word such as "on" or "if"; a <em>coordination</em> puts wires side by side ("A and B"). Inside a nominal the <em>head</em> is the main word and the others are its <em>dependents</em>.</p>
+
+<p>The message "Move the blue box towards the yellow circle." becomes, through the common reader (<code>lib/reader.mjs</code>, the code every strategy is called through; three of these four lines are asserted by <code>tests/vss-syntax.test.mjs</code>, and the fourth, <code>@n2</code>, was checked for this document):</p>
+<pre><code>@c1 syntax.clause form=imperative verb="Move" complement=$n1
+@n1 syntax.nominal dependent="the" dependent="blue" head="box"
+@r1 syntax.relation marker="towards" from=$c1 to=$n2
+@n2 syntax.nominal dependent="the" dependent="yellow" head="circle"</code></pre>
+
+<h3>Constraints and where they show in the code</h3>
+<div class="scroll"><table>
+<thead><tr><th>Constraint</th><th>Where it shows</th></tr></thead>
+<tbody>
+<tr><td>Unsupervised: everything learned comes from the text of the messages; no annotated circuit is read for learning.</td><td><code>strategies/vss/src/corpus.mjs</code> <code>readMessages</code> reads only the first column (<code>text</code>) of <code>semantic/{drawing,diagram,document,calendar}/*.csv</code> of the dataset. <code>strategies/vss/train.mjs</code> reads nothing else from the dataset.</td></tr>
+<tr><td>Portable: plain JavaScript, no dependencies; the reader itself needs no file or network access, so it can run in a browser.</td><td><code>package.json</code> lists no dependencies. <code>strategies/vss/src/reader.mjs</code> imports only modules of <code>src/</code>, and <code>strategies/vss/index.mjs</code> reads the model file (it also accepts a model object). But since the move to the syntax schema, <code>src/emit-syntax.mjs</code> imports <code>lib/syntax.mjs</code>, which imports <code>node:fs</code> and reads <code>schemas/syntax/schema.sop</code> when it is loaded. As the code stands, loading the reader needs Node.js file access; running it in a browser was not tried.</td></tr>
+<tr><td>No knowledge repository, no context: one message at a time, no pronoun resolution.</td><td><code>tests/vss-syntax.test.mjs</code> checks that the reader's source files do not mention the knowledge repository and that the test runs with <code>SOP_KNOWLEDGE_DIR</code> unset.</td></tr>
+<tr><td>Every word placed exactly once.</td><td><code>lib/syntax.mjs</code> <code>writeCircuit</code> throws when a span lies outside the message, when a word is not covered or is claimed twice, and when repeated words cross between wires so that even the message-order fallback leaves words uncovered (section <a href="#r-emit">7.10</a>); <code>strategies/vss/src/emit-syntax.mjs</code> gives every left-over word a <code>discourse</code> place before writing.</td></tr>
+<tr><td>Output in the syntax schema, one circuit per message.</td><td><code>strategies/vss/index.mjs</code> declares <code>schema: 'syntax'</code>; <code>lib/reader.mjs</code> checks every circuit with <code>validateSyntax</code>. The schema says "The formalizer returns one circuit for a message" (<code>docs/syntax-schema.md</code>, Rule 2).</td></tr>
+<tr><td>Rules and word lists may name only function words (closed-class words: determiners, pronouns, numerals, prepositions, conjunctions, helping verbs, degree words, interjections) and a few common verbs, never nouns, adjectives or anything particular to the dataset. A few borderline words remain in the legend: left/right as direction adverbs, today/tomorrow, thanks (listed as borderline in <code>improvements-ideas.md</code>).</td><td>Commit <code>cd237e3</code> removed adjectives and fixed phrases from <code>legend.sop</code>; <code>improvements-ideas.md</code> ("Making VSS reusable") restates the rule. No English content word appears as a literal in <code>units.mjs</code>, <code>links.mjs</code>, <code>reader.mjs</code> or <code>emit-syntax.mjs</code> (searched for this document). The code does hard-code the legend's station names, mark names and the <code>nlu</code> slot names (<a href="#hardcoded">box at the end of section 6</a>).</td></tr>
+</tbody>
+</table></div>
+
+<div class="box why"><span class="label">Why it is done this way</span>
+<p><strong>Why the project keeps a reader that scores below spaCy.</strong> VSS is a second voice whose source is unlike a parser's. The dataset is labelled largely by agreement between strategies that read a message from different sources: <code>improvements-ideas.md</code> records "62,066 of 183,497 messages have a syntactic circuit (33.8%): 56,934 by agreement of VSS and spaCy" (more exactly: 56,934 labels were settled by agreement, and 55,648 of them by VSS and <code>spacy-direct</code> alone; the rest come from six calendar files where an older DistilBERT took part, 106 of them without VSS, and from round 2; <a href="syntax-work-2026-11-27.html#state">syntax-work-2026-11-27.html, "The dataset"</a>), and "Families of strategies that read the same parse agree with each other on 77–100% of messages and repeat the same faults: agreement needs different sources". The same file states the owner's decision to keep "four strategies at most … they read a message from really different sources, so their agreement means something". A reader whose stations are learned from raw text and whose rules name only function words is such a different source.</p>
+<p><strong>Why it is not trained on the accepted circuits.</strong> 55,648 of the 62,066 labels were written by VSS agreeing with <code>spacy-direct</code> (and 880 more by VSS agreeing with an older DistilBERT, with or without <code>spacy-direct</code>), so training VSS on them would partly train it on its own output, and its agreement with spaCy would then mean less. The lever study of 2026-11-27 also measured that a station prior taken from the accepted circuits would gain about 1.4 points (section <a href="#limits">14</a>).</p>
+<p><strong>Why no dependencies and no annotated input.</strong> <code>docs/strategies/vss.md</code> states the constraints ("It needs no parser, no annotated circuits and no knowledge world"; "the same code runs in Node.js and in a browser") but the repository does not record why they were chosen: not recorded.</p>
+</div>
+
+<p>The repository does not expand the name "VSS". The vector operations in <code>strategies/vss/src/space.mjs</code> are those of vector symbolic architectures (also called hyperdimensional computing): every symbol gets a fixed random vector of +1 and −1 derived from its name, <em>binding</em> multiplies two vectors element by element (the result is unlike both inputs, and it is used to tag a filler with its role or a neighbour with its side), <em>bundling</em> adds vectors into one, and the cosine measures how alike two vectors are. VSS uses them for word vectors, for occurrence prototypes and for a memory of what fills which role (sections <a href="#training">5</a> and <a href="#reading">7</a>).</p>
+
+<p>Speed, on the random 1% benchmark (1,831 messages; <code>eval-results/2026-11-27-syntax-benchmark-random/summary.json</code>): in the first judged run (the file as it stood before <code>8cd3377</code>) the median time per message was 0.402 ms and opening the strategy took 51 ms; in the rerun of VSS at <code>fa46cb7</code> (commit <code>8cd3377</code>, the file's content at about 18:00) 0.392 ms and 58 ms. Both are single runs on a shared machine.</p>
+
+<!-- ============================================================ -->
+<h2 id="terms">2. Terms: the code's names, project terms, established terms</h2>
+
+<p>The code uses its own names for several things. Each is listed once here with the established term it corresponds to. The rest of this document uses the code's name where it helps to find the code, and the established term otherwise.</p>
+
+<div class="scroll"><table>
+<thead><tr><th>Code's name</th><th>Established term</th><th>In plain words</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>station</td><td>hidden state of a hidden Markov model; here a fine-grained part-of-speech tag tied to a slot of the earlier <code>nlu</code> schema</td><td>the kind of position a word stands in: determiner, noun, verb that opens its clause, verb after its subject, preposition, …</td><td><code>legend.sop</code> (<code>vss.station</code>), <code>src/routes.mjs</code></td></tr>
+<tr><td>route</td><td>state sequence (tag sequence) of a sentence</td><td>one station per word of the sentence</td><td><code>src/routes.mjs</code> <code>readRoutes</code></td></tr>
+<tr><td>route book</td><td>the parameters of the hidden Markov model</td><td>how likely each station follows each other one, and how likely each word is at each station</td><td><code>src/routes.mjs</code> <code>learnRoutes</code></td></tr>
+<tr><td>legend</td><td>a hand-written grammar resource: tag set, a prior on tag transitions, a lexicon of closed-class words, morphological rules</td><td>the list of stations and the few English words whose place the language fixes</td><td><code>strategies/vss/legend.sop</code>, <code>src/legend.mjs</code></td></tr>
+<tr><td>unit</td><td>chunk (the output of shallow parsing, also called chunking)</td><td>a run of words that belong together: a noun group, a verb group, a preposition</td><td><code>src/units.mjs</code></td></tr>
+<tr><td>entity</td><td>nominal (noun phrase)</td><td>the internal name of a nominal; becomes <code>syntax.nominal</code></td><td><code>src/units.mjs</code>, <code>src/links.mjs</code></td></tr>
+<tr><td>cue</td><td>preposition (as a station); a linking word in general (on internal relations and coordinations)</td><td>"on", "next to", "of"; also "and" on a coordination</td><td><code>legend.sop</code></td></tr>
+<tr><td>marker (station)</td><td>subordinating conjunction</td><td>"if", "because", "while"</td><td><code>legend.sop</code></td></tr>
+<tr><td>doubt</td><td>a tagging constraint sent back to the decoder</td><td>"this word must not be (or must be) at these stations; decode again"</td><td><code>src/units.mjs</code>, <code>src/links.mjs</code>, <code>src/reader.mjs</code></td></tr>
+<tr><td>verb budget</td><td>constrained Viterbi decoding: the decoder's state is a station paired with a small counter</td><td>one verb per clause, counted while decoding</td><td><code>src/routes.mjs</code> <code>budgetPath</code></td></tr>
+<tr><td>lift</td><td>a re-weighting of emission probabilities</td><td>the second opinion of the occurrence prototypes</td><td><code>src/reader.mjs</code></td></tr>
+<tr><td>occurrence prototype</td><td>centroid of context vectors, one per tag</td><td>what the neighbours of a word at a given station usually look like</td><td><code>src/occurrence.mjs</code></td></tr>
+<tr><td>meanings</td><td>distributional word vectors</td><td>a word is known by the words around it</td><td><code>src/meaning.mjs</code></td></tr>
+<tr><td>memory (role-filler memory)</td><td>selectional preferences, stored as bundled vectors</td><td>which kinds of words fill which role of a verb or noun</td><td><code>src/meaning.mjs</code></td></tr>
+<tr><td>habits</td><td>counted approximations of subcategorization frames, of the noun/adjective distinction, of prepositional-phrase attachment preferences and of collocations</td><td>what a word was seen doing where the structure left no doubt</td><td><code>src/habits.mjs</code></td></tr>
+<tr><td>kinds, anchored frames</td><td>counts in diagnostic contexts</td><td>how often a word stood where function words fix its class ("the ___ on" is a noun); stored as <code>habits.kinds</code>, three counts per word</td><td><code>src/anchors.mjs</code></td></tr>
+<tr><td>the kind "verb"</td><td>verb</td><td>first count of <code>habits.kinds</code>: seen in a frame where only a verb can stand ("could ___ it")</td><td><code>src/anchors.mjs</code></td></tr>
+<tr><td>the kind "thing"</td><td>noun (the head of a nominal)</td><td>second count: seen where only a noun can stand ("the ___ on"); "seen as a thing at least 3 times" in the rules means this count</td><td><code>src/anchors.mjs</code>, <code>lexicon.kindsOf</code></td></tr>
+<tr><td>the kind "quality"</td><td>adjective (attributive or predicative)</td><td>third count: seen where only an adjective can stand ("a bit ___ ."; "is ___ ." at half weight)</td><td><code>src/anchors.mjs</code></td></tr>
+<tr><td><code>anchored</code> (a habit)</td><td>a verb seen with verbal morphology or syntax</td><td>a word read as a verb with a helping verb, a negation or "to" before it, at least 2 times, counted on the reader's own readings; not the same as the anchored frames (section <a href="#r-before">7.2</a>)</td><td><code>src/habits.mjs</code>, <code>lexicon.anchoredVerb</code></td></tr>
+<tr><td>describing word</td><td>attributive adjective, or a participle used as one</td><td>"blue" in "the blue box", "curved" in "curved connectors"</td><td><code>src/units.mjs</code></td></tr>
+<tr><td>said in passing</td><td>discourse element (written <code>discourse</code> in the syntax schema)</td><td>a word that belongs to the clause but fills no role: "please", "thanks", "well"</td><td><code>src/emit-syntax.mjs</code></td></tr>
+<tr><td>governor</td><td>head (the verb or noun that takes a dependent)</td><td>the verb or noun whose role a filler takes in the role-filler memory (<code>v:move</code>, <code>n:box</code>)</td><td><code>src/habits.mjs</code>, <code>src/meaning.mjs</code></td></tr>
+<tr><td>host</td><td>attachment site</td><td>a wire a relation may start from: the clause, or a nominal before the preposition</td><td><code>src/links.mjs</code> <code>attach</code></td></tr>
+<tr><td>placed by (<code>placedBy</code>), chain</td><td>the attachment site of the phrase that holds a nominal; the sequence of such sites</td><td>in "a boy with a happy face next to the table", "face" is placed by "boy"; the chain of "face" is face, boy</td><td><code>src/links.mjs</code></td></tr>
+<tr><td>set-off place phrase</td><td>a fronted or parenthetical prepositional phrase</td><td>", next to the crate, a small black cat": a phrase set off by commas whose preposition points at a known thing, before a new thing (rule in section <a href="#cat-coord">9.7</a>)</td><td><code>src/links.mjs</code> <code>fill</code></td></tr>
+<tr><td>lexicon</td><td>lexicon (here: lookups of the learned habits)</td><td>questions such as "does this verb take a quality?"</td><td><code>src/reader.mjs</code> <code>openModel</code></td></tr>
+<tr><td>opener</td><td>a short discourse-initial expression</td><td>"quick one:", "from now on,"</td><td><code>train.mjs</code></td></tr>
+<tr><td>spelling variant</td><td>misspelling normalisation</td><td>"shoudl" is read as "should"</td><td><code>src/variants.mjs</code></td></tr>
+<tr><td>wire</td><td>(SOP Lang term) one line of a circuit</td><td><code>@id type key=value …</code></td><td>everywhere</td></tr>
+<tr><td>frontier</td><td>the candidates for coordination</td><td>the nominals already seen in the current clause</td><td><code>src/links.mjs</code> <code>fill</code></td></tr>
+<tr><td>gap, <code>gapOf</code></td><td>gapping (ellipsis of the verb in a coordinated clause)</td><td>"make A blue and B green": "B green" borrows "make"</td><td><code>src/links.mjs</code></td></tr>
+<tr><td>open marks</td><td>underspecification</td><td>marks for what the words leave open: <code>attachment=open</code>, a tie with no linking word, a <code>participant</code></td><td><code>src/links.mjs</code></td></tr>
+</tbody>
+</table></div>
+
+<h3>Project terms</h3>
+<div class="scroll"><table>
+<thead><tr><th>Term</th><th>In plain words</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>SOP Lang</td><td>the project's declarative notation; one wire per line</td><td><code>schemas/syntax/schema.sop</code>, <code>strategies/vss/legend.sop</code></td></tr>
+<tr><td><code>syntax</code> schema</td><td>the current output format: four wire types (clause, nominal, relation, coordination), version 3</td><td><code>docs/syntax-schema.md</code></td></tr>
+<tr><td><code>nlu</code> schema</td><td>the previous output format, with slots such as <code>predicate</code>, <code>direct_object</code>, <code>result_complement</code>; VSS still builds its internal wires in it (section <a href="#keys">8</a>)</td><td><code>docs/strategies/vss.md</code></td></tr>
+<tr><td>common reader</td><td>the code through which every strategy is called; it checks each circuit with <code>validateSyntax</code></td><td><code>lib/reader.mjs</code></td></tr>
+<tr><td>judge</td><td>a language-model agent that reads a message and a circuit and grades the circuit L1 to L8 by written rules; <code>docs/strategies/vss.md</code> names "Opus judges" for the <code>nlu</code> period</td><td><code>tests/benchmark/syntax/rules.md</code>, <code>README.md</code></td></tr>
+<tr><td>label</td><td>the accepted circuit stored for a message in the dataset's syntactic files, with who wrote it and how it was accepted (<code>judge</code>, <code>written</code> or <code>agreement</code>)</td><td><code>webmeet-dataset/syntactic/**/*.csv</code></td></tr>
+<tr><td>accepted circuit</td><td>a circuit a judge accepted, or a label settled by agreement</td><td><code>tests/benchmark/syntax/README.md</code></td></tr>
+<tr><td>registry</td><td>the record of every circuit a judge read or wrote, with the reasons</td><td><code>webmeet-dataset/annotations/syntax/v1/judged/</code></td></tr>
+<tr><td>agreement</td><td>several strategies of different families writing the same circuit for a message, which then counts as accepted without a judge. In the batch conversion that wrote almost all agreement labels, two families were enough and the comparison was relaxed: circuits that differ only in where a relation with a marker starts count as the same, and VSS's circuit becomes the label (<code>--prefer vss</code>; <a href="syntax-evaluation-and-conversion.html#agreement">syntax-evaluation-and-conversion.html, section 10</a>)</td><td><code>tests/benchmark/syntax/README.md</code> ("A conversion round")</td></tr>
+<tr><td>conversion round</td><td>a step that gives some dataset files their syntactic counterpart: the strategies run, agreement settles what it can, judges read the rest; its report has the same levels as the benchmark</td><td><code>tests/benchmark/syntax/round.mjs</code></td></tr>
+<tr><td>the owner</td><td>the project owner, who sets the goals and constraints of the work</td><td><code>improvements-ideas.md</code></td></tr>
+<tr><td>calendar, diagram, document and drawing analyses</td><td>studies of VSS's faults on the messages of one area of the dataset, each followed by rules; the rules from the calendar analysis carry a letter (A, B, G, L, O, T, U, W) so they can be switched off one by one</td><td><code>src/reader.mjs</code> (<code>without</code>), commit messages</td></tr>
+</tbody>
+</table></div>
+
+<h3>Grammar and NLP terms used below</h3>
+<dl class="terms">
+<dt>Hidden Markov model (HMM)</dt>
+<dd>A model of a sequence in which every word is produced by a hidden state, and each state depends only on the state before it. It has transition probabilities (state to state), emission probabilities (state to word) and start and end probabilities.</dd>
+<dt>Expectation-maximization (EM), Baum-Welch</dt>
+<dd>Training without labels: guess the parameters, compute for every word how likely each state is given the guess (the expectation step, done with the forward-backward algorithm), re-estimate the parameters from those expected counts (the maximization step), and repeat. Baum-Welch is EM for HMMs.</dd>
+<dt>Forward-backward, posterior</dt>
+<dd>An algorithm that gives, for every word, the probability of each state given the whole sentence. The code calls this probability of the chosen station its "confidence".</dd>
+<dt>Viterbi decoding</dt>
+<dd>Finding the single most probable state sequence of a sentence by dynamic programming.</dd>
+<dt>Part-of-speech tag</dt>
+<dd>The word class of a word in context: noun, verb, preposition, …</dd>
+<dt>Chunking (shallow parsing)</dt>
+<dd>Grouping words into non-overlapping phrases (noun groups, verb groups) without building a full tree.</dd>
+<dt>Dependency parse</dt>
+<dd>A tree in which every word depends on one other word (its head). The syntax schema is not a full dependency parse, but it uses the terms head, dependent, complement and modifier from dependency syntax.</dd>
+<dt>Subcategorization frame</dt>
+<dd>What a verb takes after it: an object, two objects ("give me a hand"), an object and a quality ("make it red"), a clause ("let it go").</dd>
+<dt>Prepositional-phrase attachment</dt>
+<dd>Deciding whether a phrase such as "on the table" belongs to the verb or to a noun before it.</dd>
+<dt>Coordination, conjunct</dt>
+<dd>Wires joined side by side; each joined wire is a conjunct.</dd>
+<dt>Clause forms</dt>
+<dd><em>imperative</em> (a command), <em>declarative</em> (a statement), <em>interrogative</em> (a question), <em>nonfinite</em> (a verb form that cannot make a sentence alone: "facing left", "to delete it"), <em>fragment</em> (no verb).</dd>
+</dl>
+
+<!-- ============================================================ -->
+<h2 id="files">3. Map of the files</h2>
+
+<p>Line counts are those of commit <code>fa46cb7</code> (<code>wc -l</code>). "T" marks code that runs during training, so that a change to it changes the model (section <a href="#commands">11</a>); "R" marks code used by reading.</p>
+<div class="scroll"><table>
+<thead><tr><th>File (under <code>strategies/vss/</code>)</th><th class="num">Lines</th><th>Used by</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>index.mjs</code></td><td class="num">30</td><td>R</td><td>The strategy object <code>vss</code> (<code>schema: 'syntax'</code>); loads <code>model/model.json</code> and calls <code>createVssReader(model, {schema: 'syntax'})</code>.</td></tr>
+<tr><td><code>train.mjs</code></td><td class="num">130</td><td>T</td><td>The training driver: every step of section <a href="#training">5</a>, then writes <code>model/model.json</code>.</td></tr>
+<tr><td><code>legend.sop</code></td><td class="num">155</td><td>T (copied into the model)</td><td>The legend: stations, word lists, endings, forms, irregular pairs, paired linking words, kinds.</td></tr>
+<tr><td><code>model/model.json</code></td><td class="num">3.31 MB</td><td>R</td><td>The trained model, including a copy of the legend.</td></tr>
+<tr><td><code>src/corpus.mjs</code></td><td class="num">38</td><td>T</td><td>Reads the distinct message texts of the dataset.</td></tr>
+<tr><td><code>src/tokens.mjs</code></td><td class="num">42</td><td>T, R</td><td>Tokenizer (the same pattern as the validator) and surface shapes.</td></tr>
+<tr><td><code>src/observe.mjs</code></td><td class="num">92</td><td>T, R</td><td>Observations: joined words, quoted passages, compounds, spelling variants, capitals; the classes of unknown words.</td></tr>
+<tr><td><code>src/legend.mjs</code></td><td class="num">125</td><td>T, R</td><td>Parses the legend; <code>admitted</code> (which stations a word may take); <code>sentencesOf</code>.</td></tr>
+<tr><td><code>src/forms.mjs</code></td><td class="num">33</td><td>T, R</td><td>Candidate stems of a word from the legend's endings and irregular pairs.</td></tr>
+<tr><td><code>src/variants.mjs</code></td><td class="num">60</td><td>T</td><td>Spelling variants by edit distance and vector likeness.</td></tr>
+<tr><td><code>src/routes.mjs</code></td><td class="num">503</td><td>T, R</td><td>The HMM: vocabulary, training by EM, Viterbi decoding, k-best decoding, the verb budget.</td></tr>
+<tr><td><code>src/anchors.mjs</code></td><td class="num">45</td><td>T</td><td>Counts of each word in frames fixed by function words (verb, thing, quality).</td></tr>
+<tr><td><code>src/occurrence.mjs</code></td><td class="num">73</td><td>T, R</td><td>Occurrence vectors and per-station prototypes.</td></tr>
+<tr><td><code>src/space.mjs</code></td><td class="num">51</td><td>T, R</td><td>Vector operations: identity, bind, bundle, normalise, dot.</td></tr>
+<tr><td><code>src/meaning.mjs</code></td><td class="num">156</td><td>T, R</td><td>Word vectors and the role-filler memory.</td></tr>
+<tr><td><code>src/habits.mjs</code></td><td class="num">214</td><td>T (and <code>attachment</code> in R)</td><td>Counts habits of words on the text as read by the trained HMM; the attachment score.</td></tr>
+<tr><td><code>src/reader.mjs</code></td><td class="num">395</td><td>R (and <code>openModel</code> in T)</td><td>Opens the model, builds the lexicon and the linker's context, runs the reading loop, writes the output.</td></tr>
+<tr><td><code>src/units.mjs</code></td><td class="num">667</td><td>T, R</td><td>The chunker: units from stations, merges, and doubts.</td></tr>
+<tr><td><code>src/links.mjs</code></td><td class="num">1,142</td><td>R</td><td>The linker: clauses, roles, relations, coordinations, as internal <code>nlu.*</code> wires.</td></tr>
+<tr><td><code>src/emit-syntax.mjs</code></td><td class="num">315</td><td>R</td><td>Turns the internal wires into syntax wires and calls <code>writeCircuit</code>.</td></tr>
+<tr><td><code>src/emit.mjs</code></td><td class="num">4</td><td>R (nlu output)</td><td>Writes the internal wires as <code>nlu</code> text.</td></tr>
+<tr><td><code>src/flags.mjs</code></td><td class="num">47</td><td>R (nlu output only)</td><td>Symptoms of a doubtful reading, read off an <code>nlu</code> circuit.</td></tr>
+<tr><td><code>src/syntax.mjs</code></td><td class="num">68</td><td>—</td><td>Rewrites an <code>nlu</code> circuit into version 1 of the syntax schema (<code>fact</code>, <code>thing</code>, <code>link</code>, <code>list</code>). Imported only by <code>judged.mjs</code>; obsolete since version 3.</td></tr>
+<tr><td><code>src/units.mjs.orig</code></td><td class="num">—</td><td>—</td><td>A copy of an earlier <code>units.mjs</code>, committed in <code>1c0b4f6</code>; imported by nothing.</td></tr>
+<tr><td><code>core.mjs</code>, <code>compare.mjs</code>, <code>evaluate.mjs</code>, <code>judged.mjs</code>, <code>triage.mjs</code></td><td class="num">—</td><td>tools</td><td>Measurement tools of the <code>nlu</code> period. They read the reader's <code>nlu</code> output and need the <code>sop-knowledge-worlds</code> checkout.</td></tr>
+<tr><td><code>judging-rules.md</code>, <code>judging-rules-syntax.md</code></td><td class="num">—</td><td>judges</td><td>Judging rules for the <code>nlu</code> schema and for version 1 of the syntax schema; superseded by <code>tests/benchmark/syntax/rules.md</code>.</td></tr>
+</tbody>
+</table></div>
+
+<!-- ============================================================ -->
+<h2 id="halves">4. The two halves: training and reading</h2>
+
+<p>Training (<code>node strategies/vss/train.mjs</code>) reads the dataset's message texts and writes one JSON file. Reading (<code>createVssReader(model).analyse(text)</code>) needs only that file. Observation, the HMM decoder and the chunker are shared by both halves; the linker and the writer are used only for reading.</p>
+
+<div class="halves" role="figure" aria-label="Training on the left produces model.json in the middle, which reading on the right uses">
+  <div class="lane">
+    <h4>Training (train.mjs)</h4>
+    <div class="step">Message texts<small>semantic/*/*.csv, column text; 183,497 distinct texts</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Observe<small>tokens, joined words, quotes, compounds</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Spelling variants<small>rough 128-d vectors + one edit</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Observe again, with variants; openers</div>
+    <div class="arrow">↓</div>
+    <div class="step">Vocabulary and sentences<small>9,073 symbols; 207,616 sentences</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">HMM by expectation-maximization<small>25 stations, 25 rounds, legend as prior</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Occurrence prototypes<small>512-d, from confident tags</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Word vectors<small>128-d, 5,244 words</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Habits and role-filler memory<small>text re-read with the new HMM and the chunker</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Kinds from anchored frames<small>[verb, thing, quality] counts; counted before EM, stored last</small></div>
+  </div>
+  <div class="model">
+    <strong>model.json</strong>
+    legend copy · symbols · variants · openers · transition, start, end, shape, emission · occurrence · meanings · memory · habits (with kinds)
+    <div class="arrow" style="margin-top:.5rem">written by training, read by reading</div>
+  </div>
+  <div class="lane">
+    <h4>Reading (reader.mjs analyse)</h4>
+    <div class="step">Message<small>one text, nothing else</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Observe<small>same code as training</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">Opener bans; occurrence lift</div>
+    <div class="arrow">↓</div>
+    <div class="loop"><span class="tag">re-read while there are new doubts, at most 4 more times</span>
+      <div class="step">Viterbi decoding with the verb budget and the bans<small>one station per word, plus its posterior</small></div>
+      <div class="arrow">↓</div>
+      <div class="step">Chunking (units)<small>merges; doubts</small></div>
+      <div class="arrow">↓</div>
+      <div class="step">Linking<small>internal nlu wires; doubts</small></div>
+      <div class="arrow">↓</div>
+      <div class="step">Whole-text leanings<small>more doubts</small></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="step">emit-syntax.mjs<small>syntax wires, every word placed</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">writeCircuit, then validateSyntax<small>lib/syntax.mjs, lib/reader.mjs</small></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="training">5. Training, step by step</h2>
+
+<p>The numbers in this section come from a training run made for the first version of this document on the working tree (the output went to a scratch file, not to the repository). It took 79.3 s of wall time and used 1.6 GB of memory at its peak, on this machine while other work was running. The model it wrote was equal, key by key, to <code>strategies/vss/model/model.json</code> of the working tree at that moment. A reviewer repeated the run after <code>fa46cb7</code> and got the same sentence and occurrence counts, the same log-likelihoods, and a model identical to the committed one.</p>
+
+<div class="box note"><span class="label">Not obvious from the code: what training needs from the legend</span>
+<p>Training depends on the legend (section <a href="#legend">6</a>) throughout. The terms used below, in short: a <em>station</em> is a hidden state of the HMM (a fine part-of-speech tag); a word list without <code>open=true</code> <em>confines</em> its words to the stations that list it, while an open list adds a station and confines nothing; a <em>closed</em> station admits only listed words (and words with a listed ending); a <em>core</em> station is one where a unit can end; <code>like=</code> makes a station share another's emission row; a <em>form rule</em> says where a word built with an ending (<code>-ed</code>, <code>-ing</code>, <code>-er</code>, <code>-s</code>) from another word of the text starts out, and <code>confine=true</code> restricts it to those stations.</p>
+</div>
+
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>Training is deterministic. The "random" vectors of <code>src/space.mjs</code> are derived from the symbol's name by a fixed hash (FNV-1a) and a xorshift generator, and no step draws a random number. Retraining with the same code, legend and dataset gives the same model.</p>
+</div>
+
+<h3 id="t-messages">5.1 Messages</h3>
+<p><code>src/corpus.mjs</code> <code>readMessages</code> reads every CSV file of <code>semantic/drawing</code>, <code>semantic/diagram</code>, <code>semantic/document</code> and <code>semantic/calendar</code> (or of the dataset root when it has no <code>semantic/</code> folder), skips files whose first header is not <code>text</code>, and keeps each distinct text once. The trained model records 183,497 messages and 2,623,108 tokens (<code>model.trained</code>).</p>
+
+<h3 id="t-variants">5.2 Spelling variants</h3>
+<p><code>train.mjs</code> first observes every message, counts the words, and learns rough 128-dimensional word vectors (the method of section <a href="#t-meanings">5.7</a>) for the words seen at least 5 times. <code>src/variants.mjs</code> <code>findVariants</code> then maps a rare word to a common one when:</p>
+<ul>
+<li>the rare word is all lower-case letters, at least 5 letters long and seen at most 12 times;</li>
+<li>the common word is all lower-case, at least 5 letters long and seen at least 100 times, and at least 40 times as often as the rare one;</li>
+<li>the two are one edit apart (an insertion, a deletion, a substitution or a swap of two neighbouring letters);</li>
+<li>the cosine of their vectors is at least 0.6 (0.15 is added when the legend fixes the place of the common word); a rare word without a vector is accepted only when both words have at least 6 letters and the legend lists the common word.</li>
+</ul>
+<p>The model holds 114 variants, for example <code>shoudl→should</code>, <code>bewteen→between</code>, <code>wihout→without</code>. Some are wrong: <code>foward→toward</code> (it is "forward"), <code>pleased→please</code>, <code>otters→others</code>. From here on <code>observe</code> looks a variant up as its common word; the circuit still quotes the letters of the message.</p>
+
+<h3 id="t-openers">5.3 Openers</h3>
+<p>Some messages begin with a few words and a break: "quick one: …", "from now on, …". <code>train.mjs</code> takes the words before the first comma, colon, semicolon, "!" or dash when they are 1 to 3 words, none of them a mark or a word the legend lists at a structural station (auxiliary, marker, infinitive, relative, negation, preposition, conjunction), and at least two tokens follow the break. Such a run is an opener when it was seen at least 5 times and followed by at least 4 different pairs of words. The model holds 134 openers: "from now on", "quick one", "actually", "also", "look", but also "circle", "260", "goal" and "roundup 260", which come from messages built on a common pattern in the dataset. At reading time only openers of 1 or 2 words are used (<code>src/reader.mjs</code> <code>analyse</code>, <code>cut &lt;= 2</code>).</p>
+
+<h3 id="t-vocabulary">5.4 Vocabulary</h3>
+<p><code>src/routes.mjs</code> <code>buildVocabulary</code> keeps every word seen at least 3 times (<code>--min-count</code>) and adds 16 classes for everything else: <code>~number ~date ~clock ~code ~mark ~quote ~capital ~upper ~initial ~word</code> and the ending classes <code>~ing ~ed ~ly ~est ~er ~s</code>. The model has 9,073 symbols. <code>symbolOf</code> looks a token up as itself; an unseen lower-case word as the first of its stems that is in the vocabulary and not confined by the legend; anything else as its class. A word written with a capital inside a sentence is a separate symbol from its lower-case form unless the legend lists the word (<code>src/observe.mjs</code>).</p>
+
+<h3 id="t-hmm">5.5 The station model: a hidden Markov model trained by expectation-maximization</h3>
+<p>The HMM reads one sentence at a time; <code>src/legend.mjs</code> <code>sentencesOf</code> ends a sentence after a run of terminator words ("." "!" "?"). The training corpus has 207,616 sentences. The states are the 25 stations of the legend (section <a href="#legend">6</a>). <code>src/routes.mjs</code> <code>learnRoutes</code> works as follows.</p>
+<ol>
+<li><strong>Which stations a symbol may take.</strong> <code>admitted</code> in <code>src/legend.mjs</code>: a word in a word list without <code>open=true</code> may stand only at the stations that list it; a number, date, clock time, code, mark or quoted passage only at the stations that admit that shape; any other word at every station that is not closed, and at a closed station whose shape (capital, upper case) or suffix (<code>-ly</code>, <code>-wise</code>, …) admits it. In practice an ordinary unlisted lower-case word may be a describing word, a noun, a verb (opening its clause or after its subject), a predicative quality, or an adverb when its ending allows. A form rule with <code>confine=true</code> narrows further: a word built with <code>-ed</code> from another word of the text may stand only at the verb stations (<code>predicate</code>, <code>following</code>), as a describing word (<code>modifier</code>), or at <code>complement</code> (a predicative adjective), which shares the row of <code>modifier</code>.</li>
+<li><strong>Shared rows.</strong> A station with <code>like=</code> shares the emission row of another: <code>following</code> (a verb after its subject) uses the words of <code>predicate</code>, and <code>complement</code> (a predicative quality) uses the words of <code>modifier</code>. Only the transitions tell them apart.</li>
+<li><strong>The prior on transitions</strong> (<code>prior</code>): weight 4 to a station the source lists in <code>follows</code>, 1 from a station marked <code>core</code> to any other, 0.05 otherwise, and 0.05 to a station whose <code>after</code> list does not name the source. End: 1 for a core station, 0.05 otherwise. Start: the stations that may open a sentence.</li>
+<li><strong>Initial emissions.</strong> Each symbol's count is shared among its admitted stations, with weight 8 (<code>formLean</code>) for a closed station that its suffix admits and for the station of a form rule (past and <code>-ing</code> forms lean to the verb station, <code>-er</code>/<code>-est</code> forms to <code>modifier</code>) when the word is built from another word of the text. A shape distribution (lower, capital, upper) per station starts at 0.15/0.65/0.20 for stations that admit capitals and 0.94/0.05/0.01 for the others.</li>
+<li><strong>25 rounds of Baum-Welch</strong> (forward-backward, scaled) over all sentences. In the maximization step the transitions are the expected counts plus 20 times the prior; a transition the prior marks as unlikely (0.05) is also damped by 0.05 in the counts, so the text cannot make it common. Three steps that are not part of EM change the expected emission counts: <em>kinship</em> 0.5 (half of the counts of a form such as "moved" are replaced by the distribution of its stem "move"), <em>sharpening</em> from round 7 on (the counts of every word that no list confines, open-list words such as "make" and "first" included, are raised to the power 1.5 and renormalised, so a word tends to keep one place; <code>free</code> in <code>src/routes.mjs</code>), and a small smoothing (0.001 times the initial emissions).</li>
+</ol>
+<p>Log-likelihood per token in the run made for this document: −6.7092 after round 1, −5.3815 at rounds 15 and 16, −5.3823 after round 25.</p>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>Because kinship and sharpening change the counts between the two EM steps, the likelihood is no longer guaranteed to rise: it falls slightly after round 16. The 25 rounds are a default (<code>--iterations</code>), not a convergence test.</p>
+<p>An option <code>--anchoring</code> pulls each word towards the kind that the anchored frames show (section <a href="#t-kinds">5.9</a>). It measured worse and is off unless the option is given (<code>train.mjs</code> comment; <code>docs/strategies/vss.md</code>).</p>
+</div>
+<p>Output in the model: <code>transition</code> (25 × 25), <code>start</code>, <code>end</code>, <code>shape</code> (25 × 3) and <code>emission</code>, one sparse row per symbol with pairs (station, probability) for the stations that own a row.</p>
+
+<h3 id="t-occurrence">5.6 Occurrence prototypes</h3>
+<p><code>src/occurrence.mjs</code>. Every message is decoded with the new HMM (<code>readRoutes</code>, without verb budget or bans). For each token whose posterior is at least 0.97, the <em>outside</em> of the occurrence is one 512-dimensional vector: the sum, for the neighbours at positions −2, −1, +1 and +2, of the side's vector bound to the neighbour's vector, plus the vector of the token's own form class (its ending or its capital), never the word itself. A neighbour counts as its word when the legend lists it, otherwise as its class. The prototype of a station is the mean of its occurrences minus the mean of all occurrences, normalised. 2,322,127 confident occurrences were used. The model stores the overall mean and the 25 prototypes as base64-encoded 32-bit floats (<code>model.occurrence</code>).</p>
+
+<h3 id="t-meanings">5.7 Word vectors</h3>
+<p><code>src/meaning.mjs</code> <code>learnMeanings</code>. For every word seen at least 10 times that starts with a letter and is not confined by the legend: the vector is the sum, over its neighbours at −2…+2, of the positive pointwise mutual information of the pair (how much more often than chance the two stand together) times the side's vector bound to the neighbour's vector, in 128 dimensions, stored as 8-bit integers. The model has 5,244 word vectors. They are used to compare the heads of two nominals (section <a href="#r-partner">7.8</a>) and as the filler vectors of the memory.</p>
+
+<h3 id="t-habits">5.8 Habits and the role-filler memory</h3>
+<p><code>src/habits.mjs</code> <code>learnHabits</code> opens the model built so far (<code>openModel</code>), reads every message with the HMM (<code>readRoutes</code>, with no verb budget, no bans and no occurrence lift) and the chunker (<code>buildUnits</code>, whose doubts it ignores), and counts what each word does where the structure leaves no doubt.</p>
+<div class="scroll"><table>
+<thead><tr><th>Habit (model key)</th><th>Counted where</th><th>Kept when</th><th class="num">In the model</th></tr></thead>
+<tbody>
+<tr><td><code>nominal</code>: thing (1) or quality (0)</td><td>heads of noun groups and words after a preposition count as things; describing words after a grading word and bare qualities count as qualities</td><td>thing: its plural heads at least 2 groups and things + plurals &gt; 2 × qualities; quality: at least 3 and more than things</td><td class="num">2,178 words</td></tr>
+<tr><td><code>together</code></td><td>a word right before the head inside a noun group that no verb precedes</td><td>pair seen at least 2 times</td><td class="num">5,917 pairs</td></tr>
+<tr><td><code>describes</code></td><td>a participle right after a noun group that does not itself follow a preposition</td><td>per form and head, at least 2</td><td class="num">204 forms</td></tr>
+<tr><td><code>verbTotal</code>, <code>anchored</code></td><td>every verb; verbs with an auxiliary, a negation or "to" before them</td><td>at least 3; anchored at least 2</td><td class="num">1,814; 611 verbs</td></tr>
+<tr><td><code>takesQuality</code></td><td>verb + pronoun or determiner-led object + bare quality ("make it blue")</td><td>at least 3 and at least 3% of the verb's cases with such an object</td><td class="num">81 verbs</td></tr>
+<tr><td><code>takesClause</code></td><td>verb + pronoun + bare verb ("let us add")</td><td>at least 5 and at least 0.3% of the verb</td><td class="num">38 verbs</td></tr>
+<tr><td><code>directs</code></td><td>verb + pronoun + "to" + verb ("need you to make")</td><td>at least 3 and 1%</td><td class="num">7 verbs</td></tr>
+<tr><td><code>names</code></td><td>verb + pronoun + bare name ("call it Bob")</td><td>at least 3 and 1%</td><td class="num">6 verbs</td></tr>
+<tr><td><code>gives</code></td><td>verb + recipient pronoun + another noun group ("give me a hand")</td><td>at least 3 and 1%</td><td class="num">10 verbs</td></tr>
+<tr><td><code>asks</code></td><td>verb (+ pronoun) + question word, or "if", "unless", "whether"</td><td>at least 3 and 2%</td><td class="num">41 verbs</td></tr>
+<tr><td><code>phrasal</code></td><td>verb (+ object) + a particle word with no noun group after it ("zoom in", "sort it out")</td><td>at least 3</td><td class="num">310 verbs</td></tr>
+<tr><td><code>separable</code></td><td>verb + object + particle ("turn the legend on")</td><td>at least 2</td><td class="num">251 verbs</td></tr>
+<tr><td><code>attach</code>, <code>attachSure</code></td><td>sure cases: a preposition right after the verb or after a pronoun object belongs to the verb; after a noun group that no verb governs it belongs to the noun. Doubtful cases: after a noun group that a verb governs.</td><td>see below</td><td class="num">1,492 verbs, 2,193 nouns</td></tr>
+<tr><td><code>memory</code></td><td>per verb (<code>v:</code>) and noun (<code>n:</code>): each role (a preposition, <code>object</code>, <code>said</code>) bound to the vector of what filled it, summed</td><td>all</td><td class="num">6,440 governors</td></tr>
+</tbody>
+</table></div>
+<p><strong>Settling the doubtful attachments.</strong> The sure cases undercount the verb, because its object usually stands between the verb and the preposition. The first round therefore uses only each preposition's lean (the log ratio of its rate after verbs to its rate after nouns, among sure cases) shifted by a constant found by bisection so that the doubtful cases split half and half overall; each doubtful case is shared between verb and noun by a logistic of that score. Three more rounds use the attachment score of the counts so far (<code>attachment</code>: rates smoothed with weight 5 towards the preposition's overall rate). The doubtful cases then enter the memory by the share each side received.</p>
+
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The habits are counted on the reader's own readings of the same text, so an error of the HMM or of the chunker can confirm itself. Moreover, the reading that produces these counts is plainer than the reading at reading time, in four ways. (1) When <code>learnHabits</code> runs the model has no habits and no kinds yet, so every lookup of a learned habit or kind returns nothing (<code>takesQuality</code>, <code>nominal</code>, <code>kindsOf</code>, …); lookups that read the legend or the vocabulary still answer as at reading time (<code>canBe</code>, <code>tagged</code>, <code>makesDo</code>, <code>listed</code>, <code>grades</code>, <code>formOf</code>, <code>gradedForm</code>). (2) The rules of <code>units.mjs</code> that check <code>lexicon.leans</code>, <code>lexicon.linkOf</code> or a rule letter (<code>lexicon.trial</code>) are skipped, because only <code>createVssReader</code> sets those. (3) The chunker's doubts are not used, so only its merges and splits shape the counts; there is no re-reading. (4) The decoding has no occurrence lift and no verb budget.</p>
+<p>The learned lists hold noise: <code>takesClause</code> contains "drawing", "whenever" and "oculd"; <code>asks</code> contains "nice" and "waht"; <code>gives</code> contains "igve" and "gve". Misspellings shorter than 5 letters are never mapped by the variant step.</p>
+</div>
+
+<h3 id="t-kinds">5.9 Kinds from anchored frames</h3>
+<p><code>src/anchors.mjs</code> <code>anchoredFrames</code> runs before the HMM is trained and counts, for every lower-case word that no list confines (open-list words included; <code>free</code>), how often it stood in a frame that the legend's words alone fix. "Can only be" below means that the legend confines the word to that station alone (<code>only</code>).</p>
+<ul>
+<li>A <em>thing</em>: the one word between a word that can only be a determiner or only a degree word, and a word that closes the group (a mark, a word that can only be a preposition or a conjunction, a helping verb): "the ___ on".</li>
+<li>A <em>verb</em>: after a word that can only be a helping verb (or a negation after a helping verb) before an object or a closing word; after "to" before an object; after a pronoun that can only be a subject ("they ___"), unless a preposition stands before that pronoun; message-initial or after a courtesy word before an object (weight 0.5). An object here is a word that can only be a determiner or degree word, a recipient pronoun, or the literal word "it".</li>
+<li>A <em>quality</em>: after a word that can only be a degree word (with no condition on the word after); after a form of "be" before a closing word, when the word before the "be" is not a determiner (weight 0.5).</li>
+</ul>
+<p>Words with at least 3 counts in total are kept in <code>habits.kinds</code>: 2,700 words, each with three counts [verb, thing, quality].</p>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p><strong>The quality frame fires after only five words.</strong> The file's header says "after 'very' stands a quality", but the code does not count "very ___". "very", "really", "slightly" and "extremely" are only in an open list (<code>@w.degree … open=true</code>), so the legend does not confine them; "too", "quite", "more" and "so" are confined but also listed at <code>adverb</code>. The only words the legend confines to the degree station alone are the five compounds of <code>@w.degree.compound</code>: "a bit", "a lot", "a little bit", "a tad", "a touch". A reviewer checked this with <code>anchoredFrames</code> on test messages: "it is very zorbish ." gives [0, 0, 0], "it is too zorbish ." gives [0, 0, 0], and "make it a bit zorbish ." gives [0, 1, 1].</p>
+<p>The last result shows a second effect: because <code>opens</code> also accepts words confined to the degree station, "a bit X ." counts X as a thing as well as a quality.</p>
+<p>The second branch of the quality test, <code>only(before, 'degree', 'adverb')</code>, adds nothing: <code>adverb</code> is missing from the <code>at</code> map of <code>src/anchors.mjs</code>, so the test reduces to the first branch. A variable <code>grades</code> is defined and never used (<code>void grades</code>).</p>
+<p>So the quality counts, which many rules read ("shown as a quality at least 3 times"), come almost only from "be ___ ." at half weight and from the five degree compounds. They are thin.</p>
+</div>
+<div class="box why"><span class="label">Why it is done this way</span>
+<p>The file's header gives the reason: counting a word only in frames fixed by the legend "says what kind of word it is without asking the route model, so the model's own mistakes cannot confirm themselves". This holds for <code>habits.kinds</code> only; the habits of section <a href="#t-habits">5.8</a>, the <code>anchored</code> habit among them, are counted on the model's own readings. These counts, read through <code>lexicon.kindsOf</code>, are the evidence that most rules of the chunker and the linker consult ("seen as a verb at least 3 times"). <code>kindsOf</code> also lets the forms of a word share its verb count (the stem's count, and for a two-letter verb such as "go" its <code>-es</code>/<code>-ing</code> forms, fa46cb7) and a plural share its stem's thing count. Using the kinds as a prior inside EM measured worse, so they serve only the rules.</p>
+</div>
+
+<h3 id="t-model">5.10 What model.json holds</h3>
+<div class="scroll"><table>
+<thead><tr><th>Key</th><th>Content</th><th>Written by</th><th class="num">Size (MB of JSON)</th></tr></thead>
+<tbody>
+<tr><td><code>version</code>, <code>trained</code></td><td>1; messages, tokens, iterations, minimum count, options</td><td><code>train.mjs</code></td><td class="num">0.00</td></tr>
+<tr><td><code>legend</code></td><td>the full text of <code>legend.sop</code></td><td><code>train.mjs</code></td><td class="num">0.02</td></tr>
+<tr><td><code>symbols</code></td><td>9,073 symbols (16 classes, then words)</td><td><code>routes.mjs</code></td><td class="num">0.08</td></tr>
+<tr><td><code>variants</code>, <code>openers</code></td><td>114 variants, 134 openers</td><td><code>variants.mjs</code>, <code>train.mjs</code></td><td class="num">0.00</td></tr>
+<tr><td><code>transition</code>, <code>start</code>, <code>end</code>, <code>shape</code>, <code>emission</code></td><td>the HMM</td><td><code>routes.mjs</code></td><td class="num">0.40</td></tr>
+<tr><td><code>occurrence</code></td><td>512-d mean and 25 prototypes</td><td><code>occurrence.mjs</code></td><td class="num">0.07</td></tr>
+<tr><td><code>meanings</code></td><td>5,244 word vectors, 128-d, int8</td><td><code>meaning.mjs</code></td><td class="num">0.94</td></tr>
+<tr><td><code>memory</code></td><td>6,440 role-filler vectors, 128-d, int8</td><td><code>habits.mjs</code>, <code>meaning.mjs</code></td><td class="num">1.17</td></tr>
+<tr><td><code>habits</code></td><td><code>nominal</code>, <code>takesClause</code>, <code>takesQuality</code>, <code>gives</code>, <code>asks</code>, <code>directs</code>, <code>names</code>, <code>phrasal</code>, <code>separable</code>, <code>anchored</code>, <code>attachSure</code>, <code>together</code>, <code>describes</code>, <code>verbTotal</code>, <code>attach</code>, <code>kinds</code></td><td><code>habits.mjs</code>, <code>anchors.mjs</code></td><td class="num">0.62</td></tr>
+</tbody>
+</table></div>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The reader takes the legend from <code>model.json</code>, not from <code>legend.sop</code> (<code>src/reader.mjs</code> <code>openModel</code> calls <code>readLegend(model.legend)</code>). An edit to <code>legend.sop</code> has no effect on reading until the model is trained again. The test <code>tests/vss.test.mjs</code> reads <code>legend.sop</code> directly, so it can pass while the model still carries an older legend.</p>
+<p>What retraining does to other readings depends on the edit. EM starts from scratch at every training, so an edit that changes which stations a word may take, or which forms belong to a word, moves probabilities everywhere: <code>improvements-ideas.md</code> records that relating "goes" to "go" in the stem rule "shifted unrelated readings" and was dropped. An edit that only gives a mark, through a new open list, to words that are already listed leaves the learned parts unchanged; the <code>fa46cb7</code> message records this for the marks it added. The practice adopted is therefore to add marks as open lists, retrain once and check the changed readings at once.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="legend">6. The legend</h2>
+
+<p><code>strategies/vss/legend.sop</code> is written in SOP Lang, one wire per line, and parsed by <code>src/legend.mjs</code> <code>parseWires</code> (a regular expression, not the SOP Lang toolchain). Its header line is:</p>
+<pre><code>@vss.legend core.module name=vss.legend version=1 language=en schema=nlu</code></pre>
+<p><code>schema=nlu</code> is accurate: the <code>key</code> of each station is a slot name of the earlier <code>nlu</code> schema, and the linker writes internal wires with those names (section <a href="#keys">8</a>). At <code>fa46cb7</code> the legend has 25 stations, 43 word lists with 422 distinct words and compounds, 6 endings, 4 form rules, 86 irregular pairs, 2 pairs of linking words and 16 kinds.</p>
+
+<h3 id="l-stations">6.1 Stations (<code>vss.station</code>)</h3>
+<p>Attributes, as the legend's comments define them: <code>follows</code> (the stations that usually come next: the prior before any text is seen), <code>core</code> (a unit can end here; a station that is not core should be followed by one of its <code>follows</code>), <code>closed</code> (only listed words stand here), <code>like</code> (shares the words of another station), <code>shape</code> (surface shapes admitted by form alone, or preferred before learning), <code>suffix</code> (an ending that admits an unlisted word at a closed station), <code>opens=false</code> (never begins a sentence), <code>after</code> (the only stations it may come after; <code>start</code> for the beginning of a sentence), <code>ends</code> (closes a sentence), <code>as</code> (the unit kind when it is not the station's name), <code>clause=opens</code> (a word here begins a new clause). Real lines:</p>
+<pre><code>@st.noun vss.station unit=entity key=head core=true follows=noun follows=name follows=quantity follows=following
+@st.following vss.station unit=clause key=predicate core=true like=predicate
+@st.complement vss.station unit=clause key=result_complement core=true like=modifier
+@st.adverb vss.station unit=clause key=adverb core=true closed=true suffix=ly suffix=wise suffix=ward suffix=wards suffix=ways
+@st.infinitive vss.station clause=opens unit=clause key=marker as=marker closed=true follows=predicate follows=negation follows=adverb follows=auxiliary</code></pre>
+
+<div class="scroll"><table>
+<thead><tr><th>Station</th><th>Unit</th><th>Key (nlu slot)</th><th>Flags</th><th>Established term</th></tr></thead>
+<tbody>
+<tr><td><code>determiner</code></td><td>entity</td><td>determiner</td><td>closed</td><td>determiner</td></tr>
+<tr><td><code>quantity</code></td><td>entity</td><td>quantity</td><td>core, closed, shape number</td><td>numeral, quantifier</td></tr>
+<tr><td><code>degree</code></td><td>entity</td><td>degree</td><td>closed</td><td>degree adverb (intensifier)</td></tr>
+<tr><td><code>modifier</code></td><td>entity</td><td>modifier</td><td>open</td><td>attributive adjective or noun modifier</td></tr>
+<tr><td><code>noun</code></td><td>entity</td><td>head</td><td>core, open</td><td>common noun</td></tr>
+<tr><td><code>name</code></td><td>entity</td><td>name</td><td>core, closed, shapes capital, upper, code</td><td>proper noun, label</td></tr>
+<tr><td><code>pronoun</code></td><td>entity</td><td>pronoun</td><td>core, closed</td><td>pronoun</td></tr>
+<tr><td><code>literal</code></td><td>entity</td><td>literal</td><td>core, closed, shapes quote, date, clock</td><td>quoted text, date, clock time</td></tr>
+<tr><td><code>possessive</code></td><td>entity</td><td>possessive_marker</td><td>closed</td><td>possessive clitic "'s"</td></tr>
+<tr><td><code>question</code></td><td>clause</td><td>question</td><td>opens a clause, core, closed</td><td>interrogative word</td></tr>
+<tr><td><code>auxiliary</code></td><td>clause</td><td>auxiliary</td><td>core, closed</td><td>auxiliary verb</td></tr>
+<tr><td><code>negation</code></td><td>clause</td><td>negation</td><td>core, closed</td><td>negation</td></tr>
+<tr><td><code>marker</code></td><td>clause</td><td>marker</td><td>opens a clause, core, closed</td><td>subordinating conjunction</td></tr>
+<tr><td><code>infinitive</code></td><td>clause</td><td>marker</td><td>opens a clause, closed</td><td>infinitival "to"</td></tr>
+<tr><td><code>relative</code></td><td>clause</td><td>marker</td><td>opens a clause, closed, never sentence-initial, <code>after</code> list</td><td>relative pronoun</td></tr>
+<tr><td><code>predicate</code></td><td>clause</td><td>predicate</td><td>core, open, <code>after</code> list (start, conjunction, separator, marker, …)</td><td>verb that opens its clause</td></tr>
+<tr><td><code>following</code></td><td>clause</td><td>predicate</td><td>core, <code>like=predicate</code></td><td>verb after its subject</td></tr>
+<tr><td><code>complement</code></td><td>clause</td><td>result_complement</td><td>core, <code>like=modifier</code></td><td>predicative or resultative adjective</td></tr>
+<tr><td><code>adverb</code></td><td>clause</td><td>adverb</td><td>core, closed, suffixes</td><td>adverb, verb particle</td></tr>
+<tr><td><code>expression</code></td><td>clause</td><td>expression</td><td>core, closed</td><td>interjection</td></tr>
+<tr><td><code>filler</code></td><td>clause</td><td>filler</td><td>core, closed</td><td>politeness or hesitation word</td></tr>
+<tr><td><code>separator</code></td><td>clause</td><td>separator</td><td>opens a clause, core, shape mark</td><td>sentence-internal punctuation</td></tr>
+<tr><td><code>terminator</code></td><td>clause</td><td>terminator</td><td>opens a clause, core, closed, ends</td><td>sentence-final punctuation</td></tr>
+<tr><td><code>cue</code></td><td>relation</td><td>cue</td><td>closed</td><td>preposition</td></tr>
+<tr><td><code>conjunction</code></td><td>coordination</td><td>cue</td><td>opens a clause, core, closed</td><td>coordinating conjunction</td></tr>
+</tbody>
+</table></div>
+
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The distinction between a verb that opens its clause (<code>predicate</code>, a command) and a verb after its subject (<code>following</code>), and between an attributive adjective (<code>modifier</code>) and a predicative one (<code>complement</code>), is made by context alone: each pair shares one emission row, and only the transitions differ. <code>predicate</code> may come only after the stations listed in its <code>after</code> attribute, which makes "the box moves" decode <code>moves</code> as <code>following</code>.</p>
+</div>
+
+<h3 id="l-words">6.2 Word lists (<code>vss.words</code>)</h3>
+<p>A list names a station and its words. A list without <code>open=true</code> <em>confines</em> its words: they may stand only at stations whose lists name them. A list with <code>open=true</code> adds a station and confines nothing: its words keep every other use the text shows. A list may carry <code>link=</code>, a mark that rules consult. A word keeps the first mark it is given as its main mark (<code>legend.links</code>) and every mark in <code>legend.tags</code>. A listed entry with a space is a compound, joined into one observation when its words stand together. Real lines:</p>
+<pre><code>@w.subject vss.words station=pronoun link=subject word="i" word="we" word="they" word="he" word="she"
+@w.makesdo vss.words station=predicate open=true link=makesdo word="let" word="make" word="have" word="help" word="see" word="watch" word="hear" word="feel"
+@w.cue.belongs vss.words station=cue open=true link=belongs word="of"
+@w.cue.compound vss.words station=cue word="next to" word="in front of" word="on top of" word="out of" …   (shortened here)</code></pre>
+
+<div class="scroll"><table>
+<thead><tr><th>Mark (<code>link=</code>)</th><th>Words</th><th>What the mark says</th><th>Consulted by</th></tr></thead>
+<tbody>
+<tr><td><code>subject</code></td><td>i, we, they, he, she</td><td>can only be the doer of the next verb</td><td>verb budget; anchored frames; subject and form decisions in <code>links.mjs</code>; doubts in <code>units.mjs</code>; rule G</td></tr>
+<tr><td><code>recipient</code></td><td>me, us, him, her, them</td><td>before a second noun group, receives it</td><td>indirect object in <code>links.mjs</code> <code>fill</code>; <code>gives</code> habit</td></tr>
+<tr><td><code>nominal</code> (open)</td><td>what, which, who, whom, whose</td><td>a question word that stands for a thing</td><td><code>emit-syntax.mjs</code> (question word as head or dependent)</td></tr>
+<tr><td><code>predicative</code></td><td>forms of "be", 's, 're, 'm</td><td>what follows says what the subject is</td><td>"be" clauses in <code>links.mjs</code>; "what's" doubt; rule G exception</td></tr>
+<tr><td><code>perfect</code></td><td>have, has, had</td><td>goes with a past form, never a bare verb</td><td>"have" + bare verb read as causative</td></tr>
+<tr><td><code>bare</code> (open)</td><td>be</td><td>the form a command uses</td><td>other forms of "be" opening a clause ask</td></tr>
+<tr><td><code>makesdo</code> (open)</td><td>let, make, have, help, see, watch, hear, feel</td><td>takes a thing and what it does, without "to"</td><td><code>lexicon.makesDo</code>; doubt "turn italic off"</td></tr>
+<tr><td><code>needsbare</code> (open)</td><td>does, did, can, could, will, would, shall, should, may, might, must</td><td>followed by a bare verb</td><td>rule A</td></tr>
+<tr><td><code>finite</code> (open)</td><td>is, are, am, was, were, has, had, does, did, modals, 'd 'll 've 're 'm</td><td>has its subject before it</td><td>rule O; subject search; form decision</td></tr>
+<tr><td><code>day</code> (open)</td><td>today, tomorrow, yesterday, tonight</td><td>forms one thing with a bare noun after it</td><td>rule T</td></tr>
+<tr><td><code>definite</code> (open; fa46cb7)</td><td>the, this, that, these, those, its, his, her, their, my, your, our</td><td>names a thing already known</td><td>set-off phrase rule in <code>links.mjs</code></td></tr>
+<tr><td><code>postposed</code> (open; fa46cb7)</td><td>else</td><td>modifies the pronoun before it</td><td>"everything else" merge in <code>links.mjs</code></td></tr>
+<tr><td><code>selects</code> (open)</td><td>first, second, third, fourth, fifth, last, next, previous, other, same</td><td>picks among counted things</td><td>rule T; count breaks in <code>readEntity</code></td></tr>
+<tr><td><code>belongs</code> (open)</td><td>of</td><td>the relation starts at the thing before</td><td>attachment; "left of" merge</td></tr>
+<tr><td><code>particle</code> (open)</td><td>up, down, out, off, in, on, over, back, away, around, apart, together, through, along</td><td>moves with the verb</td><td>particles in <code>fill</code>; <code>phrasal</code> habit</td></tr>
+<tr><td><code>relative</code></td><td>that, which, who, whom, whose</td><td>ties a clause to the thing before</td><td>relative clauses; "a chart that counts users"</td></tr>
+<tr><td><code>infinitive</code></td><td>to</td><td>introduces a verb that completes the verb before</td><td>infinitive clauses; habits; anchored frames</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="l-forms">6.3 Endings, forms and irregular pairs</h3>
+<pre><code>@forms vss.endings ending=s ending=es ending=ed ending=ing ending=er ending=est
+@forms.past vss.forms station=predicate also=modifier confine=true ending=ed
+@forms.progressive vss.forms station=predicate ending=ing
+@forms.graded vss.forms station=modifier ending=er ending=est
+@forms.plural vss.forms station=noun ending=s ending=es
+@irregular.past vss.irregular form=past pair="draw drawn" pair="draw drew" pair="go gone" …   (86 pairs)</code></pre>
+<p>A form belongs to a family when stripping a listed ending leaves a word the text also uses (<code>src/forms.mjs</code> <code>stemsOf</code>, which also tries the stem with an added "e", without a doubled consonant, and with "i" turned into "y"). The form rules decide where such a form starts out in training, whether it is confined (past forms), and what the lexicon reports: <code>formOf</code> (past or progressive), <code>gradedForm</code>, <code>sForm</code> (a verb in <code>-s</code>), <code>pluralThing</code>.</p>
+
+<h3 id="l-pairs">6.4 Paired linking words and kinds</h3>
+<pre><code>@pair.range vss.pair first="from" second="to"
+@pair.span vss.pair first="between" second="and"
+@k.additive vss.kind unit=coordination kind=additive cue="and" cue="," cue="&amp;" cue=";"
+@k.contrast vss.kind unit=coordination kind=contrast joins=clause cue="but"
+@k.condition vss.kind unit=relation kind=condition cue="if" cue="unless" cue="whether"
+@k.label vss.kind unit=relation kind=label cue="called" cue="labelled" cue="labeled" cue="named" cue="titled" cue="entitled"</code></pre>
+<p>A pair says that the second linking word starts where the first did ("from A to B"). Kinds name coordinations (additive, alternative, contrast, sequence), relations between clauses (purpose, condition, cause, time, label, nominal_clause) and detached expressions (gratitude, greeting, apology, acknowledgment, rejection, hesitation). The syntax schema has no kinds, so no kind is written, but the reader still uses the kinds as rules in five ways:</p>
+<ol>
+<li><strong>Which joining words coordinate at all.</strong> The cue lists of the four coordination kinds decide it: <code>src/links.mjs</code> calls <code>context.kindOf('coordination', word, true)</code> in <code>fill</code> (whether a pending joiner can join, <code>joinable</code>), in the gapping test, and for clauses joined by a comma alone. ",", ";", "&amp;", "and", "or", "nor", "but", "then" and "so" coordinate; a colon or a dash is in no coordination kind, so it does not, and after the object "a picnic spot: a blanket" becomes a relation of kind <code>elaboration</code> (the object spelled out).</li>
+<li><strong>Clause joiners.</strong> <code>joins=clause</code> on "but", "then" and "so" makes what follows a clause of its own.</li>
+<li><strong>Condition.</strong> The cues of <code>condition</code> ("if", "unless", "whether") define the learned <code>asks</code> habit in training (<code>src/habits.mjs</code>: a verb followed by a question word or by one of these cues), and at reading time "if" after a verb that asks is what is asked ("tell me if it fits").</li>
+<li><strong>Label.</strong> <code>label</code> marks naming participles for <code>emit-syntax.mjs</code> (<code>knows.naming</code>) and gives the relation of "a group called g2" its kind.</li>
+<li><strong>Relation kinds by cue.</strong> The other relation kinds only name internal relations, which the syntax output drops.</li>
+</ol>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The pair <code>@pair.span</code> (between … and) never fires. <code>attach</code> in <code>src/links.mjs</code> applies a pair only when the second word is the cue of a relation, but "and" is confined to the <code>conjunction</code> station (<code>@w.conjunction</code> is a closed list), so it never forms a cue unit.</p>
+</div>
+
+<div class="box why"><span class="label">Why it is done this way</span>
+<p>The legend is the only place where English words are listed, so that the reader's code holds no word list of its own (<code>src/legend.mjs</code> header). The effect of confining closed-class words is that EM has fixed points: "the" can only be a determiner, so the probabilities of the stations around it are learned against a known station. Open lists add a use without taking away the uses the text shows: "near" is declared as a preposition in an open list (<code>@w.cue.open</code>) that no other list names, so the text can still teach the HMM its other uses ("the near side").</p>
+</div>
+<div class="box note" id="hardcoded"><span class="label">Not obvious from the code</span>
+<p>The <code>src/legend.mjs</code> header says the reader holds "no word list and no slot name of its own". That holds for English words, not for names: <code>src/units.mjs</code>, <code>src/links.mjs</code>, <code>src/reader.mjs</code> and <code>src/emit-syntax.mjs</code> hard-code the legend's station names (<code>'noun'</code>, <code>'predicate'</code>, <code>'following'</code>, <code>'modifier'</code>, <code>'complement'</code>, …), its mark names (<code>'needsbare'</code>, <code>'finite'</code>, <code>'definite'</code>, <code>'postposed'</code>, <code>'selects'</code>, <code>'day'</code>, <code>'bare'</code>, <code>'makesdo'</code>, …) and the <code>nlu</code> slot names (<code>'direct_object'</code>, <code>'result_complement'</code>, …). Renaming a station or a mark in the legend breaks the code; the legend cannot change apart from it.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="reading">7. Reading, step by step</h2>
+
+<p>The public entry is <code>strategies/vss/index.mjs</code>: <code>open()</code> loads the model and creates the reader with <code>{schema: 'syntax'}</code>; <code>analyse(text)</code> returns <code>{analyses: [{sop, confidence}]}</code>, or no analysis and an <code>error</code> when the reader throws. The common reader <code>lib/reader.mjs</code> checks the circuit with <code>validateSyntax</code>. The steps below are in <code>src/reader.mjs</code> <code>createVssReader</code> → <code>analyse</code>.</p>
+
+<h3 id="r-observe">7.1 Observation and tokens</h3>
+<ol>
+<li><code>src/tokens.mjs</code> <code>tokenize</code> uses the validator's pattern, so a token is exactly one word of <code>lib/syntax.mjs</code> <code>wordsOf</code>, except that punctuation is kept: a date, a clock time or a decimal number is one token, a clitic is split off ("don't" → "do", "n't"). <code>shapeOf</code> gives each token a shape: number, date, clock, code ("3px", "g1"), mark, quote (also addresses), upper, capital, initial (a capital at the start of a sentence), lower.</li>
+<li><code>src/observe.mjs</code> <code>joinWritten</code> joins what is written as one word: "soft-focus", "Q1-Q4", "260,180", "example.com/prices".</li>
+<li>A quoted passage becomes one observation with the word <code>~quote</code>; it can only be a <code>literal</code>.</li>
+<li>Compounds of the legend are joined, longest first: "next to", "in front of", "make sure".</li>
+<li>A spelling variant is looked up as its common word.</li>
+<li>A word written with a capital inside a sentence keeps its written form as its symbol, unless the legend lists its plain form; with rule L, it also keeps it when the legend lists the plain form only in open lists of stations that are not grammatical ("the title Second").</li>
+</ol>
+
+<h3 id="r-before">7.2 Openers and the occurrence lift</h3>
+<p>When the message begins with a learned opener of 1 or 2 words before the first break, those words are kept off the verb stations unless they carry the learned <code>anchored</code> habit (<code>lexicon.anchoredVerb</code>: read as a verb after a helping verb, a negation or "to" at least 2 times) or (fa46cb7) were seen as a verb in the anchored frames at least 20 times and never as a thing (<code>SURELY_A_VERB</code>, "excuse me, …"). Then, for every token and station, the cosine between the station's prototype and the token's outside vector (minus the overall mean) is computed; during decoding every emission probability is multiplied by <code>exp(4 × cosine)</code> (<code>occurrenceWeight</code>, default 4).</p>
+<div class="box note"><span class="label">Not obvious from the code: two things called "anchored"</span>
+<p><code>lexicon.anchoredVerb</code> reads <code>habits.anchored</code>, which <code>src/habits.mjs</code> counts on the reader's own chunked readings of the text: a verb unit with a helping verb, a negation or "to" before it, at least 2 times. <code>habits.kinds</code> comes from <code>src/anchors.mjs</code>: frames fixed by legend words alone, counted on the raw text before the HMM exists. The opener rule uses the first; most rules of the chunker and the linker use the second (<code>lexicon.kindsOf</code>). The reason "the model's own mistakes cannot confirm themselves" (section <a href="#t-kinds">5.9</a>) applies only to the second.</p>
+</div>
+
+<h3 id="r-decode">7.3 Decoding the stations</h3>
+<p><code>src/routes.mjs</code> <code>readRoutes</code> decodes one sentence at a time. <code>readSentence</code> runs the Viterbi recursion and the forward pass together, then the backward pass; the posterior of the chosen station is kept as the token's confidence. A ban (from a doubt or an opener) sets the emission of the banned station at that position to zero.</p>
+<p>The verb budget is on by default (<code>options.budget</code> unset). <code>budgetPath</code> runs a second Viterbi over pairs (station, register), where the register counts the verbs of the current clause:</p>
+<div class="scroll"><table>
+<thead><tr><th>Token's station</th><th>Register after it</th></tr></thead>
+<tbody>
+<tr><td>opens a clause (marker, question word, infinitival "to", relative, separator, terminator, conjunction)</td><td>0</td></tr>
+<tr><td>auxiliary</td><td>1 if the clause already had its verb (a new verb group begins), otherwise unchanged</td></tr>
+<tr><td>a pronoun marked <code>subject</code></td><td>1 if the clause already had its verb, otherwise at least 1</td></tr>
+<tr><td>another nominal station (determiner, quantity, degree, modifier, noun, name, pronoun, literal, possessive)</td><td>0 becomes 1; otherwise unchanged</td></tr>
+<tr><td>any other station (negation, adverb, preposition (<code>cue</code>), <code>complement</code>, interjection, filler)</td><td>unchanged</td></tr>
+<tr><td>a verb station, word that can be an auxiliary</td><td>unchanged (it does not use up the verb)</td></tr>
+<tr><td>a verb station, register 0 or 1</td><td>3 if the verb takes a clause or directs ("let", "need"), otherwise 2</td></tr>
+<tr><td>a verb station, register 2</td><td>allowed only for a past or <code>-ing</code> form (a participle); unchanged</td></tr>
+<tr><td>a verb station, register 3</td><td>allowed; a participle keeps 3; any other verb (one more bare verb: "let it go") gives 3 or 2 by the same test as at register 0</td></tr>
+</tbody>
+</table></div>
+<p>The decoder returns the budget path. If no path keeps the budget (<code>budgetPath</code> returns <code>null</code>), <code>readSentence</code> falls back to the plain Viterbi path. The confidence is the posterior computed without the budget; the bans and the occurrence lift are included in it, since both act on the emissions.</p>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The confidence is not the probability of the station the budget chose. When the budget forces a station the plain model disfavours, the token's confidence can be near zero. In the syntax output only the minimum confidence of the message is returned; neither <code>lib/reader.mjs</code> nor the tools of <code>tests/benchmark/syntax/</code> read it.</p>
+<p>At <code>fa46cb7</code> the verbs the budget lets take one more bare verb (<code>budget.makesDo</code> in <code>src/reader.mjs</code>) are those of the learned <code>takesClause</code> and <code>directs</code> lists, not the legend's <code>makesdo</code> mark. One of the uncommitted edits made after <code>fa46cb7</code> (seen at about 18:00) adds the legend's mark (<code>lexicon.makesDo</code>, "watch him run"). The option <code>verbLead</code>, which would favour words known as verbs, defaults to 0, so <code>budget.known</code> has no effect.</p>
+<p>The budget has been on by default since commit <code>7e8e98d</code> ("one verb per clause in decoding"), whose message records no measurement. The only recorded measurement is from the <code>nlu</code> period and was negative: "moved 119 texts closer to a saved circuit and 169 further. It is off" (<code>docs/strategies/vss.md</code>). Its effect in the syntax schema was not measured.</p>
+</div>
+
+<h3 id="r-units">7.4 Cutting into units (chunking)</h3>
+<p><code>src/units.mjs</code> <code>buildUnits(tokens, stations, lexicon)</code> walks the stations once:</p>
+<ul>
+<li>a run of nominal stations becomes an <code>entity</code> (<code>readEntity</code>), with token positions for determiner, quantity, degree, modifier, compound, head, name, pronoun, literal, possessor;</li>
+<li>auxiliaries, negations, adverbs before a verb and the verb become a <code>verb</code> unit (<code>readVerbGroup</code>), or an <code>aux</code> unit when no verb follows; a word that can be an auxiliary followed by another verb (or by a past form at <code>complement</code>) is the helping verb ("be turned", "have been moved");</li>
+<li>a run of prepositions becomes a <code>cue</code>; grading words and qualities with no noun become a <code>complement</code> (or an <code>adverb</code>); interjections and terminators group; anything else is a one-token unit of its station's type.</li>
+</ul>
+<p>Inside <code>readEntity</code> the last noun is the head, earlier nouns are compounds, names after the head form a name, a describing word is a compound or a modifier by the learned noun/adjective habit (a capitalised one is a compound), and several rules decide where one nominal ends and the next begins (section <a href="#cat-nominal">9.3</a>). After the walk, 13 merge passes join units ("Jan's office chair", "two more clouds", "tomorrow morning") and about 35 checks raise doubts (sections <a href="#cat-nominal">9.3</a> and <a href="#cat-verb">9.4</a>).</p>
+
+<h3 id="r-doubts">7.5 Doubts and the re-reading loop</h3>
+<p>A doubt is <code>{position, not: kind}</code> or <code>{position, is: kind}</code>. It names a set of stations to ban at that position (<code>barred</code> in <code>src/reader.mjs</code>):</p>
+<div class="scroll"><table>
+<thead><tr><th>Doubt</th><th>Banned stations</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>not: 'verb'</code></td><td>predicate, following</td><td>not a verb</td></tr>
+<tr><td><code>not: 'thing'</code></td><td>every nominal station and <code>complement</code></td><td>not part of a nominal</td></tr>
+<tr><td><code>not: 'head'</code></td><td>noun, name and the verb stations</td><td>says how something is</td></tr>
+<tr><td><code>not: 'quality'</code></td><td>modifier, complement, degree and the verb stations</td><td>names a thing</td></tr>
+<tr><td><code>not: 'expression'</code></td><td>expression, filler</td><td>not said in passing</td></tr>
+<tr><td><code>is: 'verb'</code></td><td>every station that is not a verb station</td><td>is a verb</td></tr>
+<tr><td><code>is: 'head'</code>, <code>is: 'name'</code>, <code>is: 'modifier'</code>, <code>is: 'degree'</code></td><td>every station except noun / name / modifier / degree</td><td>is that</td></tr>
+</tbody>
+</table></div>
+<p>Doubts come from three places: the chunker (<code>units.doubts</code>), the linker (<code>doubts</code> returned by <code>linkUnits</code>) and <code>leaning()</code> in the reader, which compares each token's station with what the whole text says about the word (rules in section <a href="#cat-decode">9.2</a>). A doubt is <em>fresh</em> when it bans something not yet banned at that position and does not leave the position with no station at all. The loop in <code>analyse</code>:</p>
+<pre><code>first = read()                                   // chunk + link the decoded stations
+first.doubts.push(...leaning())
+for (again = 0; again &lt; 4 &amp;&amp; first.doubts.some(fresh); again++) {
+  add the bans of every fresh doubt to `tried`    // bans accumulate
+  stations = readRoutes(..., tried, lift, budget) // decode again under all bans
+  first = read(); first.doubts.push(...leaning())
+}</code></pre>
+<p>Example, traced with the reader's <code>trace</code> option for the first version of this document (re-checked by a reviewer at <code>fa46cb7</code>). "can I get a cinnamon stick?" first decodes <code>stick</code> as <code>following</code> (a verb after its subject). The linker finds a bare verb right after a noun group that a verb already holds, while <code>stick</code> was seen as a thing at least 3 times in fixed frames, and raises <code>{position: 5, not: 'verb'}</code>. The second decoding makes <code>stick</code> a noun:</p>
+<pre><code>first:  can/auxiliary I/pronoun get/predicate a/determiner cinnamon/noun stick/following ?/terminator
+second: can/auxiliary I/pronoun get/predicate a/determiner cinnamon/noun stick/noun ?/terminator
+
+@c1 syntax.clause form=interrogative auxiliary="can" verb="get" subject=$n1 complement=$n2
+@n1 syntax.nominal head="I"
+@n2 syntax.nominal dependent="a" dependent="cinnamon" head="stick"</code></pre>
+<div class="box why"><span class="label">Why it is done this way</span>
+<p>The HMM sees one neighbour on each side; the chunker and the linker see structure, such as a verb that no clause can hold. They do not change the word's station in place: they ban the station and the decoder finds the best path without it, so the stations of the neighbouring words can change with it. This came from the first design ("A verb that the structure cannot place was probably not a verb", <code>src/reader.mjs</code>); since commit <code>1a3f75e</code> a word can be doubted for more than one reason, and the doubts now come in the kinds listed above.</p>
+</div>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The limit of 4 re-decodings (so at most 5 readings) is a number in the code with no recorded measurement. When the limit is reached, the last reading is used even if it still has fresh doubts. Bans accumulate across rounds and are never lifted.</p>
+</div>
+
+<h3 id="r-link">7.6 Linking units into clauses, nominals, relations and coordinations</h3>
+<p><code>src/links.mjs</code> <code>linkUnits(text, tokens, units, context, flips)</code> produces internal wires <code>nlu.clause</code>, <code>nlu.entity</code>, <code>nlu.relation</code> and <code>nlu.coordination</code>. Every quoted value keeps the positions of the tokens it covers (<code>[key, quoted, first, last]</code>), so that <code>emit-syntax.mjs</code> can map it to words later. It works in this order:</p>
+<ol>
+<li><strong>Preparations</strong> over all units: a quality right after a preposition is a nominal ("in red"); a bare word listed after a nominal with a conjunction is a nominal ("by product and region"); a postposed word joins the pronoun before it ("everything else", fa46cb7).</li>
+<li><strong>Sentences</strong> are split at terminator units; each is linked by <code>linkSentence</code>, then <code>tieLoose</code> ties loose clauses.</li>
+<li><strong>Helping verbs</strong>: an auxiliary before its subject joins the verb after the subject (the clause is inverted: a question); an auxiliary with no verb becomes the verb.</li>
+<li><strong>Clause roles</strong>: for each verb unit, its role (main, describing a nominal, infinitive, completing another verb) and where its clause starts. A main clause's subject and the words before its verb are found by <code>scanLeft</code>.</li>
+<li><strong>Clause wires</strong>: material before the first verb (fronted phrases, or a fragment clause), the clause form (section <a href="#r-form">7.7</a>), markers, then <code>fill(clause, region)</code> for the units from after the verb up to the start of the next clause.</li>
+<li><strong>How the clauses hang together</strong>: describing clauses, purpose, completing clauses, relative clauses, fronted clauses, clauses joined by a linking word, coordinated clauses.</li>
+<li><strong>Separators</strong> left over are placed on the nearest standing clause.</li>
+</ol>
+<p><code>fill</code> walks the region left to right with a small state: the objects of the clause, the frontier of nominals seen so far, the last nominal, a pending preposition, pending joiners, the last relation. A nominal becomes a role of the clause, the end of a pending relation, a conjunct of a coordination, or a value tied to the nominal before it. A joiner (conjunction or comma) is first tested for gapping (section <a href="#cat-coord">9.7</a>) and for joining clauses. A preposition waits for its nominal and then <code>attach</code> decides where the relation starts (section <a href="#r-attach">7.9</a>).</p>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>The linker is one left-to-right pass of fixed policy. It never revisits an earlier choice except by raising a doubt, which makes the decoder run again and the whole linking start over.</p>
+<p>The internal wires keep the <code>nlu</code> slot names because the linker was written for that schema. The <code>nlu</code> text output (<code>src/emit.mjs</code>) still exists: <code>tests/vss.test.mjs</code>, <code>evaluate.mjs</code>, <code>judged.mjs</code> and <code>triage.mjs</code> read it, and in that mode the reader also returns a second reading (the least certain decision taken the other way, when its margin is below 0.7) and <code>flags</code>. In the syntax mode used by the strategy, <code>flips</code> is always empty and only one circuit is written.</p>
+</div>
+
+<h3 id="r-form">7.7 The form of a clause</h3>
+<p>The first matching line decides (<code>src/links.mjs</code>, where the clause wire is made):</p>
+<div class="scroll"><table>
+<thead><tr><th>#</th><th>Condition</th><th>Form</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>the clause is not a main clause: declarative if it completes another verb and is finite (an auxiliary, an <code>-s</code> form, or a subject-only pronoun as subject); otherwise nonfinite</td><td>declarative / nonfinite</td><td>"make sure it fits"; "a girl facing left"</td></tr>
+<tr><td>2</td><td>bare <code>-ing</code> form</td><td>nonfinite</td><td>"a dog lying down"</td></tr>
+<tr><td>3</td><td>an inverted auxiliary; or a question word, unless the clause <em>states</em> (see below); or the last main clause of a sentence ending in "?", unless the clause is embedded</td><td>interrogative</td><td>"could you move it"</td></tr>
+<tr><td>4</td><td>the clause has a subject, or is embedded (fa46cb7)</td><td>declarative</td><td>"the title is too long"; "tell me which events are scheduled"</td></tr>
+<tr><td>5</td><td>a form of "be" other than "be" itself, with no auxiliary and no subject, and a nominal right after it</td><td>interrogative</td><td>"is it possible"</td></tr>
+<tr><td>6</td><td>past form with no auxiliary</td><td>nonfinite</td><td>"as drawn so far"</td></tr>
+<tr><td>7</td><td><code>-s</code> form</td><td>declarative</td><td>"a chart that counts users"</td></tr>
+<tr><td>8</td><td>(fa46cb7) a verb marked <code>finite</code> (a finite form of "be", "have", "do" or a modal) with no auxiliary: interrogative when it opens its clause before a nominal, otherwise declarative</td><td>interrogative / declarative</td><td>"Does the chart carry a Plan series?"; "a gantt chart that has one bar per task"</td></tr>
+<tr><td>9</td><td>otherwise</td><td>imperative</td><td>"delete the last row"</td></tr>
+</tbody>
+</table></div>
+<p>A clause with a question word <em>states</em> (it is not inverted, and one of two conditions holds):</p>
+<ul>
+<li><strong>Own subject</strong> (commit <code>dd562c3</code>, variable <code>ownSubject</code>): the question word is followed by a subject of its own (a pronoun, a determiner-led nominal, or any nominal after "how", "where", "when", "why") and then the verb: "tell me what it shows".</li>
+<li><strong>Embedded</strong> (commit <code>fa46cb7</code>, variable <code>embedded</code> in <code>src/links.mjs</code>): the clause is not the first clause of the sentence, and its question word stands right after a verb or a nominal ("tell me which events are scheduled", "show what I said"). Exception: when the clause's verb is a form of "be" or is marked <code>finite</code> and a nominal stands right after it, the clause still asks (the code's comment cites "what colour is the tree", "what values does Sales show"). An embedded clause is declarative even when the sentence ends in "?".</li>
+</ul>
+<p>Traced at about 18:00 on the working tree (<code>fa46cb7</code> plus the later uncommitted edits):</p>
+<pre><code># show me which events are scheduled?
+@c1 syntax.clause form=imperative verb="show" complement=$n1
+@n1 syntax.nominal head="me"
+@n2 syntax.nominal dependent="which" head="events"
+@c2 syntax.clause form=declarative auxiliary="are" verb="scheduled" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2
+
+# tell me what colour is the tree
+@c2 syntax.clause form=interrogative verb="is" complement=$n2 subject=$n3     (the exception: "is" before a nominal)</code></pre>
+
+<h3 id="r-partner">7.8 Coordination: which earlier nominal a listed one joins</h3>
+<p>When a nominal follows a conjunction or a comma, <code>fill</code> has to decide which earlier nominal it is listed with. The candidates are the frontier: with a comma alone, only the nominals of the clause that are not ends of relations; otherwise every nominal seen in the clause, except the end of a set-off place phrase (fa46cb7: a phrase set off by commas whose preposition points at a known thing, a pronoun or a nominal with a definite determiner, before a new thing: ", next to the crate, a small black cat"). <code>partner</code> chooses:</p>
+<ol>
+<li>a bare name joins the capitalised name right before it ("items Plan and Review");</li>
+<li>otherwise each candidate gets a likeness score, <code>context.alike</code>: the cosine of the two head words' vectors (128-d) plus the cosine of the two nominals' <em>build</em> vectors, plus 0.02 × its position among the candidates divided by the number of nominals in the frontier (at most 0.02 in all), so that the nearer of two equal candidates wins; on an exact tie the later one wins as well. A build vector is the bundle, in 512 dimensions, of each slot bound to what fills it: the determiner word, "some" for a quantity, the index of each modifier and compound, and the kind of core (head, name, pronoun, literal). Two nominals built alike ("a large yellow cat", "a small brown dog") have near build vectors;</li>
+<li>if the nearest candidate (or the list it is in) is introduced like the new nominal (same determiner, or both bare, both names, both pronouns, …) and the most alike one is not, the nearest wins ("with title Plan and participants Ana");</li>
+<li>a determiner-led nominal that is unlike every candidate (best score below 0.3) is not joined to the end of a phrase; it joins the last candidate that is not one ("at 10:00 and the room to Cedar room");</li>
+<li>otherwise the most alike candidate.</li>
+</ol>
+<p>The same likeness decides an <em>aside</em>: after the verb's object, a bare nominal set off by a comma that is unlike every candidate (below 0.3) is not one more thing the verb acts on; it is tied to the clause with no linking word. Likeness values computed for this document with the model committed in <code>fa46cb7</code> (written at 17:26; a reviewer re-checked the six values):</p>
+<div class="scroll"><table>
+<thead><tr><th>Message</th><th>Pair</th><th class="num">Likeness</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">book the sync at 16:00, Friday, for 60 minutes</td><td>the sync | Friday</td><td class="num">−0.09</td></tr>
+<tr><td>16:00 | Friday</td><td class="num">−0.05</td></tr>
+<tr><td>the sync | 60 minutes</td><td class="num">0.54</td></tr>
+<tr><td rowspan="3">draw a boy with a kite, a dog on the grass, and a girl</td><td>a boy | a girl</td><td class="num">1.52</td></tr>
+<tr><td>a dog | a girl</td><td class="num">1.34</td></tr>
+<tr><td>the grass | a girl</td><td class="num">0.59</td></tr>
+</tbody>
+</table></div>
+<pre><code># book the sync at 16:00, Friday, for 60 minutes
+@c1 syntax.clause form=imperative verb="book" complement=$n1
+@n1 syntax.nominal dependent="the" head="sync"
+@r1 syntax.relation marker="at" from=$c1 to=$n2
+@n2 syntax.nominal head="16:00"
+@n3 syntax.nominal head="Friday"
+@r3 syntax.relation marker="for" from=$c1 to=$n4
+@n4 syntax.nominal dependent="60" head="minutes"
+@r2 syntax.relation from=$c1 to=$n3</code></pre>
+<div class="box why"><span class="label">Why it is done this way</span>
+<p>Joining a listed nominal to the nearest one fails on lists of things that each carry a place (in the <code>nlu</code> period this change raised link F1 from 62.1 to 63.1, and the vectors added 0.7 more; <code>docs/strategies/vss.md</code>): in "a boy with a kite, a dog on the grass, and a girl" the nearest nominal before "a girl" is "the grass". The likeness of heads and builds lets "a girl" find "a boy". The threshold 0.3 is documented in <code>src/links.mjs</code> as measured on the first conversion round: items of a list scored 0.6 or more against the things before them, a day or an hour set off after a phrase scored about 0.</p>
+</div>
+<div class="box note"><span class="label">Not obvious from the code</span>
+<p>Rule order matters. The comment of the "serial list" rule in <code>fill</code> (fa46cb7) cites "a boy with a kite, a dog on the grass, and a girl", but at <code>fa46cb7</code> that message is caught earlier by the gapping rule: each segment "a dog on the grass" repeats the build of "a boy with a kite" (nominal, preposition, nominal held by the verb), so the reader writes three clauses that share "draw":</p>
+<pre><code>@k1 syntax.coordination conjunction="and" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1
+@c3 syntax.clause form=fragment complement=$n5 ellipsis=$c1</code></pre>
+</div>
+
+<h3 id="r-attach">7.9 Where a relation starts</h3>
+<p><code>attach(relation, clause, entity, cue, target)</code> in <code>src/links.mjs</code>, in order:</p>
+<ol>
+<li>the second linking word of a pair starts where the first did ("from largest to smallest");</li>
+<li>no nominal before the preposition, or a pronoun: the clause ("move it to the left");</li>
+<li>"of" (mark <code>belongs</code>): the nominal before it ("the level of Intro");</li>
+<li>in a fragment: the nominal before, or a nominal that one is itself placed by (up to 4 steps back, 0.3 subtracted per step), whichever holds this preposition best;</li>
+<li>two literals, that is numbers, dates, clock times or quoted text, one against the other: the first literal ("240 by 160");</li>
+<li>otherwise every host competes: the clause, with the verb's score, and each nominal of the chain (the nominal before, the one it is placed by, …, up to 4), with the noun's score. The score is <code>holds</code>: the counted attachment rate of the word with this preposition (log, smoothed) plus 2 × the memory's fit of the target's vector to that role. If the two best scores differ by less than 0.5, the relation starts at the clause and is marked <code>attachment=open</code>, written as <code>attachment=ambiguous</code>.</li>
+</ol>
+<p>On the random benchmark, 67 of VSS's 1,206 accepted circuits (5.6%) carried <code>attachment=ambiguous</code> in the first judged run; after the rerun at <code>fa46cb7</code>, 66 of 1,202 (5.5%) do, with 225 circuits still waiting for a judge (<code>eval-results/2026-11-27-syntax-benchmark-random/table.md</code>).</p>
+<div class="box why"><span class="label">Why it is done this way</span>
+<p>The project's standard (<code>docs/strategies/vss.md</code>, "What the reader leaves open"; Rule 2 of <code>docs/syntax-schema.md</code>): a reader that sees one message states what the words settle and marks the rest, so that a later layer with context can complete the circuit without undoing a guess. A relation marked ambiguous still belongs to its clause.</p>
+</div>
+
+<h3 id="r-emit">7.10 Writing the syntax circuit</h3>
+<p><code>src/emit-syntax.mjs</code> <code>emitSyntax(text, tokens, wires, knows)</code> maps every token span to words of <code>wordsOf(text)</code> (punctuation is not a word, so a span that covers only punctuation disappears), translates each internal wire (section <a href="#keys">8</a>), and then runs a series of passes over the syntax wires (section <a href="#cat-emit">9.10</a>). <code>knows</code> gives it seven lookups from the reader: whether a question word stands for a thing, whether a word is a verb form, a quality, a naming participle, a conjunction or a question word, and whether a verb takes a result. Every word still uncovered becomes a <code>discourse</code> word of the clause it stands in. <code>writeCircuit</code> (<code>lib/syntax.mjs</code>) orders the wires so that the schema's alignment rule (a quoted value claims the earliest free occurrence of its words) gives each value its own occurrence. It throws when a span lies outside the message, when a word is uncovered or claimed twice. When repeated words cross between wires, so that no order gives every value its own occurrence, it writes the wires in message order (since commit <code>d12c190</code>) and throws only if the check of that text then finds words that are uncovered or not in the message. When it throws, the strategy returns no circuit and the error.</p>
+
+<h3 id="r-example">7.11 A whole message</h3>
+<p>"a small grey cat sitting in the bottom left corner", traced for the first version of this document (re-checked by a reviewer at <code>fa46cb7</code>):</p>
+<pre><code>stations:   a/determiner small/modifier grey/modifier cat/noun sitting/following in/cue
+            the/determiner bottom/modifier left/noun corner/noun
+confidence: 1.00 1.00 1.00 1.00 1.00 1.00 1.00 0.76 0.59 0.99
+units:      entity[a small grey cat] verb[sitting] cue[in] entity[the bottom left corner]
+
+internal wires (nlu):
+@c1 nlu.clause form=fragment topic=$e1
+@e1 nlu.entity determiner="a" modifier="small" modifier="grey" head="cat"
+@c2 nlu.clause form=nonfinite predicate="sitting"
+@e2 nlu.entity determiner="the" compound="bottom" compound="left" head="corner"
+@r1 nlu.relation kind=in from=$c2 to=$e2 cue="in"
+@r2 nlu.relation kind=nominal_clause from=$e1 to=$c2
+
+syntax circuit:
+@n1 syntax.nominal dependent="a" dependent="small" dependent="grey" head="cat"
+@c2 syntax.clause form=nonfinite verb="sitting"
+@r1 syntax.relation marker="in" from=$c2 to=$n2
+@n2 syntax.nominal dependent="the" dependent="bottom" dependent="left" head="corner"
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c2</code></pre>
+<p>No verb opens the message, so the noun group stands in a fragment clause. "sitting" right after a nominal is a bare verb form, so it opens a nonfinite clause that describes the cat (section <a href="#cat-clauses">9.8</a>, third rule). The relation from the cat to that clause has no linking word. The order of the wires is the one <code>writeCircuit</code> chose for alignment.</p>
+
+<!-- ============================================================ -->
+<h2 id="keys">8. From internal wire names to syntax keys</h2>
+<p>The linker writes internal wires with the slot names of the <code>nlu</code> schema; <code>src/emit-syntax.mjs</code> turns them into the syntax schema. Nominal ids <code>e1, e2, …</code> are renamed <code>n1, n2, …</code>.</p>
+<div class="scroll"><table>
+<thead><tr><th>Internal wire and key</th><th>Syntax wire and key</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><code>nlu.clause</code></td><td><code>syntax.clause</code></td><td>a clause with no <code>predicate</code> gets <code>form=fragment</code></td></tr>
+<tr><td><code>form</code></td><td><code>form</code></td><td>same values</td></tr>
+<tr><td><code>predicate</code></td><td><code>verb</code></td><td></td></tr>
+<tr><td><code>auxiliary</code>, <code>negation</code></td><td><code>auxiliary</code>, <code>negation</code></td><td></td></tr>
+<tr><td><code>particle</code>, <code>adverb</code>, <code>result_complement</code>, <code>degree</code>, <code>unresolved</code></td><td><code>modifier</code></td><td>adjacent grading words become one run ("a little longer")</td></tr>
+<tr><td><code>connective</code>, <code>filler</code>, <code>expression</code></td><td><code>discourse</code></td><td>written with a capital right after another word, the words are mentioned, not said: they become a nominal ("a paragraph saying Thank you")</td></tr>
+<tr><td><code>subject</code></td><td><code>subject</code></td><td></td></tr>
+<tr><td><code>direct_object</code>, <code>indirect_object</code>, <code>predicative_entity</code>, <code>topic</code>, <code>participant</code></td><td><code>complement</code></td><td>the schema does not say what the nominal is to the verb</td></tr>
+<tr><td><code>clausal_complement</code></td><td><code>syntax.relation</code> from the governing clause to the completing clause</td><td>marker "to" when the infinitive has it</td></tr>
+<tr><td><code>marker</code></td><td>the <code>marker</code> of the relation that ends at this clause</td><td>without such a relation: a new relation from the main clause; alone in its message: <code>discourse</code> for a word that joins clauses ("so make the boxes blue"), <code>modifier</code> otherwise ("where is the title?")</td></tr>
+<tr><td><code>question</code></td><td><code>dependent</code> of the next nominal, <code>head</code> of a nominal of its own, or <code>modifier</code></td><td>"what colour"; "what is this?"; "where is it?"</td></tr>
+<tr><td><code>separator</code>, <code>terminator</code></td><td>not written</td><td>punctuation is no word; a word used as a separator: a sign after a number ("30%") is a <code>dependent</code>, others <code>discourse</code></td></tr>
+<tr><td><code>polarity</code>, <code>speech_act</code></td><td>dropped</td><td></td></tr>
+<tr><td>a fragment that shares a verb (<code>shares</code>)</td><td><code>ellipsis</code></td><td>points at the clause whose verb it borrows</td></tr>
+<tr><td><code>nlu.entity</code></td><td><code>syntax.nominal</code></td><td></td></tr>
+<tr><td><code>head</code>, <code>name</code>, <code>pronoun</code>, <code>literal</code></td><td><code>head</code> (the first present), <code>dependent</code> (the others)</td><td>with none, the last word becomes the head</td></tr>
+<tr><td><code>determiner</code>, <code>quantity</code>, <code>degree</code>, <code>modifier</code>, <code>compound</code>, <code>adverb</code></td><td><code>dependent</code></td><td></td></tr>
+<tr><td><code>possessor</code> + <code>possessive_marker</code></td><td><code>syntax.relation</code> from the owned nominal to the owner, marker "'s"</td><td>"put Jan's chair next to the table"</td></tr>
+<tr><td><code>nlu.relation</code></td><td><code>syntax.relation</code></td><td></td></tr>
+<tr><td><code>from</code>, <code>to</code></td><td><code>from</code>, <code>to</code></td><td></td></tr>
+<tr><td><code>cue</code></td><td><code>marker</code></td><td></td></tr>
+<tr><td><code>negation</code></td><td><code>negation</code></td><td>"not behind Jo"</td></tr>
+<tr><td><code>adverb</code></td><td><code>modifier</code> of the clause where the relation starts</td><td>"right below" (the choice of clause dates from fa46cb7)</td></tr>
+<tr><td><code>attachment=open</code></td><td><code>attachment=ambiguous</code></td><td></td></tr>
+<tr><td><code>kind</code> (on, at, open, purpose, nominal_clause, elaboration, …)</td><td>dropped</td><td>a relation with <code>kind=open</code> is written without a marker</td></tr>
+<tr><td><code>nlu.coordination</code></td><td><code>syntax.coordination</code></td><td>dissolved when it has fewer than two conjuncts or conjuncts of different types</td></tr>
+<tr><td><code>member</code></td><td><code>conjunct</code></td><td></td></tr>
+<tr><td><code>cue</code></td><td><code>conjunction</code></td><td>commas are not words, so they disappear</td></tr>
+<tr><td><code>kind</code></td><td>dropped</td><td></td></tr>
+</tbody>
+</table></div>
+<p>Wires made by <code>emit-syntax.mjs</code> itself carry other letters: <code>x</code> (relations it adds), <code>q</code> (a nominal for a question word), <code>p</code> (a nonfinite clause made from a naming participle), <code>m</code> (a nominal for mentioned words or for a run of names), <code>j</code> (a coordination of names), <code>f</code> (a fragment that holds a nominal), <code>c0</code> (a fragment for left-over words when there is no clause).</p>
+
+<!-- ============================================================ -->
+<h2 id="rules">9. Catalogue of rules</h2>
+<p>This is what the code holds at commit <code>fa46cb7</code>. Rules marked "(fa46cb7)" first appeared in that commit. Most examples are the ones quoted in the code's comments; examples marked "traced" were run through the reader for this document, at about 18:00 on the working tree (<code>fa46cb7</code> plus the later uncommitted edits named at the top). A few rows have no example: no message was found for them in the traces made for this document. A row may group several checks of the code. Section 9 has 170 rows.</p>
+<p>Marks in the last column: <span class="mark t">T</span> the rule uses a threshold that the repository says was chosen from counts in this dataset; <span class="mark n">n</span> the rule uses a count or ratio whose origin the code does not record (most are "seen at least 3 times"); "—" no number. The three thresholds marked T are named constants with a comment that cites dataset counts:</p>
+<ul>
+<li><code>SURELY_A_THING = 20</code> in <code>src/reader.mjs</code>: "meeting" seen as a thing 104 times, "coming" 6 times by chance;</li>
+<li><code>SURELY_A_VERB = 20</code> in <code>src/links.mjs</code> (fa46cb7), also used by <code>src/reader.mjs</code>: "excuse" 121 times, "chose" 38, while "warm" (6) and "empty" (10) also say how things are;</li>
+<li><code>UNLIKE = 0.3</code> in <code>src/links.mjs</code>: measured on the first conversion round, where items of a list scored 0.6 or more and a day or hour set off after a phrase scored about 0.</li>
+</ul>
+<p>A letter in parentheses (rule A, B, G, L, O, T, U, W) is the rule's letter from the calendar analysis: <code>createVssReader(model, {without: 'A,G'})</code> switches lettered rules off to measure them.</p>
+
+<h3 id="cat-observe">9.1 Tokens and observations (<code>src/tokens.mjs</code>, <code>src/observe.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>Tokens follow the validator's pattern: a date, a clock time or a decimal is one token; a clitic is split off.</td><td>"don't" → "do" + "n't"</td><td>—</td></tr>
+<tr><td>A hyphenated word, or digits joined by a comma, is one observation.</td><td>"soft-focus", "260,180"</td><td>—</td></tr>
+<tr><td>An address is one observation with the shape of quoted text.</td><td>"example.com/prices"</td><td>—</td></tr>
+<tr><td>A quoted passage is one observation and can only be a literal.</td><td>write "open the window" here</td><td>—</td></tr>
+<tr><td>A compound of the legend is one observation, longest first.</td><td>"in front of", "make sure"</td><td>—</td></tr>
+<tr><td>A learned spelling variant is looked up as its common word.</td><td>"shoudl" → should</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A capital inside a sentence makes a symbol of its own unless the legend lists the word; (rule L) also when the legend lists it only in open lists of non-grammatical stations.</td><td>"the title Second"</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-decode">9.2 Decoding constraints (<code>src/routes.mjs</code>, <code>src/reader.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>Verb budget: one verb per clause; a clause-opening station resets the count; a word that can be an auxiliary does not use it up; after a verb that takes a clause or directs, one more bare verb; a participle is always allowed.</td><td>"let us add": "add" allowed after "let"</td><td>—</td></tr>
+<tr><td>The words of a learned opener (1–2 words before the first break) are kept off the verb stations unless they carry the learned <code>anchored</code> habit, or (fa46cb7) were seen as a verb at least 20 times in the anchored frames and never as a thing.</td><td>"quick one: …"; "excuse me, …"</td><td><span class="mark t">T</span> <span class="mark n">n</span></td></tr>
+<tr><td>(fa46cb7) The forms of a two-letter verb count for it when the kinds of a word are looked up.</td><td>"goes", "going"</td><td>—</td></tr>
+<tr><td>Occurrence lift: each emission × exp(4 × cosine with the station's prototype).</td><td>applies to every token of every message</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word whose best emission at nominal stations is more than 30 times its best at verb stations, and never seen as a verb in fixed frames, is no verb.</td><td>traced: "navy n3" ("navy" first decoded as a verb; written as a modifier of a fragment clause)</td><td><span class="mark n">n</span></td></tr>
+<tr><td>(rule G) A word seen as a thing at least 20 times in fixed frames, never as a verb, and at least 3 times more as a thing than as a quality, is no verb, unless a form of "be" or a subject-only pronoun stands right before it.</td><td>"the Intro meeting" vs "we are meeting Ana"; traced: "this meeting can go" ("meeting", kinds [0, 104, 1], first decoded as a verb)</td><td><span class="mark t">T</span></td></tr>
+<tr><td>A word seen only as a quality (at least 3, more than as a thing) and never as a verb is no verb.</td><td>traced: "max 3" ("max", kinds [0, 0, 5], first decoded as a verb; written as the head of a nominal)</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word the legend lists as a preposition or adverb, but not as a verb, is a verb only if seen as one at least 3 times.</td><td>traced: "and likewise the same line on the claims chart" ("likewise", in an open adverb list, first decoded as a verb; written as a modifier)</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word the HMM places at verb stations 30 times more than at nominal stations, seen as a verb at least once and never as a thing or quality, is not part of a nominal.</td><td>traced: "nah put it back" ("put" first decoded as a noun, then as the verb)</td><td><span class="mark n">n</span></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-nominal">9.3 Where a nominal begins and ends, and its head (<code>src/units.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>The last noun is the head; nouns before it are compounds; names after it form a name; a describing word is a compound or a modifier by the learned noun/adjective habit.</td><td>"the bottom left corner"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word that can stand for a thing, last in the group, heads it.</td><td>"the first one"</td><td>—</td></tr>
+<tr><td>With no noun, the last describing word stands for the thing; a lone number is written as given; a lone determiner that can be a pronoun is a pronoun.</td><td>"the red"; "set it to 3"; "delete that"</td><td>—</td></tr>
+<tr><td>A determiner-like pronoun before a count with no noun after opens the counted thing.</td><td>"these two"</td><td>—</td></tr>
+<tr><td>A count after a noun that counts the next noun begins another nominal; after a thing with its number, a count begins the next.</td><td>"the colour bar ten steps"; "block 2 one space"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A number word the HMM took as describing still counts.</td><td>"the first three bars"</td><td>—</td></tr>
+<tr><td>A describing word right after a plural noun begins the next nominal.</td><td>"the markers small circles"</td><td>—</td></tr>
+<tr><td>A noun followed by a number or a quoted value begins its own nominal, unless the pair was learned as standing together.</td><td>"the Introduction heading level 2"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A determiner, a grading word and a graded form are a grading run, not a nominal.</td><td>"a little longer"</td><td>—</td></tr>
+<tr><td>Owner, "'s", owned thing: the owned nominal with a possessor.</td><td>"Jan's office chair"</td><td>—</td></tr>
+<tr><td>A capitalised grammar word right after a nominal is part of its name.</td><td>"Box A"</td><td>—</td></tr>
+<tr><td>A word that could stand alone joins the determiner of the nominal after it.</td><td>"all the arrows"</td><td>—</td></tr>
+<tr><td>A grading adverb joins the measure after it.</td><td>"approximately 73 words"</td><td>—</td></tr>
+<tr><td>After a naming verb, the name after a noun is a nominal of its own.</td><td>"name the x axis Month"</td><td>—</td></tr>
+<tr><td>A count, a grading word and the thing counted are one nominal.</td><td>"two more clouds"</td><td>—</td></tr>
+<tr><td>A measure and the direction right after it are one group, unless a preposition follows.</td><td>"move it 520 across and 410 down"</td><td>—</td></tr>
+<tr><td>An interjection-listed word that can be a determiner, right before a bare noun, is its determiner.</td><td>"no birds"</td><td>—</td></tr>
+<tr><td>(rule T) A selecting word right before a bare noun or name belongs to it, except right after a verb.</td><td>"next Tuesday"; "which comes first Monday or Tuesday"</td><td>—</td></tr>
+<tr><td>(rule T) A day word right before a bare lower-case noun forms one nominal with it.</td><td>"tomorrow morning"</td><td>—</td></tr>
+<tr><td>(rule T) A day word with "'s" owns the thing after it.</td><td>"tomorrow's Standup"</td><td>—</td></tr>
+<tr><td>A single word before "of" with a nominal after it forms the linking phrase.</td><td>"left of the hill", "ahead of it"</td><td>—</td></tr>
+<tr><td>After a verb that takes a quality, a final head that is a quality, never seen with the word before it, is split off as the outcome.</td><td>"make the girl ginger"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A label goes on over a following lone word, unless the verb before it takes a quality or the same words are written again as one.</td><td>"labelled Close ticket"</td><td>—</td></tr>
+<tr><td>(rule G) After a bare nominal, a lone lower-case word seen as a thing at least 20 times, never as a verb, and at least 10 times more than as a quality, is a head; not after a counted, quoted or determiner-led nominal.</td><td>"wipe Intro meeting", "system design"</td><td><span class="mark t">T</span> <span class="mark n">n</span></td></tr>
+<tr><td>Two words learned as standing together inside a nominal are one nominal, also where the HMM took one of them for an adverb; a plural noun closes its nominal.</td><td>"in the top right", "labelled Right side"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a preposition, a determiner-led nominal runs to a following lone word shown as a thing (at least 3, and 3 times more than as a quality), unless a quality-taking verb still waits or an "of" phrase follows.</td><td>"on the budget pie"; "make the bars on the chart purple"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>Inside a determiner-led nominal a plural noun is the last word; the next word, if the learned noun/adjective habit makes it a quality, does not belong to it (doubts: the plural is a head, the next word is not).</td><td>traced: "can you make the markers small circles?" ("markers" first decoded as a describing word)</td><td>—</td></tr>
+<tr><td>A word that can grade, right before a graded form, grades it; the graded form names no thing.</td><td>"way longer"</td><td>—</td></tr>
+<tr><td>Before a preposition, a last word not shown as a thing (fewer than 3) but shown as a quality is not the head.</td><td>"a falcon high above the hill"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>Right after a command verb (seen as a verb at least 3 times, not taking a quality), a lone lower-case word that does not say how is a head; also after a counted thing.</td><td>"book retro at 15:30"; "schedule a 60 minutes retro"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a nominal, a lone plural word listed nowhere and never seen as a verb is a head.</td><td>"describe my calendar entries"</td><td>—</td></tr>
+<tr><td>Verb, determiner-led nominal, then a lone bare verb at the end: that word is the head (unless the first verb makes something do, directs, or takes a quality).</td><td>"undo the last document edit"</td><td>—</td></tr>
+<tr><td>A determiner-led nominal ending in an <code>-ing</code> form, followed by a lone verb with nothing to act on: that verb is the head.</td><td>"a short planning meeting tomorrow"</td><td>—</td></tr>
+<tr><td>A verb form heading a noun compound is not a thing (rule G excepted); a quality or a graded form closing a nominal after a noun is not its head; a grading word standing as a thing before a number is not a thing.</td><td>"the dashed line wider"; "approximately 73 words"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A nominal that nothing holds, ending in a word never seen as a thing after one that is, with no verb after it: the last word is the verb.</td><td>"the two lines differ"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>(fa46cb7) A word marked <code>postposed</code> right after a pronoun belongs to that pronoun's nominal.</td><td>"keep everything else where it is"</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-verb">9.4 Verb or not (<code>src/units.mjs</code>, <code>src/links.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>(rule O) The word that opens a clause, with only bare nouns between it and a finite helping verb, is the subject, not a command.</td><td>"Sam is travelling", "Work should be Studio"</td><td>—</td></tr>
+<tr><td>(rule B) Right after a preposition, the <code>-ing</code> form of a known verb with a thing of its own after it is a verb.</td><td>"by removing it", "thanks for sorting the sync"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a form of "be", a preposition, or a marker that can be a preposition, an interjection-listed word is not an interjection.</td><td>"it would be nice", "after Thanks"</td><td>—</td></tr>
+<tr><td>After a pronoun or a question word, "'s" is a form of "be", not a possessive.</td><td>"what's in the diagram"</td><td>—</td></tr>
+<tr><td>Right after a relative word, a word that is an <code>-s</code> form or a known verb is a verb.</td><td>"a chart that counts users"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a subject-only pronoun, a lone bare word known as a verb is its verb.</td><td>"where they stand"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a grading word, a word not known as a verb is not a verb.</td><td>"more readable"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A hyphenated word ending in <code>-ed</code> is a verb only with a doer or auxiliary before it or an object after it.</td><td>"teal-edged", "left-aligned"</td><td>—</td></tr>
+<tr><td>Verb, determiner-like word, past form, noun: the past form describes the noun.</td><td>"put all removed shapes back"</td><td>—</td></tr>
+<tr><td>After a modal that is never a verb by itself, with its subject before it, the next lower-case word (seen as a verb, or never seen) is the verb.</td><td>"so the animals can still pass", "it won't fit"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word listed both as a preposition and as a verb is the verb only after its subject, an auxiliary or "to".</td><td>"…, just like that" vs "I would like a chart"</td><td>—</td></tr>
+<tr><td>A sentence-initial word never seen as a verb, before the <code>-s</code> form of a known verb (or its past form with no thing after it), is the doer.</td><td>"Leadership looks tiny", "Lee asked to sync"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a comma, an interjection or a courtesy word, a capitalised known verb before a determiner or pronoun opens a command.</td><td>"…, Move the box"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A capitalised interjection inside a sentence is not said in passing.</td><td>"a paragraph saying Thank you"</td><td>—</td></tr>
+<tr><td>After a verb that is no helper, a past form before a noun describes the noun.</td><td>"use curved connectors"</td><td>—</td></tr>
+<tr><td>A bare verb form does not follow another verb directly, unless the first makes something do something or directs; after a quality-taking verb, a word shown as a quality is the outcome.</td><td>"turn italic off" vs "help move it"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A word seen more often as a thing than as a verb, right before a number with no unit after it, is not a verb.</td><td>"level 2", "scale 1.5" vs "set 2023 to 20"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A pronoun, words that say when or how, then the <code>-s</code> form of a known verb: that form is the verb.</td><td>"so it no longer cuts through the box"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A subordinator, or a question word inside a message, needs a verb: the last word of the one group after it is that verb if it can be one.</td><td>"where the path bends"; "tell me how the picture goes"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After an inverted auxiliary and its subject, in a question, a known verb is the verb.</td><td>"what values does Sales show"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>(rule A) An auxiliary that needs a bare verb, opening its clause before a group with no verb after it, takes the last word of the group as its verb.</td><td>"Could Main work as the name"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>After a form of "be", a word never shown as a verb (or shown 3 times more as a quality) is not a verb; "be" is the verb.</td><td>"it is level with the house"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A bare verb right after a nominal that a verb or preposition already holds, seen as a thing at least 3 times, is not a verb.</td><td>"can I get a cinnamon stick?"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A bare verb never seen as a verb but seen as a thing is not stated as the action.</td><td>"pie radius smaller"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A bare lower-case word right after another verb, never shown as a verb, is not a verb.</td><td>"make runway orange"</td><td>—</td></tr>
+<tr><td>A past form opening its clause right before a bare noun describes that noun.</td><td>"selected event"</td><td>—</td></tr>
+<tr><td>The verb of a completing clause must have been seen as a verb, and is never an <code>-s</code> form unless a pronoun stands before it.</td><td>"leave it tidy"; "keep the axis labels larger" vs "make sure it fits"</td><td>—</td></tr>
+<tr><td>A stranded bare verb after another verb's object: not a verb if the word is more often a thing; otherwise, after a verb, the clause of the thing before it.</td><td>"make the chart show its gridlines"</td><td>—</td></tr>
+<tr><td>(fa46cb7) The word that opens a sentence with no verb, or that opens a sentence right before a word that can only be an object ("me", "us", "them"), is the verb when it was seen as a verb at least 20 times and never as a thing.</td><td>"excuse me", "Sign in a signboard"</td><td><span class="mark t">T</span></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-clause">9.5 Clauses: helping verbs, subject, start (<code>src/links.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>An auxiliary before its subject joins the verb after the subject; an auxiliary with no verb is the verb; a helping verb opening its clause before a nominal does the same.</td><td>"could you increase the mouth"; "does this diagram make sense"</td><td>—</td></tr>
+<tr><td>"have" before a bare verb makes its object do something; it is not a perfect.</td><td>"have the fan become …"</td><td>—</td></tr>
+<tr><td>A negation with no verb to negate stays a word of its clause.</td><td>traced: "not now" → <code>@c1 syntax.clause form=fragment negation="not" modifier="now"</code></td><td>—</td></tr>
+<tr><td>An auxiliary followed only by a pronoun asks, with the pronoun as subject.</td><td>"…, would you"</td><td>—</td></tr>
+<tr><td>The subject is the nominal before the verb; phrases with prepositions between them are hung on the subject.</td><td>"the box on the left moves"</td><td>—</td></tr>
+<tr><td>Adverbs, courtesy words and negations before the verb belong to its clause.</td><td>"please just move it"</td><td>—</td></tr>
+<tr><td>Before an inverted auxiliary, a nominal after a question word is what is asked.</td><td>"what values does Sales show"</td><td>—</td></tr>
+<tr><td>A preposition that can be a subordinator, before a nominal and its verb, opens a clause; with an <code>-s</code> verb also after a chain of phrases.</td><td>"as it stood"; "until its edge meets the edge"</td><td>—</td></tr>
+<tr><td>A pronoun after another nominal, before a verb with its own object, is the subject and the clause starts there.</td><td>"on Friday I need the chart"</td><td>—</td></tr>
+<tr><td>A pronoun right after a nominal, before a verb: a clause that says which thing is meant.</td><td>"the positions they began in"</td><td>—</td></tr>
+<tr><td>Two nominals before a verb that needs a subject: the determiner-led second is the subject, and the clause says which first thing.</td><td>"the way the drawing looks"</td><td>—</td></tr>
+<tr><td>Phrases with their own prepositions before the first verb belong to its clause.</td><td>"with the bigger one on the left, put two clouds"</td><td>—</td></tr>
+<tr><td>Other material before the first verb, or a sentence with no verb, is a fragment clause.</td><td>"a fireplace"</td><td>—</td></tr>
+<tr><td>A courtesy word before the first clause belongs to it.</td><td>"Please, create …"</td><td>—</td></tr>
+<tr><td>A question word followed by a subject of its own, then the verb: the clause states.</td><td>"tell me what it shows"</td><td>—</td></tr>
+<tr><td>(fa46cb7) A clause opened by a question word that stands right after a verb or a nominal, and that is not the first clause of its sentence, states, also before "?"; not when its verb is a form of "be" or a finite helping verb with a nominal right after it.</td><td>"tell me which events are scheduled" (declarative) vs "tell me what colour is the tree" (interrogative)</td><td>—</td></tr>
+<tr><td>The form of the clause: the table of section <a href="#r-form">7.7</a>.</td><td>see section <a href="#r-form">7.7</a></td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-roles">9.6 Nominals and words after the verb (<code>src/links.mjs</code> <code>fill</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>The first bare nominal is the direct object; after "be", the predicative nominal (or the subject where a main clause opens with "be"); in a fragment, the topic.</td><td>"delete the last row"; "is the box red"</td><td>—</td></tr>
+<tr><td>A second bare nominal is predicative only when the verb takes two (a form of "be", a verb that takes a quality, names or gives); otherwise a participant, or tied to the nominal right before it.</td><td>"move the cloud two hand-widths over"</td><td>—</td></tr>
+<tr><td>A recipient pronoun, or a verb that gives and does not take a quality, makes the first nominal the indirect object; with both habits the other frame is the default. (Both are written as <code>complement</code> in the syntax schema.)</td><td>"give me a hand"; "make the snowman a hero"</td><td>—</td></tr>
+<tr><td>In a question with "be", the nominal after "be" is the subject.</td><td>"what colour is the castle"</td><td>—</td></tr>
+<tr><td>A value right after a nominal that the verb does not take is tied to that nominal.</td><td>"x 120", "id Id one"</td><td>—</td></tr>
+<tr><td>A quality right after a nominal that the verb does not hold describes that nominal; a verb that takes a quality claims the quality that closes its clause.</td><td>"with outline gold"; "do the dots on the line wider"</td><td>—</td></tr>
+<tr><td>A bare word after "be" in a question, not known to say how, names the thing asked about.</td><td>"what colour is castle"</td><td>—</td></tr>
+<tr><td>A giving verb with no object takes the bare word after it.</td><td>"give neon around the kites"</td><td>—</td></tr>
+<tr><td>A naming verb gives a name.</td><td>"call it robot", "a square called park"</td><td>—</td></tr>
+<tr><td>A preposition with nothing to point at moves with the verb (particle) or modifies the clause.</td><td>"zoom in"</td><td>—</td></tr>
+<tr><td>A particle-marked word right after the verb or its object is a particle.</td><td>"put it back"</td><td>—</td></tr>
+<tr><td>A preposition right after the verb moves with it when the pair was learned; a preposition that links things as readily as it follows verbs does so only when the pair was seen split by its object; not after "be", not when the clause has what is asked in front.</td><td>"sort out the text size"; "turn the legend on" vs "focus on the event"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A marker that can be a preposition links the nominal after it when no verb does.</td><td>"after Thanks"</td><td>—</td></tr>
+<tr><td>A grading word between a preposition and its nominal goes to the clause.</td><td>"with only the first item checked"</td><td>—</td></tr>
+<tr><td>A negation right before a phrase with a preposition negates that relation alone.</td><td>"not behind Jo"</td><td>—</td></tr>
+<tr><td>After a break, a negation with a nominal or a quality is a part that shares the verb.</td><td>"black, not grey"</td><td>—</td></tr>
+<tr><td>An interjection gets a fragment clause of its own.</td><td>"Move it, thanks"</td><td>—</td></tr>
+<tr><td>After a break, with no object yet, a nominal is only mentioned.</td><td>"before I forget, a fireplace"</td><td>—</td></tr>
+<tr><td>After the object, a break that is not a joining word (a colon) spells the object out.</td><td>"a picnic spot: a blanket, a basket"</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-coord">9.7 Coordination (<code>src/links.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>Gapping: after a joiner, a segment built like the segment before it (nominal + quality after a quality; nominal + preposition + nominal after a relation the verb holds, when the verb's attachment score for that preposition is not negative; once a gap exists, any segment that begins with a nominal) is a fragment that shares the verb. The first nominals of both segments must be alike in kind (both headed, or both literal, no pronoun).</td><td>"make the second box blue and the first one green"</td><td>—</td></tr>
+<tr><td>After a conjunction that joins clauses ("but", "then", "so"), what follows is a clause of its own.</td><td>"…, then the girl to the left"</td><td>—</td></tr>
+<tr><td>A conjunction before a phrase with its own preposition joins the two relations; the second starts where the first does.</td><td>"put it near Ben but not behind Jo"</td><td>—</td></tr>
+<tr><td>A listed nominal joins the earlier nominal most like it (section <a href="#r-partner">7.8</a>), the nearest on a tie.</td><td>"a blanket, a basket and a boy"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>A bare name joins the capitalised name right before the joining word.</td><td>"items Plan and Review"</td><td>—</td></tr>
+<tr><td>When the nearest candidate is introduced like the new nominal and the most alike one is not, the nearest is the partner.</td><td>"with title Plan and participants Ana"</td><td>—</td></tr>
+<tr><td>A determiner-led nominal unlike every candidate (below 0.3) is not joined to the end of a phrase.</td><td>"at 10:00 and the room to Cedar room"</td><td><span class="mark t">T</span></td></tr>
+<tr><td>A comma alone lists a nominal with the things of the clause, not with the ends of relations.</td><td>traced (made up for this document): "draw a cat on the sofa, a dog" → "a dog" is listed with "a cat", not with "the sofa"</td><td>—</td></tr>
+<tr><td>A comma-set bare nominal unlike every thing of the clause (below 0.3), after the verb's object, belongs to the clause with no linking word.</td><td>"book the sync at 16:00, Friday, for 60 minutes"</td><td><span class="mark t">T</span></td></tr>
+<tr><td>(rule U) A comma series closed by a conjunction begins with the nominal before its first comma, when that one is introduced like the others.</td><td>"for Ana, Mihai and me"</td><td>—</td></tr>
+<tr><td>(fa46cb7) After nominals listed by commas, a comma plus a conjunction adds the last item to that list (the "serial list" rule).</td><td>"a boy with a kite, a dog on the grass, and a girl"</td><td>—</td></tr>
+<tr><td>(fa46cb7) A number right after the joining words that follow a number is listed with that number.</td><td>"on pages 2 and 3", "set them to 10, 20, 30"</td><td>—</td></tr>
+<tr><td>(fa46cb7) Set off by commas, a phrase whose preposition points at a known thing (a pronoun or a nominal with a definite determiner), before a new thing, says where the new thing is.</td><td>", next to the crate, a small black cat"</td><td>—</td></tr>
+<tr><td>Clauses separated by commas alone join the coordination of a later conjunction.</td><td>"A, B, and C"</td><td>—</td></tr>
+<tr><td>(fa46cb7) Two main clauses with their own verbs that only a comma separates, that no later conjunction joins and that no linking word of their own ties, form a coordination (with no conjunction word, since a comma is not a word).</td><td>"I cannot see it, drag it to the corner"; not "since they belong together, place them side by side"</td><td>—</td></tr>
+<tr><td>A bare word listed after a nominal with a conjunction is a nominal.</td><td>"by product and region"</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-clauses">9.8 Clause to clause (<code>src/links.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>"to" and a verb: a nonfinite clause that completes the verb before; the pronoun before "to" is its subject when that verb directs.</td><td>"I want to delete it"; "I need you to make"</td><td>—</td></tr>
+<tr><td>"to" after a nominal that is not directed: what the thing is for.</td><td>"a button to close the window"</td><td>—</td></tr>
+<tr><td>A bare verb form right after a nominal describes it; not a past form after a nominal that opens a clause, nor after a subject-only pronoun.</td><td>"a man wearing a hat"; "they made"</td><td>—</td></tr>
+<tr><td>The describing clause is said of the thing placed rather than of the place when the learned <code>describes</code> counts and the memory say so.</td><td>"put a man on the path wearing a blue cap"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>(fa46cb7) A second participle after the first, with only adverbs between, goes on describing the same thing.</td><td>"a girl facing left sitting on the bench"</td><td>—</td></tr>
+<tr><td>A bare <code>-ing</code> form right after a verb completes it.</td><td>"try making …"</td><td>—</td></tr>
+<tr><td>A comma and a bare verb form after a main clause describe what that clause is about.</td><td>", coloured by region"</td><td>—</td></tr>
+<tr><td>What a describing participle says ends at the next separator; (rule W) also for a participle set off by a comma after a main clause; (fa46cb7) a comma between two numbers does not end it.</td><td>"a line showing 10, 20 and 30"</td><td>—</td></tr>
+<tr><td>After a clause-taking verb and a nominal, a bare verb opens a completing clause with that nominal as subject.</td><td>"let us add"</td><td>—</td></tr>
+<tr><td>(rule B) A preposition before a bare <code>-ing</code> form is the marker of its clause.</td><td>"by removing it"</td><td>—</td></tr>
+<tr><td>A clause opened by a marker is tied to the clause before it; "if" after a verb that asks makes the clause what is asked.</td><td>"move it if it fits"; "tell me if it fits"</td><td>—</td></tr>
+<tr><td>A clause that opens the sentence with its marker hangs on the next main clause.</td><td>"while you're there, thin the lines"</td><td>—</td></tr>
+<tr><td>(fa46cb7) With no comma before its linking word ("where", "as", …), a clause completes the nearest verb before it, also a participle when the linking word follows it at once.</td><td>"add two ducks, keeping everything else where it is"; "a girl sitting where the path bends"</td><td>—</td></tr>
+<tr><td>A verb with a second completing clause is tied to it without a linking word (internal relation of kind <code>open</code>; <code>completes</code> in <code>src/links.mjs</code>).</td><td>none found in the traces made for this document</td><td>—</td></tr>
+<tr><td>A nonfinite clause with no subject that nothing refers to is tied to the clause before it.</td><td>"split by time of day"</td><td>—</td></tr>
+<tr><td>A clause that opens with a question word right after a verb that asks or takes a clause (or right after any verb) is tied to that verb's clause.</td><td>"tell me which events are scheduled"; "that is how the picture goes"</td><td>—</td></tr>
+<tr><td>A describing past form (no negation, no adverb) with exactly one bare nominal after it is first the cue of a relation from the described nominal to that nominal (of kind <code>label</code> when the word is a naming cue such as "called"); <code>emit-syntax.mjs</code> later turns any such verb-form cue into the verb of a nonfinite clause (section <a href="#cat-emit">9.10</a>).</td><td>"a group called g2"</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-attach">9.9 Where a relation starts (<code>src/links.mjs</code> <code>attach</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>The second linking word of a pair starts where the first did (only "from … to" can fire; see section <a href="#l-pairs">6.4</a>).</td><td>"from largest to smallest"</td><td>—</td></tr>
+<tr><td>After a pronoun, or with no nominal before: the clause.</td><td>"move it to the left"</td><td>—</td></tr>
+<tr><td>"of" starts at the nominal before it.</td><td>"the level of Intro"</td><td>—</td></tr>
+<tr><td>In a fragment: the nominal before or one it is placed by, by learned holding, 0.3 subtracted per step, at most 4 steps.</td><td>"a boy with a happy face next to the table"</td><td><span class="mark n">n</span></td></tr>
+<tr><td>Two literals (numbers, dates, clock times, quoted text) one against the other: the relation starts at the first.</td><td>"resize it to 240 by 160"</td><td>—</td></tr>
+<tr><td>Otherwise the clause and each nominal of the chain compete: count score + 2 × memory fit; a margin below 0.5 gives the clause with <code>attachment=ambiguous</code>.</td><td>"put the cat on the table"</td><td><span class="mark n">n</span></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="cat-emit">9.10 Writing (<code>src/emit-syntax.mjs</code>)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rule</th><th>Example</th><th>Mark</th></tr></thead>
+<tbody>
+<tr><td>Words that grade together form one modifier run; the word that opens such a run has no place of its own.</td><td>"a little longer"</td><td>—</td></tr>
+<tr><td>Words said to the listener, written with a capital right after another word, are mentioned: a nominal; after another word said in passing, they are said in passing too.</td><td>"a paragraph saying Thank you"; "ok Thanks"</td><td>—</td></tr>
+<tr><td>A word that grades a relation is a modifier of the clause where the relation starts (fa46cb7: not the clause nearest by position).</td><td>"a boy sitting on the bench with an owl right on top of his head"</td><td>—</td></tr>
+<tr><td>A completing clause is the end of a relation from the governing clause, marked "to" when the infinitive has it.</td><td>"I want to delete it"</td><td>—</td></tr>
+<tr><td>A marker marks the relation that ends at its clause; a question word that opens a clause built as a question modifies it; with no other clause, a joining word is said in passing and any other word modifies its clause.</td><td>"the one on one, when is it"; "so make the boxes blue"; "where is the title?"</td><td>—</td></tr>
+<tr><td>A question word stands where its grammar puts it: dependent of the nominal after it, head of a nominal of its own, or modifier of the clause.</td><td>"what colour"; "what is this?"; "how the picture goes"</td><td>—</td></tr>
+<tr><td>A verb form used as the linking word of a relation to a nominal is the verb of a nonfinite clause that describes the thing.</td><td>"a group called g2"</td><td>—</td></tr>
+<tr><td>A sign right after a number belongs to that number; any other stray word is said in passing.</td><td>"30%"</td><td>—</td></tr>
+<tr><td>A coordination needs two conjuncts of one type; otherwise it is dissolved and its words go to a clause.</td><td>none found in the traces made for this document</td><td>—</td></tr>
+<tr><td>A noun with its name, listed with further bare names (or, since fa46cb7, numbers), heads a list of names: the names are the things listed and the noun is tied to that list.</td><td>"items Plan and Review"; "pages 2 and 3"</td><td>—</td></tr>
+<tr><td>A word that says how a thing is, right after a nominal that ends a phrase with a preposition, describes that nominal (not after a verb that takes a result, not after a comma).</td><td>"with outline gold"</td><td>—</td></tr>
+<tr><td>A naming participle right after a nominal, with only a capitalised or quoted name after it, is a nonfinite clause that describes the nominal.</td><td>"new calendar named Work"</td><td>—</td></tr>
+<tr><td>A fragment holding only modifiers or words said in passing joins the clause after it (or before it); a quality that is a sentence of its own stays; set off before a clause with its own verb, it is said in passing.</td><td>"next, add a title"; "Perfect. Now add a title"; "Great, now move the box"</td><td>—</td></tr>
+<tr><td>Every word left over joins the clause it stands in as a discourse word (a safety net for words no earlier step placed; with no clause at all, a fragment clause <code>c0</code> is made for them).</td><td>none found in the traces made for this document</td><td>—</td></tr>
+</tbody>
+</table></div>
+
+<!-- ============================================================ -->
+<h2 id="learned">10. What is learned and what is declared</h2>
+<div class="scroll"><table>
+<thead><tr><th></th><th>Learned from the text of the messages</th><th>Declared by hand</th></tr></thead>
+<tbody>
+<tr><td>Words</td><td>vocabulary (words seen at least 3 times); 114 spelling variants; 134 openers</td><td>422 listed words and compounds in 43 lists (<code>legend.sop</code>); which lists confine their words</td></tr>
+<tr><td>Word classes</td><td>HMM emissions and transitions (25 × 25); shape distributions; occurrence prototypes; kinds [verb, thing, quality] from anchored frames; thing or quality (<code>nominal</code>)</td><td>the 25 stations and their attributes; the transition prior (4 / 1 / 0.05); which frames are anchored (<code>src/anchors.mjs</code>)</td></tr>
+<tr><td>Morphology</td><td>which forms belong to which word in this text (a stem must itself occur)</td><td>endings, form rules and 86 irregular pairs (<code>legend.sop</code>); stem spelling rules (<code>src/forms.mjs</code>); ending classes <code>ing ed ly est er s</code> (<code>src/observe.mjs</code>); clitics (<code>src/tokens.mjs</code>)</td></tr>
+<tr><td>Verb frames</td><td><code>takesQuality</code>, <code>takesClause</code>, <code>directs</code>, <code>names</code>, <code>gives</code>, <code>asks</code>, <code>phrasal</code>, <code>separable</code>, <code>anchored</code></td><td>the marks <code>makesdo</code>, <code>needsbare</code>, <code>finite</code>, <code>perfect</code>, <code>bare</code>, <code>predicative</code>; the patterns in which frames are counted (<code>src/habits.mjs</code>)</td></tr>
+<tr><td>Attachment</td><td>verb and noun rates per preposition, settled over doubtful cases; role-filler memory</td><td>the sure patterns; the competition of hosts; the weight 2 and the margin 0.5</td></tr>
+<tr><td>Likeness</td><td>word vectors (128-d); pairs that stand together; participle–noun counts</td><td>the build vector of a nominal (which slots, which fillers); the threshold 0.3</td></tr>
+<tr><td>Structure</td><td>—</td><td>every rule of the chunker, linker and writer (section <a href="#rules">9</a>); the clause-form table; the verb budget; the loop limit 4</td></tr>
+</tbody>
+</table></div>
+<p>English-specific knowledge outside the legend: the ending classes of <code>src/observe.mjs</code>, the clitic pattern of <code>src/tokens.mjs</code>, the stem spelling rules of <code>src/forms.mjs</code>, the plural test <code>/[^s]s$/</code> and the hyphen-and-<code>ed</code> test in <code>src/units.mjs</code>, the question mark in the clause-form decision of <code>src/links.mjs</code>, the literal word "it" as an object in the verb frames of <code>src/anchors.mjs</code> (<code>token?.word === 'it'</code>), and the pattern of break marks <code>/^[,:;!—–-]$/</code> that ends an opener in <code>train.mjs</code> and in <code>src/reader.mjs</code>. The names of stations, marks and <code>nlu</code> slots are also hard-coded (<a href="#hardcoded">box at the end of section 6</a>).</p>
+
+<!-- ============================================================ -->
+<h2 id="commands">11. How to train, test and measure</h2>
+<p>All commands run from the folder <code>soplang-nlu</code>, with the dataset checked out next to it.</p>
+<h4>Train</h4>
+<pre><code>node strategies/vss/train.mjs --dataset ../webmeet-dataset
+# options: --out &lt;file&gt; --legend &lt;file&gt; --iterations 25 --min-count 3 --dimensions 128
+#          --sharpen 1.5 --warmup 6 --kinship 0.5 --formLean 8 --anchoring &lt;strength&gt;</code></pre>
+<p>Without <code>--out</code> it overwrites <code>strategies/vss/model/model.json</code>. <code>--legend</code> is resolved relative to <code>strategies/vss/</code>, not to the current folder; <code>--dataset</code> defaults to <code>webmeet-dataset</code> next to <code>soplang-nlu</code>.</p>
+<p>Retrain after any change to <code>train.mjs</code>, <code>legend.sop</code>, or a module whose code runs during training: every file marked T in section <a href="#files">3</a> (<code>corpus</code>, <code>tokens</code>, <code>observe</code>, <code>legend</code>, <code>forms</code>, <code>variants</code>, <code>routes</code>, <code>anchors</code>, <code>occurrence</code>, <code>space</code>, <code>meaning</code>, <code>habits</code>, <code>units</code> through <code>learnHabits</code>, and the <code>openModel</code> part of <code>reader.mjs</code>). <code>links.mjs</code>, <code>emit-syntax.mjs</code> and the <code>createVssReader</code> part of <code>reader.mjs</code> do not affect the model. A change to <code>units.mjs</code> that touches only rules guarded by <code>lexicon.leans</code>, <code>lexicon.linkOf</code> or a rule letter does not change the model either, since those lookups are absent during training (section <a href="#t-habits">5.8</a>).</p>
+<h4>Read one message</h4>
+<pre><code>node --input-type=module -e "
+import {vss} from './strategies/vss/index.mjs'
+const engine = await vss.open()
+console.log((await engine.analyse('could you increase the mouth by 10 percent?')).analyses[0].sop)"</code></pre>
+<p>For the stations, units and doubts of each round: <code>createVssReader(model, {schema: 'syntax', trace: true})</code> from <code>strategies/vss/src/reader.mjs</code>. To switch lettered rules off: <code>{without: 'A,G'}</code>. The reader's other options (<code>budget</code>, <code>occurrence</code>, <code>openers</code>, <code>open</code>, <code>hosts</code>, <code>alike</code>, <code>attachMode</code>, <code>openBelow</code>, <code>memoryWeight</code>, <code>occurrenceWeight</code>, …) are read in <code>openModel</code> and <code>createVssReader</code>.</p>
+<h4>Test</h4>
+<pre><code>env -u SOP_KNOWLEDGE_DIR node --test tests/vss-syntax.test.mjs tests/vss.test.mjs
+npm test      # every test of the package</code></pre>
+<p><code>tests/vss-syntax.test.mjs</code> (9 tests) checks the public strategy in the syntax schema; <code>tests/vss.test.mjs</code> (8 tests) checks the legend, observation and the internal <code>nlu</code> output.</p>
+<h4>Measure on the syntax benchmark</h4>
+<pre><code>node tests/benchmark/syntax/run.mjs eval-results/&lt;run&gt; --only vss \
+  --sample eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz
+node tests/benchmark/syntax/judge-prepare.mjs eval-results/&lt;run&gt; --size 170
+#   a judge reads judging/RULES.md and each packet, writes judging/verdicts-&lt;k&gt;.jsonl
+node tests/benchmark/syntax/judge-publish.mjs eval-results/&lt;run&gt; --tag &lt;run&gt; --judge &lt;model&gt;
+node tests/benchmark/syntax/table.mjs eval-results/&lt;run&gt;</code></pre>
+<p>The procedure, the levels and the conversion rounds (<code>round.mjs</code>) are described in <code>tests/benchmark/syntax/README.md</code>; the judges' rules are in <code>tests/benchmark/syntax/rules.md</code>. The <code>nlu</code>-period tools (<code>strategies/vss/evaluate.mjs</code>, <code>judged.mjs</code>, <code>triage.mjs</code>) need the <code>sop-knowledge-worlds</code> checkout and measure the <code>nlu</code> output.</p>
+
+<!-- ============================================================ -->
+<h2 id="results">12. Measured results</h2>
+<p>The levels of the syntax benchmark: L0 no valid circuit; L1 a wrong clause (form, verb, auxiliary, words of one clause in another); L2 a word with content held as <code>discourse</code>; L3 words in the wrong wire or a wrong tie (head, subject, nominal split or merged, wrong relation end or conjunct); L4 states what the message does not say; L5 a clause not written; L6 something left untied; L8 accepted (by a judge of this run for a message that had no label before the run, or earlier according to the registry); L9 equal to the label the message had before the run (the labels are frozen in <code>key/labels-before.jsonl</code> when judging is first prepared), so no judge read it in this run; L10 accepted by a judge in this run for a message that had a different label before the run, which the accepted circuit replaces. The exact order of these tests is in <a href="syntax-evaluation-and-conversion.html#levels">syntax-evaluation-and-conversion.html, section 5</a>. GOAL is L8 + L9 + L10 over all messages (<code>tests/benchmark/syntax/rules.md</code>, <code>table.md</code>).</p>
+
+<h3>Random 1% benchmark (syntax schema): the first judged run</h3>
+<p>1,831 messages drawn at random from the dataset with the seed "syntax-2026-11-27"; every circuit of the five strategies judged (5,858 distinct circuits; commit <code>9f57aa3</code>). The table below is that first judged run: <code>table.md</code> and <code>summary.json</code> of <code>eval-results/2026-11-27-syntax-benchmark-random/</code> as they stood at <code>9f57aa3</code>; the circuits of that run are kept in <code>first-run/</code> since commit <code>87a221e</code>. The VSS circuits were committed in <code>a09047d</code> (16:14); the run does not record the VSS commit that produced them. They predate the VSS commits <code>59066d1</code>, <code>1c0b4f6</code>, <code>dd562c3</code> and <code>fa46cb7</code>.</p>
+<div class="scroll"><table>
+<thead><tr><th>Strategy</th><th class="num">L0</th><th class="num">L1</th><th class="num">L2</th><th class="num">L3</th><th class="num">L4</th><th class="num">L5</th><th class="num">L6</th><th class="num">L8</th><th class="num">L9</th><th class="num">L10</th><th class="num">GOAL</th></tr></thead>
+<tbody>
+<tr><td><strong>vss</strong></td><td class="num">0</td><td class="num">195</td><td class="num">4</td><td class="num">342</td><td class="num">0</td><td class="num">39</td><td class="num">45</td><td class="num">620</td><td class="num">586</td><td class="num">0</td><td class="num"><strong>65.9%</strong></td></tr>
+<tr><td>spacy</td><td class="num">0</td><td class="num">132</td><td class="num">10</td><td class="num">166</td><td class="num">0</td><td class="num">2</td><td class="num">10</td><td class="num">922</td><td class="num">406</td><td class="num">183</td><td class="num">82.5%</td></tr>
+<tr><td>distilbert</td><td class="num">0</td><td class="num">72</td><td class="num">6</td><td class="num">363</td><td class="num">5</td><td class="num">9</td><td class="num">61</td><td class="num">728</td><td class="num">563</td><td class="num">24</td><td class="num">71.8%</td></tr>
+<tr><td>prolog</td><td class="num">41</td><td class="num">229</td><td class="num">1</td><td class="num">383</td><td class="num">7</td><td class="num">37</td><td class="num">4</td><td class="num">658</td><td class="num">238</td><td class="num">233</td><td class="num">61.7%</td></tr>
+<tr><td>z3</td><td class="num">0</td><td class="num">236</td><td class="num">10</td><td class="num">460</td><td class="num">0</td><td class="num">31</td><td class="num">9</td><td class="num">599</td><td class="num">250</td><td class="num">236</td><td class="num">59.3%</td></tr>
+</tbody>
+</table></div>
+<p>VSS: 1,831 of 1,831 circuits valid, median 0.402 ms per message, 51 ms to open. Its rejections are mostly L3 (342, wrong wire or tie) and L1 (195, wrong clause). Rejection notes written by the judge for short messages in that run (<code>judging/verdicts-*.jsonl</code> matched with <code>key/items.jsonl</code>):</p>
+<div class="scroll"><table>
+<thead><tr><th>Message</th><th>Level</th><th>Judge's note</th></tr></thead>
+<tbody>
+<tr><td>which one is red?</td><td>L3</td><td>the subject is written as 'red' and 'which' and 'one' are split into two complements</td></tr>
+<tr><td>thegroup Departments -&gt; Infra</td><td>L1</td><td>'thegroup' is written as the verb of an imperative clause, though it is 'the group', no verb</td></tr>
+<tr><td>make a bar chart with the categories year 1, year 2</td><td>L3</td><td>the coordination joins 'a bar chart' and 'year 2', though 'year 2' goes with 'year 1'</td></tr>
+<tr><td>tell me which way the boy on the lawn is facing</td><td>L1</td><td>'the boy on the lawn is facing' is written as an imperative clause tied to nothing</td></tr>
+<tr><td>b2, make it centred</td><td>L6</td><td>the fragment 'b2' is tied to nothing inside its sentence</td></tr>
+<tr><td>what if we move Bench flush against Slide</td><td>L3</td><td>'flush' is merged with 'Bench' into one head 'Bench flush'</td></tr>
+</tbody>
+</table></div>
+
+<div class="box note"><span class="label">Not obvious from the code: half of VSS's accepted circuits were not read by a judge in this run</span>
+<p>Of VSS's 1,206 accepted circuits in the first run, 586 are L9: equal to a label the message had before the run, and counted as accepted without a judge reading them in this run. Of the 593 sample messages that had a label before the run, 567 got it from agreement between <code>spacy-direct</code> and VSS (<code>source</code> "spacy-direct+vss" in <code>key/labels-before.jsonl</code>, counted for this document; also stated in <a href="syntax-work-2026-11-27.html#bench-table">syntax-work-2026-11-27.html</a> and <a href="syntax-evaluation-and-conversion.html#benchmark">syntax-evaluation-and-conversion.html</a>). So VSS is credited for matching labels it helped make. Their error rate rests on an audit: a judge read a random 2% of the agreement circuits of the batch conversion and rejected 10 of the 1,140 audited agreements of VSS and <code>spacy-direct</code> (0.88%; <code>improvements-ideas.md</code> and the commit message give 10 of 1,154, 0.87%, a count that includes 14 audited agreements with DistilBERT; <a href="syntax-evaluation-and-conversion.html#agreement">syntax-evaluation-and-conversion.html, section 10</a>, explains the difference). VSS has no message at L10 for the same reason: when VSS and <code>spacy-direct</code> differed only in where a relation with a marker starts, the batch made VSS's circuit the label (<code>--prefer vss</code>), so on a labelled message VSS's circuit usually is the label (<a href="syntax-work-2026-11-27.html#t2">syntax-work-2026-11-27.html, T2</a>).</p>
+<p>The judged part alone: VSS has 620 circuits at L8. On the 1,238 sample messages that had no label, at most 620 VSS circuits were accepted, that is at most 50.1% (at most, because some L8 circuits may belong to labelled messages). The same bound is 74.5% for spaCy (922 at L8) and 58.8% for DistilBERT (728). The benchmark tools do not report GOAL separately on the messages without a label, but <a href="syntax-evaluation-and-conversion.html#benchmark">syntax-evaluation-and-conversion.html, section 7</a>, splits the same run by the 576 messages whose label came from the batch's agreement circuits: on the other 1,255 messages GOAL is 50.2% for VSS, 74.7% for spaCy and 59.2% for DistilBERT, against 100.0%, 99.7% and 99.3% on the 576.</p>
+</div>
+
+<h3>After the first run: reruns</h3>
+<div class="scroll"><table>
+<thead><tr><th>Rerun</th><th>What changed</th><th>State at about 18:00</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>spaCy and DistilBERT (commit <code>87a221e</code>)</td><td>spaCy repaired in the layer that writes its circuits; DistilBERT retrained (syntax-v2) with the benchmark messages held out of training; 1,040 new circuits for judges (packets 36–42)</td><td>verdicts published in <code>5c87955</code>: spaCy 86.8%, DistilBERT 73.1%</td><td><code>table.md</code></td></tr>
+<tr><td>VSS at <code>fa46cb7</code> (commit <code>8cd3377</code>)</td><td>the rules of <code>59066d1</code>, <code>1c0b4f6</code>, <code>dd562c3</code> and <code>fa46cb7</code>; 225 new circuits for judges (packets 43–44)</td><td>65.6% with the 225 circuits not yet judged (counted as not accepted); 77.9% if every waiting circuit were accepted. By 18:11 packets 43–44 had verdict files (<a href="syntax-evaluation-and-conversion.html#benchmark">syntax-evaluation-and-conversion.html, section 7</a>); <code>table.md</code> as written at 18:06 gives VSS 75.5% with no circuit waiting (582 at L9, 4 at L10). That figure was not checked further for this document, it is not an independent measure (see the box below), and the folder kept changing after it (a further VSS rerun at 18:13)</td><td><code>table.md</code>, <code>summary.json</code> (median 0.392 ms, 58 ms to open)</td></tr>
+</tbody>
+</table></div>
+<p>Training text: VSS learns from the <code>text</code> column of all 183,497 distinct messages, which include the 1,831 benchmark messages; that is learning from text, not from labels. The retrained DistilBERT holds the benchmark messages out of training (<code>87a221e</code>). Whether this matters for VSS was not measured.</p>
+
+<h3>Other measurements in the syntax schema</h3>
+<div class="scroll"><table>
+<thead><tr><th>What</th><th>Result</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>First judged run of VSS in the syntax schema, on the earlier fixed 1% sample</td><td>63.4% at L8 or better</td><td>commit message of <code>24de853</code></td></tr>
+<tr><td>Conversion round 1 (17 small files, 575 messages)</td><td>83.7% accepted before the rules drawn from that round; the report shows 92.3%, measured after those rules on the same files (a recount at about 18:00 on the VSS file now in the round folder, written after later rules as well, gives 93.4%; <a href="syntax-evaluation-and-conversion.html#rounds">syntax-evaluation-and-conversion.html, section 8</a>)</td><td>commit <code>e33cc24</code> (14:27); <code>eval-results/2026-11-27-round-01/report.md</code> (committed 14:39)</td></tr>
+<tr><td>Conversion round 2 (4 files, 598 messages)</td><td>86.8% accepted before the rules drawn from it; the report shows 87.0% (the difference is not explained in the repository)</td><td>commit <code>71faa24</code>; <code>eval-results/2026-11-27-round-02/report.md</code></td></tr>
+<tr><td>Rule batches checked against about 8,000 accepted circuits of the dataset</td><td><code>59066d1</code>: 8 change; <code>1c0b4f6</code>: none; <code>dd562c3</code>: 2 change, both to the better reading; <code>fa46cb7</code>: 18 now differ from their label</td><td>commit messages; the tool used, and how the 8,000 circuits were chosen, are not stated (of all 62,066 labels of the dataset, 56,934 are agreement labels, 55,648 of them VSS–<code>spacy-direct</code> agreements, so a sample of labels at large would be mostly agreement labels; not verified)</td></tr>
+<tr><td><code>dd562c3</code> on the judged benchmark sample</td><td>5 of 1,206 accepted circuits change (all still acceptable by the rules); 105 rejected circuits change; whether they became acceptable was not measured</td><td>commit message</td></tr>
+<tr><td><code>fa46cb7</code> on the judged benchmark sample</td><td>22 accepted and 118 rejected circuits change; two rules were tried and dropped: "participle-only forms" and "an -s form at the end of a group as the verb". The judged rerun is pending (packets 43–44, above)</td><td>commit message of <code>fa46cb7</code></td></tr>
+<tr><td>Lever study (read-only, 7 agents)</td><td>with VSS's stations forced to those of an accepted circuit, +2.7 points from circuits already known to be accepted (65.9% to 68.6%), and about 71 to 72% in all if 30% of 191 new, unjudged forced circuits passed (the study's estimate of the ceiling of any station-level change); details in section <a href="#limits">14</a></td><td><code>eval-results/2026-11-27-vss-levers-study/study-result.json</code>, commit <code>45677bc</code>; summary in <code>improvements-ideas.md</code></td></tr>
+<tr><td>Tests</td><td>17 of 17 pass (run for the first version of this document; re-checked by a reviewer at <code>fa46cb7</code>)</td><td><code>tests/vss-syntax.test.mjs</code>, <code>tests/vss.test.mjs</code></td></tr>
+<tr><td>Training</td><td>79.3 s wall time, 1.6 GB peak memory, 3.31 MB model, deterministic</td><td>run for this document (scratch output)</td></tr>
+</tbody>
+</table></div>
+<div class="box note"><span class="label">Not obvious from the code: what the numbers can and cannot be compared with</span>
+<p>The round reports are not comparable with the benchmark. In a round report a circuit settled by agreement of several strategy families counts as accepted for the strategies that wrote it, and VSS is one of those families; with <code>--focus vss</code> the judge always reads VSS's circuits so that VSS gets a level (<code>tests/benchmark/syntax/round.mjs</code>). The round files were also small, short-message files. <code>improvements-ideas.md</code> notes that the dataset as a whole is dominated by long drawing and chart messages, where VSS does worse. The part about length is not borne out on the random sample: its drawing and diagram messages average 13.9 and 12.4 words against 13.1 for all, while VSS's GOAL is 68.2% on drawing and 60.9% on diagram messages (<a href="syntax-work-2026-11-27.html#i-small">syntax-work-2026-11-27.html, I3</a>). Acceptance by message length was not measured.</p>
+<p>A judged rerun on this sample is not an independent measure of the later rules, for two reasons. The rules committed after the first run were checked against its judged circuits (<code>dd562c3</code>), and some were found in its rejections (the <code>fa46cb7</code> message: "rules found in the benchmark rejections"). And the judges' rules themselves changed after the first run was judged (commit <code>a81dd93</code>: "let's add", "everything else", embedded question clauses), so a rerun is judged by different rules. <code>improvements-ideas.md</code> proposes a fresh sample.</p>
+</div>
+
+<h3>Measurements of the <code>nlu</code> period (not comparable)</h3>
+<p>From <code>docs/strategies/vss.md</code>, measured on the earlier <code>nlu</code> schema: blind paired reviews of 240 messages, every circuit acceptable for 45.0% (first model) and 50.8% (model at <code>d98b426</code>) against 67.5% and 63.8% for spaCy direct; the judged loop on the fixed sample, 52.9% under strict rules (model <code>03f9abe</code>) and 60.0% under the plausible rules with open marks (model <code>346876e</code>); against saved circuits, 64.6% F1 of links with their role. An independent review then estimated a ceiling of 60 to 65% for this design (one committed station path, a single-pass linker, habits counted on the reader's own readings), 70 to 78% for a design that keeps a lattice of stations and assembles circuits from constructions declared in the legend, and 83 to 88% "if the factors of that design were trained on the drafted circuits" (drafted circuits: proposals saved in the <code>nlu</code> period, not accepted ones). That review found "that most lost acceptance comes from the station of a word, not from linking". Both its ceiling and that finding were set in the <code>nlu</code> schema; VSS's 65.9% in the syntax schema is already above the 60–65% ceiling, and the lever study of section <a href="#limits">14</a> places most of the faults in the syntax schema in units and links instead.</p>
+
+<!-- ============================================================ -->
+<h2 id="changes">13. What changed since docs/strategies/vss.md</h2>
+<p><code>docs/strategies/vss.md</code> is partly updated: its opening, its example and its first paragraphs already describe the syntax-schema output, while its steps, its table of learned parts and its measurements are from the <code>nlu</code> period. What still holds and what changed:</p>
+<div class="scroll"><table>
+<thead><tr><th>Topic</th><th>Still holds</th><th>Changed</th></tr></thead>
+<tbody>
+<tr><td>Output</td><td>one circuit per message in the syntax schema through <code>emit-syntax.mjs</code> and the shared writer; no knowledge repository</td><td>the strategy no longer returns a second reading or <code>flags</code>; those exist only in the internal <code>nlu</code> mode</td></tr>
+<tr><td>Learned parts</td><td>routes by EM, word forms, things and qualities, verb habits, attachment, meanings, role-filler memory</td><td>the old table does not list spelling variants, openers, occurrence prototypes or the anchored kinds, which are all in the model; training reads <code>semantic/</code> (commit <code>14ef4a6</code>)</td></tr>
+<tr><td>Steps</td><td>observe, route, cut, link, reconsider, emit</td><td>"reconsider" is now a general loop of doubts of several kinds from three sources, at most 4 re-decodings (commits <code>1a3f75e</code> and later)</td></tr>
+<tr><td>Verb budget</td><td>the mechanism</td><td>the old document says the budget measured worse and is off; it is now on by default (<code>src/reader.mjs</code>; commit <code>7e8e98d</code>, "one verb per clause in decoding", which records no measurement)</td></tr>
+<tr><td>Legend</td><td>stations, closed lists, endings, kinds; the marks <code>belongs</code>, <code>infinitive</code>, <code>nominal</code>, <code>particle</code>, <code>perfect</code>, <code>predicative</code>, <code>recipient</code>, <code>relative</code>, <code>selects</code>, <code>subject</code> (those of the legend when <code>vss.md</code> was last edited, <code>392579c</code>, 13:02)</td><td>no adjectives or fixed phrases in the lists (commit <code>cd237e3</code>); marks added since: <code>bare</code>, <code>makesdo</code>, <code>needsbare</code>, <code>finite</code>, <code>day</code>, and in <code>fa46cb7</code> <code>definite</code>, <code>postposed</code>; irregular pairs</td></tr>
+<tr><td>Open marks</td><td>the reader still marks what the words leave open</td><td>in the output: <code>attachment=open</code> → <code>attachment=ambiguous</code>; <code>participant</code>, <code>topic</code> → <code>complement</code>; <code>kind=open</code> → a relation without a marker</td></tr>
+<tr><td>Rules</td><td>—</td><td>most of the 42 VSS commits of 2026-11-27 (up to <code>fa46cb7</code>) add rules, including the lettered rules A, B, G, L, O, T, U, W from the calendar analysis and the rules from the diagram, document and drawing analyses</td></tr>
+<tr><td>Limits listed</td><td>"the two lines differ" still reads "differ" as a head (checked for this document); no pronoun resolution, no context</td><td>"make sure it fits" now keeps "fits" as a declarative verb, but "it" is both the complement of "make sure" and the subject of "fits" (checked for this document)</td></tr>
+<tr><td>Portability</td><td>no dependencies; the model can be passed in as an object</td><td>the old document says the reader has no file access and runs in a browser; through <code>emit-syntax.mjs</code> it now loads <code>lib/syntax.mjs</code>, which reads a file with <code>node:fs</code></td></tr>
+<tr><td>Training cost</td><td>about 3 MB of model</td><td>the old document says about 30 s; the run for this document took 79.3 s on a machine with other work running (not a controlled comparison)</td></tr>
+</tbody>
+</table></div>
+
+<!-- ============================================================ -->
+<h2 id="limits">14. Known limits</h2>
+<ol>
+<li><strong>One path, one pass.</strong> Each round decodes one station path; the linker is one pass of fixed policy; alternative readings are never built and compared. The independent review in <code>docs/strategies/vss.md</code> put the ceiling of this design at 60 to 65%, but in the <code>nlu</code> schema; in the syntax schema VSS already scored 65.9% in the first judged run.</li>
+<li><strong>Where the faults are (measured).</strong> The lever study (<code>eval-results/2026-11-27-vss-levers-study/study-result.json</code>, commit <code>45677bc</code>; summary in <code>improvements-ideas.md</code>, "Done since…") forced VSS's stations to those of a known accepted circuit on the 538 benchmark messages where VSS was not accepted but such a circuit exists. For 292 of them (54%) the circuit did not change at all: the stations already fit and the error is in <code>src/units.mjs</code> or <code>src/links.mjs</code>. Perfect stations turned 50 messages into accepted ones with certainty: +2.7 points (65.9% to 68.6%), and 191 forced circuits were new. <strong>Correction, after judging:</strong> the forced-station circuits were then judged in full (<code>eval-results/2026-11-27-vss-lever-trials</code>, strategy <code>vss-oracle-stations</code>, commit <code>9df0889</code>): of 401 such circuits, 170 were accepted, so perfect stations would repair up to about 170 messages, roughly +9 points, not +2.7. Both parts matter: for about half of the failures the stations already fit and the fault is in <code>src/units.mjs</code> or <code>src/links.mjs</code>; for the other half better tagging is a real lever (the same trials measured DistilBERT evidence on the roles of words at +3.9 points). The faults left form "a long tail: 17 rule groups of 5 to 32 messages each (of about 520 rejected)".</li>
+<li><strong>Self-counted habits.</strong> Habits and the memory are counted on the reader's own readings, with a plainer chunker than the one that reads (section <a href="#t-habits">5.8</a>). The learned lists carry noise ("drawing" as a clause-taking verb, "nice" as a verb that asks, "igve" as a giving verb).</li>
+<li><strong>Thresholds set by hand.</strong> Three are documented as chosen from counts in this dataset: <code>SURELY_A_THING = 20</code> (<code>src/reader.mjs</code>), <code>SURELY_A_VERB = 20</code> (<code>src/links.mjs</code>, fa46cb7) and <code>UNLIKE = 0.3</code> (<code>src/links.mjs</code>). Most rules use counts such as "at least 3" whose origin the code does not record. Training has its own set (prior weights, 20 as pseudo-count weight, sharpening, kinship, the variant and opener thresholds).</li>
+<li><strong>Rules as code.</strong> The 170 rows of section <a href="#rules">9</a> (some rows group several checks) are JavaScript, ordered, many reading the same structures. Their interactions show only by running (section <a href="#r-partner">7.8</a> shows a rule whose own example is caught first by another). Only eight groups carry letters that can be switched off.</li>
+<li><strong>English in the code.</strong> Ending classes, clitics, stem spelling, the plural test, the question mark, the word "it" in the anchored frames and the break marks of openers are in JavaScript, outside the legend (section <a href="#learned">10</a>).</li>
+<li><strong>The legend is not independent of the code.</strong> The code hard-codes the legend's station names, mark names and the <code>nlu</code> slot names (<a href="#hardcoded">box at the end of section 6</a>), so the legend cannot be edited or replaced apart from the code, and the <code>src/legend.mjs</code> header ("no word list and no slot name of its own") holds for word lists only.</li>
+<li><strong>The model carries the legend.</strong> An edit to <code>legend.sop</code> needs retraining before it changes any reading.</li>
+<li><strong>Dataset-shaped learned items.</strong> Some openers ("circle", "260", "roundup 260") and spelling variants (<code>foward→toward</code>, <code>otters→others</code>) come from the dataset's patterns or are wrong; misspellings under 5 letters are never corrected.</li>
+<li><strong>Observed faults</strong> (checked for the first version of this document): "the two lines differ" → <code>head="differ"</code>; "make runway orange" → one modifier run "runway orange"; "make sure it fits" → one nominal used as complement and as subject; "pie radius smaller" → "smaller" as a dependent of the nominal, while the schema document's own example writes it as a modifier of the fragment clause (<code>docs/syntax-schema.md</code>, the <code>syntax.clause</code> section: <code>@c1 syntax.clause form=fragment complement=$n1 modifier="smaller"</code>; Rule 5.2 states the principle with "make the box red").</li>
+<li><strong>The whole dataset against small files.</strong> 65.9% on the random sample against 84–87% on the small files of the first two rounds (<code>improvements-ideas.md</code>). <code>improvements-ideas.md</code> puts this down to long messages, but on the random sample the drawing and diagram messages are not longer than the others; VSS is weakest on diagram messages (60.9%; <a href="syntax-work-2026-11-27.html#i-small">syntax-work-2026-11-27.html, I3</a>). The effect of length itself was not measured.</li>
+<li><strong>The benchmark figure leans on agreement labels.</strong> 586 of VSS's 1,206 accepted circuits in the first run were not read by a judge in that run: they equal labels the messages had before the run, and 567 of those 593 labels VSS had written in agreement with <code>spacy-direct</code> (section <a href="#results">12</a>).</li>
+<li><strong>Portability.</strong> The reader is meant to run without file access, but <code>src/emit-syntax.mjs</code> → <code>lib/syntax.mjs</code> reads the schema file with <code>node:fs</code> at load time (section <a href="#purpose">1</a>). Passing the schema text in, or bundling it, would restore the property; not done.</li>
+<li><strong>Leftovers.</strong> <code>asideW</code> is a constant <code>false</code> in <code>fill</code>; <code>budget.known</code> has no effect by default; <code>anchors.mjs</code> keeps an unused <code>grades</code> and a second quality branch that adds nothing (section <a href="#t-kinds">5.9</a>); the pair <code>between … and</code> never fires (section <a href="#l-pairs">6.4</a>); <code>src/units.mjs.orig</code>, <code>src/syntax.mjs</code> and <code>judging-rules-syntax.md</code> belong to earlier states.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="reuse">15. Steps towards a reusable engine</h2>
+<p><code>improvements-ideas.md</code> ("Making VSS reusable", written after the owner asked whether the rules are general or particular) states that the rules added so far are statements about English that name only function words and use what VSS learns from text, and that what is not yet general is: some thresholds measured on this dataset, the choice of which constructions to cover (driven by the frequent faults of commands to a drawing application), and a few borderline legend words (left/right as direction adverbs, today/tomorrow, thanks). It proposes four steps:</p>
+<ol>
+<li><strong>Audit of generality.</strong> List every rule and word list and try to show each one particular; class each as general English, a threshold tuned on this data, or particular; rewrite or remove the particular ones. Section <a href="#rules">9</a> of this document is a starting inventory; its marks separate the documented thresholds from the undocumented ones.</li>
+<li><strong>Rules as data.</strong> Move the rules out of JavaScript into constructions declared in the legend (SOP Lang), over stations and word marks, so that the engine stays generic and the grammar of English becomes a file that can be read, checked and extended. The word marks of section <a href="#l-words">6.2</a> already move part of the knowledge this way. A precondition: the code now hard-codes the legend's station, mark and slot names (<a href="#hardcoded">box at the end of section 6</a>); constructions declared as data would have to name those through the legend, or the legend could still not change apart from the code.</li>
+<li><strong>Thresholds learned, not set.</strong> The code names the features of each decision; the weights are learned from accepted circuits, so that no number is tuned by hand on this dataset.</li>
+<li><strong>A test outside the dataset.</strong> Run VSS on English it was never tuned on (other kinds of messages or a public corpus) and have a judge read a sample.</li>
+</ol>
+<p>The same file lists ideas not yet tried, and the lever study (section <a href="#limits">14</a>) estimated the gain of four of them on the benchmark, starting from 65.9%:</p>
+<div class="scroll"><table>
+<thead><tr><th>Idea</th><th>Estimated gain (lever study)</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>A station prior taken from the accepted circuits (a station model supervised by the about 62,000 labels in <code>webmeet-dataset/syntactic/</code>)</td><td class="num">+1.4 points</td><td>mapping circuits back to stations needs care, since stations are finer than the syntax keys; the study found the mapping faithful (VSS forced to the mapped stations reproduces 98.7% of agreement labels)</td></tr>
+<tr><td>Learned linker decisions (small classifiers in place of thresholds)</td><td class="num">+0.3 points</td><td></td></tr>
+<tr><td>A table of evidence from spaCy and DistilBERT (DistilBERT's prediction as one more voice where VSS's rules are unsure)</td><td class="num">+1.1 to +6 points</td><td>depends on circuits not yet judged; it would also make VSS less independent of the voices it is meant to agree with</td></tr>
+<tr><td>Reranking k-best readings of VSS</td><td class="num">+0.1 points</td><td>in the <code>nlu</code> schema, alternatives held an accepted reading for only 3 to 6% of rejected messages</td></tr>
+</tbody>
+</table></div>
+<p>The trial circuits of these levers are being judged (<code>eval-results/2026-11-27-vss-lever-trials</code>) to decide which to build; the plan recorded in <code>improvements-ideas.md</code> is "first the measured rule prototypes, one commit each; then the structural rules; then learned decisions where thresholds fail; station-level learning only if the trials justify it". Two related trials were measured and dropped: counting word kinds also from the accepted circuits changed 41 of 1,831 benchmark circuits "with no net gain", and relating "goes" to "go" in the stem rule shifted unrelated readings.</p>
+<p>Any training on the labels meets a circularity: 55,648 of the 62,066 labels came from agreement of VSS and <code>spacy-direct</code> (and 880 more from VSS and an older DistilBERT), so a VSS supervised by them would partly learn its own output, and its later agreement with spaCy would mean less. The <code>nlu</code>-period review quoted in section <a href="#results">12</a> pointed to a lattice of stations with whole circuits assembled from constructions declared in the legend; its estimates were made in the <code>nlu</code> schema, before the lever study placed most faults in units and links.</p>
+<p>Also needed for a fair measure, from this document: the English knowledge now in JavaScript (section <a href="#learned">10</a>) would move into the legend or a language file, and the benchmark sample used to check rules would be replaced by a fresh held-out one.</p>
+
+<!-- ============================================================ -->
+<h2 id="sources">16. Sources</h2>
+<ul>
+<li>Code: <code>strategies/vss/index.mjs</code>, <code>train.mjs</code>, <code>legend.sop</code>, every file of <code>strategies/vss/src/</code>; headers of <code>core.mjs</code>, <code>compare.mjs</code>, <code>evaluate.mjs</code>, <code>judged.mjs</code>, <code>triage.mjs</code>; <code>lib/syntax.mjs</code>, <code>lib/reader.mjs</code>, <code>schemas/syntax/schema.sop</code>.</li>
+<li>Tests: <code>tests/vss-syntax.test.mjs</code>, <code>tests/vss.test.mjs</code> (run for the first version; re-checked by a reviewer at <code>fa46cb7</code>).</li>
+<li>Documents: <code>docs/strategies/vss.md</code>, <code>docs/syntax-schema.md</code>, <code>improvements-ideas.md</code>, <code>tests/benchmark/syntax/README.md</code>, <code>tests/benchmark/syntax/rules.md</code>, <a href="syntax-work-2026-11-27.html"><code>docs/syntax-work-2026-11-27.html</code></a>, <a href="syntax-evaluation-and-conversion.html"><code>docs/syntax-evaluation-and-conversion.html</code></a>.</li>
+<li>Results: <code>eval-results/2026-11-27-syntax-benchmark-random/</code> (<code>table.md</code>, <code>table.json</code>, <code>summary.json</code>, <code>sample.json.gz</code>, <code>sample.lock.json</code>, <code>key/items.jsonl</code>, <code>key/labels-before.jsonl</code>, <code>judging/verdicts-*.jsonl</code>, <code>first-run/</code>), <code>eval-results/2026-11-27-vss-levers-study/study-result.json</code>, <code>eval-results/2026-11-27-round-01/report.md</code>, <code>eval-results/2026-11-27-round-02/report.md</code>.</li>
+<li>History: <code>git log -- strategies/vss</code>, 42 commits from <code>d1c6196</code> to <code>fa46cb7</code>; the messages of <code>24de853</code>, <code>a09047d</code>, <code>9f57aa3</code>, <code>7e8e98d</code>, <code>d12c190</code>, <code>a81dd93</code>, <code>87a221e</code>, <code>45677bc</code>, <code>fa46cb7</code>, <code>8cd3377</code>, <code>5c87955</code> (several of them as quoted by the two reviewers of this document).</li>
+<li>Runs for this document, outputs in a scratch folder: one training run, traces of the reader on the messages quoted above, likeness values, inspection of <code>model.json</code>; for the revision, traces of the rows marked "traced" in section <a href="#rules">9</a> and a count of the label sources in <code>key/labels-before.jsonl</code>.</li>
+</ul>
+
+</main>
+</body>
+</html>

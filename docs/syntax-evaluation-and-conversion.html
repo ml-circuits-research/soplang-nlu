@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How syntactic labels are made and measured</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1e1f22;
+  --muted: #5d5f66;
+  --line: #d9d5cc;
+  --soft: #f1eee7;
+  --code-bg: #f3f0e9;
+  --accent: #2c5b88;
+  --why-bg: #edf3fa;
+  --why-line: #2c5b88;
+  --nob-bg: #fbf3e4;
+  --nob-line: #a8650f;
+  --warn-bg: #fbeeee;
+  --warn-line: #a33a3a;
+  --ok: #2f7a45;
+  --bad: #a33a3a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181b;
+    --fg: #e6e4df;
+    --muted: #a3a29d;
+    --line: #3a3b40;
+    --soft: #212227;
+    --code-bg: #212328;
+    --accent: #8db8e3;
+    --why-bg: #1b2430;
+    --why-line: #6d9fd1;
+    --nob-bg: #2a2318;
+    --nob-line: #d39a4a;
+    --warn-bg: #2c1d1d;
+    --warn-line: #d27a7a;
+    --ok: #7cc48f;
+    --bad: #e08c8c;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3rem; }
+h2 { font-size: 1.45rem; margin: 2.8rem 0 .8rem; padding-top: .6rem; border-top: 1px solid var(--line); }
+h3 { font-size: 1.12rem; margin: 1.8rem 0 .5rem; }
+p, li { max-width: 60rem; }
+a { color: var(--accent); }
+.dateline { color: var(--muted); margin: 0 0 1.2rem; }
+code, pre, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: .88em; }
+code { background: var(--code-bg); padding: .08em .3em; border-radius: 4px; overflow-wrap: anywhere; }
+pre {
+  background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px;
+  padding: .8rem 1rem; overflow-x: auto; line-height: 1.45; margin: .8rem 0 1.1rem;
+}
+pre code { background: none; padding: 0; font-size: .85rem; overflow-wrap: normal; }
+.caption { color: var(--muted); font-size: .9rem; margin: -.6rem 0 1rem; }
+.table-wrap { overflow-x: auto; margin: .8rem 0 1.2rem; }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+caption { caption-side: top; text-align: left; padding-bottom: .3rem; color: var(--muted); font-size: .9rem; }
+th, td { border: 1px solid var(--line); padding: .35rem .55rem; text-align: left; vertical-align: top; }
+th { background: var(--soft); font-weight: 600; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.box { border-left: 4px solid; border-radius: 0 6px 6px 0; padding: .7rem 1rem .4rem; margin: 1.2rem 0; }
+.box > .title { font-weight: 700; margin: 0 0 .4rem; }
+.box.why { background: var(--why-bg); border-color: var(--why-line); }
+.box.nob { background: var(--nob-bg); border-color: var(--nob-line); }
+.box.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+nav.toc { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: .6rem 1.2rem; margin: 1.2rem 0 2rem; }
+nav.toc ol { margin: .3rem 0; padding-left: 1.4rem; }
+nav.toc li { margin: .1rem 0; }
+.flow { list-style: none; padding: 0; margin: 1rem 0 1.4rem; counter-reset: step; }
+.flow > li {
+  position: relative; border: 1px solid var(--line); background: var(--soft);
+  border-radius: 6px; padding: .55rem .8rem .55rem 2.6rem; margin: 0 0 1.5rem;
+}
+.flow > li::before {
+  counter-increment: step; content: counter(step);
+  position: absolute; left: .7rem; top: .55rem; width: 1.4rem; height: 1.4rem; border-radius: 50%;
+  background: var(--accent); color: var(--bg); font-size: .8rem; font-weight: 700; text-align: center; line-height: 1.4rem;
+}
+.flow > li:not(:last-child)::after {
+  content: "\2193"; position: absolute; left: 1.05rem; bottom: -1.45rem; color: var(--muted); font-size: 1.1rem;
+}
+.flow .side { display: block; color: var(--muted); font-size: .9rem; }
+.ok { color: var(--ok); font-weight: 600; }
+.bad { color: var(--bad); font-weight: 600; }
+.small { font-size: .9rem; color: var(--muted); }
+@media (max-width: 40rem) {
+  body { font-size: 15px; }
+  h1 { font-size: 1.6rem; }
+  .flow > li { padding-left: 2.4rem; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>How syntactic labels are made and measured</h1>
+<p class="dateline">Written 2026-11-27. Revised the same evening after two reviews; folders and files are described as they stood at about 18:00.</p>
+<p class="dateline">Related documents: <a href="vss-architecture.html">The VSS reader: architecture</a> (how VSS reads a message, step by step, and every rule it holds) and <a href="syntax-work-2026-11-27.html">Decisions and insights of the syntax work, 2026-11-27</a> (what was decided that day and why, what was measured, what is open).</p>
+
+<p>The <code>syntactic/</code> layer of <code>webmeet-dataset</code> gives each message one syntactic analysis, written in the <code>syntax</code> schema (<a href="syntax-schema.md">syntax-schema.md</a>). This document explains how such an analysis becomes the reference annotation (the "label") of its message and how the programs that write analyses are measured against those labels: the levels L0 to L10 and GOAL, the language-model judges and their rules, the benchmark on a random 1% of the dataset, the conversion rounds, agreement between programs, the batch conversion of the whole dataset, where every file lives, and the pitfalls seen so far. A reviewer can use it to check the method; a newcomer can use it to run each step. The reader that most of the work was about, VSS, is described in <a href="vss-architecture.html">vss-architecture.html</a>; the decisions and findings of the day are in <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a>. Every statement about code names its file, relative to the root of <code>soplang-nlu</code> unless it starts with <code>webmeet-dataset/</code>. Every number says what it counts and where it was counted.</p>
+
+<nav class="toc" aria-label="Contents">
+<strong>Contents</strong>
+<ol>
+<li><a href="#glance">At a glance, with a timeline</a></li>
+<li><a href="#terms">Terms, and the code's own names</a></li>
+<li><a href="#circuit">The circuit that is judged</a></li>
+<li><a href="#same">When two circuits are the same: normal form and core</a></li>
+<li><a href="#levels">The levels L0 to L10 and GOAL</a></li>
+<li><a href="#judges">The judges</a></li>
+<li><a href="#benchmark">The benchmark on a random 1% of the dataset</a></li>
+<li><a href="#rounds">Conversion rounds</a></li>
+<li><a href="#rewrite">Writing a circuit when none is accepted</a></li>
+<li><a href="#agreement">Agreement between strategies of different sources</a></li>
+<li><a href="#batch">The batch conversion of the whole dataset</a></li>
+<li><a href="#counts">How the label counts fit together</a></li>
+<li><a href="#storage">Where everything is stored</a></li>
+<li><a href="#layers">The layers check</a></li>
+<li><a href="#commands">Commands, step by step</a></li>
+<li><a href="#pitfalls">Pitfalls</a></li>
+<li><a href="#notmeasured">What is not measured</a></li>
+<li><a href="#sources">Sources, and the owner's decisions</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="glance">1. At a glance, with a timeline</h2>
+
+<p>A <em>formalizer</em> reads one English message and writes one <em>circuit</em>: lines of SOP Lang, the project's line notation, that split the message into clauses and nominals (noun phrases), give every word one place and tie the parts (section <a href="#circuit">3</a>). The code also calls a formalizer a <em>strategy</em>; both words mean the same program. The <em>label</em> of a message is an accepted circuit. It is stored in the message's row of <code>webmeet-dataset/syntactic/&lt;tab&gt;/&lt;file&gt;.csv</code> and nowhere else. A circuit can be accepted in three ways, and the <code>accepted_by</code> cell of the row records which:</p>
+
+<ul>
+<li><code>judge</code>: a judge (a language model working by <code>tests/benchmark/syntax/rules.md</code>) read the circuit and accepted it;</li>
+<li><code>written</code>: a judge wrote the circuit because no formalizer's circuit was accepted;</li>
+<li><code>agreement</code>: formalizers that read the message from different sources wrote circuits that count as alike, and no judge read it. "Alike" means equal cores (section <a href="#same">4</a>) in the hand-run rounds, and equal <em>relaxed</em> cores, which ignore where a phrase with a linking word attaches, in the batch conversion that produced almost all agreement labels (section <a href="#agreement">10</a>).</li>
+</ul>
+
+<p>The same tools serve two purposes. A <em>benchmark</em> measures formalizers on a fixed sample and prints a table of levels. A <em>conversion round</em> writes the syntactic files of the dataset, and reports the same table along the way. In the owner's words, testing and converting are one activity (<a href="#d8">owner's decision</a>, kept in <code>tests/benchmark/syntax/README.md</code>, section "A conversion round").</p>
+
+<p>The path of one circuit through the tools:</p>
+
+<ol class="flow">
+<li><strong>A strategy writes the circuit.</strong> <code>tests/benchmark/syntax/run.mjs</code> runs every strategy over the sample, each in a process of its own.
+<span class="side">No valid circuit: level L0. Validity is checked by <code>validateSyntax</code> in <code>lib/syntax.mjs</code>.</span></li>
+<li><strong>The circuit is put in normal form and its core is computed.</strong> <code>normalForm</code> in <code>tests/benchmark/syntax/lib.mjs</code>. Two circuits of one message are the same when their cores are equal.</li>
+<li><strong>Is it the label of the message?</strong> Then it is accepted already and no judge reads it.
+<span class="side">Against the labels frozen before the run, this is level L9.</span></li>
+<li><strong>Does the registry of judge decisions hold it?</strong> Then it keeps the verdict it has, accepted or rejected.
+<span class="side"><code>webmeet-dataset/annotations/syntax/v1/judged/*.jsonl</code></span></li>
+<li><strong>In a conversion round only: did strategies of enough different families write it alike?</strong> Then it is settled by agreement. A random share of these circuits still goes to a judge as a control.</li>
+<li><strong>Otherwise it goes to a judge</strong> in a packet, once per message and core, with nothing that tells who wrote it. The judge grades it L8 (acceptable) or L1 to L6 (rejected, with the reason).</li>
+<li><strong>Publication.</strong> What the judge decided goes into a new registry file. Then the labels:
+<span class="side"><code>judge-publish.mjs</code> (benchmark) makes every accepted circuit the label of its message, replacing what the row held. <code>round.mjs write</code> (round) writes new syntactic files and fills empty cells, but never replaces a circuit already in a file (section <a href="#rounds">8</a>).</span></li>
+<li><strong>The table.</strong> <code>table.mjs</code> (or <code>round.mjs report</code>) counts, per strategy, how many messages stand at each level, and GOAL.</li>
+</ol>
+
+<div class="table-wrap">
+<table>
+<caption>State at about 18:00 on 2026-11-27</caption>
+<tr><th>What</th><th class="n">Count</th><th>Where it was counted</th></tr>
+<tr><td>Messages in the syntactic files (all distinct)</td><td class="n">183,497</td><td><code>readLabels</code> of <code>tests/benchmark/syntax/lib.mjs</code> over <code>webmeet-dataset/syntactic/</code></td></tr>
+<tr><td>Messages with a label</td><td class="n">62,066 (33.8%)</td><td>same count</td></tr>
+<tr><td>&nbsp;&nbsp;of which <code>accepted_by</code> = agreement</td><td class="n">56,934</td><td>same count</td></tr>
+<tr><td>&nbsp;&nbsp;of which <code>accepted_by</code> = judge</td><td class="n">5,100</td><td>same count</td></tr>
+<tr><td>&nbsp;&nbsp;of which <code>accepted_by</code> = written</td><td class="n">32</td><td>same count</td></tr>
+<tr><td>Lines in the registry of judge decisions</td><td class="n">12,310 (15.7 MB)</td><td><code>readRegistry</code> and <code>du</code> over <code>webmeet-dataset/annotations/syntax/v1/judged/*.jsonl</code>; 306 of the lines were added at 17:45 (section <a href="#pitfalls">16</a>)</td></tr>
+<tr><td>Syntactic files, mirroring the semantic files</td><td class="n">238 of 238</td><td><code>node tools/layers.mjs check</code> in <code>webmeet-dataset</code>, run at 18:00</td></tr>
+</table>
+</div>
+
+<h3>Timeline of 2026-11-27</h3>
+<p>The order matters for reading the results: the batch conversion wrote its labels before the random benchmark froze its labels, which is why 593 benchmark messages already had a label. Times are commit times (CET) as listed in the chronology of <a href="syntax-work-2026-11-27.html#chronology">syntax-work-2026-11-27.html</a>, or file times where marked. "nlu" is <code>soplang-nlu</code>, "data" is <code>webmeet-dataset</code>.</p>
+<div class="table-wrap">
+<table>
+<tr><th>Time</th><th>Commit or file</th><th>What happened</th></tr>
+<tr><td>13:26–13:45</td><td>nlu <code>e166870</code>, <code>24de853</code>; data <code>e0a20ad</code></td><td>Benchmark tools. VSS judged on the earlier fixed sample; its 1,160 accepted circuits become labels (registry file <code>2026-11-27-vss-fixed-sample.jsonl</code>).</td></tr>
+<tr><td>14:07</td><td>nlu <code>9a57cfe</code></td><td>Conversion rounds (<code>round.mjs</code>).</td></tr>
+<tr><td>14:27–14:40</td><td>nlu <code>662a663</code>, <code>01695d3</code>, <code>5db3975</code>; data <code>0124ab9</code></td><td>The DistilBERT strategy is ported to the syntax schema but keeps weights fitted on the old annotations (<code>662a663</code>). Round 1 closed (575 messages); six judging cases settled.</td></tr>
+<tr><td>14:57–15:03</td><td>nlu <code>7db7628</code>, <code>a58ffb6</code>; data <code>7be6e99</code></td><td>Batch scripts. Round 2 closed (598 messages).</td></tr>
+<tr><td>14:59–15:00</td><td>file times</td><td><code>batch-run.sh</code> writes DistilBERT circuits in six calendar folders (section <a href="#batch">11</a>).</td></tr>
+<tr><td>15:13</td><td>nlu <code>40c00a7</code></td><td>At most four strategies; relaxed agreement.</td></tr>
+<tr><td>15:31</td><td>nlu <code>9ae0e6f</code></td><td>DistilBERT retrained on syntax circuits only; older checkpoints refused.</td></tr>
+<tr><td>15:50–16:14</td><td>nlu <code>925f838</code>, <code>a09047d</code>; data <code>0b58c84</code></td><td>Batch settled (settle files 15:50–15:53), pooled audit judged, batch written: 60,914 messages have a label.</td></tr>
+<tr><td>15:52–16:39</td><td>file times; nlu <code>9f57aa3</code></td><td>Random benchmark: strategies run (logs 15:52), DistilBERT run again after the silver checkpoint was trained (between 16:19:41 and 16:20:06, see <a href="syntax-work-2026-11-27.html#i-distilbert">syntax-work-2026-11-27.html, I9</a>), labels frozen (16:20:03) and 35 packets written (16:20:06), all judged (verdict files 16:25–16:38), table committed (<code>9f57aa3</code>).</td></tr>
+<tr><td>16:51</td><td>data <code>95e7739</code>; nlu <code>e52bfc8</code></td><td>Duplicated data removed; labels only in the syntactic files.</td></tr>
+<tr><td>16:57</td><td>data <code>6e81e6c</code></td><td>Benchmark labels published: 62,066 messages have a label.</td></tr>
+<tr><td>17:38–18:11</td><td>nlu <code>a81dd93</code>; file times</td><td>Three settled cases added to <code>rules.md</code>. A second judging pass in the benchmark folder (packets 36 to 44, section <a href="#benchmark">7</a>).</td></tr>
+<tr><td>17:45</td><td>file times</td><td><code>judge-publish.mjs</code> now keeps a replaced agreement label in the registry; 306 such circuits of the benchmark publication are added (section <a href="#pitfalls">16</a>).</td></tr>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="terms">2. Terms, and the code's own names</h2>
+
+<p>The code uses some words of its own. Each one is listed here once, with the established term it corresponds to.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Word in the code</th><th>What it is</th><th>Established term</th></tr>
+<tr><td>message</td><td>One text a user typed in the WebMeet application (commands and questions to an app that draws pictures, diagrams, charts, documents and calendar entries), one row of a dataset file.</td><td>utterance, input sentence</td></tr>
+<tr><td>tab</td><td>The top folder of the dataset a file stands in: <code>calendar</code>, <code>diagram</code>, <code>document</code> or <code>drawing</code>, one per area of the application.</td><td>a domain split of the corpus</td></tr>
+<tr><td>record, message id</td><td>The number of a row in its file, counted from 1 after the header. A message id is <code>&lt;tab&gt;/&lt;file&gt;#&lt;record&gt;</code>, for example <code>diagram/charts-01.csv#232</code>.</td><td>row index; item identifier</td></tr>
+<tr><td>SOP Lang</td><td>The project's line notation: one line per wire, <code>@id type key=value …</code>. A quoted value holds words of the message, <code>$id</code> refers to another wire, and an unquoted word is a value from a fixed list.</td><td>a graph serialisation format</td></tr>
+<tr><td>wire</td><td>One line of SOP Lang.</td><td>a node of the analysis graph, with its edges</td></tr>
+<tr><td>circuit</td><td>All the wires written for one message.</td><td>a syntactic analysis (parse) of the sentence</td></tr>
+<tr><td>formalizer, strategy</td><td>A program in <code>strategies/&lt;name&gt;/</code> that reads a message and writes its circuit. The five of the benchmark are described in the next table.</td><td>parser, automatic annotator</td></tr>
+<tr><td>label</td><td>The accepted circuit of a message, in the <code>sop</code> cell of its syntactic row.</td><td>reference annotation; gold label</td></tr>
+<tr><td>judge</td><td>A language model that reads a message and one circuit and decides by <code>rules.md</code> whether the circuit is acceptable.</td><td>adjudicator; "LLM as a judge"</td></tr>
+<tr><td>next layer</td><td>The semantic reading that later takes the circuit, with context, and decides what the message means (<code>rules.md</code>, opening paragraph; the meaning circuits of <code>webmeet-dataset/semantic/</code>). A circuit passes when that reading only has to add to it, not undo it.</td><td>downstream semantic interpretation</td></tr>
+<tr><td>verdict, grade</td><td>The judge's decision: grade L8 (accepted) or L1 to L6 (rejected, by the kind of fault).</td><td>adjudication with an error category</td></tr>
+<tr><td>packet</td><td>A file of circuits for one judge (<code>packet-&lt;k&gt;.jsonl</code>), 170 or 200 lines; 100 messages in a rewriting packet.</td><td>a batch of annotation items</td></tr>
+<tr><td>item number <code>n</code></td><td>The running number of a circuit in <code>key/items.jsonl</code>, shared across all packets of a run. A packet holds a run of item numbers; the packet number <code>k</code> is another number.</td><td>item identifier</td></tr>
+<tr><td>registry</td><td>The folder of judge decisions, one line per circuit a judge read or wrote.</td><td>adjudication log</td></tr>
+<tr><td>normal form</td><td>A circuit rewritten so that wire names, wire order and key order no longer show.</td><td>normal form, canonical form</td></tr>
+<tr><td>core</td><td>A text computed from the normal form that says what the circuit says; equal cores mean the same circuit.</td><td>canonical representation used for exact-match comparison</td></tr>
+<tr><td>written alike</td><td>Two strategies wrote circuits with equal cores (strict), or with equal relaxed cores when <code>--relaxed</code> is given.</td><td>exact match; match up to attachment</td></tr>
+<tr><td>relaxed core</td><td>The core without the start of every relation that has a marker, and without its <code>attachment=ambiguous</code> line (<code>relaxedCore</code> in <code>tests/benchmark/syntax/lib.mjs</code>).</td><td>matching that ignores the attachment site of every relation with a linking word (prepositional phrases and marked subordinate clauses)</td></tr>
+<tr><td>family</td><td>Strategies grouped by the source of their analysis: VSS's own learned model, the dependency parse, a hand-written grammar (the Prolog grammar and the Z3 model are two families), a fine-tuned encoder.</td><td>agreement across groups stands in for agreement of independent annotators</td></tr>
+<tr><td>settle, agreement</td><td>To accept a circuit without a judge because strategies of different families wrote it alike.</td><td>consensus labelling by an ensemble</td></tr>
+<tr><td>audit</td><td>Agreed circuits that a judge reads all the same: the random share <code>chooseAudit</code> picks, and any agreed circuit that reaches a packet for another reason.</td><td>quality-control sample, spot check</td></tr>
+<tr><td>rewriting, fixer</td><td>A judge writes the circuit of a message for which no circuit was accepted.</td><td>manual correction, re-annotation</td></tr>
+<tr><td>round</td><td>One pass that converts one or more source files, and measures the strategies on them.</td><td>an annotation batch</td></tr>
+<tr><td>labels before the run</td><td>The labels the messages of a run had when the run was first prepared, kept in <code>key/labels-before.jsonl</code>.</td><td>frozen reference set</td></tr>
+<tr><td>silver</td><td>Circuits settled by agreement, used as weaker training data.</td><td>silver-standard data</td></tr>
+<tr><td><code>first-run/</code></td><td>A folder in a run or round folder that keeps the strategy files of the first run, the circuits the judges saw, before later reruns overwrote the files beside it.</td><td>archived system outputs</td></tr>
+<tr><td><code>gold-only/</code></td><td>A folder in the benchmark folder with a DistilBERT output that, by its name, comes from the checkpoint trained without silver data. Which checkpoint wrote it is not recorded.</td><td>ablation output</td></tr>
+<tr><td>semantic layer, syntactic layer</td><td><code>webmeet-dataset/semantic/</code> and <code>webmeet-dataset/syntactic/</code>: the same messages, with meaning circuits and syntax circuits.</td><td>two annotation layers over one corpus</td></tr>
+<tr><td>knowledge repository</td><td><code>sop-knowledge-worlds</code>, a separate repository of hand-written world knowledge that strategies used before, named by the environment variable <code>SOP_KNOWLEDGE_DIR</code>. The <a href="#d4">owner's decision</a> forbids it, so <code>run.mjs</code> removes that variable before a strategy loads.</td><td>external lexical and world-knowledge resource</td></tr>
+</table>
+</div>
+
+<h3>The strategies</h3>
+<p><code>tests/benchmark/syntax/strategies.mjs</code> lists five strategies in <code>strategyModules</code>; these are the five rows of the benchmark table. The <a href="#d10">owner's decision</a> limits the work to four: VSS, one strategy that reads the dependency parse, DistilBERT, and one hand-written grammar. Prolog and Z3 both hold that fourth place until one of them is dropped (comment in <code>strategies.mjs</code>). "Parked" means they still run in the benchmark but are no longer improved.</p>
+<div class="table-wrap">
+<table>
+<tr><th>Strategy</th><th>What it is</th><th>Described in</th></tr>
+<tr><td><code>vss</code></td><td>The project's own reader. It learns, without any labels, a hidden Markov model (a model of which kind of word follows which, estimated by expectation-maximization) from the <code>text</code> column of the dataset, finds the most probable sequence by Viterbi decoding, and applies hand-written general rules declared in <code>strategies/vss/legend.sop</code>. The repository does not expand the name "VSS".</td><td><a href="vss-architecture.html">vss-architecture.html</a>, <a href="strategies/vss.md">strategies/vss.md</a></td></tr>
+<tr><td><code>spacy</code></td><td>The spaCy dependency parse (a statistical parser's tree with one head per word) with repairs, written as a circuit. The parser's beam (several parses kept during parsing) gives a parse to fall back on and marks <code>attachment=ambiguous</code> where the beam disagrees on where a phrase starts. It is the former <code>spacy-beam</code> under one name (<code>strategies/spacy/index.mjs</code>).</td><td><a href="strategies/spacy.md">strategies/spacy.md</a></td></tr>
+<tr><td><code>distilbert</code></td><td>A DistilBERT encoder (a small pretrained transformer) fine-tuned to predict circuits of the syntax schema.</td><td><a href="strategies/distilbert.md">strategies/distilbert.md</a></td></tr>
+<tr><td><code>prolog</code></td><td>A hand-written grammar run in SWI-Prolog.</td><td><a href="strategies/prolog.md">strategies/prolog.md</a></td></tr>
+<tr><td><code>z3</code></td><td>A hand-written grammar whose choices (word classes, clause boundaries, attachments) are solved as constraints by the Z3 SMT solver, using its MaxSMT mode, which picks the compatible set of choices that best meets weighted constraints.</td><td><a href="strategies/z3.md">strategies/z3.md</a></td></tr>
+</table>
+</div>
+<p class="small">The pages for <code>prolog</code> and <code>z3</code> still describe parts of their earlier versions for the <code>nlu</code> schema (they mention configured worlds and NLU circuits). Eight further strategies are listed in <code>retiredModules</code>: they are left out of rounds and benchmark, still run by name with <code>run.mjs --only</code>, and their code is kept. The batch conversion used one of them, <code>spacy-direct</code>.</p>
+
+<p>Grammar terms used below, in plain words: a <em>clause</em> is one verb with what belongs to it; a <em>nominal</em> is the group of words that describe one thing (noun phrase); its <em>head</em> is the main word and the others are its <em>dependents</em>; a <em>marker</em> is the linking word of a relation (a preposition, "if", the "to" of an infinitive); <em>attachment</em> is the question of which word a phrase hangs from; <em>coordination</em> is putting things side by side with "and", "or", "but". A <em>dependency parse</em> is the tree a statistical parser such as spaCy builds, with one head for each word.</p>
+
+<!-- ============================================================ -->
+<h2 id="circuit">3. The circuit that is judged</h2>
+
+<p>The schema is <code>syntax</code>, version 3, declared in <code>schemas/syntax/schema.sop</code> and specified in <a href="syntax-schema.md">syntax-schema.md</a>. It has four wire types and 18 keys (17 names, since <code>negation</code> stands on two types). It replaced the earlier <code>nlu</code> schema, which had more than 50 keys (<a href="#d3">owner's decision</a>, commit <code>8536c9c</code> and later).</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Wire type</th><th>Key</th><th>What it holds</th></tr>
+<tr><td rowspan="9"><code>syntax.clause</code>: one verb with what belongs to it, or a group of words with no verb</td><td><code>form</code></td><td>one of <code>imperative</code>, <code>declarative</code>, <code>interrogative</code>, <code>fragment</code> (no verb), <code>nonfinite</code> (a verb form that cannot make a sentence by itself: "facing left", "delete it" after "to")</td></tr>
+<tr><td><code>verb</code></td><td>the main verb</td></tr>
+<tr><td><code>auxiliary</code></td><td>helping verbs ("could", "is")</td></tr>
+<tr><td><code>negation</code></td><td>"not", "don't" and the like</td></tr>
+<tr><td><code>subject</code></td><td>a reference to the nominal that is the grammatical subject, when the words show one</td></tr>
+<tr><td><code>complement</code></td><td>references to the other nominals the verb takes, whatever they are to it; in a fragment, every nominal that is not the end of a relation</td></tr>
+<tr><td><code>modifier</code></td><td>words that are neither nominals nor markers: "red", "slightly", "up"</td></tr>
+<tr><td><code>discourse</code></td><td>words said to the listener, outside the grammar of the clause: "please", "hey", "thanks"</td></tr>
+<tr><td><code>ellipsis</code></td><td>on a fragment: a reference to the clause whose verb it shares ("make A blue and B green")</td></tr>
+<tr><td rowspan="2"><code>syntax.nominal</code>: the words that describe one thing</td><td><code>head</code></td><td>the main word (required)</td></tr>
+<tr><td><code>dependent</code></td><td>every other word of the nominal, determiners included</td></tr>
+<tr><td rowspan="5"><code>syntax.relation</code>: a tie between two wires</td><td><code>from</code>, <code>to</code></td><td>references to the wire the relation starts at and the wire it ends at</td></tr>
+<tr><td><code>marker</code></td><td>the linking word: a preposition, "'s", "if", the "to" of an infinitive; no marker means the two wires simply stand together</td></tr>
+<tr><td><code>negation</code></td><td>a negation of this relation only ("but not behind Jo")</td></tr>
+<tr><td><code>attachment</code></td><td>only <code>ambiguous</code>: the relation belongs to the clause it starts at, and the formalizer did not settle whether it attaches to the verb or to a nominal of that clause</td></tr>
+<tr><td><code>syntax.coordination</code>: wires put side by side</td><td><code>conjunct</code>, <code>conjunction</code></td><td>references to the joined wires; the word that joins them ("and")</td></tr>
+</table>
+</div>
+
+<p>In the notation, <code>@c1</code> names a wire, <code>syntax.clause</code> is its type, <code>verb="make"</code> holds words of the message, <code>complement=$n1</code> refers to the wire <code>@n1</code>, and <code>form=imperative</code> is a value from the fixed list. A real message of the random benchmark, with the circuit that <code>prolog</code>, <code>spacy</code> and <code>z3</code> wrote alike and a judge accepted (item 1 of <code>eval-results/2026-11-27-syntax-benchmark-random/key/items.jsonl</code>, grade L8 in <code>judging/verdicts-1.jsonl</code>):</p>
+<pre><code># make a bar chart of the projects by name please
+@c1 syntax.clause form=imperative verb="make" discourse="please" complement=$n1
+@n1 syntax.nominal dependent="a" dependent="bar" head="chart"
+@r1 syntax.relation marker="of" from=$n1 to=$n2
+@n2 syntax.nominal dependent="the" head="projects"
+@r2 syntax.relation attachment=ambiguous marker="by" from=$c1 to=$n3
+@n3 syntax.nominal head="name"</code></pre>
+<p>A constructed example from <a href="syntax-schema.md">syntax-schema.md</a> (section "A whole message") shows a coordination of two clauses:</p>
+<pre><code># move the blue box next to the red circle and make it bigger
+@c1 syntax.clause form=imperative verb="move" complement=$n1
+@n1 syntax.nominal dependent="the" dependent="blue" head="box"
+@r1 syntax.relation from=$c1 to=$n2 marker="next to" attachment=ambiguous
+@n2 syntax.nominal dependent="the" dependent="red" head="circle"
+@c2 syntax.clause form=imperative verb="make" complement=$n3 modifier="bigger"
+@n3 syntax.nominal head="it"
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunction="and"</code></pre>
+
+<p>A program checks the form before any judge sees a circuit: <code>validateSyntax(text, sop)</code> in <code>lib/syntax.mjs</code>. Every word of the message must stand in exactly one quoted value, and punctuation in none. When a word occurs more than once, values take its occurrences in the order the circuit is written (Rule 1 of the specification). A relation that leaves open whether a phrase hangs from the verb or from a nominal starts at the clause and carries <code>attachment=ambiguous</code> (Rule 2).</p>
+
+<!-- ============================================================ -->
+<h2 id="same">4. When two circuits are the same: normal form and core</h2>
+
+<p>Every comparison in the tools is a comparison of cores: whether a circuit is the label, whether the registry holds it, whether two strategies agree. The core is computed in two steps, both in <code>tests/benchmark/syntax/lib.mjs</code>.</p>
+
+<p><strong>The normal form</strong> (<code>normalForm</code>) rewrites a circuit so that:</p>
+<ul>
+<li>wires are named <code>c</code>, <code>n</code>, <code>r</code>, <code>k</code> with a number, in the order of their first word;</li>
+<li><code>dependent</code>, <code>modifier</code>, <code>auxiliary</code>, <code>negation</code> and <code>discourse</code> hold one word per value;</li>
+<li><code>marker</code> and <code>conjunction</code> hold neighbouring words as one value;</li>
+<li>a clause lists its subject, then its complements; a relation lists <code>from</code>, then <code>to</code>.</li>
+</ul>
+
+<p><strong>The core</strong> is <code>coreOf(text, normalForm)</code> from <code>lib/syntax.mjs</code>: a sorted list of lines. Positions count the words of the message from 0, punctuation left out. A wire is named by the position of its first word, and a relation by <code>(start&gt;end)</code>, the names of its <code>from</code> and <code>to</code> wires. Span lines (<code>3-4 marker @(0&gt;5)</code>) say which words a value holds, under which key, in which wire. The other lines give a wire's references (<code>clause 0 complement 1</code>: the complement of clause 0 is the nominal that starts at word 1) and its unquoted values (<code>clause 0 form imperative</code>). Wire names and line order no longer matter.</p>
+
+<pre><code># put the cat next to the red box
+# strategy A
+@c1 syntax.clause form=imperative verb="put" complement=$n1
+@n1 syntax.nominal dependent="the" head="cat"
+@r1 syntax.relation from=$c1 to=$n2 marker="next to"
+@n2 syntax.nominal dependent="the" dependent="red" head="box"
+# strategy B
+@thing syntax.nominal head="cat" dependent="the"
+@place syntax.nominal dependent="the red" head="box"
+@link syntax.relation marker="next" marker="to" to=$place from=$act
+@act syntax.clause complement=$thing verb="put" form=imperative
+
+# both have this normal form
+@c1 syntax.clause form=imperative verb="put" complement=$n1
+@n1 syntax.nominal dependent="the" head="cat"
+@r1 syntax.relation marker="next to" from=$c1 to=$n2
+@n2 syntax.nominal dependent="the" dependent="red" head="box"
+
+# and this core
+0-0 verb @0
+1-1 dependent @1
+2-2 head @1
+3-4 marker @(0&gt;5)
+5-5 dependent @5
+6-6 dependent @5
+7-7 head @5
+clause 0 complement 1
+clause 0 form imperative
+relation (0&gt;5) from 0
+relation (0&gt;5) to 5</code></pre>
+<p class="caption">A constructed example: the two circuits are from <code>tests/syntax-benchmark.test.mjs</code> ("the normal form is one text for one circuit, whoever wrote it"). The normal form and core were printed with <code>normalForm</code> on 2026-11-27.</p>
+
+<div class="box why">
+<p class="title">Why it is done this way</p>
+<ul>
+<li>The judge must not see who wrote a circuit. Wire names such as <code>@x1</code> or <code>@thing</code> would tell. In normal form, a circuit written by several strategies reaches the judge once and looks the same whoever wrote it.</li>
+<li><code>coreOf</code> alone tells apart circuits that say the same thing: <code>marker="next to"</code> against <code>marker="next" marker="to"</code>, or <code>from=$a to=$b</code> against <code>to=$b from=$a</code>. The test checks that the two raw cores above differ and the two normal forms are equal.</li>
+<li>Packets, the registry and the syntactic files all hold circuits in normal form, so the same circuit always has the same text.</li>
+</ul>
+</div>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li><code>attachment=ambiguous</code> is part of the core. The same circuit with and without the mark counts as two circuits. Only the relaxed comparison of section <a href="#agreement">10</a> joins them.</li>
+<li>When repeated words cross between wires, the normal form sometimes cannot be written. <code>normalForm</code> then keeps the core of the circuit as written (<code>kept: 'as written'</code>). Such a circuit may fail to match the same reading written in another order. How often this happens was not measured. <a href="syntax-schema.md">syntax-schema.md</a> (Rule 1, "Known limit") reports that the writer meets the crossing case in 2 to 8 of 1,831 messages, depending on the formalizer.</li>
+<li>The registry stores a <code>core</code> field, but the tools never trust it. <code>readRegistry</code> (<code>tests/benchmark/syntax/lib.mjs</code>) computes the core again from <code>text</code> and <code>sop</code>, so a change of <code>coreOf</code> is picked up without rewriting the registry.</li>
+<li>The core of a label is computed only when it is asked for (<code>labelLine</code>, same file). So reading all 183,497 rows of the syntactic files costs no core computation until a run looks up its own messages.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="levels">5. The levels L0 to L10 and GOAL</h2>
+
+<p>The table has one row per strategy and puts each message at one level. It is written by <code>table.mjs</code> for a benchmark run and by <code>round.mjs report</code> for a round. Both call <code>tableOf</code> and <code>levelOf</code> in <code>tests/benchmark/syntax/lib.mjs</code>.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Level</th><th>Meaning</th></tr>
+<tr><td>L0</td><td>The strategy returned no valid circuit.</td></tr>
+<tr><td>L1 to L6</td><td>The circuit is rejected, by a judge of this run or already in the registry. The level is the judge's grade (section <a href="#judges">6</a>).</td></tr>
+<tr><td>L7</td><td>Unused. In the earlier scale of levels it meant one good and one bad reading; a strategy now returns one circuit.</td></tr>
+<tr><td>L8</td><td>Accepted, but neither L9 nor L10: accepted earlier in the registry; accepted in this run, by a judge or by agreement, for a message that had no label before the run; or made the label after the run started.</td></tr>
+<tr><td>L9</td><td>The circuit is equal to the label the message had before the run. No judge was needed.</td></tr>
+<tr><td>L10</td><td>Accepted in this run, by a judge or by agreement, for a message that had another label before the run.</td></tr>
+<tr><td>waiting</td><td>No judge has read the circuit yet.</td></tr>
+</table>
+</div>
+<p>Grades and levels share their numbers. A judge's grade L8 becomes level L8 or L10, depending on whether the message had a label before the run. L1 to L6 are checked by the judge in order and the first that applies is given, so the number names the first kind of fault found, not how bad the circuit is.</p>
+
+<h3>How <code>levelOf</code> decides, in order</h3>
+<ol>
+<li>No valid circuit (no core): <strong>L0</strong>.</li>
+<li>The core equals the core of the label <em>before the run</em>: <strong>L9</strong>. This is checked before any verdict.</li>
+<li>The run itself has a verdict for the circuit: a judge's line in <code>judging/verdicts-&lt;k&gt;.jsonl</code>, or, in a conversion round, settlement by agreement (<code>key/agreement.jsonl</code>, counted as a grade L8). If rejected, the grade. If accepted: <strong>L10</strong> when the message had a label before the run, else <strong>L8</strong>.</li>
+<li>The registry holds the circuit: accepted gives <strong>L8</strong>, rejected gives its grade.</li>
+<li>The circuit equals the label of <em>now</em>, because it became the label after the run started (for example, settled by agreement in a later round): <strong>L8</strong>.</li>
+<li>Otherwise: <strong>waiting</strong>.</li>
+</ol>
+
+<p><strong>GOAL</strong> = (L8 + L9 + L10) / all messages of the run. The <code>GOAL_LEVELS</code> constant in <code>lib.mjs</code> lists the three levels. While circuits wait, GOAL is a lower bound: a waiting message counts in the denominator only, so GOAL can only rise as waiting circuits receive verdicts. <code>tableOf</code> also gives <code>atMost</code>, the upper bound, which is GOAL if every waiting circuit were accepted, and counts the accepted circuits that carry <code>attachment=ambiguous</code>. The owner set the goal on 2026-11-27: GOAL ideally over 99%. The owner refused to restate it as "precision on unflagged readings plus coverage"; the dataset is to be corrected through the judged loop until the comparison with it is exact (<a href="#d1">owner's decision</a>).</p>
+
+<div class="box why">
+<p class="title">Why it is done this way</p>
+<p>GOAL counts judged acceptance, not exact match with the label. Several circuits of one message can be acceptable under <code>rules.md</code> (for example, a phrase with a marker may start at the clause or at a nominal). The label is one of them, chosen by <code>chooseLabels</code> (<code>tests/benchmark/syntax/lib.mjs</code>: the one most strategies wrote, then the lowest item number). Exact match with the label would therefore count acceptable circuits as wrong, so every circuit that differs from the label is judged. One consequence: L9 rewards the strategy whose acceptable circuit happened to become the label; see the box in section <a href="#benchmark">7</a> for what that does to the random benchmark.</p>
+</div>
+
+<p>The test "levels and GOAL from the labels, the registry and the verdicts of the run" in <code>tests/syntax-benchmark.test.mjs</code> fixes the procedure on ten constructed messages:</p>
+<div class="table-wrap">
+<table>
+<tr><th>Message</th><th>Situation</th><th>Level</th></tr>
+<tr><td>move it</td><td>equal to the label before the run</td><td>L9</td></tr>
+<tr><td>lift it</td><td>accepted in the registry, not the label</td><td>L8</td></tr>
+<tr><td>drop it</td><td>rejected in the registry with L3</td><td>L3</td></tr>
+<tr><td>turn it</td><td>a judge accepts it in this run; the message had another label</td><td>L10</td></tr>
+<tr><td>hide it</td><td>a judge accepts it; the message had no label</td><td>L8</td></tr>
+<tr><td>show it</td><td>a judge rejects it with L5</td><td>L5</td></tr>
+<tr><td>bend it</td><td>no judge yet</td><td>waiting</td></tr>
+<tr><td>fold it, tear it</td><td>no circuit; an invalid circuit</td><td>L0, L0</td></tr>
+<tr><td>put the cat next to the red box</td><td>a judge accepts the reading with <code>attachment=ambiguous</code></td><td>L8</td></tr>
+</table>
+</div>
+<p>GOAL is 5/10 = 50%, and <code>atMost</code> is 6/10.</p>
+
+<h3>The labels before the run</h3>
+<p>L9 and L10 compare with the labels the messages had <em>before</em> the run, not with the labels of now. <code>keepLabelsBefore</code> in <code>lib.mjs</code> writes them to <code>&lt;run&gt;/key/labels-before.jsonl</code>. It does this the first time <code>judge-prepare.mjs</code>, <code>round.mjs settle</code> or <code>round.mjs write</code> is called for the run, or <code>judge-publish.mjs</code> when it has something to publish (it stops at "Nothing new to publish" before the call), and never changes the file after that. A line is <code>{"text", "label", "source", "accepted_by"}</code> for each message of the run that had a label. Older runs have a file in an earlier format, which holds every label of the dataset with the keys <code>{text, label, core, run, source, previous}</code> and no <code>accepted_by</code>. In <code>eval-results/2026-11-27-syntax-benchmark-random/key/labels-before.jsonl</code> that is 60,914 lines, of which 593 belong to the sample; <code>readLabelsBefore</code> reads both formats. A run with no such file is compared with the labels of now.</p>
+
+<div class="box why">
+<p class="title">Why it is done this way</p>
+<p>A publication changes labels (section <a href="#benchmark">7</a>). Without frozen labels, the table of an earlier run would change after every later publication. For example, a strategy whose circuit was the label would drop from L9 to "waiting" once a judge accepted another strategy's circuit for the same message, because the old label may have no registry line at all. This is what the session notes recorded after the benchmark publication replaced agreement labels: the VSS circuits equal to the old labels no longer appeared accepted anywhere (<a href="syntax-work-2026-11-27.html#i-frozen">syntax-work-2026-11-27.html, I6</a>).</p>
+</div>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>L9 is decided before any verdict. A circuit equal to the label before the run is L9 even if the registry holds a rejection of it.</li>
+<li>In a round, a circuit settled by agreement for a message that already had another label counts as L10, though no judge read it. <code>tests/benchmark/syntax/README.md</code> describes L10 as "a judge accepted"; the round section of the same file says the agreement case too. Such an L10 reports a replacement that <code>round.mjs write</code> may not perform (section <a href="#rounds">8</a>).</li>
+<li>An audited agreed circuit counts as accepted by agreement (L8 or L10) until its verdict arrives, because <code>runVerdicts</code> (<code>lib.mjs</code>) adds every agreed circuit as a grade L8 unless a judge's verdict replaces it. It never shows as "waiting".</li>
+<li>A label is never sent to a judge again. <code>collectItems</code> (<code>lib.mjs</code>) leaves out every circuit equal to the label, and <code>agreedCircuits</code> leaves out every circuit that is the label already. Labels settled by agreement are therefore trusted until a publication replaces them. The only check on them is the audit (section <a href="#agreement">10</a>).</li>
+<li>Verdict lines with a format problem: what still counts is described in section <a href="#judges">6</a>, "The verdict file and its check". <code>table.mjs</code> prints how many problem lines there are.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="judges">6. The judges</h2>
+
+<p>The external reviewer proposed the judging criterion and the owner adopted it (<a href="#d2">owner's decision</a>). A circuit passes if the next layer, the semantic reading that later takes the circuit with context and decides what the message means, can continue from it by completing it. It fails only when it states something wrong or loses explicit information. Plausible and incomplete readings pass. The rules are in <code>tests/benchmark/syntax/rules.md</code>. <code>writeJudging</code> in <code>lib.mjs</code> copies them, with the check script, into the judging folder of a run as <code>RULES.md</code> and <code>check.mjs</code>; <code>round.mjs rewrite-prepare</code> and <code>pool.mjs collect</code> copy <code>rules.md</code> the same way. Every new call copies it again (see <a href="#pitfalls">Pitfalls</a>).</p>
+
+<h3>What a judge reads</h3>
+<ul>
+<li><code>judging/RULES.md</code>, before every packet and again in the middle of a long one;</li>
+<li>one <code>judging/packet-&lt;k&gt;.jsonl</code>. Each line is <code>{"n", "text", "sop"}</code>: the item number, the message and one circuit in normal form. Nothing tells which strategy wrote the circuit. Which strategies wrote item <code>n</code> is kept in <code>key/items.jsonl</code>, which is not for the judge.</li>
+</ul>
+<p>The benchmark tools do not start judges. In the work of 2026-11-27, judges were language-model agents; the registry lines name the model <code>claude-opus-5-5</code>. The instruction each agent received beyond <code>RULES.md</code> and its packet, and how packets were assigned to agents, are not recorded in the repository.</p>
+
+<h3>The rule, in one question</h3>
+<p><em>Can the next layer continue from this circuit by completing it, or must it first undo a wrong statement?</em> A rejection must quote the words of the message and name the wrong statement or the lost information. <code>rules.md</code> says: "If you cannot quote the words, the circuit is acceptable." Each line is judged by itself. Several circuits of one message can be acceptable, and a circuit is never compared with the one the judge would have written.</p>
+
+<p><strong>What must be right</strong> (from <code>rules.md</code>):</p>
+<ol>
+<li>the split into clauses and the <code>form</code> of each;</li>
+<li>the <code>verb</code> of each clause, or that it has none, with its <code>auxiliary</code> and <code>negation</code> words;</li>
+<li>whether a fragment shares the verb of another clause (<code>ellipsis</code>);</li>
+<li>which words form each nominal, and its <code>head</code>;</li>
+<li>the <code>subject</code> when the words show one, and which nominals are complements of which clause;</li>
+<li>the end of every relation, its <code>marker</code>, and its start when the words settle it;</li>
+<li>the conjuncts of every coordination.</li>
+</ol>
+<p><strong>Where several readings pass:</strong> the start of a relation with a marker (the clause, or any nominal of it that grammar allows, with or without <code>attachment=ambiguous</code>); which earlier wire a coordination joins when grammar allows several; a word that can be a noun or a verb; a misspelt or unknown word. <strong>What is not judged:</strong> what a complement or modifier means for the verb, which clause holds a <code>discourse</code> word, the order and names of wires, whether a question is meant as a request, what a pronoun refers to, and anything only context or world knowledge would settle.</p>
+
+<h3>Grades</h3>
+<p>A judge gives L8, or the first of L1 to L6 that applies.</p>
+<div class="table-wrap">
+<table>
+<tr><th>Grade</th><th>When</th></tr>
+<tr><td>L8</td><td>Acceptable.</td></tr>
+<tr><td>L1</td><td>A clause is wrong: its <code>form</code>, its <code>verb</code>, an auxiliary or negation in the wrong place, words of one clause held in another, a missing or wrong <code>ellipsis</code>.</td></tr>
+<tr><td>L2</td><td>A word with content is held in <code>discourse</code>, so its place in the sentence is lost.</td></tr>
+<tr><td>L3</td><td>Words in the wrong wire or a wrong tie: a nominal split or merged, a wrong head, a wrong or swapped subject, a complement of the wrong clause, a relation with a wrong end, a <code>marker</code> that is no linking word, or a start the words rule out, a linking word held as a modifier or dependent, a wrong conjunct.</td></tr>
+<tr><td>L4</td><td>The circuit states what the message does not say: an <code>ellipsis</code>, subject, relation or coordination the words do not give.</td></tr>
+<tr><td>L5</td><td>A clause is not written: its verb is held as a modifier, dependent, head or discourse word.</td></tr>
+<tr><td>L6</td><td>Something is left untied inside its sentence, or a pairing the words give is not written ("x 120" with "120" tied to nothing).</td></tr>
+</table>
+</div>
+
+<p>In the first judging pass of the random benchmark the judges graded 5,858 circuits. 3,115 were accepted. Of the 2,743 rejected, 1,640 were L3, 834 L1, 115 L5, 111 L6, 31 L2 and 12 L4 (counted over <code>eval-results/2026-11-27-syntax-benchmark-random/judging/verdicts-1.jsonl</code> to <code>verdicts-35.jsonl</code>).</p>
+
+<h3>Settled cases</h3>
+<p>The section "Settled cases" of <code>rules.md</code> holds 29 cases: six from conversion round 1 (commit <code>01695d3</code>), three from the benchmark judges (commit <code>a81dd93</code>, 17:38), and the rest from earlier in the day: those written when <code>rules.md</code> was created (commit <code>e166870</code>), whose criterion and first cases came from the judging rules of the <code>nlu</code> schema (<code>strategies/vss/judging-rules.md</code>, where commits <code>615e232</code> and <code>9196fe7</code> had added them), and five added in commit <code>24de853</code> (per <a href="syntax-work-2026-11-27.html#goal">syntax-work-2026-11-27.html, "Where the rules came from"</a>). They were added wherever judges ruled differently on the same construction or asked. The section "What you write" follows them. A few of the cases:</p>
+<ul>
+<li>"Could you move it?" is one interrogative clause: "Could" is an auxiliary and "you" the subject.</li>
+<li>A message with no verb ("pie radius smaller", "legend on the right") is a fragment. Making a noun its <code>verb</code> is L1.</li>
+<li>A command needs its verb. When the first word of a message with no other verb can be a noun or a verb ("book design review"), it is the verb. Held as a noun, the command is lost: L1.</li>
+<li>A number or name right after a noun ("block 2", "x 120") may be a <code>dependent</code> of that noun, or a nominal of its own tied to the noun by a relation with no marker. Both pass. Tied to nothing, it is L6.</li>
+<li>Words said to the listener that are quoted as content ("a paragraph saying Thank you") are content. Held as <code>discourse</code>, they are L2.</li>
+<li>A clause that opens with a question word inside another clause ("tell me where it is", "show what I said") states: its form is <code>declarative</code>, and it is tied to the clause it belongs to. Written as <code>interrogative</code> it is L1. A clause that asks at the start of a sentence ("where is it?") is <code>interrogative</code>. (Added in <code>a81dd93</code>.)</li>
+</ul>
+
+<h3>Two real messages</h3>
+<pre><code># hair short     (item numbers 223, 225, 224)
+# vss: L8
+@n1 syntax.nominal head="hair" dependent="short"
+@c1 syntax.clause form=fragment complement=$n1
+
+# prolog, spacy, z3: L8
+@n1 syntax.nominal head="hair"
+@c1 syntax.clause form=fragment modifier="short" complement=$n1
+
+# distilbert: L4
+@n1 syntax.nominal head="hair"
+@c1 syntax.clause form=fragment modifier="short" complement=$n1
+@c2 syntax.clause form=fragment complement=$n1
+# note: 'hair short' is written as two fragments, the second an empty
+#       copy with 'hair' as complement again.</code></pre>
+<pre><code># add a sun 260 400     (item numbers 1190, 1192, 1191)
+# distilbert, vss: L8
+@c1 syntax.clause form=imperative verb="add" complement=$n1
+@n1 syntax.nominal dependent="a" head="sun" dependent="260" dependent="400"
+
+# prolog, spacy: L8
+@c1 syntax.clause form=imperative verb="add" complement=$n1
+@n1 syntax.nominal dependent="a" head="sun"
+@n2 syntax.nominal dependent="260" head="400"
+@r1 syntax.relation from=$n1 to=$n2
+
+# z3: L6
+@c1 syntax.clause form=imperative verb="add" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent="a" head="sun"
+@n2 syntax.nominal dependent="260" head="400"
+# note: In 'a sun 260 400' the numbers '260 400' are a second complement
+#       of 'add', not paired with 'sun'.</code></pre>
+<p class="caption">From <code>eval-results/2026-11-27-syntax-benchmark-random/key/items.jsonl</code> and its verdict files. The comment lines with strategy names and grades are added here; the judge saw only the message and the circuit.</p>
+<p>The judge's note on the Z3 circuit describes what the circuit states: the numbers stand as a second thing added. The fault is that the pairing of the numbers with "sun" is lost, which is L6. The parser's reading ties the numbers to "sun" by a relation with no marker, which passes by the settled case on a number after a noun. No rule or settled case names the head of two numbers side by side, so <code>dependent="260" head="400"</code> gives the judge no wrong statement to quote, and it passes.</p>
+
+<h3>The verdict file and its check</h3>
+<p>For <code>packet-&lt;k&gt;.jsonl</code> the judge writes <code>verdicts-&lt;k&gt;.jsonl</code> in the same folder, one line per packet line:</p>
+<pre><code>{"n": 12, "grade": "L8", "note": ""}
+{"n": 13, "grade": "L3", "note": "'red' is held as a dependent of 'circle', but the words say 'the red box'"}</code></pre>
+<p>The judge then runs <code>node check.mjs &lt;k&gt;</code> in that folder. <code>checkVerdicts</code> in <code>tests/benchmark/syntax/check.mjs</code> reports a problem in these cases, and the last column says whether the line still counts as a verdict (in <code>table.mjs</code>, <code>round.mjs report</code> and the levels):</p>
+<div class="table-wrap">
+<table>
+<tr><th>Problem</th><th>Does the line still count?</th></tr>
+<tr><td>not a JSON object</td><td>no</td></tr>
+<tr><td>a key other than <code>n</code>, <code>grade</code>, <code>note</code></td><td>yes: the problem is reported, but the verdict counts</td></tr>
+<tr><td><code>n</code> is no line of the packet</td><td>no</td></tr>
+<tr><td><code>n</code> is judged twice</td><td>the first line counts, the second does not</td></tr>
+<tr><td>the grade is not L8 or L1 to L6, or the note is not a string</td><td>no</td></tr>
+<tr><td>a rejection whose note quotes no words of the message in single quotes</td><td>no</td></tr>
+</table>
+</div>
+<p>A line that does not count leaves its circuit "waiting". Any problem at all, including an extra key, blocks publication: <code>judge-publish.mjs</code> and <code>round.mjs write</code> publish nothing while any verdict file of the run has a problem.</p>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>The quote check (<code>quotesTheMessage</code>) is loose. It looks only at single quote marks: the straight <code>'</code> and the curly <code>‘</code> and <code>’</code> (<code>QUOTE = /['‘’]/</code>). Any two of them form a pair, and an apostrophe counts as one; double quotes do not count. The test passes when the text between some pair, lower-cased with spaces evened out, occurs in the message and holds a letter or digit. It shows that the note points at words of the message. It does not show that the note is right.</li>
+<li>When the first line for an <code>n</code> fails the check, a second line for the same <code>n</code> is not reported as "judged twice" and can count.</li>
+<li>Two judge agents read all their circuits and then wrote all-accept verdict files with a script. An automatic safety check flagged both. The session checked only that the two agents had changed nothing but their verdict files (session notes, recorded in <a href="syntax-work-2026-11-27.html#i-safety">syntax-work-2026-11-27.html, I11</a>; not recounted here). A verdict file written in one go is no sign by itself that circuits went unread, but that check does not show the all-accept verdicts to be right either, and no spot-check of those packets is recorded. A reviewer who doubts a packet can re-read a sample of its L8 lines against the rules.</li>
+<li>Each circuit was read by one judge. Whether two judges agree, and whether a judge agrees with a human annotator, was not measured (section <a href="#notmeasured">17</a>).</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="benchmark">7. The benchmark on a random 1% of the dataset</h2>
+
+<h3>The sample</h3>
+<p><code>tests/benchmark/syntax/sample.mjs</code> draws a sample in these steps:</p>
+<ol>
+<li>It reads the <code>text</code> column of every message file of the dataset as committed at a revision (through <code>git show</code>, so uncommitted edits do not count). For a commit from before the dataset was split into layers, the message files are the CSV files at the root (<code>messageFiles</code>); after the split, those under <code>semantic/</code>.</li>
+<li>It keeps each distinct text once, under the id <code>&lt;tab&gt;/&lt;file&gt;#&lt;record&gt;</code> of its first record.</li>
+<li>It orders the texts by <code>sha256(seed + "\0" + text)</code>.</li>
+<li>It takes the first <code>round(share × distinct texts)</code> of them that stand in no excluded sample.</li>
+</ol>
+<p>Beside the sample it writes a <code>.lock.json</code> with the seed, share, dataset commit, counts, exclusions and the hash of the sample. An existing sample file is never replaced by a different one.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Sample</th><th class="n">Messages</th><th>How it was drawn</th><th>Use</th></tr>
+<tr><td><code>eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz</code></td><td class="n">1,831</td><td>seed "syntax-2026-11-27", share 0.01, a random 1% of the 183,094 distinct texts at dataset commit <code>5c45966</code> (100 CSV files at the root, before the split), excluding the fixed sample (<code>sample.lock.json</code>). All 1,831 still stand in the dataset, which now has 183,497 messages after later commits (checked with <code>readLabels</code> at 18:00).</td><td>The benchmark of 2026-11-27 (<a href="#d6">owner's decision</a>).</td></tr>
+<tr><td><code>eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz</code></td><td class="n">1,831</td><td>an earlier fixed 1%</td><td>Default of <code>run.mjs</code> when no <code>--sample</code> is given. Strategies were tuned on it on 2026-11-27, so it no longer measures them.</td></tr>
+</table>
+</div>
+
+<h3>The steps</h3>
+<ol>
+<li><strong>Run the strategies:</strong> <code>run.mjs &lt;run&gt; --sample &lt;file&gt;</code>. Each active strategy of <code>strategies.mjs</code> whose exported object declares <code>schema: 'syntax'</code> runs through <code>createReader</code> (<code>lib/reader.mjs</code>) in a forked process. A crash or a timeout (120 s per message by default) costs one message, and the process restarts after it, up to 20 times. <code>SOP_KNOWLEDGE_DIR</code> is removed before a strategy loads, and a <code>knowledgeDir</code> option is dropped, so no strategy can read the knowledge repository (section <a href="#terms">2</a>). The output is <code>&lt;strategy&gt;.jsonl</code> (<code>{id, text, sop, error, ms}</code>), <code>summary.json</code> and <code>logs/</code>. <code>summary.json</code> records counts and times but no model path and no options, so a run folder cannot say which checkpoint a learned strategy used.</li>
+<li><strong>Prepare packets:</strong> <code>judge-prepare.mjs &lt;run&gt; --size 170</code>. Every circuit that is neither in the registry nor the label of its message goes into a packet, once per message and core. The labels before the run are frozen at this step. A second call keeps the item numbers already given and puts new circuits into new packets.</li>
+<li><strong>Judge</strong> (section <a href="#judges">6</a>), and run <code>judging/check.mjs</code>.</li>
+<li><strong>Publish:</strong> <code>judge-publish.mjs &lt;run&gt; --tag &lt;name&gt; --judge &lt;model&gt;</code>.</li>
+<li><strong>Print the table:</strong> <code>table.mjs &lt;run&gt;</code>, and <code>agree.mjs &lt;run&gt;</code> for agreement between strategies. Both can be called at any time.</li>
+</ol>
+
+<p>In a benchmark every distinct circuit that is not already decided goes to a judge, whichever strategy wrote it. On the random sample that was 5,858 circuits of five strategies, in 35 packets (34 of 170 lines and one of 78), all written at 16:20:06 and judged by 16:38 (file times; commit <code>9f57aa3</code>).</p>
+
+<h3>Publication: accepted circuits become labels</h3>
+<p><code>judge-publish.mjs</code> does three things:</p>
+<ul>
+<li><strong>Registry.</strong> It writes one new file <code>&lt;tag&gt;.jsonl</code> into <code>webmeet-dataset/annotations/syntax/v1/judged/</code>, with one line per circuit judged in the run. It never overwrites a file and never adds a second line for a circuit the registry already holds.</li>
+<li><strong>Labels.</strong> Every circuit accepted in the run becomes the label of its message, whatever the row held before, including a circuit settled by agreement (<a href="#d6">owner's decision</a>: "a judge's word counts before agreement"). When several circuits of one message were accepted, the label is the one most strategies wrote, and among equals the one with the lowest item number <code>n</code> (<code>chooseLabels</code> in <code>lib.mjs</code>). <code>writeLabels</code> (same file) rewrites only the files that change, and in them only the cells <code>sop</code>, <code>source</code>, <code>accepted_by</code> of those rows. Row order, line ends and message cells stay byte for byte, so the layers check still passes. Nothing is committed: committing the dataset is a separate step.</li>
+<li><strong>Replaced agreement labels</strong> (code of 17:45). An agreement label that the publication replaces, and that the registry does not hold, is written as an accepted line with judge "agreement" into <code>&lt;tag&gt;-replaced-agreement.jsonl</code>, so the circuit stays recorded as an acceptable reading. The publication of the random benchmark ran before this code; its file was added afterwards (section <a href="#pitfalls">16</a>).</li>
+</ul>
+<p>For the random benchmark the publication gave a judge label to 1,470 messages: 1,152 had none and 318 had another label (dataset commit <code>6e81e6c</code>; section <a href="#counts">12</a>).</p>
+
+<h3>The result of the first judging pass</h3>
+<div class="table-wrap">
+<table>
+<tr><th>Strategy</th><th class="n">L0</th><th class="n">L1</th><th class="n">L2</th><th class="n">L3</th><th class="n">L4</th><th class="n">L5</th><th class="n">L6</th><th class="n">L8</th><th class="n">L9</th><th class="n">L10</th><th class="n">GOAL</th></tr>
+<tr><td>spacy</td><td class="n">0</td><td class="n">132</td><td class="n">10</td><td class="n">166</td><td class="n">0</td><td class="n">2</td><td class="n">10</td><td class="n">922</td><td class="n">406</td><td class="n">183</td><td class="n"><strong>82.5%</strong></td></tr>
+<tr><td>distilbert</td><td class="n">0</td><td class="n">72</td><td class="n">6</td><td class="n">363</td><td class="n">5</td><td class="n">9</td><td class="n">61</td><td class="n">728</td><td class="n">563</td><td class="n">24</td><td class="n"><strong>71.8%</strong></td></tr>
+<tr><td>vss</td><td class="n">0</td><td class="n">195</td><td class="n">4</td><td class="n">342</td><td class="n">0</td><td class="n">39</td><td class="n">45</td><td class="n">620</td><td class="n">586</td><td class="n">0</td><td class="n"><strong>65.9%</strong></td></tr>
+<tr><td>prolog</td><td class="n">41</td><td class="n">229</td><td class="n">1</td><td class="n">383</td><td class="n">7</td><td class="n">37</td><td class="n">4</td><td class="n">658</td><td class="n">238</td><td class="n">233</td><td class="n"><strong>61.7%</strong></td></tr>
+<tr><td>z3</td><td class="n">0</td><td class="n">236</td><td class="n">10</td><td class="n">460</td><td class="n">0</td><td class="n">31</td><td class="n">9</td><td class="n">599</td><td class="n">250</td><td class="n">236</td><td class="n"><strong>59.3%</strong></td></tr>
+</table>
+</div>
+<p class="caption">1,831 messages per strategy, none waiting, L7 unused. Published in <code>eval-results/2026-11-27-syntax-benchmark-random/table.md</code> at commit <code>9f57aa3</code>. The strategy files of that commit are now kept in <code>first-run/</code> of the same folder. Recounted at 18:00 with <code>tableOf</code> over <code>first-run/*.jsonl</code>, with <code>key/labels-before.jsonl</code> as the labels before the run, the run's verdicts and the registry of that time: exactly the counts above. Before the run, 593 of the 1,831 messages had a label.</p>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<p>The benchmark folder is still in use. After commit <code>9f57aa3</code> a parallel session reran strategies in the same folder: <code>spacy.jsonl</code> (17:39, after the spaCy repairs of commit <code>a55e33f</code>), <code>distilbert.jsonl</code> (17:38, with the new checkpoint <code>.local-models/distilbert/syntax-v2</code>) and <code>vss.jsonl</code> (17:49). <code>judge-prepare.mjs</code> was called again: <code>key/items.jsonl</code> now holds 7,123 items, and packets 36 to 44 (1,265 circuits, written at 17:39 and 17:49) form a second judging pass; by 18:11 all of them had verdict files. <code>table.mjs</code> on the folder now counts the rerun files, not the circuits of the table above, and gives other counts for spacy, distilbert and vss. The table above and the split below refer to the first pass, whose circuits are in <code>first-run/</code>. The second pass is not described here.</p>
+</div>
+
+<div class="box warn">
+<p class="title">Not obvious from the code</p>
+<p>What the table counts without a judge. Before this run, the batch conversion (section <a href="#batch">11</a>) had already given 580 of the 1,831 benchmark messages a label, and 576 of these 580 labels are circuits of <code>eval-results/conversion/silver-vss-spacy.jsonl</code>, the file of every circuit the batch settled by agreement. By the <code>source</code> field of <code>key/labels-before.jsonl</code>, VSS wrote all 576: 567 were written alike by VSS and spacy-direct, 6 by VSS and DistilBERT, 1 by all three, and 2 carry <code>vss</code> alone. 13 of the 576 (the 2 with <code>vss</code> alone among them) were also audit lines that a judge read and accepted in the batch. The other 17 labelled messages are 13 labels from rounds 1 and 2 and 4 VSS circuits a judge accepted in the batch folder <code>calendar__meetings-01.01</code>. <code>judge-prepare.mjs</code> sends no circuit equal to a label to a judge, so on the 576 every strategy that wrote the label's circuit stood at L9 with no judge in this run. Splitting the same run by this set (recounted with <code>tableOf</code> over <code>first-run/</code>, 18:00):</p>
+<div class="table-wrap">
+<table>
+<tr><th>Strategy</th><th class="n">GOAL, all 1,831</th><th class="n">the 576 labelled by the batch</th><th class="n">the other 1,255</th></tr>
+<tr><td>spacy</td><td class="n">82.5%</td><td class="n">99.7%</td><td class="n">74.7%</td></tr>
+<tr><td>distilbert</td><td class="n">71.8%</td><td class="n">99.3%</td><td class="n">59.2%</td></tr>
+<tr><td>vss</td><td class="n">65.9%</td><td class="n">100.0%</td><td class="n">50.2%</td></tr>
+<tr><td>prolog</td><td class="n">61.7%</td><td class="n">79.5%</td><td class="n">53.5%</td></tr>
+<tr><td>z3</td><td class="n">59.3%</td><td class="n">81.9%</td><td class="n">48.8%</td></tr>
+</table>
+</div>
+<p>By the batch audit, about 1 in 100 parser and VSS agreements is rejected (10 of 1,140, section <a href="#agreement">10</a>), so counting these labels is not wrong. But the messages where VSS and the parser agree are not a random part of the sample, and on the other 1,255 messages VSS and Prolog change places. DistilBERT was most likely trained on the same agreement circuits (see <a href="#pitfalls">Pitfalls</a>), so its 99.3% on that set is not a measure of reading unseen messages. The name <code>silver-vss-spacy.jsonl</code> misleads: besides the VSS and spacy-direct agreements, the file holds the 1,016 agreements in which DistilBERT took part (section <a href="#agreement">10</a>).</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="rounds">8. Conversion rounds</h2>
+
+<p>A conversion round gives one or more files of <code>webmeet-dataset/semantic/</code> their counterpart in <code>syntactic/</code>, and measures the strategies on them (<a href="#d8">owner's decision</a>). The tool is <code>tests/benchmark/syntax/round.mjs</code>, with one sub-command per step. <code>&lt;round&gt;</code> is a new folder under <code>eval-results/</code>. Every command takes <code>--dataset &lt;folder&gt;</code>. Without it, the commands after <code>start</code> use the dataset recorded in the round's <code>files.json</code>, and <code>plan</code> and <code>start</code> use <code>../webmeet-dataset</code> resolved from the <code>soplang-nlu</code> folder (<code>packageRoot</code> in <code>lib.mjs</code>), not from the working directory. <code>sample.mjs</code> and <code>drop-duplicates.mjs</code> resolve their default the same way.</p>
+
+<ol class="flow">
+<li><strong><code>plan [--rounds 3]</code></strong>: shows which files the next rounds would take. Writes nothing.</li>
+<li><strong><code>start &lt;round&gt; [--min-messages 500] [--order size|name] [--files a.csv,…]</code></strong>: takes the source file with the fewest messages that has no syntactic file and belongs to no round in progress, and adds more until the round has at least 500 messages (<code>pickFiles</code> in <code>round.mjs</code>). It writes <code>files.json</code>, with a sha256 of each source as read from disk, and <code>sample.json</code>, with each distinct non-empty text once and ids <code>&lt;tab&gt;/&lt;file&gt;#&lt;record&gt;</code>.</li>
+<li><strong><code>run.mjs &lt;round&gt; --sample &lt;round&gt;/sample.json</code></strong>: as in a benchmark.</li>
+<li><strong><code>settle &lt;round&gt;</code></strong>: decides what needs no judge and prepares packets for the rest (options below).</li>
+<li><strong>Judges</strong> write <code>judging/verdicts-&lt;k&gt;.jsonl</code>.</li>
+<li><strong><code>rewrite-prepare &lt;round&gt; [--now]</code></strong>: packets for messages with no accepted circuit (section <a href="#rewrite">9</a>).</li>
+<li><strong><code>write &lt;round&gt; --tag &lt;name&gt; --judge &lt;model&gt; [--allow-open]</code></strong>: publishes and writes the syntactic files. Without <code>--judge</code> the registry lines say <code>"judge": "unknown"</code>, with no warning (<code>judge-publish.mjs</code> prints one).</li>
+<li><strong><code>report &lt;round&gt;</code></strong>: how the messages are settled, how often agreement was right, and the table of levels. Can be called at any time.</li>
+</ol>
+
+<h3><code>settle</code>: what it decides</h3>
+<p>For every message, the circuits of the strategies are grouped by core:</p>
+<ul>
+<li>a circuit the registry holds keeps its verdict;</li>
+<li>a circuit equal to the label is accepted already;</li>
+<li>a circuit that strategies of at least <code>--families</code> different families wrote alike (3 by default) is settled by agreement (<code>agreedCircuits</code> in <code>lib.mjs</code>);</li>
+<li>a random share of the agreed circuits (<code>--audit</code>, 0.05 by default) still goes to a judge, mixed with the others so the judge cannot tell which they are. When the judge rejects one, the judge's word counts;</li>
+<li>the remaining circuits go to packets, as in a benchmark, according to <code>--judge</code>.</li>
+</ul>
+<p>It writes <code>settle.json</code> (counts) and <code>key/agreement.jsonl</code> (the agreed circuits, each with an <code>audit</code> flag). The flag is set on every agreed circuit that stands in the run's items, whatever sent it there: the random share, <code>--focus</code>, <code>--judge all</code>, or an earlier call (<code>item.audit = true</code> for any agreed item in <code>settle</code> of <code>round.mjs</code>). For example, in round 1, 262 of the 263 agreed circuits were flagged because they were already in packets from an earlier call (<code>settle.json</code>: 262 agreed and sent to a judge, 1,798 sent in all).</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Option</th><th>Effect</th></tr>
+<tr><td><code>--judge all</code> (default)</td><td>Every circuit not yet decided goes to a judge, as in a benchmark.</td></tr>
+<tr><td><code>--judge needed</code></td><td>A judge reads only what the conversion needs. For a message with no accepted circuit, that is the open circuit with the most families, then the most strategies, then the first strategy of <code>--prefer</code>. When that one is rejected, a later call sends the next. A message that has a label, or an accepted or agreed circuit, sends nothing (<a href="#d9">owner's decision</a>: one judge and one fixer in batch).</td></tr>
+<tr><td><code>--judge audit</code></td><td>Only the audit share of the agreed circuits goes to a judge, plus the circuits of <code>--focus</code>. All other messages stay open for a later call.</td></tr>
+<tr><td><code>--focus vss</code></td><td>The circuits of these strategies always go to a judge, so they get a level on every message.</td></tr>
+<tr><td><code>--families 2</code></td><td>How many different families must agree (section <a href="#agreement">10</a>).</td></tr>
+<tr><td><code>--relaxed</code></td><td>Circuits that differ only in the start of relations with a marker count as written alike (section <a href="#agreement">10</a>).</td></tr>
+<tr><td><code>--prefer vss</code></td><td>Under <code>--relaxed</code>, the circuit of this strategy stands for the group, and that circuit becomes the label.</td></tr>
+<tr><td><code>--audit 0.05</code>, <code>--seed</code>, <code>--size 200</code></td><td>Audit share; seed of the audit choice (default: the round folder's name); packet size.</td></tr>
+</table>
+</div>
+
+<h3><code>write</code>: what it publishes</h3>
+<p>Into the registry file <code>&lt;tag&gt;.jsonl</code> it publishes only what a judge decided: each circuit a judge read, including audited agreed ones, and each circuit a judge wrote. A circuit settled by agreement that no judge read gets no registry line. Its only record is its row in the syntactic file, with <code>accepted_by</code> "agreement". A round in which no judge decided anything writes no registry file.</p>
+<p>Then it writes each syntactic file of the round. Every message of the source file appears once, in order, with the columns <code>text</code>, <code>sop</code>, <code>source</code>, <code>accepted_by</code>. The circuit of a message is its label if the label is among the accepted circuits, else the accepted circuit most strategies wrote (<code>chooseCircuit</code> in <code>round.mjs</code>). The command writes nothing, and lists the messages, while any message of a new file has no circuit. <code>--allow-open</code> writes empty cells for them instead. An existing file is only completed: if the messages are the same and in the same order, and every circuit already there is kept, its empty cells are filled. Otherwise the file is left as it is.</p>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li><code>round.mjs write</code> never changes a cell that holds a circuit, and <code>writeLabels</code> is never called in <code>round.mjs</code>. For an existing syntactic file, if the round would change any circuit already there, the whole file is left untouched ("exists already: not written"), including its empty cells. The accepted circuits of such messages reach only the registry. So the owner's decision that every circuit a judge accepts becomes the label holds for <code>judge-publish.mjs</code>, not for rounds. In a round on an existing file, an L10 (also one by agreement) reports a replacement that <code>write</code> does not perform.</li>
+<li>The registry lines, the round's settled circuits and the labels can disagree about a circuit. <code>roundState</code> (<code>round.mjs</code>) applies the sources in an order where the later one overrides; from strongest to weakest: the registry, a judge of this round, the label, agreement in this round, a circuit written by a judge in this round. The code comment says only "the strongest word last". The order fits two rules of the tools: the first registry line for a circuit counts, and a circuit the registry holds is never sent to a judge again, so a judge of the round can disagree with the registry only if the registry took the circuit up after the packets were made.</li>
+<li><code>report.md</code> is a snapshot of when it was called. The round-1 report in its folder still says "8 need a judge to write the circuit", because it was written before <code>write</code>. The round-2 report says 33 are open for the same reason. <code>written.json</code> is the record of what was published.</li>
+<li>What an earlier <code>settle</code> call settled by agreement stays settled, even if the strategy files have changed since. Strategy files in a round folder are overwritten when a strategy is run again, and VSS was rerun after rule changes. A later <code>report</code> therefore reads circuits that are not the ones the judges saw; <code>first-run/vss.jsonl</code> keeps the first ones.</li>
+<li>Every semantic file now has a syntactic file, after the batch write of section <a href="#batch">11</a>, so <code>round.mjs plan</code> prints "No source file is left for a round" (run on 2026-11-27), and <code>start --files</code> refuses a file that has one. Further work fills the empty cells through the existing folders: settle again, judge, <code>rewrite-prepare --now</code>, then <code>write</code> with a new tag, which completes the file.</li>
+<li>A source file can change after <code>start</code>. <code>write</code> compares the sha256 and says so in its table, and gives a message added since then its label or what the registry knows.</li>
+<li>Rounds 1 and 2 and the batch were written by an earlier version of <code>write</code> that also published agreement lines into the registry. Their <code>written.json</code> files have <code>published.agreement</code> (1 in round 1, 328 in round 2, 56,940 summed over the batch) and lack the <code>settledByAgreement</code> field of the current code. Those registry lines were removed in dataset commit <code>95e7739</code>, so these <code>written.json</code> files name registry lines that no longer exist.</li>
+</ul>
+</div>
+
+<h3>Rounds 1 and 2</h3>
+<div class="table-wrap">
+<table>
+<tr><th></th><th>Round 1</th><th>Round 2</th></tr>
+<tr><td>Files, messages</td><td>17 files, 575 messages</td><td>4 files, 598 messages</td></tr>
+<tr><td>Strategies run</td><td>10</td><td>12</td></tr>
+<tr><td>Distinct circuits</td><td class="n">1,740</td><td class="n">2,327</td></tr>
+<tr><td>Settled by agreement (3 families)</td><td class="n">263</td><td class="n">345 (for 320 messages)</td></tr>
+<tr><td>Agreed circuits a judge read, and accepted</td><td>262, all accepted</td><td>17, all accepted</td></tr>
+<tr><td>Circuits sent to a judge</td><td class="n">1,798</td><td class="n">738</td></tr>
+<tr><td>Circuits written by a judge</td><td class="n">8</td><td class="n">33</td></tr>
+<tr><td>Labels written by <code>write</code></td><td>575 (568 judge, 7 written)</td><td>598 (301 agreement, 272 judge, 25 written)</td></tr>
+<tr><td>Labels now in the round's files</td><td>575 (568 judge, 7 written)</td><td>598 (300 agreement, 273 judge, 25 written)</td></tr>
+</table>
+</div>
+<p class="caption">From <code>eval-results/2026-11-27-round-0{1,2}/settle.json</code>, <code>report.md</code> and <code>written.json</code> (the "files" entries). The last row was counted with <code>readLabels</code> at 18:00; in round 2 the benchmark publication replaced one agreement label ("the first paragraph removed") with a judge label. The commit message of dataset <code>0124ab9</code> gives 567 judge and 8 written for round 1, as cited in <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a>; <code>written.json</code> of the round says 568 and 7.</p>
+<p>Why more circuits were written than became labels (8 against 7, 33 against 25): <code>chooseCircuit</code> takes the label if it is accepted, else the accepted circuit with the most strategies, and a written circuit has none. When a formalizer's circuit of the same message was also accepted, that circuit becomes the label and the written circuit stays only in the registry as accepted. This is possible after <code>rewrite-prepare --now</code> sent a message whose other circuits were still unread; which case applied to these messages was not checked.</p>
+
+<p>VSS on the first run of each round, recounted with <code>tableOf</code> over <code>first-run/vss.jsonl</code> in each round folder: 83.7% GOAL on round 1 and 86.8% on round 2. The VSS file now in the round-1 folder was written after general rules drawn from round 1's rejections (commit <code>e33cc24</code> and later). The same recount on it gives 93.4% on the same messages; the round's <code>report.md</code>, committed at 14:39 after the first of those rules (<code>e33cc24</code>, 14:27), shows 92.3%, the figure cited in <a href="syntax-work-2026-11-27.html#i-small">syntax-work-2026-11-27.html, I3</a>, and <a href="vss-architecture.html#results">vss-architecture.html, section 12</a>. On the random sample of the whole dataset, VSS reached 65.9%.</p>
+
+<!-- ============================================================ -->
+<h2 id="rewrite">9. Writing a circuit when none is accepted</h2>
+
+<p>In a conversion round, a message whose circuits were all rejected, or that no strategy wrote a valid circuit for, has no accepted circuit. <code>round.mjs rewrite-prepare &lt;round&gt;</code> puts such messages into <code>rewriting/packet-&lt;k&gt;.jsonl</code>, 100 to a packet by default. Each line is <code>{"n", "text", "rejected": [{"sop", "note"}]}</code>, so the writer sees what went wrong. The writer is a judge in the role of fixer. It reads <code>rewriting/REWRITE.md</code> (from <code>tests/benchmark/syntax/rewrite.md</code>), <code>RULES.md</code> and the schema, and writes <code>written-&lt;k&gt;.jsonl</code> with lines <code>{"n", "sop"}</code>.</p>
+
+<p><code>node check.mjs &lt;k&gt;</code> in that folder calls <code>tests/benchmark/syntax/rewrite-check.mjs</code>. It validates each circuit against the schema and the message with <code>validateSyntax</code> and says in plain words what to correct ("these words of the message stand in no value: …"). It also refuses a circuit equal to one already rejected for that message.</p>
+
+<p>A message that still has a circuit waiting for a judge is left out, because that circuit may yet be accepted. <code>--now</code> takes it anyway. This is needed after <code>settle --judge needed</code>, which never sends the other strategies' circuits to a judge.</p>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<p>A written circuit is accepted with no second judge. <code>round.mjs write</code> records it in the registry with <code>source</code> "judge", verdict "accepted" and the note "written by the judge: no circuit of a formalizer was accepted for this message". The label gets <code>accepted_by</code> "written" only when no formalizer's circuit of the message is accepted (section <a href="#rounds">8</a>). Rounds 1 and 2 wrote 8 and 33 circuits this way (<code>published.written</code> in <code>eval-results/2026-11-27-round-0{1,2}/written.json</code>), of which 7 and 25 became labels. How accurate written circuits are was not measured.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="agreement">10. Agreement between strategies of different sources</h2>
+
+<p>A circuit is settled without a judge when strategies that read the message from <em>different sources</em> wrote it alike. The source is called the <em>family</em> in the code. It is declared in <code>tests/benchmark/syntax/strategies.mjs</code>; <code>familyFinder</code> maps a strategy name to its family, and a name it does not know is a family of its own.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Family</th><th>Strategies</th><th>What they read the message from</th></tr>
+<tr><td>vss</td><td><a href="strategies/vss.md">vss</a></td><td>its own model learned from the dataset's texts (<code>strategies/vss/train.mjs</code> reads only the text column)</td></tr>
+<tr><td>parser</td><td><a href="strategies/spacy.md">spacy</a>, <a href="strategies/spacy-direct.md">spacy-direct</a>, <a href="strategies/spacy-beam.md">spacy-beam</a>, <a href="strategies/neural-dependencies.md">neural-dependencies</a>, neuro-prolog, neuro-z3, <a href="strategies/neuro-selector.md">neuro-selector</a>, <a href="strategies/selector-distilbert.md">selector-distilbert</a></td><td>the spaCy dependency parse, or a choice among circuits written from it</td></tr>
+<tr><td>prolog</td><td><a href="strategies/prolog.md">prolog</a>, prolog-worlds, <a href="strategies/prolog-example-transfer.md">prolog-example-transfer</a></td><td>a hand-written grammar in Prolog</td></tr>
+<tr><td>z3</td><td><a href="strategies/z3.md">z3</a></td><td>a hand-written grammar solved as constraints with Z3</td></tr>
+<tr><td>distilbert</td><td><a href="strategies/distilbert.md">distilbert</a></td><td>a fine-tuned DistilBERT encoder</td></tr>
+</table>
+</div>
+<p class="small"><code>prolog-worlds</code> is a name kept in the family list for an older strategy; it has no module in <code>strategies.mjs</code> and no folder under <code>strategies/</code>.</p>
+
+<h3>Why agreement must come from different sources</h3>
+<ul>
+<li>Strategies of one source wrote the same circuit for most messages of round 2 (598 messages): spacy-direct and neural-dependencies 97%, the two selectors 88%, neuro-prolog 78% with spacy-direct, prolog and prolog-example-transfer 100%, since the latter has no templates yet (comment in <code>strategies.mjs</code>). Recomputed with <code>agree.mjs</code> in <a href="syntax-work-2026-11-27.html#i-agree">syntax-work-2026-11-27.html, I1</a>: strategies of different families agreed on 28% to 54%.</li>
+<li>When the three spaCy strategies (spacy-direct, spacy-beam, neural-dependencies) wrote a circuit alike in round 1, a judge still rejected 53 of the 439 of them that were judged, 12.1% (442 agreed, 3 got no verdict in the run; recomputed from <code>eval-results/2026-11-27-round-01/</code> for <a href="syntax-work-2026-11-27.html#i-agree">syntax-work-2026-11-27.html, I1</a>; not recounted here).</li>
+<li>On the first judged sample, a judge rejected 14 of 39 circuits that only VSS and Prolog wrote alike, against 3 of 427 that three or four of the earlier families wrote alike (<code>tests/benchmark/syntax/README.md</code>). VSS and Prolog both read word order with a learned lexicon, so their agreement is not independent. This is why <code>settle</code> asks for three families by default.</li>
+<li>The batch accepts two families. When that setting was chosen, the evidence was rounds 1 and 2: VSS and spacy-direct agreed under the relaxed comparison on 606 messages, and a judge rejected 2 of them (commit <code>40c00a7</code>); the comment on <code>relaxedCore</code> gives 325 of 327 accepted for the circuits matched this way. The code records no further reason; the batch ran three strategies, so three families would have required all three to agree (<a href="syntax-work-2026-11-27.html#t1">syntax-work-2026-11-27.html, T1</a>). The batch audit confirmed the setting afterwards: of the parser and VSS agreements, a judge rejected 10 of the 1,140 audited, 0.88%.</li>
+</ul>
+
+<h3>Relaxed agreement</h3>
+<p>The judges accept several starts for a relation with a marker (section <a href="#judges">6</a>). Two strategies that differ only in where such a phrase attaches would never agree under exact matching, though both circuits pass. <code>relaxedCore</code> in <code>lib.mjs</code> therefore removes the start of every relation that has a marker, and its <code>attachment=ambiguous</code> line, before comparing. That covers prepositional phrases and also clauses introduced by a marker such as "if" or the "to" of an infinitive.</p>
+<pre><code># turn underline on for the Results heading   (round 1)
+# vss: "for the Results heading" hangs from "underline"
+@r1 syntax.relation marker="for" from=$n1 to=$n2
+# spacy-direct: it hangs from the clause
+@r1 syntax.relation marker="for" from=$c1 to=$n2
+
+# the relaxed core of "put the cat next to the red box": the start became *
+3-4 marker @(*&gt;5)
+relation (*&gt;5) to 5</code></pre>
+<p>Under <code>--relaxed</code>, the circuit that stands for the group is the one written by the first strategy of <code>--prefer</code>. The batch uses <code>--prefer vss</code>, so it is VSS's choice of start that becomes the label, and the parser may have chosen another start. Why VSS's circuit, and not the parser's, stands for the group is not recorded in the code or the session notes.</p>
+<p>How much the batch depends on the relaxed comparison, recounted at 18:00 over every <code>eval-results/conversion/*/key/agreement.jsonl</code> against the strategy files in the same folders: of the 58,103 agreed circuits, 43,471 (74.8%) were written exactly alike by at least two families, and 14,632 (25.2%) matched only under the relaxed comparison. For parser and VSS the split is 43,237 exact of 57,087; for DistilBERT and VSS only 26 of 793 were exact.</p>
+<p>On rounds 1 and 2 (1,173 messages), VSS and spacy-direct agreed on 606 messages under the relaxed comparison and on 469 strictly, recounted over <code>first-run/vss.jsonl</code> of the two round folders against <code>spacy-direct.jsonl</code>: the circuits the judges saw. The same recount over the VSS files now in those folders, rerun after rule changes, gives 641 relaxed and 496 strict.</p>
+
+<h3>The audit</h3>
+<p><code>chooseAudit</code> (<code>lib.mjs</code>) orders the agreed circuits by <code>sha256(seed + text + core)</code> and takes the first <code>round(share × count)</code>. The choice depends only on the seed, the messages and the circuits, so the same call gives the same audit. <code>round.mjs report</code> prints how many audited circuits the judge accepted. The batch audit, recounted over every <code>eval-results/conversion/*/key/agreement.jsonl</code> and the verdicts of those folders:</p>
+<div class="table-wrap">
+<table>
+<tr><th>Families that agreed</th><th class="n">Agreed circuits</th><th class="n">Read by a judge</th><th class="n">Rejected</th></tr>
+<tr><td>parser + vss</td><td class="n">57,087</td><td class="n">1,140</td><td class="n">10</td></tr>
+<tr><td>distilbert + vss</td><td class="n">793</td><td class="n">18</td><td class="n">0</td></tr>
+<tr><td>distilbert + parser + vss</td><td class="n">114</td><td class="n">2</td><td class="n">0</td></tr>
+<tr><td>distilbert + parser</td><td class="n">109</td><td class="n">3</td><td class="n">0</td></tr>
+<tr><td><strong>All</strong></td><td class="n"><strong>58,103</strong></td><td class="n"><strong>1,163</strong></td><td class="n"><strong>10</strong></td></tr>
+</table>
+</div>
+<p class="caption">All 1,163 were judged in the pool <code>eval-results/conversion-audit/</code>: 1,718 lines in 11 packets, the 1,163 and 555 further VSS circuits of <code>calendar__meetings-01.01</code>. The commit message of dataset <code>0b58c84</code> and the session notes give "10 of 1,154 (0.87%)": 1,140 parser + vss and 14 DistilBERT-pair lines. They counted the 9 audit lines of <code>calendar__meetings-01.01</code> (distilbert + vss, none rejected) with the 564 circuits of that folder, all of them VSS circuits. That folder had 438 agreed circuits, and 9 = round(0.02 × 438), so the 9 look like its audit share; the folder does not record why they were sent. Over all 1,163 read, 10 rejected is 0.86%; for parser + vss alone, 10 of 1,140 is 0.88%.</p>
+<p>Split by how the parser and VSS matched (same recount): 870 audited circuits were written exactly alike, 6 rejected; 270 matched only under the relaxed comparison, 4 rejected. The counts are too small to tell the two rates apart with confidence.</p>
+
+<p>Three of the ten circuits that VSS and the parser agreed on and a judge rejected (notes from <code>eval-results/conversion-audit/verdicts-*.jsonl</code>):</p>
+<ul>
+<li>L1: "'Have the legend switched on.' is a command with 'Have' as its verb and 'the legend' as its complement, but the circuit writes an interrogative clause".</li>
+<li>L3: "'the two people in green' has 'in green' start at 'a man', which states the man is in green and loses the description of the two people".</li>
+<li>L3: "'a girl arms up' is merged into one nominal with head 'arms', but 'a girl' is the thing that is there and 'arms up' describes her".</li>
+</ul>
+
+<p>Two further tools report agreement without changing anything. <code>agree.mjs &lt;run&gt;</code> says, per run, how often all strategies, more than half, and each pair wrote the same circuit, and how often a judged shared circuit was accepted. Only a judge's verdict counts there, never agreement. <code>agreed.mjs &lt;out.jsonl&gt; --strategies a,b &lt;run…&gt;</code> lists the circuits the named strategies wrote alike across many run folders.</p>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>The library default of <code>agreedCircuits</code> is two families. <code>round.mjs settle</code> defaults to three, and <code>batch-settle.sh</code> passes two. Reading only <code>lib.mjs</code> gives the wrong default.</li>
+<li>In strict mode one message can have more than one agreed circuit, when two pairs of families each agree on a different circuit. This happened in round 2 (345 agreed circuits for 320 messages). The syntactic file holds one of them; the other is kept only by the 20 registry lines with judge "agreement" in <code>2026-11-27-round-02.jsonl</code> (<code>webmeet-dataset/annotations/syntax/v1/judged/README.md</code>).</li>
+<li>A family is only as independent as its training. The session notes conclude that a DistilBERT trained on circuits settled by agreement no longer gives an independent voice (<a href="syntax-work-2026-11-27.html#i-distilbert">syntax-work-2026-11-27.html, I9</a>; a reading of a result, not a separate measurement). In the batch, DistilBERT took part only in six calendar folders, very likely with weights fitted on the old annotations (section <a href="#batch">11</a>).</li>
+<li>On the calendar files of templated booking messages, spacy-direct made the time zone the head of the clock time ("14:00 UTC" with head "UTC") in 990 of 1,000 messages of <code>calendar/meetings-01.01</code> (recomputed from that folder's <code>spacy-direct.jsonl</code> for <a href="syntax-work-2026-11-27.html#i-calendar">syntax-work-2026-11-27.html, I8</a>). Agreement was low there through spaCy's fault, not VSS's. For <code>calendar/meetings-01.01</code> a judge read 564 VSS circuits, 9 of them agreed circuits: 560 accepted, 4 rejected (pooled verdicts). The accepted VSS reading keeps the time as head: <code>@n4 syntax.nominal head="14:00" dependent="UTC"</code> in "Please, put Review on the Work 6 calendar on 2026-12-14 at 14:00 UTC for 30 minutes. Thanks!".</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="batch">11. The batch conversion of the whole dataset</h2>
+
+<p>After rounds 1 and 2, the rest of the dataset was converted in one pass. Three shell scripts and the pool tool do this. All of them run from <code>soplang-nlu</code> and write under <code>eval-results/conversion/</code>.</p>
+
+<ol class="flow">
+<li><strong><code>tests/benchmark/syntax/batch-run.sh [parallel=4] [strategies=vss,spacy-direct,distilbert]</code></strong>
+<span class="side">For every semantic file that has no syntactic file and is not held by a hand-run round (<code>eval-results/*-round-*/files.json</code>), it makes a folder <code>eval-results/conversion/&lt;tab&gt;__&lt;name&gt;/</code> with <code>round.mjs start --files &lt;file&gt; --min-messages 1</code>, then runs the strategies with <code>run.mjs --reuse</code>, so output already there is kept. No judge is involved. In the run of 2026-11-27, only 6 of the 217 folders got a DistilBERT file: <code>calendar__meetings-01.01</code>, <code>-01.02</code>, <code>-01.03</code>, <code>-02.01</code>, <code>-02.02</code> and <code>calendar__meetings-03</code> (files from 14:59 to 15:00). In the other 211, <code>summary.json</code> lists only <code>spacy-direct</code> and <code>vss</code>. Why is not recorded.</span></li>
+<li><strong><code>tests/benchmark/syntax/batch-settle.sh [audit=0.02] [parallel=8] [--again]</code></strong>
+<span class="side">For every folder that holds <code>sample.json</code> and <code>spacy.jsonl</code> or <code>spacy-direct.jsonl</code>, it runs VSS (again, or for the first time), because it is quick and its rules change, and then runs <code>round.mjs settle --families 2 --relaxed --prefer vss --judge audit --audit 0.02 --size 170</code>. A folder with a <code>settle.json</code> is skipped unless <code>--again</code> is given. Why the audit share is 0.02 (against the default 0.05) and packets hold 170 lines (against 200 in rounds) is not recorded.</span></li>
+<li><strong><code>tests/benchmark/syntax/pool.mjs collect eval-results/conversion-audit [--size 170] &lt;folders…&gt;</code></strong>
+<span class="side">Each folder holds only a few audit lines, so a judge per folder would be wasteful. The pool gathers every packet line without a verdict into packets of the usual size and writes <code>key.jsonl</code> (pooled number → round, packet, line). Judges work on the pool. <code>pool.mjs distribute</code> then writes each verdict back into its round's <code>judging/verdicts-&lt;k&gt;.jsonl</code> under its own number. A verdict a round already has is kept.</span></li>
+<li><strong><code>tests/benchmark/syntax/batch-write.sh &lt;tag prefix&gt; [judge=claude-opus-5-5]</code></strong>
+<span class="side">For each settled folder, one after the other, it runs <code>round.mjs write --tag &lt;prefix&gt;-&lt;name&gt; --allow-open</code>. Agreed circuits go into the syntactic file. With the current code a registry file is written only where a judge decided something. Messages with no settled circuit keep an empty cell, which a later call with another tag fills.</span></li>
+</ol>
+
+<p>The batch of 2026-11-27 ran an earlier version of <code>write</code> that also put agreement lines into the registry: its <code>written.json</code> files name a registry file in 216 of the 217 folders, and their <code>published</code> counts add up to 58,658 lines (56,940 agreement, 1,704 accepted and 14 rejected by a judge). <code>drop-duplicates.mjs</code> later removed the agreement lines (dataset commit <code>95e7739</code>: 57,249 lines removed over the whole registry, 20 kept, per <a href="syntax-work-2026-11-27.html#d12">syntax-work-2026-11-27.html, D12</a>), which left 204 batch files with the 1,718 judge lines.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>What</th><th class="n">Count</th><th>Source</th></tr>
+<tr><td>Conversion folders (plus 21 files of rounds 1 and 2 = 238)</td><td class="n">217</td><td><code>ls -d eval-results/conversion/*/</code></td></tr>
+<tr><td>Circuits settled by agreement in those folders</td><td class="n">58,103</td><td>recount of <code>key/agreement.jsonl</code>; the same 58,103 lines form <code>eval-results/conversion/silver-vss-spacy.jsonl</code></td></tr>
+<tr><td>Agreed circuits read by a judge</td><td class="n">1,163</td><td>section <a href="#agreement">10</a></td></tr>
+<tr><td>Rows written to the syntactic files with <code>accepted_by</code> agreement</td><td class="n">56,940</td><td>sum of the "agreement" entries of the files in the 217 <code>written.json</code></td></tr>
+<tr><td>Rows written with <code>accepted_by</code> judge (labels the registry or other files already had, and circuits a judge accepted in the batch)</td><td class="n">2,801</td><td>same files</td></tr>
+<tr><td>Cells left empty by the batch write</td><td class="n">122,583</td><td>same files, "open"</td></tr>
+<tr><td>Messages with a label after the batch and the rounds</td><td class="n">60,914 of 183,497</td><td>dataset commit <code>0b58c84</code>; 575 + 598 + 56,940 + 2,801 (section <a href="#counts">12</a>)</td></tr>
+<tr><td>Pooled lines judged (11 packets)</td><td class="n">1,718</td><td><code>eval-results/conversion-audit/key.jsonl</code>: 1,163 agreed circuits (10 rejected) and 555 other VSS circuits of <code>calendar/meetings-01.01</code> (4 rejected)</td></tr>
+</table>
+</div>
+
+<div class="box warn">
+<p class="title">Not obvious from the code</p>
+<p>DistilBERT in the batch: the circuits were very likely written by weights fitted on the old, untrusted annotations, against the owner's decisions that no strategy uses the old annotations and that DistilBERT is retrained on syntax circuits only (<a href="#d4">decision</a>, <a href="#d11">decision</a>). The evidence: the port of commit <code>662a663</code> (14:27) kept "the weights and the selector's ranker, both fitted on the old annotations"; the retraining on syntax circuits, which also refuses older checkpoints, is commit <code>9ae0e6f</code> (15:31); the first syntax checkpoint, <code>.local-models/distilbert/syntax-v1</code>, has its training summary from 15:23, its <code>checkpoint/</code> folder from 15:15 and its weights from 15:19 (file times; see <a href="syntax-work-2026-11-27.html#d11">syntax-work-2026-11-27.html, D11</a>); the six DistilBERT files of the batch are from 14:59 to 15:00. The reviewers of <a href="syntax-work-2026-11-27.html#t1">syntax-work-2026-11-27.html</a> (box after T1) add that at commit <code>7db7628</code> <code>strategies/distilbert/index.mjs</code> still loaded the model through the older worker. This is still inferred: nothing in the folders records the checkpoint, since <code>summary.json</code> has no model path and <code>logs/distilbert.log</code> is empty. The consequence: 1,016 agreed circuits involve DistilBERT (793 with VSS, 114 with the parser and VSS, 109 with the parser), and 986 of them are labels now (769 <code>distilbert+vss</code>, 111 <code>distilbert+spacy-direct+vss</code>, 106 <code>distilbert+spacy-direct</code>; <code>readLabels</code> at 18:00). All of them come from those six calendar files, where spaCy's time-zone fault left few parser agreements. 23 of the 1,016 were audited, none rejected.</p>
+</div>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>The batch used <code>spacy-direct</code>, not <code>spacy</code>: the batch-run default, chosen before the decision to keep one spaCy strategy. Agreement labels therefore say <code>spacy-direct+vss</code> (55,648 of them now), while the benchmark table has a row <code>spacy</code>, which is spacy-beam.</li>
+<li><code>readOutputs</code> (<code>lib.mjs</code>) reads every strategy file a folder's <code>summary.json</code> names, so in the six calendar folders DistilBERT took part in the settlement although the script comment speaks of VSS and the parser, and any two of the three families were enough. The other 211 folders were settled by VSS and spacy-direct alone.</li>
+<li>Because <code>batch-settle.sh</code> reruns VSS, the VSS file in a folder is from the last settle, while the audit verdicts belong to the circuits of that settle. A later rerun with <code>--again</code> may produce circuits no judge has seen. The circuits already agreed stay agreed.</li>
+<li>The folder name is the file path with <code>/</code> replaced by <code>__</code>: <code>calendar/meetings-01.01.csv</code> becomes <code>calendar__meetings-01.01</code>.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="counts">12. How the label counts fit together</h2>
+
+<p>Many near-equal counts appear in this document. This table follows the labels step by step. Every count is of messages, which here equals rows: the 183,497 messages of the syntactic files are all distinct and none stands in two files (<code>readLabels</code> at 18:00).</p>
+<div class="table-wrap">
+<table>
+<tr><th>Step</th><th class="n">Agreement</th><th class="n">Judge</th><th class="n">Written</th><th class="n">All labels</th><th>Source</th></tr>
+<tr><td>Round 1 (17 files, 575 messages)</td><td class="n">0</td><td class="n">568</td><td class="n">7</td><td class="n">575</td><td><code>written.json</code>; data <code>0124ab9</code></td></tr>
+<tr><td>Round 2 (4 files, 598 messages)</td><td class="n">301</td><td class="n">272</td><td class="n">25</td><td class="n">598</td><td><code>written.json</code>; data <code>7be6e99</code></td></tr>
+<tr><td>Batch (217 files)</td><td class="n">56,940</td><td class="n">2,801</td><td class="n">0</td><td class="n">59,741</td><td>217 <code>written.json</code>; data <code>0b58c84</code></td></tr>
+<tr><td><strong>After the batch</strong></td><td class="n"><strong>57,241</strong></td><td class="n"><strong>3,641</strong></td><td class="n"><strong>32</strong></td><td class="n"><strong>60,914</strong></td><td>sums of the rows above; 60,914 is also the line count of the benchmark's <code>labels-before.jsonl</code></td></tr>
+<tr><td>Benchmark publication: 1,152 messages get a first label</td><td class="n"></td><td class="n">+1,152</td><td class="n"></td><td class="n">+1,152</td><td>data <code>6e81e6c</code></td></tr>
+<tr><td>Benchmark publication: 318 labels replaced by a judge label, 307 of them agreement labels (306 from the batch, 1 from round 2) and 11 judge labels</td><td class="n">−307</td><td class="n">+307</td><td class="n"></td><td class="n">0</td><td>commit message of <code>6e81e6c</code>; the split recounted from <code>labels-before.jsonl</code>, the batch audit verdicts and <code>silver-vss-spacy.jsonl</code></td></tr>
+<tr><td><strong>Now</strong></td><td class="n"><strong>56,934</strong></td><td class="n"><strong>5,100</strong></td><td class="n"><strong>32</strong></td><td class="n"><strong>62,066</strong></td><td><code>readLabels</code> at 18:00</td></tr>
+</table>
+</div>
+<p>Other counts and how they relate:</p>
+<ul>
+<li>593 benchmark messages had a label before the run: 13 from the rounds and 580 from the batch. 576 of the 580 are circuits of <code>silver-vss-spacy.jsonl</code>, 13 of those also read and accepted in the batch audit; the other 4 are VSS circuits a judge accepted in <code>calendar__meetings-01.01</code> (section <a href="#benchmark">7</a>).</li>
+<li>Of the 318 replaced labels, 312 had been written by several strategies: the 307 agreement labels, 4 audited batch circuits that VSS and spacy-direct both wrote, and 1 round-2 judge label written by three parser strategies. The other 6 were VSS circuits accepted by a judge in the batch (2 audit lines, 4 circuits of <code>calendar__meetings-01.01</code>). <code>labels-before.jsonl</code> of the benchmark is in the older format, without <code>accepted_by</code>, so the 307 agreement labels were identified through the batch and round-2 agreement files.</li>
+<li>1,482 benchmark messages carry a judge label now: the 1,470 the publication set, and 12 judge labels from before the run that it did not replace. 263 carry an agreement label; 1,745 in all have a label.</li>
+<li>183,094 distinct texts were in the dataset at commit <code>5c45966</code>, from which the sample was drawn; 183,497 are in it now.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="storage">13. Where everything is stored</h2>
+
+<div class="table-wrap">
+<table>
+<tr><th>Place</th><th>What it holds</th><th>Written by</th></tr>
+<tr><td><code>webmeet-dataset/syntactic/&lt;tab&gt;/&lt;file&gt;.csv</code></td><td>The <strong>labels</strong>, and the only store of them (<a href="#d12">owner's decision</a>). Columns <code>text</code>, <code>sop</code> (circuit in normal form, one wire per line, empty if not settled), <code>source</code> (strategies joined by <code>+</code>, or <code>judge</code>), <code>accepted_by</code> (<code>agreement</code>, <code>judge</code>, <code>written</code>, or empty).</td><td><code>round.mjs write</code>, <code>judge-publish.mjs</code></td></tr>
+<tr><td><code>webmeet-dataset/annotations/syntax/v1/judged/&lt;tag&gt;.jsonl</code></td><td>The <strong>registry</strong>: one line per circuit a judge read or wrote, <code>{text, sop, core, verdict, grade, note, judge, run, source}</code>. One file per run or round, never overwritten. The first line for a message and core counts.</td><td>same two tools</td></tr>
+<tr><td><code>webmeet-dataset/annotations/syntax/v1/judged/&lt;tag&gt;-replaced-agreement.jsonl</code></td><td>Agreement labels that a benchmark publication replaced, kept as accepted readings with judge "agreement". One such file exists: <code>2026-11-27-benchmark-random-replaced-agreement.jsonl</code>, 306 lines, written at 17:45.</td><td><code>judge-publish.mjs</code> (code of 17:45)</td></tr>
+<tr><td><code>webmeet-dataset/annotations/syntax/v1/reference/reference-nlu-v1.jsonl</code></td><td>Circuits rewritten by rule from the older <code>nlu</code> schema by <code>convert-nlu.mjs</code>. No judge read them in the <code>syntax</code> schema. They count nowhere and are kept for comparison.</td><td><code>convert-nlu.mjs</code></td></tr>
+<tr><td><code>eval-results/&lt;run&gt;/</code></td><td>A benchmark run: <code>&lt;strategy&gt;.jsonl</code>, <code>summary.json</code>, <code>logs/</code>, <code>judging/</code> (packets, <code>RULES.md</code>, <code>check.mjs</code>, verdicts), <code>key/items.jsonl</code>, <code>key/labels-before.jsonl</code>, <code>table.md/json</code>, <code>agreement.md/json</code>. The random benchmark also has <code>first-run/</code> (the five strategy files of commit <code>9f57aa3</code>, the circuits of the first judging pass, copied there at 17:37 and committed with <code>87a221e</code>, as <a href="vss-architecture.html#results">vss-architecture.html, section 12</a>, records) and <code>gold-only/</code> (a DistilBERT output, section <a href="#terms">2</a>).</td><td>the benchmark tools, and judges for the verdicts</td></tr>
+<tr><td><code>eval-results/&lt;round&gt;/</code></td><td>A round adds: <code>files.json</code>, <code>sample.json</code>, <code>settle.json</code>, <code>key/agreement.jsonl</code>, <code>rewriting/</code> (packets, <code>REWRITE.md</code>, written circuits), <code>key/rewrite-items.jsonl</code>, <code>written.json</code>, <code>report.md/json</code>. Rounds 1 and 2 also have <code>first-run/vss.jsonl</code>.</td><td><code>round.mjs</code></td></tr>
+<tr><td><code>eval-results/conversion/</code>, <code>eval-results/conversion-audit/</code></td><td>The 217 batch folders, with their <code>*.log</code> files beside them, <code>silver-vss-spacy.jsonl</code>, and the pooled audit.</td><td>the batch scripts, <code>pool.mjs</code></td></tr>
+</table>
+</div>
+
+<p>The registry holds 12,310 lines at 18:00. By file: <code>2026-11-27-benchmark-random.jsonl</code> 5,858, <code>2026-11-27-vss-fixed-sample.jsonl</code> 1,831, <code>2026-11-27-round-01.jsonl</code> 1,806, <code>2026-11-27-round-02.jsonl</code> 791, 204 files <code>2026-11-27-agreement-*.jsonl</code> from the batch with 1,718 lines, and <code>2026-11-27-benchmark-random-replaced-agreement.jsonl</code> 306. By kind: 7,771 accepted by a judge, 4,172 rejected, 41 written by a judge, and 326 lines with judge "agreement" (20 in round 2, 306 replaced agreement labels).</p>
+
+<div class="box why">
+<p class="title">Why it is done this way</p>
+<p>The owner asked for no duplicated data (<a href="#d12">owner's decision</a>). Until 2026-11-27, <code>annotations/syntax/v1/labels.jsonl</code> (47.6 MB) repeated the labels, and the registry held lines with judge "agreement" that repeated the circuits settled by agreement. <code>tests/benchmark/syntax/drop-duplicates.mjs</code> removed both, after checking every line against the syntactic files. It reports first, and changes nothing without <code>--apply</code>. An agreement line stayed when removing it would lose something. The registry went from 58 MB to 6.7 MB (dataset commit <code>95e7739</code>); the batch files were already part of those 6.7 MB, since they came with commit <code>0b58c84</code> before it. The 15.4 MB of the registry at the first version of this document was those 6.7 MB plus the benchmark file <code>2026-11-27-benchmark-random.jsonl</code> (8.7 MB, dataset commit <code>6e81e6c</code>); the replaced-agreement file (0.34 MB) brings it to 15.7 MB. A label settled by agreement that is still a label has exactly one record: its row, with <code>accepted_by</code> "agreement".</p>
+</div>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>A syntactic file holds only the present label. What a row held before is in the git history of <code>webmeet-dataset</code>, and for the messages of a run in that run's <code>key/labels-before.jsonl</code>.</li>
+<li>A message that stands in several files gets its label from the first file in name order that has a non-empty cell (<code>readLabels</code>), and <code>writeLabels</code> writes the label into every file the message stands in. No such message exists now.</li>
+<li>The <code>RULES.md</code> in a run folder shows the rules at the last preparation, not those the verdicts were given under (see <a href="#pitfalls">Pitfalls</a>).</li>
+<li><code>--registry &lt;folder&gt;</code> on <code>judge-prepare.mjs</code>, <code>judge-publish.mjs</code>, <code>table.mjs</code> and <code>agree.mjs</code> makes a trial use another registry. Its labels then come from a folder <code>syntactic</code> beside it, or from <code>--syntactic</code> (<code>syntacticDirOf</code> in <code>lib.mjs</code>), so a trial never reads or writes the dataset's labels.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="layers">14. The layers check</h2>
+
+<p>The <a href="#d7">owner's decision</a>: <code>semantic/</code> and <code>syntactic/</code> are mirrors, with the same paths, the same messages and the same order, and no file holds more than 1,000 messages. <code>webmeet-dataset/tools/layers.mjs</code> keeps this without any language model:</p>
+<ul>
+<li><code>node tools/layers.mjs split [--max 1000] [--dry]</code> splits each semantic file of more than <code>--max</code> messages into parts <code>&lt;name&gt;.01.csv</code>, <code>&lt;name&gt;.02.csv</code>, …, in row order, each part repeating the header. The bytes of every row are kept. It checks that the header followed by the rows of all parts gives back the original file before removing it. A syntactic file with the same path is split at the same rows, after a check that its messages match. Commit <code>d44ab91</code> split 49 files into 187 parts.</li>
+<li><code>node tools/layers.mjs check</code> checks that every syntactic file has a semantic file with the same path, the same number of rows and the same message in each row. It exits with 1 and lists what differs. At 18:00 it printed: "238 of 238 semantic files have their syntactic file. Every one mirrors its source: same path, same messages, same order."</li>
+</ul>
+
+<div class="box nob">
+<p class="title">Not obvious from the code</p>
+<ul>
+<li>The check compares messages only, never circuits. A wrong or missing <code>sop</code> cell passes.</li>
+<li><code>round.mjs write</code> writes each distinct, non-empty text of a source once (<code>messagesOfFile</code> in <code>round.mjs</code>), while the check compares row counts. A source file with a repeated or empty message would get a syntactic file the check rejects. No such file exists now, since the check passes on all 238.</li>
+<li><code>writeLabels</code> and <code>round.mjs write</code> keep row order and line ends exactly so that this check keeps passing after every publication.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="commands">15. Commands, step by step</h2>
+
+<p>All commands run from the <code>soplang-nlu</code> folder unless marked. The strategies read the environment variables they document. For example, <code>spacy</code> needs a Python with spaCy and an English pipeline, named by <code>SOP_NLU_SYNTAX_PYTHON</code> and <code>SOP_NLU_SYNTAX_MODEL</code> (<code>strategies/spacy/index.mjs</code>, <a href="strategies/neural-dependencies.md">strategies/neural-dependencies.md</a>), and <code>distilbert</code> takes its checkpoint from <code>SOP_NLU_DISTILBERT_MODEL</code>, else <code>.local-models/distilbert/syntax-v1</code> (<code>strategies/distilbert/index.mjs</code>). Give per-strategy options with <code>run.mjs --options &lt;file.json&gt;</code>. The test command unsets <code>SOP_KNOWLEDGE_DIR</code> for the same reason <code>run.mjs</code> does.</p>
+
+<pre><code># 0. tests of the tools (24 tests; all passed on 2026-11-27, in about 4 s)
+env -u SOP_KNOWLEDGE_DIR node --test tests/syntax-benchmark.test.mjs
+
+# 1. a new random sample (never overwrites a different sample)
+node tests/benchmark/syntax/sample.mjs eval-results/&lt;folder&gt;/sample.json.gz \
+  --share 0.01 --seed &lt;text&gt; \
+  --exclude eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz \
+            eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz
+
+# 2. a benchmark
+node tests/benchmark/syntax/run.mjs eval-results/&lt;run&gt; \
+  --sample eval-results/&lt;folder&gt;/sample.json.gz [--only vss,spacy] [--jobs 3]
+node tests/benchmark/syntax/judge-prepare.mjs eval-results/&lt;run&gt; --size 170
+#    judges: read judging/RULES.md and judging/packet-&lt;k&gt;.jsonl,
+#    write judging/verdicts-&lt;k&gt;.jsonl, then
+node eval-results/&lt;run&gt;/judging/check.mjs &lt;k&gt;
+node tests/benchmark/syntax/judge-publish.mjs eval-results/&lt;run&gt; --tag &lt;run&gt; --judge &lt;model&gt;
+node tests/benchmark/syntax/table.mjs eval-results/&lt;run&gt;
+node tests/benchmark/syntax/agree.mjs eval-results/&lt;run&gt;
+
+# 3. a conversion round
+#    plan and start find no file since the batch write; continue through the
+#    existing folders instead (section 8)
+node tests/benchmark/syntax/round.mjs plan --rounds 3
+node tests/benchmark/syntax/round.mjs start eval-results/&lt;round&gt; [--files drawing/style-01.csv]
+node tests/benchmark/syntax/run.mjs eval-results/&lt;round&gt; --sample eval-results/&lt;round&gt;/sample.json
+node tests/benchmark/syntax/round.mjs settle eval-results/&lt;round&gt; \
+  [--judge needed --focus vss] [--families 3] [--audit 0.05]
+#    judges write judging/verdicts-&lt;k&gt;.jsonl
+node tests/benchmark/syntax/round.mjs rewrite-prepare eval-results/&lt;round&gt; [--now]
+#    a judge writes rewriting/written-&lt;k&gt;.jsonl and runs:
+#    node eval-results/&lt;round&gt;/rewriting/check.mjs &lt;k&gt;
+node tests/benchmark/syntax/round.mjs write eval-results/&lt;round&gt; --tag &lt;round&gt; \
+  --judge &lt;model&gt; [--allow-open]
+node tests/benchmark/syntax/round.mjs report eval-results/&lt;round&gt;
+
+# 4. the batch conversion
+tests/benchmark/syntax/batch-run.sh 4 vss,spacy-direct,distilbert
+tests/benchmark/syntax/batch-settle.sh 0.02 8
+node tests/benchmark/syntax/pool.mjs collect eval-results/conversion-audit --size 170 eval-results/conversion/*/
+#    judges write eval-results/conversion-audit/verdicts-&lt;k&gt;.jsonl and run its check.mjs
+node tests/benchmark/syntax/pool.mjs distribute eval-results/conversion-audit
+tests/benchmark/syntax/batch-write.sh 2026-11-27-agreement claude-opus-5-5
+
+# 5. the dataset (run in webmeet-dataset)
+node tools/layers.mjs check
+node tools/layers.mjs split --dry
+
+# 6. duplicated data (reports only, unless --apply; see Pitfalls before --apply)
+node tests/benchmark/syntax/drop-duplicates.mjs [--apply]</code></pre>
+
+<p>Nothing here commits. Committing the dataset is a separate step, and the owner asked for a commit after each step (<a href="#d14">owner's decision</a>).</p>
+
+<!-- ============================================================ -->
+<h2 id="pitfalls">16. Pitfalls</h2>
+
+<h3>A publication replaces labels</h3>
+<p>Every circuit a judge accepts in a benchmark becomes the label of its message, also over a label settled by agreement that no judge rejected. In the random benchmark, 318 of the 593 messages that had a label before the run hold another circuit now; 307 of the old labels were agreement labels (section <a href="#counts">12</a>). An agreement label has no registry line, so until 17:45 such a replaced circuit was recorded nowhere except the git history and the run's <code>key/labels-before.jsonl</code>, and a later run that wrote it again sent it to a judge again (<code>improvements-ideas.md</code>). Since 17:45 <code>judge-publish.mjs</code> keeps it in <code>&lt;tag&gt;-replaced-agreement.jsonl</code>; for the random benchmark that file was added afterwards with 306 lines. The one agreement label it lacks is the round-2 label of "the first paragraph removed", whose circuit is still recorded only in git and <code>labels-before.jsonl</code>. Always read L9 and L10 against the frozen labels, and do not delete <code>key/labels-before.jsonl</code>.</p>
+
+<h3><code>drop-duplicates.mjs --apply</code> would now remove the kept circuits</h3>
+<p><code>checkRegistryLines</code> in <code>tests/benchmark/syntax/drop-duplicates.mjs</code> removes a line with judge "agreement" whenever the message's cell holds a label with <code>accepted_by</code> judge or written, whatever circuit that label is. The lines of a replaced-agreement file are exactly of that kind. Run at 18:00 without <code>--apply</code>, the tool reported: "306 agreement lines repeat the syntactic files and can be removed: 0 files rewritten, 1 files left with no line and removed." With <code>--apply</code> it would delete <code>2026-11-27-benchmark-random-replaced-agreement.jsonl</code>. Do not run it with <code>--apply</code> until that rule is changed.</p>
+
+<h3>The rules in a run folder are the latest, not those the verdicts were given under</h3>
+<p>Every call of <code>judge-prepare.mjs</code>, <code>round.mjs settle</code> (both through <code>writeJudging</code> in <code>lib.mjs</code>), <code>round.mjs rewrite-prepare</code> or <code>pool.mjs collect</code> copies <code>rules.md</code> over the folder's <code>RULES.md</code> (<code>copyFileSync</code>). This has just happened: the benchmark's <code>judging/RULES.md</code> (17:49) holds the rules with 29 settled cases, while the 5,858 verdicts of the first pass were given at 16:25–16:38 under an earlier version. To know the rules behind a verdict file, look up <code>tests/benchmark/syntax/rules.md</code> in git at the time of the verdicts.</p>
+
+<h3>Benchmark messages in training data</h3>
+<p>The owner allows training on the dataset, its texts and its accepted circuits, but not hard-coding its cases (<a href="#d5">owner's decision</a>). The 1% benchmark is therefore not a held-out set for a learned strategy unless training excludes it, and the table has to be read with that in mind:</p>
+<ul>
+<li>The DistilBERT checkpoint <code>.local-models/distilbert/syntax-v1-silver</code> was trained with <code>eval-results/conversion/silver-vss-spacy.jsonl</code> (58,103 agreement circuits, weight 0.3, nothing excluded per its <code>training-summary.json</code>, 16:19:23). That file holds 576 of the 1,831 benchmark messages. Which checkpoint wrote the judged circuits of <code>first-run/distilbert.jsonl</code> is not recorded. They are not the circuits of <code>gold-only/distilbert.jsonl</code> (1,137 of 1,831 differ); the packets that hold them were written at 16:20:06, after the silver checkpoint's training summary; and the split of 99.3% on those 576 messages against 59.2% on the other 1,255 (section <a href="#benchmark">7</a>) fits a model trained on the agreement circuits. Likely, not verified.</li>
+<li><code>strategies/distilbert/retrain.mjs</code> now reads every label of the syntactic files: judge and written labels as gold, agreement labels as silver unless <code>--no-agreement</code>. 1,745 benchmark messages carry a label now (1,482 judge, 263 agreement), so a retrain without <code>--exclude</code> trains on them. The checkpoint <code>syntax-v2</code> (17:38) excluded them: its <code>training-summary.json</code> lists 1,482 gold and 263 agreement lines excluded. <code>--exclude</code> takes a plain JSON array or JSON Lines file of <code>{text}</code>. The file is read as UTF-8 text, so the gzipped sample must be unpacked first.</li>
+<li>VSS learns from the text column of the whole dataset, benchmark messages included (<code>strategies/vss/train.mjs</code>). That is learning from text, not from labels.</li>
+<li><a href="strategies/distilbert.md">strategies/distilbert.md</a> still names <code>labels.jsonl</code> as the default gold file. The file was removed, and <code>retrain.mjs</code> refuses <code>--gold</code>.</li>
+</ul>
+
+<h3>Labels count without a judge</h3>
+<p>A circuit equal to the label is L9 and is never judged. Where labels were made by agreement of two strategies, those two strategies collect L9 on every such message. On the random benchmark that is 576 messages, all of them L9 for VSS (section <a href="#benchmark">7</a>). Report GOAL together with the split by labelled and unlabelled messages when comparing strategies.</p>
+
+<h3>Small files, and rules drawn from the files measured</h3>
+<p>VSS had 83.7% and 86.8% on the first runs of the small files of rounds 1 and 2, but 65.9% on the random sample (recounted in section <a href="#rounds">8</a>). <code>improvements-ideas.md</code> gives the reason that the dataset is dominated by long drawing and chart messages; on the random sample, though, the drawing and diagram messages are not longer than the others (13.9 and 12.4 words on average against 13.1), and VSS is weakest on diagram messages (<a href="syntax-work-2026-11-27.html#i-small">syntax-work-2026-11-27.html, I3</a>). Rules drawn from a round's own files inflate that round's score: VSS went from 83.7% to 92.3% on round 1 after the first rules from its rejections (the round's <code>report.md</code>), and to 93.4% with the file now in the folder. Only unseen files measure.</p>
+
+<h3>Retraining VSS shifts unrelated readings</h3>
+<p>The learned model of VSS is estimated again from scratch after any change to <code>strategies/vss/legend.sop</code> or the word-form rules in <code>strategies/vss/src/forms.mjs</code>, so readings that have nothing to do with the change can shift. Marks are therefore added as new open lists, the model is retrained once, and the damage is checked at once. A change to the stem rule for "goes" was dropped for this reason (session notes; no count recorded). Counting word kinds (verb, thing, quality) from the accepted circuits as well changed 41 of 1,831 benchmark circuits with no net gain (<code>improvements-ideas.md</code>, "Measured and dropped"; not recounted here).</p>
+
+<h3>Judging cost</h3>
+<ul>
+<li>Judging every strategy's circuit in round 1 meant 1,798 circuits for 575 messages (<code>settle.json</code>). Reading only the circuit the conversion needs (<code>--judge needed</code>) brought a round down to a few packets (session notes, <a href="syntax-work-2026-11-27.html#i-cost">syntax-work-2026-11-27.html, I10</a>; not counted). The benchmark judged 5,858 circuits for 1,831 messages, because every strategy needs a level there.</li>
+<li>The batch put a whole dataset's audit into 11 pooled packets (1,718 lines) instead of one judge per folder for 217 folders (<code>pool.mjs</code>).</li>
+<li>The table of all strategies comes from the 1% benchmark, not from every round (<a href="#d9">owner's decision</a>).</li>
+</ul>
+
+<h3>Smaller traps</h3>
+<ul>
+<li>A verdict file with one malformed line blocks the whole publication. Run <code>check.mjs</code> on every packet first.</li>
+<li><code>run.mjs</code> without <code>--sample</code> runs the earlier fixed sample, on which strategies were tuned.</li>
+<li><code>round.mjs start</code> finds no file now (section <a href="#rounds">8</a>); continue through the existing folders.</li>
+<li><code>round.mjs write</code> without <code>--judge</code> writes "unknown" into the registry lines without a warning.</li>
+<li><code>report.md</code> in a round folder is a snapshot; <code>written.json</code> records what was published, but the <code>written.json</code> files of the rounds and of the batch name agreement lines that were later removed from the registry.</li>
+<li>A run folder can be reused by later reruns, as the benchmark folder was. Keep the judged strategy files apart (<code>first-run/</code>) before rerunning.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="notmeasured">17. What is not measured</h2>
+<ul>
+<li>How often two judges give the same verdict on the same circuit: not measured. Each circuit was read by one judge. The settled cases in <code>rules.md</code> were added where judges ruled differently, which shows that disagreement exists.</li>
+<li>How often the language-model judge agrees with a human annotator: not measured (no such measurement is recorded in the repository or cited in the session notes).</li>
+<li>How accurate the circuits written by judges are: not measured. They are accepted without a second reading.</li>
+<li>How reliable agreement is for pairs involving DistilBERT: 23 audited circuits, none rejected, too few to say; and the checkpoint behind them is not recorded.</li>
+<li>Whether agreements matched only under the relaxed comparison are less reliable than exact ones: 4 of 270 against 6 of 870 audited, too few to say.</li>
+<li>How far GOAL on the random 1% carries over to messages from outside the dataset: not measured.</li>
+<li>How often <code>normalForm</code> falls back to the circuit as written, and whether such circuits fail to match equal readings: not measured.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="sources">18. Sources, and the owner's decisions</h2>
+
+<h3>The owner's decisions of 2026-11-27</h3>
+<p>The working session of 2026-11-27 kept these decisions, with their reasons, in notes that are not in the repository. <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a> records the same decisions as D1 to D14, with the commits where each landed; the plan and several of the measurements are also in <code>improvements-ideas.md</code>. This document refers to them by content and links here.</p>
+<ol>
+<li id="d1">The goal is judged acceptance: GOAL = L8 + L9 + L10, ideally over 99%. It is not restated as precision plus coverage; instead the dataset is corrected through the judged loop until the comparison with it is exact.</li>
+<li id="d2">Fair judging, the external reviewer's criterion adopted by the owner: a circuit passes if the next layer can continue from it by completing it, and fails only when it states something wrong or loses explicit information.</li>
+<li id="d3">A small, purely syntactic schema (<code>syntax</code>, version 3, four wire types, 18 keys, established grammar terms) replaces the 50-key <code>nlu</code> schema.</li>
+<li id="d4">Every strategy writes the <code>syntax</code> schema directly from the text, with no knowledge repository and no use of the old annotations, which are no longer trusted.</li>
+<li id="d5">Rules and word lists may name only function words and common verbs, never nouns, adjectives or anything particular to the dataset. Training on the dataset (its text and its accepted circuits) is allowed; hard-coding its cases is not.</li>
+<li id="d6">Evaluation on a random 1% of the whole dataset (1,831 messages). Every circuit a judge accepts becomes the label of its message, whatever the message had before.</li>
+<li id="d7">The dataset is split into <code>semantic/</code> and <code>syntactic/</code>, kept as mirrors, with no file over 1,000 messages.</li>
+<li id="d8">Testing and converting go together in rounds. A round takes the next source files without a syntactic file, and a file under 500 messages means taking another.</li>
+<li id="d9">One judge and one fixer in batch: per message a judge reads one circuit, and a fixer writes the circuit when it is rejected. The table of all strategies comes from the 1% benchmark, not from every round.</li>
+<li id="d10">At most four strategies are worked on, chosen for different sources of analysis: vss, spacy, distilbert and one hand-written grammar. Prolog and Z3 are parked, and eight close variants are left out.</li>
+<li id="d11">DistilBERT is retrained on syntax circuits only, from the pretrained base model.</li>
+<li id="d12">No duplicated data: the syntactic files are the only store of labels, and the registry keeps only what a judge read or wrote.</li>
+<li id="d13">The partial semantic work of an earlier session was committed as it stood, for the history.</li>
+<li id="d14">Commit each step, keep the plan in <code>improvements-ideas.md</code>, and run independent work in parallel.</li>
+</ol>
+
+<h3>Files read</h3>
+<p>Read for this document: <code>tests/benchmark/syntax/</code> (<code>README.md</code>, <code>rules.md</code>, <code>rewrite.md</code>, <code>lib.mjs</code>, <code>run.mjs</code>, <code>judge-prepare.mjs</code>, <code>check.mjs</code>, <code>judge-publish.mjs</code>, <code>table.mjs</code>, <code>agree.mjs</code>, <code>round.mjs</code>, <code>rewrite-check.mjs</code>, <code>sample.mjs</code>, <code>agreed.mjs</code>, <code>pool.mjs</code>, <code>batch-run.sh</code>, <code>batch-settle.sh</code>, <code>batch-write.sh</code>, <code>strategies.mjs</code>, <code>drop-duplicates.mjs</code>), <code>tests/syntax-benchmark.test.mjs</code>, <code>lib/syntax.mjs</code> (<code>coreOf</code>), <code>schemas/syntax/schema.sop</code>, <a href="syntax-schema.md">syntax-schema.md</a>, <code>strategies/spacy/index.mjs</code>, <code>strategies/distilbert/index.mjs</code>, <code>strategies/distilbert/retrain.mjs</code>, <code>docs/strategies/*.md</code>, <code>strategies/vss/train.mjs</code>, <code>improvements-ideas.md</code>, <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a>, <a href="vss-architecture.html">vss-architecture.html</a>; the training summaries under <code>.local-models/distilbert/</code>; in <code>webmeet-dataset</code>: <code>README.md</code>, <code>syntactic/README.md</code>, <code>annotations/syntax/v1/README.md</code>, <code>annotations/syntax/v1/judged/README.md</code>, <code>tools/layers.mjs</code>; the run folders <code>eval-results/2026-11-27-syntax-benchmark-random</code>, <code>2026-11-27-round-01</code>, <code>2026-11-27-round-02</code>, <code>conversion/</code>, <code>conversion-audit/</code>.</p>
+<p>The recounts marked "18:00" or "recounted" were made read-only with the functions of <code>tests/benchmark/syntax/lib.mjs</code>, <code>layers.mjs check</code> and <code>drop-duplicates.mjs</code> without <code>--apply</code>; nothing in the dataset or the run folders was changed. No git command was run for the revision of this document: statements about commits rest on the commit messages and times as cited in <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a> and <code>improvements-ideas.md</code>, on the reviewers' checks where marked, and on file times. Numbers marked "session notes" were taken from the notes of the working session as recorded in <a href="syntax-work-2026-11-27.html">syntax-work-2026-11-27.html</a>, and were not recounted.</p>
+
+</main>
+</body>
+</html>

@@ -2,6 +2,14 @@
 
 A native reader proposes up to two independent SOP Lang circuits for a single utterance. Pass `maxReadings: 1` to `createReader` to receive at most one. Configure worlds when opening the reader. Worlds supply vocabulary, schemas and knowledge. The utterance supplies the participants, instructions and evidence. Preserve a pronoun as written and leave its referent open. Every reading stands on its own.
 
+## Documents on the syntax schema work (2026-11-27)
+
+Three HTML pages describe the move to the `syntax` schema; each links to the other two.
+
+- [vss-architecture.html](vss-architecture.html): how the VSS reader learns from raw text and reads one message into a syntax circuit, step by step, with a catalogue of its rules, its measured results and its known limits.
+- [syntax-work-2026-11-27.html](syntax-work-2026-11-27.html): the decisions taken on 2026-11-27 and their reasons, the insights and measurements of the day, what was tried and dropped, the state at the end of the day and the open points.
+- [syntax-evaluation-and-conversion.html](syntax-evaluation-and-conversion.html): how a syntax circuit becomes the label of its message and how strategies are measured: levels L0 to L10 and GOAL, the judges and their rules, the random 1% benchmark, agreement between strategies, conversion rounds and the batch conversion, storage, commands and pitfalls.
+
 ## Reading a circuit
 
 The source is `put a beanie on the avatar`. Z3 emitted this circuit on the paired sample.
