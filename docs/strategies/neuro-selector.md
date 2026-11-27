@@ -1,22 +1,20 @@
-# Neuro-Selector
+[Home](../README.md) › [Formalizers](../formalizers/README.md) › neuro-selector (moved)
 
-`neuro-selector` uses a fitted model to rank source-complete SOPs from four public proposal families. Two run the base and adapted transformer dependency beams, one runs the adapted compact direct projector, and one runs Neuro-Prolog. Neuro-Prolog uses the greedy dependency graph from the base beam request.
+# neuro-selector (moved)
 
-Set the dependency model variables described in [proposal collection](../../experiments/proposal-selection/README.md) and provide `SOP_KNOWLEDGE_DIR`. Set `SOP_NLU_SELECTOR_MODEL` to a fitted `sop-proposal-ranker-v1` JSON file, or install it as `strategies/neuro-selector/model.json`. The reader accepts `selectorModelPath` as an explicit override.
+This page: a pointer to where this content now lives. Kind: Reference.
 
-```js
-import {createReader} from 'soplang-nlu'
-import {neuroSelector} from 'soplang-nlu/strategies/neuro-selector'
+This was the page of the strategy `neuro-selector` in `docs/strategies/`. Its content now lives in:
 
-const reader = await createReader({strategy: neuroSelector, knowledgeDir: '/path/to/sop-knowledge-worlds'})
-try {
-  const result = await reader.propose('Move the circle beside the square.')
-  console.log(result.candidates)
-} finally {
-  await reader.close()
-}
+- [Retired formalizers: neuro-selector](../formalizers/retired.md#neuro-selector): what it is now and why it is retired.
+- [Strategies of the nlu-schema period](../project/nlu-strategies.md#neuro-selector): what the earlier page described.
+
+Its text as it stood is kept in the git history:
+
+```sh
+git show 97a1b83:docs/strategies/neuro-selector.md
 ```
 
-The ranker sees current source and circuit features, including agreement across proposal families. It deduplicates exact SOPs and applies the fitted ranking and similarity policy. The public reader returns at most two validated readings. The internal provider pool keeps the candidate domain used to fit the ranker. Every output is an unchanged proposal from one or more families. If the pool has source-grounded partials but no complete reading, the strategy returns the first public partial unscored with status `partial`. An empty pool returns no candidates with status `no-eligible`. Selector scores rank readings and do not guarantee their meaning.
+---
 
-Run the benchmark with `STRATEGIES=neuro-selector` to measure this strategy explicitly. It loads two transformer models and one compact model per worker.
+Next: [Retired formalizers](../formalizers/retired.md#neuro-selector) · Up: [Formalizers](../formalizers/README.md)

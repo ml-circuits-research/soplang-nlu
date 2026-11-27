@@ -1,61 +1,48 @@
 # Working on now
 
-Updated by hand with every step; the numbers are in the sections this text links to.
+Written by hand at each step. It holds no scores on purpose, so that it cannot contradict the computed
+sections of this page. Each judged step, with its score: [Progress over time](#progress).
 
-**Latest results**
+**Latest steps** (2026-11-27, evening)
 
-- spaCy reached **89.6%** on the benchmark (86.8% before) after a second round of general repairs in the layer
-  that writes its circuits (commit `0a7bb62`).
-- VSS reached **75.5%** on the benchmark (65.9% at the first judging): the rules of three fault analyses and
-  the measured prototypes of the lever study ([Progress over time](#progress)). It is now above DistilBERT
-  (73.1%).
-- The lever trials, judged in full: evidence from DistilBERT on the roles of words would add about 3.9 points
-  to VSS; with perfect word tags (stations) up to about 9 points. Better tagging is a real lever for VSS,
-  alongside the structural rules.
-- Where VSS and spaCy write different circuits, both are accepted in a large share of messages: the schema
-  allows several readings ([Agreement](#agreement)).
-- **A wider agreement key** (commit `c8d0a09`): two circuits now count as the same also up to eight choices
-  the judges' rules let pass either way (which word heads a name, a number after a noun, where a discourse
-  word sits, "let's", "left of", quantity phrases, "a bit", naming participles). On the judged benchmark it
-  adds 182 agreements where both circuits were accepted and none where one was rejected. On the 217 files
-  of the batch conversion, VSS and spaCy now agree on 38.9% of messages instead of 31.7% (calendar: 56.0%
-  instead of 10.6%), so more cells can be filled without a judge, with the usual 2% audit.
+- **spaCy**: a second, third, fourth and fifth round of general repairs in the layer that writes its
+  circuits (commits `0a7bb62`, `730c906`, `fa4452c`, `0f20f16`). After each round, judges read the
+  benchmark circuits that changed.
+- **VSS**: three rounds of rules (commits `71f0dd2`, `85de0bb`, `c080ce8`). Among them: subject–verb
+  agreement and "-ing" verbs after the verbs that take them, both learned from the raw text; fronted
+  clauses; lists after "with" and after colons. After each round, judges read the benchmark circuits
+  that changed.
+- **DistilBERT**: retrained on the grown labels, with the benchmark messages held out (checkpoint
+  `syntax-v3`), and measured (commit `6af9b97`).
+- **A wider agreement key**, `variants` (commit `c8d0a09`): two circuits also count as the same up to
+  the choices the judges' rules let pass either way ([Agreement between formalizers](evaluation/agreement.md)).
+- **The conversion refilled**: VSS and spaCy, in newer versions, ran again over the files of the batch
+  conversion; agreement was settled with the wider key, and a judge read a random 2% of the new agreed
+  circuits (pooled in `eval-results/conversion-audit-02` and `eval-results/conversion-audit-03`, the
+  second in commit `aef741e`). Counts: [The dataset](#dataset) and [Agreement](#agreement).
+- **The judges' rules**: ten settled cases added after a consistency check of all distinct verdicts,
+  with the verdicts they contradict (commit `7ffdbd4`).
+- **Two learned methods, measured and not adopted**: a transition-based parser trained on the labels,
+  and spaCy fine-tuned on the judged circuits (`experiments/syntax-learned/README.md`).
+- **strict-vss**: the design of a separate formalizer that reads through a vector-symbolic sentence
+  state, and its first measurements (commit `f5be34c`; [Formalizers](formalizers/README.md)).
 
-- **Two learned methods, measured and not adopted** (`experiments/syntax-learned/README.md`): a
-  transition-based parser for VSS trained on the labels (55% known accepted, 63–76% estimated, below VSS), and
-  spaCy fine-tuned on the judged circuits (about break-even with the base model). Both mostly learn VSS's own
-  conventions, because most labels so far are VSS's agreement circuits; they need judged examples from the hard
-  part of the dataset first.
+**Next, in order** (the journal, "Next steps")
 
-- **The dataset grew to 45.6%** (83,619 of 183,497 messages have an accepted circuit; 33.8% before): VSS and
-  spaCy in their current versions ran again over the 217 files of the batch conversion, agreement was settled
-  with the wider key, a judge read a random 2% of the new agreed circuits (431 of 433 accepted), and the empty
-  cells were filled ([Dataset](#dataset)). On the way a fault of the write step was found and fixed: a file
-  where one labelled message had got another circuit was skipped whole (commit `9b2831e`).
-
-**Running at this moment**
-
-- **VSS rules, next round.** The largest group first: the finite verb found by agreement with its subject
-  ("the board dials in tomorrow morning", "the data lives somewhere" are today read as nouns), built on a
-  number habit learned from the text, not on word lists; then fronted clauses ("while you're at it, …"),
-  measures and appositions set off by commas, numerals as heads, relative clauses.
-- **DistilBERT retrained on the grown labels** (syntax-v3: 3,670 judged circuits and 77,800 agreement circuits
-  to train on, benchmark held out); then it runs on the benchmark and a judge reads its new circuits.
-
-**Next, in order**
-
-1. Judge the benchmark circuits that the next VSS round changes; record the new GOAL here.
-2. A third round for spaCy on what judges still reject: coordinations with the wrong conjuncts, scene-list
-   items, relations that start across an 'and'.
-3. Rerun VSS over the conversion after each round of rules and settle again (each gain fills cells without a
-   judge, with a 2% audit).
-4. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
-5. Conversion rounds for the messages that stay open: a judge reads one circuit per message and writes it when
-   it is rejected.
+1. Commit the next VSS round once checked; judge only the benchmark circuits that changed.
+2. After each round of rules, run VSS again over the conversion, settle with the wider key, audit 2%,
+   fill the empty cells.
+3. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one
+   most strategies wrote), and a fixer writes it when it is rejected.
+4. Retrain DistilBERT as the labels grow (benchmark held out) and measure.
 
 **Not measured yet** (what a reviewer will ask)
 
-- GOAL on a fresh random sample: the rules were found by reading this benchmark's rejected circuits, so the
-  current sample now overstates VSS somewhat. A new sample will be drawn once the labels have grown.
-- VSS learns its word habits from the raw text of the whole dataset, including the benchmark's messages (no
-  labels): this is allowed (unsupervised), but it is not a held-out measurement in the strict sense.
+- GOAL on a fresh random sample: rules were found by reading this benchmark's rejected circuits, so the
+  current sample overstates VSS and spaCy somewhat
+  ([Limits of the measurements](evaluation/validity.md#no-longer-an-unseen-sample)). A new sample will
+  be drawn once the labels have grown.
+- VSS learns its word habits from the raw text of the whole dataset, including the benchmark's messages
+  (no labels): this is allowed (unsupervised), but it is not a held-out measurement in the strict sense.
+- How often two judges, or a judge and a person, agree on this schema
+  ([Judges](evaluation/judging.md#what-is-not-known-about-judges)).

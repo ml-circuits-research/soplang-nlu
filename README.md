@@ -1,32 +1,48 @@
 # soplang-nlu
 
-Formalise a single natural-language message into plausible SOP Lang circuits using the installed worlds and schemas. Each reading is independent. The library also records lexical and phrase evidence anchored to the original text.
+soplang-nlu reads one English message typed to an application and writes how the sentence is built, as a
+**circuit** in the SOP Lang notation, in the `syntax` schema (`schemas/syntax/schema.sop`). It uses only the
+words of the message. Several formalizers (the code says *strategies*, one folder each under `strategies/`) do
+this from different sources of knowledge; their circuits are judged and become the labels of the WebMeet
+dataset.
+
+**Documentation: [docs/README.md](docs/README.md)**: what the project is, reading paths, and sections from the
+concepts to the reference. Current numbers: [docs/STATUS.md](docs/STATUS.md).
+
+## Use
+
+The package is not published (`"private": true` in `package.json`). Run code from a file inside this
+checkout, where a module can import the package by its own name:
 
 ```js
 import {createReader} from 'soplang-nlu'
-import {prolog} from 'soplang-nlu/strategies/prolog'
+import {vss} from 'soplang-nlu/strategies/vss'
 
-const reader = await createReader({
-  strategy: prolog,
-  knowledgeDir: process.env.SOP_KNOWLEDGE,
-  swipl: process.env.SWIPL
-})
+const reader = await createReader({strategy: vss})
 try {
-  const {candidates} = await reader.propose('Move it to the left')
-  for (const {sop, check} of candidates) console.log(sop, check)
+  const {candidates, error} = await reader.propose('move it')
+  if (error) console.error(error)
+  for (const {sop} of candidates) console.log(sop)
 } finally {
   await reader.close()
 }
 ```
 
-The strategy proposes the syntactic roles, links and optional semantic values for each complete candidate. The adapter attaches source coverage and schema diagnostics to its circuit. The benchmark can evaluate the separate historical `w.request` proposal method with `EVAL_SCHEMA=w.request`.
+The reader checks the circuit with `validateSyntax` (`lib/syntax.mjs`) and returns it in `candidates` only
+when it is valid; otherwise `error` says why. VSS needs only Node.js. The other formalizers need more:
+spaCy and DistilBERT need Python, Prolog needs SWI-Prolog, Z3 needs `npm ci --prefix strategies/z3`.
+Details: [Run a formalizer](docs/guides/run-a-formalizer.md) and [Library API](docs/reference/library.md).
 
-The Node.js core uses built-in modules. The [Prolog](docs/strategies/prolog.md) strategy requires a SWI-Prolog executable. The [Z3](docs/strategies/z3.md) strategy requires z3-solver. Both use a SOP installation with the native runtime and the configured knowledge worlds. See the [design and evaluation protocol](docs/README.md) for wire evidence, source offsets, timings and grading. Run `npm test` for the library tests.
+## Commands
 
-The ported formaliser sources include their respective license files under strategies/. The WebMeet evaluation comparator carries its license under tests/benchmark/webmeet/.
+- `npm test`: the library tests (`node --test tests/*.test.mjs`).
+- The syntax benchmark and the conversion tools are in `tests/benchmark/syntax/`:
+  [Run the benchmark](docs/guides/run-benchmark.md). (`npm run benchmark` runs the older
+  `tests/benchmark/port-run.mjs`, not the syntax benchmark.)
+- `node docs/status/build.mjs` rebuilds the status page; `node docs/tools/check-docs.mjs` checks the
+  documentation.
 
-The separately trained [Prolog example-transfer strategy](docs/strategies/prolog-example-transfer.md) learns slot patterns from the portion of the committed dataset outside the evaluation split. Its training time, training fingerprint and alternative quality are recorded alongside the two symbolic baselines.
+## Licenses
 
-For a standalone dependency-parser formaliser, pass `spacyDirect` or `spacyBeam` to the same reader with a local Python executable and English spaCy model. Both produce native SOP circuits directly. Direct projection returns one graph. Beam projection explores alternative dependencies and returns up to three distinct readings. [Direct strategy and source-grounded example](docs/strategies/spacy-direct.md) · [Beam strategy and paired evaluation](docs/strategies/spacy-beam.md)
-
-The [VSS strategy](docs/strategies/vss.md) learns its reader from unannotated message text alone. It needs no parser or annotated circuit, reads a message in a fraction of a millisecond, and its reader is portable JavaScript.
+The ported formalizer sources include their license files under `strategies/`. The WebMeet evaluation
+comparator carries its license under `tests/benchmark/webmeet/`.

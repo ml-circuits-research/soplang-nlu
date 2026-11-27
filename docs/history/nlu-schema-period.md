@@ -1,80 +1,26 @@
-# Notes from the `nlu` schema period (until 2026-11-26)
+[Home](../README.md) › [Project](../project/README.md) › nlu-schema notes (moved)
 
-These notes were the index of docs/ before the move to the `syntax` schema on 2026-11-27. They describe the earlier, detailed `nlu` schema (schemas/nlu/schema.sop), its evaluation with w.request legends and paired benchmarks, and design rules of that time. They are kept as they were, for the history; the current work is described in [../README.md](../README.md).
+# Notes from the nlu-schema period (moved)
 
-## Formalising the current text
+This page: a pointer to where these notes now live. Kind: Reference.
 
-A native reader proposes up to two independent SOP Lang circuits for a single utterance. Pass `maxReadings: 1` to `createReader` to receive at most one. Configure worlds when opening the reader. Worlds supply vocabulary, schemas and knowledge. The utterance supplies the participants, instructions and evidence. Preserve a pronoun as written and leave its referent open. Every reading stands on its own.
+This file was the index of `docs/` before the move to the syntax schema on 2026-11-27. It described the
+earlier, detailed `nlu` schema (`schemas/nlu/schema.sop`), its evaluation and the strategies of that time.
+Nothing in it describes the current system. Its content now lives in:
 
-## Reading a circuit
+- [The nlu-schema period](../project/nlu-period.md): how the project worked then, and the leftovers
+  still present in the code.
+- [Strategies of the nlu-schema period](../project/nlu-strategies.md): one short section for each
+  strategy page of that time.
+- [From the nlu schema](../schema/nlu-mapping.md): how each key of the `nlu` schema maps to the syntax
+  schema.
 
-The source is `put a beanie on the avatar`. Z3 emitted this circuit on the paired sample.
+Its text as it stood is kept in the git history:
 
-```sop
-@e1 nlu.entity determiner="a" head="beanie"
-@e2 nlu.entity determiner="the" head="avatar"
-@rel1 nlu.relation kind=on from=$c1 to=$e2 cue="on"
-@c1 nlu.clause form=imperative predicate="put" act=place polarity=positive direct_object=$e1
+```sh
+git show 97a1b83:docs/history/nlu-schema-period.md
 ```
 
-The clause points to the beanie through its direct object. The relation points from that clause to the avatar, preserving the written preposition. Each quoted field supplies evidence for a grammatical role. The inferred act is optional. The [analysis schema](../../schemas/nlu/schema.sop) defines the wire types and slots.
+---
 
-## Evidence in an analysis
-
-Each NLU candidate contains a whole interpretation. A clause points to its participants by local wire ID. A qualified entity keeps its quoted head, determiner and modifiers. A strategy can add a grounded semantic value to the same wire. Each source occurrence belongs to one quoted field in that reading. Repeated equal words can leave the assignment of occurrences ambiguous. The validator reports this and distinguishes evidence, filler, unresolved words and omissions. No character offsets are required in the circuit.
-
-## Library and evaluation design
-
-Use lib/ for the shared reader and configurable world loading, strategies/ for independent implementations, tests/ for contract and evaluation tests, and eval-results/ for run history. The existing readers share createReader(), propose(text) and close(). Preserve multiple candidates, unresolved text and engine errors. See the [Z3](../strategies/z3.md) and [Prolog](../strategies/prolog.md) pages. Future strategies can implement the same contract.
-
-Each one-percent run should save a new directory with the sample IDs, seed, input hashes, revisions, world configuration, proposal budget, per-row results and summary for every available strategy. Support smaller and larger samples. Give every strategy the same ordered texts. Reference circuits are evaluator inputs only. Record static, schema, syntactic and semantic findings separately. Export failures in batches for optional review, retaining judgments and model provenance.
-
-The [selector with DistilBERT](../strategies/selector-distilbert.md) combines a proposal selector and a source-only native graph model under the same public two-reading limit.
-
-Historical w.request runs used the WebMeet v1.2 legend. It grades the whole candidate set once per message. L0 means no usable reading, L1 wrong meaning, L2 incomplete meaning, L3 a reasonable exact match and L4 a reasonable alternative. Both L3 and L4 count as success. A lost negation that reverses intent is L1a; an omitted essential condition is L2c. Keep syntax diagnostics alongside these grades. A future grading scale needs its own version and explicit criteria.
-
-When many cases receive the same grade, examine a sample early and split recurring failure modes that can be distinguished by a reproducible check. Keep parent-grade totals and record the rubric version. A shared symptom such as a wrong attachment can have a strategy-specific cause; record the symptom on the candidate and the cause in the strategy diagnostic. Add levels up to L10 if the observed distinctions justify them. Preserve the original grades in historical runs.
-
-## Syntactic evidence
-
-The strategy reads the current text and proposes complete circuits against the versioned [NLU schema](../../schemas/nlu/schema.sop). Quoted slots retain the written forms. Reference slots connect clauses, participants, coordination and relations. An entity can preserve a pronoun without assigning a referent. A fragment can be represented without inventing an action. Structural validation and source coverage are separate from adjudicating the meaning of a reading.
-
-## Comparing execution time
-
-Use measureStrategy from lib/measure-strategy.mjs for the sequential baseline. It opens one reader, awaits each proposal and closes the reader. Persist timing with each run, including startup, proposal time, shutdown, total wall time, throughput and median and 95th-percentile latency. Save per-input latency in sample order. Record hardware, runtime versions, solver and world configuration, worker count and proposal budget. Record evaluator and reviewer time separately. Compare case-level outcomes in both directions to identify which strategy handles an attachment, ambiguity or unsupported phrase better.
-
-## Opening a strategy
-
-The [library entry point](../../README.md) accepts a strategy and a knowledge installation. Each bundled strategy has its own implementation in this repository. Configure additional SOP files or directories with worldPaths. Each strategy interprets the world declarations it supports. The engines perform lexical analysis, attachment and semantic inference independently. The public adapter dispatches the request to the native analysis method, validates the supplied integrated circuits and preserves their order. It applies the reading budget after rejecting invalid circuits. Rejected circuits retain their diagnostics. For WebMeet evaluation, the separately available legacy request candidates can be compared with the reference schema used by the CSVs.
-
-## Running the paired benchmark
-
-Run `WORKERS=1 SAMPLE_PERCENT=1 node tests/benchmark/port-run.mjs` with SOP_WORKSPACE pointing to the parent of the dataset and knowledge checkouts. Set SWIPL to the installed SWI-Prolog executable. The runner reads committed dataset blobs, orders record IDs by a seeded SHA-256 digest and takes the requested fraction. A record with several alternative references counts once. To replay an existing sample, pass its run directory as the first argument and a new destination as the second. The historical directory holds the exact sample, engine settings, timings and compressed predictions. Engines run consecutively with the same concurrency. Wall time includes worker startup, generation, result collection and shutdown. Per-request latency measures the reader call inside a worker. Prediction workers receive only IDs and text. Reference circuits are compared in the evaluator.
-
-For the prospective benchmark, follow the [reserved sample protocol](../../tests/benchmark/next-evaluation/README.md). On the shared Linux host, run each background command under the same two permitted logical CPUs, with low CPU and I/O priority. The shell prefix used for the ownership run was `taskset -c 0,1 nice -n 15 ionice -c 3`. Set `WORKERS=1`, `REVIEW_JOBS=1`, and the BLAS/OpenMP thread limits to 1. Keep the curation queue to one active generation lane with `SOP_NLU_CURATION_JOBS=1` and start the confirmation coordinator with `--jobs 1`. These limits and observed timings apply to this shared host.
-
-The default benchmark records native `nlu` readings, per-candidate schema and source checks, coverage, and timing. A message can pass structural checks while assigning a role incorrectly. The archived WebMeet CSV references use `w.request`. To evaluate those legacy predictions, set `EVAL_SCHEMA=w.request` before starting the benchmark. The runner applies the WebMeet comparator only to that representation.
-
-The third benchmark strategy, prolog-example-transfer, uses the complementary training split from the same committed corpus. All rows sharing the exact original evaluation text are excluded across files before training. Its candidates include the symbolic Prolog candidates and distinct learned readings. The report counts the reasonable candidates, the matched reference serialisations, and the messages with at least one reasonable candidate. See [the training boundary](../strategies/prolog-example-transfer.md).
-
-## Reviewing disagreements with the annotation
-
-Native results classify whole candidate sets. L0–L6 cover sets without an acceptable candidate. L7 is mixed. L8 requires every candidate to be acceptable. See the [whole-set evaluation](../../eval-results/2026-11-26-native-nlu-paired/source-review-v3/README.md). The reviewer checks each complete candidate against the utterance. The mechanical WebMeet v1.2 comparator is a screening step for legacy w.request predictions. Publish final semantic grades with the [NLU review legend](../../tests/benchmark/meaning-review/native-v3-legend.md). The unit is one message and one strategy. Read the original source before deciding whether a candidate is complete. Evaluate candidates even when a reference fails static validation. The primary success measure counts L7–L10 because each has at least one acceptable reading. L8–L10 require all returned readings to be acceptable. L10 also requires independent confirmation of a material defect in the frozen references. Recheck candidate annotations against the current dataset before applying corrections.
-
-A confirmed L10 triggers an automatic correction review. A reasonable L8 can supply a missing alternative. Record the frozen dataset revision, original message, prior references, candidate and confirmation. Locate the message by its exact original text when row numbers have changed. Before applying the edit, compare all current reference cells against the audited revision and preserve every defensible alternative. Validate the proposed circuit against the current schemas. A subsequent benchmark can award L9 when the reasonable prediction exactly matches the new reference. Retain the historical L10 and the revision of each benchmark so improvements to annotation and improvements to inference can be distinguished.
-
-## Implementing another strategy
-
-Export an object with a name and an asynchronous open(configuration) method. Opening receives the knowledge installation, configured world paths and engine options. Return an engine with analyse(text) and close(). analyse returns an analyses array of objects with a sop string and any native evidence, plus optional analysisDiagnostics. Each array element is a whole candidate. On engine failure return an empty array and analysisDiagnostics.error. The adapter validates each circuit and exposes it as result.candidates. A strategy that also implements the historical WebMeet request generator can expose it separately as propose(text).
-
-The schema path list supplied to the adapter extends the validator. Loading lexical rules, deciding which extra worlds an engine understands, parsing fragments, binding semantic values and choosing alternative attachments all belong to the strategy. A third-party engine with only propose(text) can still return its existing candidate contract.
-
-## Native reference annotations
-
-The benchmark parent can read independently reviewed NLU circuits from `annotations/nlu/v1/readings.jsonl` in a committed WebMeet dataset revision. It freezes the relevant references, their digest and their revision before opening any strategy. The default reference revision is the sampled dataset revision. To compare a previously frozen sample with newer annotations, set `NATIVE_REFERENCE_REVISION` explicitly. Workers continue to receive just the input ID and text.
-
-The source-first review always starts from the utterance and eligible circuits. When native reference annotations were available before generation, the final comparison awards L9 when all public candidates are acceptable and the complete set matches the frozen native reference set. Candidate-set order has no effect. Annotations added after a run can affect subsequent comparisons.
-
-## Detached expressions
-
-A short expression can perform a separate speech act. In `Move it, thanks`, the instruction and the expression of gratitude can occupy separate clause wires. The fragment carries the written expression, its optional speech_act and the separator. Each occurrence of punctuation is claimed once. In `Give thanks`, the same word can supply the object of the verb. In `Write "thanks"`, it supplies the quoted content. The grammatical construction determines which reading each strategy offers.
+Next: [The nlu-schema period](../project/nlu-period.md) · Up: [Project](../project/README.md)
