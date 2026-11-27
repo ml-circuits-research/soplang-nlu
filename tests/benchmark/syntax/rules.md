@@ -91,6 +91,9 @@ Give L8, or the first of L1 to L6 that applies.
 - A day, an hour or a length of time set off by commas after a phrase with a marker ("book the sync at 16:00, Friday, for 60 minutes") belongs to the clause: a relation from the clause with no marker passes, and so does a coordination with the time before it. A coordination with what the verb acts on states a second thing acted on: L3.
 - "left of the hill", "right of the road": "left of" may be one `marker`, or "left" a nominal or a clause `modifier` with the relation marked "of" starting at the clause or at "left". A relation marked "of" that starts at the thing placed ("a gazelle of the hill") fails: L3.
 - A clause that opens with a question word after a verb of telling or asking ("tell me which events are scheduled") must be tied to that verb's clause; any relation is enough. Untied it is L6.
+- "let's add a box", "let us put it there": "let" is the `verb`; "'s" or "us" is a nominal that is its `complement`, and may be the `subject` of the nonfinite clause of "add", tied to the clause of "let". Holding "let's" or "let us" as `discourse` words of an imperative clause of "add" also passes. "'s" or "us" as the `subject` of "let", or "add" written as a declarative clause, fails: L1.
+- "everything else", "something else", "anyone else": one nominal, with "else" a `dependent` of the pronoun. "else" held as a `modifier` of a clause splits the nominal: L3.
+- A clause that opens with a question word inside another clause ("tell me where it is", "show what I said", "how the picture goes" after a verb) states: its form is `declarative`, and it is tied to the clause it belongs to. Written as `interrogative` it is L1. A clause that asks, at the start of a sentence ("where is it?"), is `interrogative`.
 
 ## What you write
 
