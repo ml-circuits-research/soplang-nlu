@@ -1,0 +1,35 @@
+[
+  {"time": "2026-11-27 13:45", "strategy": "vss", "goal": 63.4, "commit": "24de853", "sample": "earlier fixed sample",
+   "note": "First judged run on the syntax schema (eval-results/2026-11-27-syntax-benchmark-1, 1,831 messages, 1,160 at L8), on the earlier fixed sample of eval-results/2026-11-26-fresh-locked-one-percent. Other messages than the random 1% benchmark, so not comparable with any other row."},
+
+  {"time": "2026-11-27 16:39", "strategy": "spacy", "goal": 82.5, "commit": "9f57aa3", "sample": "random 1%",
+   "note": "Random 1% benchmark (1,831 messages), first full judging: 35 packets, 5,858 distinct circuits of five strategies."},
+  {"time": "2026-11-27 16:39", "strategy": "distilbert", "goal": 71.8, "commit": "9f57aa3", "sample": "random 1%",
+   "note": "First full judging of the random 1% benchmark. This checkpoint had been trained on agreement circuits of 576 of the benchmark messages, so 71.8% is not a held-out measure (syntax-work-2026-11-27.html, I9)."},
+  {"time": "2026-11-27 16:39", "strategy": "vss", "goal": 65.9, "commit": "9f57aa3", "sample": "random 1%",
+   "note": "First full judging of the random 1% benchmark."},
+  {"time": "2026-11-27 16:39", "strategy": "prolog", "goal": 61.7, "commit": "9f57aa3", "sample": "random 1%",
+   "note": "First full judging of the random 1% benchmark. Parked since."},
+  {"time": "2026-11-27 16:39", "strategy": "z3", "goal": 59.3, "commit": "9f57aa3", "sample": "random 1%",
+   "note": "First full judging of the random 1% benchmark. Parked since."},
+
+  {"time": "2026-11-27 17:52", "strategy": "spacy", "goal": 86.8, "commit": "a55e33f", "sample": "random 1%",
+   "note": "After general repairs in the layer that writes spaCy's circuits; the new circuits judged in packets 36-42 (commit 5c87955)."},
+  {"time": "2026-11-27 17:52", "strategy": "distilbert", "goal": 73.1, "commit": "9ae0e6f", "sample": "random 1%",
+   "note": "Checkpoint syntax-v2 (trainer of 9ae0e6f), retrained on the current labels with the benchmark messages held out of training; judged in packets 36-42 (commit 5c87955)."},
+
+  {"time": "2026-11-27 17:59", "strategy": "vss", "trial": "plain copy", "goal": 68.5, "commit": "9df0889", "sample": "random 1%",
+   "note": "Lever trials (eval-results/2026-11-27-vss-lever-trials): the copy of VSS that every trial changes, with nothing added. The reference for the three trial rows listed above it."},
+  {"time": "2026-11-27 17:59", "strategy": "vss", "trial": "station prior", "goal": 69.8, "commit": "9df0889", "sample": "random 1%",
+   "note": "Lever trial: VSS's station tagger trained again with the accepted circuits mapped to stations as a weighted prior, benchmark messages held out (+1.3 points against the plain copy)."},
+  {"time": "2026-11-27 17:59", "strategy": "vss", "trial": "DistilBERT evidence on the verb", "goal": 70.7, "commit": "9df0889", "sample": "random 1%",
+   "note": "Lever trial: a small per-word table learned from DistilBERT's circuits on the corpus says how a word is used; where it is sure and VSS disagrees, the word is kept off the stations that use rules out. Used for the verb only (+2.2 points against the plain copy)."},
+  {"time": "2026-11-27 17:59", "strategy": "vss", "trial": "DistilBERT evidence on roles", "goal": 72.4, "commit": "9df0889", "sample": "random 1%",
+   "note": "Lever trial: the same table for all five word uses (verb, word of a nominal, modifier, marker, other) (+3.9 points against the plain copy)."},
+
+  {"time": "2026-11-27 18:04", "strategy": "vss", "goal": 72.0, "commit": "fa46cb7", "sample": "random 1%",
+   "note": "After the rules of fa46cb7 (the remaining rules of the drawing and diagram analyses, and rules found in the benchmark rejections); the 225 new circuits judged in packets 43-44 (commit 0f9b5c3)."},
+
+  {"time": "2026-11-27 18:24", "strategy": "vss", "goal": 75.5, "commit": "83fce90", "sample": "random 1%",
+   "note": "After the measured prototypes of the lever study (83fce90: causative verb + object + bare verb, every part of a sentence tied, compound nouns, the opening command verb, participles after a comma); the 183 new circuits judged in packets 45-46 (commit 1809b31). VSS is now above DistilBERT."}
+]
