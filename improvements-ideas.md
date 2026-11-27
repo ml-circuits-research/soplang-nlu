@@ -108,6 +108,11 @@ messages, where it does worse.
   agent is building and measuring it (false agreement checked on the judged pairs where only one circuit
   was accepted).
 
+- VSS on the benchmark, step by step (all circuits judged): 65.9% at the first judging; 72.0% after the
+  rules of the drawing and diagram analyses (fa46cb7); 75.5% after the measured prototypes of the lever study
+  (83fce90: causative verb + object + bare verb, every part of a sentence tied, compound nouns, the opening
+  command verb, participles after a comma). VSS is now above DistilBERT (73.1%); spaCy leads with 86.8%.
+
 ## In progress
 
 - VSS: the remaining rules of the drawing analysis (a word grading a relation goes to the clause where the
