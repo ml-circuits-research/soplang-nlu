@@ -19,9 +19,9 @@ sources, so their agreement means something.
 
 | Strategy | Source of the analysis | Benchmark (random 1%) | State |
 | --- | --- | ---: | --- |
-| spacy | spaCy dependency parse + our rules (former spacy-beam) | 82.5% | being improved (agent) |
-| distilbert | DistilBERT trained on syntax circuits only | 71.8% | retraining on the current labels, benchmark held out |
-| vss | our unsupervised reader (stations learned from text, rules) | 65.9% | main focus; rules being added (agent) |
+| spacy | spaCy dependency parse + our rules (former spacy-beam) | 86.8% | general repairs done (a55e33f) |
+| distilbert | DistilBERT trained on syntax circuits only | 73.1% | syntax-v2, trained on the current labels, benchmark held out |
+| vss | our unsupervised reader (stations learned from text, rules) | 75.5% | main focus; rules being added (agent) |
 | prolog | hand-written grammar | 61.7% | parked (owner: do not improve for now) |
 | z3 | constraint model | 59.3% | parked |
 
@@ -113,27 +113,32 @@ messages, where it does worse.
   (83fce90: causative verb + object + bare verb, every part of a sentence tied, compound nouns, the opening
   command verb, participles after a comma). VSS is now above DistilBERT (73.1%); spaCy leads with 86.8%.
 
+- Wider agreement key (c8d0a09, option `--key variants`): two circuits count as alike also up to the eight
+  choices the judges' rules let pass either way (which word heads a name, a number after a noun, where a
+  discourse word sits, let's, left of, quantity phrases, a bit, naming participles). On judged pairs it adds
+  182 both-accepted VSS/spaCy agreements on the benchmark and 0 with one circuit rejected; on the conversion
+  folders agreement rises from 31.7% to 38.9% of messages (calendar 10.6% to 56.0%). Two candidate kinds were
+  dropped because judges rejected one of the variants.
+
 ## In progress
 
-- VSS: the remaining rules of the drawing analysis (a word grading a relation goes to the clause where the
-  relation starts; "where"/"as" clauses complete the nearest verb; two participles in a row; lists after
-  place phrases) and the linker rules of the diagram analysis (finite forms never open a command, commas
-  between numbers, participle-only forms).
-- Documentation of the session in docs/ (HTML): the VSS architecture, the decisions and insights, the
-  evaluation and conversion method; each reviewed for accuracy and clarity.
-- A read-only study of VSS's remaining benchmark faults by area, and three designs for the lever beyond
-  rules, ranked by a judge.
-- DistilBERT: retraining on the current labels (5,100 judge + 56,934 agreement as silver), benchmark held out.
+- VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
+  habit learned from the text; fronted clauses; measures and appositions after commas; numerals as heads;
+  relative clauses.
+- Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
+  conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
+- Prototypes in scratch: a transition-based parser with an averaged perceptron for VSS (plain JavaScript),
+  and spaCy fine-tuned on the judged circuits; benchmark held out of both.
 
 ## Next steps, in order
 
-1. Commit the VSS and spaCy rules once checked; rejudge only the circuits that changed on the benchmark and
-   update the table.
-2. Rerun VSS and spaCy over the whole dataset and settle by agreement again: every improvement fills empty
-   cells without a judge. Audit 2% of the new agreement circuits.
-3. Measure the retrained DistilBERT on the benchmark (its messages were held out of training).
+1. Commit the next VSS round once checked; judge only the benchmark circuits that changed; update the table
+   and the status page (docs/STATUS.md).
+2. Settle the refilled conversion folders with the wider key, audit 2%, write the cells.
+3. Decide on the prototypes' numbers whether to build the learned structure and the fine-tuned spaCy.
 4. Conversion rounds for the messages that stay open: one judge reads one circuit per message (the one most
    strategies wrote), a fixer writes it when rejected.
+5. Retrain DistilBERT on the grown labels (benchmark held out) and measure.
 
 ## Ideas not yet tried (with the reason to expect a gain)
 
