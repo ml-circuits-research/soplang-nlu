@@ -192,8 +192,10 @@ export function repairClauses(units) {
     if (unit.dep !== 'advmod' || unit.pos !== 'ADV' || !unit.word || under(unit).length) continue
     const governor = units[unit.head], before = units[unit.index - 1]
     if (governor.index > unit.index || !before || before.word && unit.lower !== 'then') continue
+    // (a verb the parser hung, as the adverb, on a word of the group before the mark opens a clause too: "a small cat way
+    // off on the left, then save the right empty")
     const next = units.find(other => other.index > unit.index && other !== governor && first(other) === unit.index + 1 &&
-      (verbal(other) && verbal(governor) && ['ROOT', 'conj', 'dep', 'parataxis', 'ccomp', 'advcl'].includes(other.dep) || nominal(other)))
+      (verbal(other) && (verbal(governor) || other.head === governor.index) && ['ROOT', 'conj', 'dep', 'parataxis', 'ccomp', 'advcl'].includes(other.dep) || nominal(other)))
     if (next) { unit.head = next.index; changed++ }
   }
 
@@ -393,6 +395,97 @@ export function repairClauses(units) {
     if (!verbal(before)) continue
     unit.head = before.index
     unit.dep = 'dep'
+    changed++
+  }
+
+  // 16. A subordinator opens its clause: no word of the clause stands before it. A nominal that the parser made the
+  //     subject of a verb, standing right after the verb above it and before the subordinator of its own verb ("make it
+  //     so there is a cloud on top of one per tree": "it" before "so"), is no word of that clause: it is the object of
+  //     the verb above. ("there" is then the subject of "is".)
+  for (const subject of units) {
+    if (!subject.word || !SUBJECT.has(subject.dep) || subject.dep === 'expl' || subject.head === subject.index) continue
+    const verb = units[subject.head], above = units[verb.head]
+    if (!verbal(verb) || verb.head === verb.index || !verbal(above) || above.index > subject.index || first(subject) !== above.index + 1) continue
+    if (!under(verb).some(part => part.dep === 'mark' && part.index > last(subject) && part.index < verb.index)) continue
+    subject.head = above.index
+    subject.dep = 'dobj'
+    changed++
+  }
+
+  // 17. A dependent clause set before the clause it belongs to is set off from it by a comma, never by a mark that ends
+  //     a sentence. One opened by a subordinator, followed by a comma, that the parser hung on a verb after such a mark
+  //     ("while you're there, set the arrows medium, that's the tweak; also try the arrow style curved") belongs to the
+  //     clause that opens right after its comma.
+  for (const unit of units) {
+    if (!verbal(unit) || unit.dep !== 'advcl' || unit.head < unit.index || !under(unit).some(part => part.dep === 'mark' && part.index < unit.index)) continue
+    const governor = units[unit.head], comma = units[last(unit) + 1]
+    if (!comma || comma.word || comma.value !== ',' || !strong(comma, governor)) continue
+    const next = units.find(other => verbal(other) && other !== governor && first(other) === comma.index + 1 && other.index < governor.index &&
+      !units.slice(comma.index + 1, other.index).some(mark => !mark.word))
+    if (!next) continue
+    unit.head = next.index
+    changed++
+  }
+
+  // 18. Two dashes set a phrase aside inside the clause before them. A phrase with no verb between two dashes that the
+  //     parser hung on a word after the second ("spread a few boats across the lake — right there in the picture — that
+  //     is how the picture goes") belongs to the clause before the first dash.
+  const dash = mark => !mark.word && (/^[—–]$/u.test(mark.value) || /^-{1,2}$/u.test(mark.value) && units[mark.index - 1]?.end < mark.start && units[mark.index + 1]?.start > mark.end)
+  const dashes = units.filter(dash)
+  for (const [open, close] of dashes.slice(0, -1).map((mark, n) => [mark, dashes[n + 1]])) {
+    const words = units.slice(open.index + 1, close.index)
+    if (!words.length || words.some(unit => !unit.word || verbal(unit)) || !units[open.index - 1]?.word) continue
+    const tops = words.filter(unit => unit.head === unit.index || !words.includes(units[unit.head]))
+    if (tops.length !== 1 || tops[0].head === tops[0].index || tops[0].head < close.index) continue
+    // the clause before the first dash: the highest word above the last word before it that still stands before it
+    let before = units[open.index - 1]
+    for (let steps = 0; before.head !== before.index && units[before.head].index < open.index && steps < units.length; steps++) before = units[before.head]
+    if (!verbal(before)) continue
+    tops[0].head = before.index
+    changed++
+  }
+
+  // 19. A determiner determines a noun, never a verb: one that the parser hung on a verb ("two ovals — no wait, undo") is a
+  //     word said to the listener. And a verb that the parser hung on another as a word about what is said ("meta":
+  //     "no wait") is a clause of its own beside it.
+  for (const verb of units) {
+    if (!verbal(verb) || verb.dep !== 'meta') continue
+    verb.dep = 'parataxis'
+    for (const part of under(verb)) if (part.dep === 'det' && part.index < verb.index) { part.dep = 'intj'; part.pos = 'INTJ' }
+    changed++
+  }
+
+  // 20. A subject stands right before the auxiliary of its verb. The nominal between a conjunction and the auxiliary of a
+  //     verb ("erase all the stones but the big one can stay", "out with the trees but the ones beside the house can stay")
+  //     is the subject of that verb, whatever the parser made of it, and the conjunction joins the clause of that verb to
+  //     the words before it: a command with its object, or a group of words with no verb.
+  for (const verb of units) {
+    if (!verbal(verb)) continue
+    const auxiliary = under(verb).find(part => ['aux', 'auxpass'].includes(part.dep) && part.lower !== 'to' && part.index < verb.index &&
+      units.slice(part.index + 1, verb.index).every(other => other.word && (other.pos === 'ADV' || other.dep === 'neg')))
+    if (!auxiliary) continue
+    const conjunction = units.slice(0, auxiliary.index).reverse().find(other => other.word && other.pos === 'CCONJ')
+    if (!conjunction) continue
+    const words = units.slice(conjunction.index + 1, auxiliary.index), before = units.slice(0, conjunction.index)
+    if (!words.length || words.some(other => !other.word) || !before.length || before.some(other => !other.word)) continue
+    const tops = words.filter(other => other.head === other.index || !words.includes(units[other.head]))
+    if (tops.length !== 1 || !['NOUN', 'PROPN', 'PRON'].includes(tops[0].pos) || tops[0].dep === 'conj') continue
+    const [subject] = tops
+    if (subject.head === verb.index && SUBJECT.has(subject.dep)) continue
+    // the words before the conjunction: a verb form that opens them heads them, or the one word on which they hang
+    const firstTops = before.filter(other => other.head === other.index || !before.includes(units[other.head]))
+    const head = firstTops.find(other => other.index === 0 && other.pos === 'VERB' && ['VB', 'VBP'].includes(other.tag)) ?? (firstTops.length === 1 ? firstTops[0] : null)
+    if (!head || firstTops.some(other => other !== head && !['NOUN', 'PROPN', 'PRON'].includes(other.pos))) continue
+    for (const other of firstTops) if (other !== head) { other.head = head.index; other.dep = verbal(head) ? 'dobj' : 'dep' }
+    head.head = head.index
+    head.dep = 'ROOT'
+    subject.head = verb.index
+    subject.dep = 'nsubj'
+    for (const other of under(verb)) if (SUBJECT.has(other.dep) && other !== subject) { other.head = head.index; other.dep = verbal(head) ? 'dobj' : 'dep' }
+    verb.head = head.index
+    verb.dep = 'conj'
+    conjunction.head = head.index
+    conjunction.dep = 'cc'
     changed++
   }
   return changed

@@ -131,6 +131,8 @@ export const TWO_WORD_PREPOSITIONS = new Set(['according to', 'ahead of', 'along
 const INTERROGATIVE = new Set(['WDT', 'WP', 'WP$', 'WRB'])
 // the linking adverbs that put the next item of a sequence after the one before ("…, then one kite")
 const SEQUENCE = new Set(['then', 'next'])
+// the ordinal numerals, words of order
+const ORDINAL = new Set(['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'])
 const TERMINAL = new Set(['.', '!', '?'])
 const BOUNDARY = new Set([';', ':', '—', '–', '.', '!', '?'])
 
@@ -631,6 +633,20 @@ export function wiresOf(units) {
     // An adjective right after the nominal, with no determiner of its own, names no thing ("change a
     // heart head yellow big"): it says how the thing is, and goes by Rule 5 below
     if (dep === 'appos' && contrast(home, part)) return
+    // A nominal renames the one before it inside a sentence. One that opens a sentence after a semicolon or a full stop,
+    // hung on the main word of a group of words with no verb ("page 9: bold words; pages 7 and 8: amber grounds", "the
+    // missing piece: bar gap small on the sales chart. legend on the right"), is a group of words of its own: set beside
+    // that group after a semicolon, a sentence by itself after a full stop. After a colon, with a word after it that says
+    // how the thing should be, it is what that group announces, a group of words of its own beside it, of which it is the
+    // complement, and the word a modifier ("the missing piece: bar gap small on the sales chart": Rule 5).
+    const opening = units[firstOf(part) - 1]
+    const said = under(part).some(inner => inner.index > part.index && ['amod', 'advmod'].includes(inner.dep) && ['ADJ', 'ADV'].includes(inner.pos) && under(inner).every(other => other.dep === 'prep'))
+    if (['appos', 'dep'].includes(dep) && !before && home.form === 'fragment' && head.head === head.index && nominalHere(part) && opening && !opening.word &&
+        (/^[;.!?]+$/u.test(opening.value) || opening.value === ':' && said)) {
+      const other = clause(part)
+      if (/[;:]/u.test(opening.value)) join(home, other)
+      return
+    }
     const describing = part.pos === 'ADJ' && units[firstOf(part) - 1]?.word && !under(part).some(inner => inner.dep === 'det' || inner.dep === 'poss')
     if (dep === 'appos' && !describing) {
       const tie = relation(wire, nominal(part, home, 'beside'), [], home)
@@ -662,6 +678,11 @@ export function wiresOf(units) {
     // a word that says how the nominal is, after it: a modifier of the clause when the nominal is its
     // subject or complement, a dependent when the nominal ends a relation (Rule 5)
     if (wire.role === 'subject' || wire.role === 'complement') return describe(home, part)
+    // An adverb says how, where or when, not what a thing is, and a word of order after a noun cannot describe it
+    // from there: one after a nominal that ends a relation is a modifier of the clause ("orders by week first",
+    // "beside the sun next", "on the arrows too"; a word of place, "the tree there", may stand either way). The
+    // ordinal numerals are the words of order an adjective's tag may hide.
+    if (wire.role === 'marked' && !under(part).length && (part.pos === 'ADV' && part.dep === 'advmod' || ORDINAL.has(part.lower))) return describe(home, part)
     inside(wire, part)
   }
 
@@ -943,7 +964,11 @@ export function wiresOf(units) {
   // a word of discourse (a clause), or stays with the words it stands among
   for (const {unit, of, wire, key, beside} of pendingJoiners) {
     if (placed.has(unit.index)) continue
-    const group = joinedFor.get(of.index) ?? groupOf.get(nominalOf.get(of.index)) ?? groupOf.get(relationOf.get(of.index)) ?? groupOf.get(clauseOf.get(of.index))
+    // a conjunction before a nominal joined to the one it hangs on joins those two, also when that nominal is itself set
+    // beside a clause ("…, then the second and third": "and" joins "second" and "third")
+    const next = under(of).filter(part => part.dep === 'conj' && part.index > unit.index).sort((a, b) => a.index - b.index)[0]
+    const own = unit.index > of.index && next && nominalOf.has(next.index) && !clauseOf.has(next.index) ? groupOf.get(nominalOf.get(of.index)) : undefined
+    const group = own ?? joinedFor.get(of.index) ?? groupOf.get(nominalOf.get(of.index)) ?? groupOf.get(relationOf.get(of.index)) ?? groupOf.get(clauseOf.get(of.index))
     const opens = group && Math.min(...group.members.map(member => firstWord(member))) > unit.word[0]
     if (group && (unit.dep === 'preconj' || !opens)) put(group, 'conjunction', unit, ...beside)
     else {

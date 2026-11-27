@@ -8,7 +8,8 @@
 // tags, relations, word order, punctuation, capitals and endings, and corrects the units in place.
 // The only words a rule names are function words ("of", "else", "in", "to", pronouns, determiners,
 // numerals, the auxiliaries "do" and "have" and the closed class of auxiliaries, the linking adverbs
-// of sequence "then" and "next", the two-word prepositions of the writer) and "left", the past form
+// of sequence "then" and "next", the two-word prepositions of the writer, the particles of phrasal
+// verbs ("up", "out", "off" …), the article "a", the word of thanks "thanks") and "left", the past form
 // of the common verb "leave"; none names a noun, an adjective or a word particular to these messages.
 // Some rules also read counts learned from the raw text of the messages: how often a word that opens
 // a sentence is followed by a determiner or a pronoun (command-openers.mjs, written by
@@ -48,6 +49,10 @@ const SINGULAR_PRONOUN = new Set(['it', 'this', 'that', 'he', 'she', 'one', 'eac
   'everyone', 'everybody', 'someone', 'somebody', 'anyone', 'anybody', 'nobody'])
 // the linking adverbs that put the next item of a sequence after the one before ("…, then make it red")
 const SEQUENCE = new Set(['then', 'next'])
+// the particles of English phrasal verbs ("set up", "lay out"), prepositions and adverbs of place by form
+// what a preposition governs
+const GOVERNED = new Set(['pobj', 'pcomp'])
+const PARTICLES = new Set(['up', 'down', 'out', 'off', 'over', 'back', 'away', 'in', 'on', 'around', 'aside', 'apart', 'together', 'along'])
 // A word opens commands when, of the sentences it opens in the raw text (at least LEAST_OPENINGS of
 // them), a determiner or an object pronoun follows it in at least half (OPENER_SHARE): "plot" (251 of
 // 358), "slide" (303 of 357), but not "legend" (0 of 343) or "line" (82 of 260).
@@ -209,8 +214,10 @@ export function repairWords(units) {
   //    label with its value ("Budget table: header Item, Cost; row Paper, 12").
   for (const first of units) {
     if (!first.word || first.quoted || !NOT_A_CLAUSE.has(first.dep) || first.head === first.index && verbal(first)) continue
-    // a clause after a comma may open with a linking word of sequence before its verb ("…, next coat every edge")
-    const linking = other => other.word && SEQUENCE.has(other.lower) && other.dep === 'advmod' && !under(other).length && ends(markBefore(other), CLAUSE_END)
+    // a clause after a comma may open with a linking word of sequence before its verb ("…, next coat every edge"), and a
+    // sentence with an adverb that the parser hung on its first word ("now snxp Approve and Review to a single row")
+    const linking = other => other.word && other.dep === 'advmod' && !under(other).length &&
+      (SEQUENCE.has(other.lower) && ends(markBefore(other), CLAUSE_END) || other.pos === 'ADV' && other.head === first.index && opensSentence(other))
     const before = units.slice(0, first.index).reverse().find(other => other.word && !(linking(other) && other.index === first.index - 1) || ends(other, CLAUSE_END))
     if (before?.word) continue
     if (/^\p{Lu}/u.test(first.value) && !opensSentence(first)) continue
@@ -227,10 +234,11 @@ export function repairWords(units) {
     const nounLike = ['NOUN', 'PROPN', 'X', 'ADJ'].includes(first.pos) && !['NNS', 'NNPS'].includes(first.tag) && !/(?<![sui])s$/u.test(first.lower)
     // A word that the raw text shows opening commands is the verb before the noun that would be its
     // object, as a base form is: "plot sales by month", "slide box n2 x 670", "trade places for the boy",
-    // also with the capital that opens a sentence ("Chart revenue against order date"); and alone ("flip"),
-    // it is a command of one word. A pair the raw text writes after a determiner is
-    // one nominal ("the chart title"), and an adjective before a noun describes it ("empty box").
-    const learned = nounLike && first.pos !== 'ADJ' && opensCommands(first.lower) && (stretch.length === 1 && first.head === first.index && opensSentence(first) ||
+    // also with the capital that opens a sentence ("Chart revenue against order date"); and alone in its sentence or
+    // after a comma that ends the words before ("flip", "two ovals — no wait, undo"), it is a command of one word. A
+    // pair the raw text writes after a determiner is one nominal ("the chart title"), and an adjective before a noun
+    // describes it ("empty box").
+    const learned = nounLike && first.pos !== 'ADJ' && opensCommands(first.lower) && (stretch.length === 1 && first.head === first.index && (opensSentence(first) || ends(markBefore(first), CLAUSE_END)) ||
       next?.word && ['NOUN', 'PROPN'].includes(next.pos) && (!capitalised(first) || opensSentence(first) && !capitalised(next)) && !NOMINAL_PAIRS.has(first.lower + ' ' + next.lower))
     if (learned && stretch.length === 1) {
       first.pos = 'VERB'
@@ -612,13 +620,16 @@ export function repairWords(units) {
   //     switch the colour of it black" (a modifier of the clause, Rule 5). After a pronoun the bare noun
   //     is the name a verb of naming gives ("call it bird"); that, a plural ("make the style dashes"), a
   //     name, or a word with a figure ("make the line e1") is left alone.
+  //     So is one joined by a conjunction to an adjective after it ("color the Intro node orange and medium sized").
   for (const word of units) {
-    if (!word.word || word.quoted || word.pos !== 'NOUN' || word.tag !== 'NN' || capitalised(word) || !/^\p{L}+$/u.test(word.value) || under(word).length) continue
+    if (!word.word || word.quoted || word.pos !== 'NOUN' || word.tag !== 'NN' || capitalised(word) || !/^\p{L}+$/u.test(word.value)) continue
+    if (under(word).some(part => !(part.dep === 'cc' && part.index > word.index || part.dep === 'conj' && part.pos === 'ADJ' && part.index > word.index))) continue
     const verb = units[word.head]
     if (!verbal(verb) || !['dobj', 'oprd', 'attr', 'appos'].includes(word.dep) || verb.index > word.index) continue
     const object = under(verb).find(part => part !== word && part.dep === 'dobj' && part.index < word.index && lastOf(part) === word.index - 1)
     // the last word of its clause: before a phrase of its own it names a thing ("replace Sales table with …")
-    if (!object || !NOMINAL.has(object.pos) || object.pos === 'PRON' || units[word.index + 1]?.word) continue
+    const following = units[word.index + 1]
+    if (!object || !NOMINAL.has(object.pos) || object.pos === 'PRON' || following?.word && !(following.dep === 'cc' && following.head === word.index)) continue
     word.pos = 'ADJ'
     word.tag = 'JJ'
     word.dep = 'oprd'
@@ -684,6 +695,24 @@ export function repairWords(units) {
     first.dep = 'ROOT'
     last.head = first.index
     last.dep = 'appos'
+    changed++
+  }
+  //     So is a nominal opened by "then" that the parser joined to the object of a verb, when it is itself a pair joined by
+  //     a conjunction ("swap the first and second, then the second and third"): a second thing the verb does, not a
+  //     third thing it takes.
+  for (const unit of units) {
+    const opening = under(unit).find(part => SEQUENCE.has(part.lower) && part.dep === 'advmod' && part.index === firstOf(unit) && !under(part).length && ends(markBefore(part), CLAUSE_END))
+    if (!unit.word || unit.quoted || unit.dep !== 'conj' || unit.head > unit.index || !(opening || sequenceBefore(unit)) || !under(unit).some(part => part.dep === 'cc')) continue
+    if (!under(unit).some(part => part.dep === 'conj' && part.index > unit.index) || !under(unit).some(part => part.dep === 'det' && part.index < unit.index)) continue
+    let verb = units[unit.head]
+    for (let steps = 0; verb.head !== verb.index && verb.dep === 'conj' && steps < units.length; steps++) verb = units[verb.head]
+    if (!['dobj', 'pobj'].includes(verb.dep)) continue
+    verb = units[verb.head]
+    if (!verbal(verb) || ['acl', 'relcl', 'amod'].includes(verb.dep)) continue
+    unit.head = verb.index
+    unit.dep = 'dep'
+    // (an adjective with a determiner and no noun to describe stands for a thing: "the second")
+    if (unit.pos === 'ADJ') { unit.pos = 'NOUN'; unit.tag = 'NN' }
     changed++
   }
   for (const unit of units) {
@@ -1152,6 +1181,323 @@ export function repairWords(units) {
     if (!word.word || word.quoted || word.pos !== 'PROPN' || !/^\p{Ll}+$/u.test(word.value) || word.dep !== 'amod' || !describes(word.lower)) continue
     word.pos = 'ADJ'
     word.tag = 'JJ'
+    changed++
+  }
+
+  // 27. Like joins like. After a preposition, a bare small-lettered noun followed by a name or a number opens a list of
+  //     settings, each a bare noun with its value: "with title Quarterly plan and participants Ana and Lee and room Cedar
+  //     room", "with labels North, South and East and values 3, 5 and 8 and layout bar and label Review". A conjunction
+  //     followed by another bare small-lettered noun with a value after it opens the next item; one followed by a name or
+  //     a number joins values ("Ana and Lee"). Each item is joined to the first, and its words stay with it: the parser may
+  //     hang an item on the verb or on the thing the list describes ("add a group … and layout bar"), or the value of one
+  //     item on another ("calendar Work and title Quarterly plan", "Work" on "plan"). A value that is a clause is what
+  //     its noun says ("notes bring the slides"). The list ends at a mark, a preposition or a subordinator.
+  const nameLike = unit => unit?.word && (unit.quoted || capitalised(unit) || /^\p{Lu}+$/u.test(unit.value) || unit.pos === 'NUM' || /^\d/u.test(unit.value))
+  const keyNoun = unit => unit?.word && !unit.quoted && unit.pos === 'NOUN' && /^\p{Ll}+$/u.test(unit.value)
+  const valueStart = unit => unit?.word && (nameLike(unit) || ['NOUN', 'PROPN', 'ADJ', 'VERB', 'NUM'].includes(unit.pos))
+  for (const marker of units) {
+    if (!marker.word || marker.pos !== 'ADP' || marker.dep !== 'prep' || !keyNoun(units[marker.index + 1]) || !nameLike(units[marker.index + 2])) continue
+    const items = [{key: units[marker.index + 1], start: marker.index + 1, joiner: null}]
+    let end = units.length
+    for (let at = marker.index + 2; at < units.length; at++) {
+      const unit = units[at]
+      if (!unit.word) {
+        // a comma between the values of one item ("values 3, 5 and 8")
+        if (unit.value === ',' && nameLike(units[at + 1])) continue
+        end = at
+        break
+      }
+      if (unit.pos === 'CCONJ') {
+        if (keyNoun(units[at + 1]) && valueStart(units[at + 2]) && units[at + 2].pos !== 'CCONJ') { items.push({key: units[at + 1], start: at + 1, joiner: unit}); at++; continue }
+        if (nameLike(units[at + 1])) continue
+        end = at
+        break
+      }
+      if (['ADP', 'SCONJ'].includes(unit.pos) && !nameLike(unit)) { end = at; break }
+    }
+    if (items.length < 2) continue
+    items.forEach((item, n) => { item.stop = n + 1 < items.length ? items[n + 1].start - 1 : end })
+    const inSpan = (unit, item) => unit.index >= item.start && unit.index < item.stop
+    const topsOf = item => units.slice(item.start, item.stop).filter(unit => unit.word && (unit.head === unit.index || !inSpan(units[unit.head], item)))
+    // the first item: the top the preposition governs heads it
+    const firstTops = topsOf(items[0])
+    const first = firstTops.find(unit => unit.head === marker.index) ?? (firstTops.length === 1 ? firstTops[0] : null)
+    if (!first) continue
+    const heads = [first]
+    for (const item of items.slice(1)) {
+      const tops = topsOf(item)
+      // the item stands as the parser built it when one nominal holds its key ("label Review", "type bar"); otherwise
+      // the key heads it, and the other words of the item hang on the key
+      const nominalTop = tops.length === 1 && ['NOUN', 'PROPN', 'NUM'].includes(tops[0].pos) && within(item.key, tops[0])
+      const top = nominalTop ? tops[0] : item.key
+      if (!nominalTop) for (const other of tops) if (other !== item.key) { other.head = item.key.index; other.dep = 'appos'; changed++ }
+      if (!heads.includes(units[top.head]) || top.head === top.index || top.dep !== 'conj') { top.head = first.index; top.dep = 'conj'; changed++ }
+      if (!heads.includes(units[item.joiner.head])) { item.joiner.head = first.index; item.joiner.dep = 'cc'; changed++ }
+      heads.push(top)
+    }
+  }
+
+  // 28. A numeral counts the word after it. A numeral written in letters that the parser made the object of a verb,
+  //     directly followed by a word hung on the same verb by no named relation and taking nothing ("undo one move and
+  //     say how many shapes remain", "move" read as a second verb), counts that word: a noun, the object of the verb.
+  for (const number of units) {
+    if (!number.word || number.pos !== 'NUM' || !/^\p{Ll}+$/u.test(number.value) || number.dep !== 'dobj' || under(number).length) continue
+    const word = units[number.index + 1], verb = units[number.head]
+    if (!word?.word || word.quoted || word.head !== verb.index || word.dep !== 'dep' || under(word).length || !['VERB', 'NOUN'].includes(word.pos) || !verbal(verb)) continue
+    word.pos = 'NOUN'
+    word.tag = 'NN'
+    word.lemma = word.lower
+    word.dep = 'dobj'
+    number.head = word.index
+    number.dep = 'nummod'
+    changed++
+  }
+
+  // 29. A conjunction joins like with like. A word that the raw text shows to be a noun (names) and that the tagger read
+  //     as a verb joined to a verb before it, standing right after a conjunction that follows a noun, and taking nothing
+  //     that only a verb takes ("placing one circle … at its order value and profit for the summary slide"), is a noun
+  //     joined to that noun.
+  for (const word of units) {
+    if (!word.word || word.quoted || word.pos !== 'VERB' || word.dep !== 'conj' || !/^\p{Ll}+$/u.test(word.value) || !names(word.lower) || describes(word.lower)) continue
+    const conjunction = units[word.index - 1], noun = units[word.index - 2]
+    if (!conjunction?.word || conjunction.dep !== 'cc' || !noun?.word || !['NOUN', 'PROPN'].includes(noun.pos) || under(word).some(part => VERB_ONLY.has(part.dep))) continue
+    word.pos = 'NOUN'
+    word.tag = 'NN'
+    word.lemma = word.lower
+    word.head = noun.index
+    word.dep = 'conj'
+    conjunction.head = noun.index
+    changed++
+  }
+
+  // 30. A number in figures after a noun labels it ("width 180"), and a noun takes one such number. A number between two
+  //     nouns that the parser hung on the second as its count, when the second has a number of its own right after it
+  //     ("set r1 width 180 height 90"), goes with the first: each noun is paired with the number after it.
+  for (const number of units) {
+    if (!number.word || number.pos !== 'NUM' || !/^\d/u.test(number.value) || number.dep !== 'nummod' || number.head !== number.index + 1) continue
+    const before = units[number.index - 1], noun = units[number.index + 1], after = units[number.index + 2]
+    if (!before?.word || before.quoted || !['NOUN', 'PROPN'].includes(before.pos) || !['NOUN', 'PROPN'].includes(noun.pos)) continue
+    if (!after?.word || after.pos !== 'NUM' || after.head !== noun.index || under(number).length) continue
+    number.head = before.index
+    number.dep = 'appos'
+    changed++
+  }
+
+  // 31. A determiner opens a nominal; it grades nothing. A determiner that the parser hung as an adverb on the
+  //     superlative right after it ("which region advanced the most in revenue?") is the determiner of that word.
+  for (const unit of units) {
+    if (!unit.word || unit.tag !== 'DT' || unit.dep !== 'advmod' || unit.head !== unit.index + 1 || !['JJS', 'RBS'].includes(units[unit.head].tag) || under(unit).length) continue
+    unit.pos = 'DET'
+    unit.dep = 'det'
+    changed++
+  }
+
+  // 32. "than" links a comparative to what it is compared with. A preposition that the parser hung on a number as a word
+  //     of its count, right after a comparative that it also hung there ("if there are more than one"), marks a relation
+  //     from the comparative, which stands where the number stood, to the number.
+  for (const marker of units) {
+    if (!marker.word || marker.pos !== 'ADP' || marker.dep !== 'quantmod' || marker.head !== marker.index + 1) continue
+    const comparative = units[marker.index - 1], number = units[marker.head]
+    if (!comparative?.word || !['JJR', 'RBR'].includes(comparative.tag) || comparative.head !== number.index || under(comparative).length || number.pos !== 'NUM') continue
+    const root = number.head === number.index
+    comparative.head = root ? comparative.index : number.head
+    comparative.dep = root ? 'ROOT' : number.dep
+    marker.head = comparative.index
+    marker.dep = 'prep'
+    number.head = marker.index
+    number.dep = 'pobj'
+    changed++
+  }
+
+  // 33. A command opens with its verb, and a particle follows its verb ("set up", "lay out", "even out"). A sentence with
+  //     no verb of its own whose first word is followed by a particle and then a determiner or a possessive ("ly out the
+  //     whole picture like a poster layout centred on the subject") opens with a verb that the tagger did not read:
+  //     the first word is that verb, the particle its particle, and the nominal after them its object. (A participle
+  //     that describes a noun, "centred", is no verb of the sentence.)
+  for (const word of units) {
+    if (!word.word || word.quoted || verbal(word) || !['NOUN', 'PROPN', 'X', 'ADJ', 'ADV', 'INTJ'].includes(word.pos) || !opensSentence(word) || markBefore(word)) continue
+    if (units.slice(0, word.index).some(other => other.word)) continue
+    const particle = units[word.index + 1], opening = units[word.index + 2]
+    if (!particle?.word || !PARTICLES.has(particle.lower) || !opening?.word || !['DT', 'PDT', 'PRP$'].includes(opening.tag) || opening.dep !== 'det' && opening.dep !== 'poss') continue
+    // (a preposition with its object is no particle: "just on a diagonal between the house and the lake")
+    if (particle.dep === 'prep' || under(particle).some(part => GOVERNED.has(part.dep))) continue
+    const end = units.findIndex(other => other.index > word.index && ends(other, CLAUSE_END))
+    const stretch = units.slice(word.index, end < 0 ? units.length : end).filter(other => other.word)
+    const describing = other => ['VBN', 'VBG'].includes(other.tag) && ['acl', 'amod'].includes(other.dep) && !under(other).some(part => SUBJECT.has(part.dep) || ['aux', 'auxpass'].includes(part.dep))
+    if (stretch.some(other => verbal(other) && !describing(other))) continue
+    const object = units[opening.head]
+    if (!object?.word || !['NOUN', 'PROPN'].includes(object.pos) || within(object, word) || object.index <= opening.index) continue
+    const root = object.head === object.index
+    word.pos = 'VERB'
+    word.tag = 'VB'
+    word.lemma = word.lower
+    word.head = root ? word.index : object.head
+    word.dep = root ? 'ROOT' : object.dep
+    object.head = word.index
+    object.dep = 'dobj'
+    particle.pos = 'ADP'
+    particle.tag = 'RP'
+    particle.head = word.index
+    particle.dep = 'prt'
+    changed++
+  }
+
+  // 34. A verb form agrees with its subject: a base form ("meet") after a singular noun ("the edge of Rack") is no
+  //     finite verb of it, but a bare infinitive that completes a verb before it ("make the edge meet the edge of
+  //     Sample"). The word opening the sentence that the parser hung such a clause on, right before its subject, is that
+  //     verb, whatever the tagger read it as: "maake the edge of Rack meet the edge of Sample".
+  for (const verb of units) {
+    if (!verb.word || verb.pos !== 'VERB' || verb.tag !== 'VB' || verb.dep !== 'ccomp' || verb.head === verb.index) continue
+    const holder = units[verb.head], subject = under(verb).find(part => part.dep === 'nsubj' && part.index < verb.index)
+    if (!subject || !['NN', 'NNP'].includes(subject.tag) || subject.pos === 'PRON' || under(verb).some(part => ['aux', 'auxpass', 'mark'].includes(part.dep))) continue
+    if (holder.quoted || verbal(holder) || holder.head !== holder.index || !opensSentence(holder) || holder.index > subject.index || firstOf(subject) !== holder.index + 1) continue
+    if (!['NOUN', 'PROPN', 'X', 'ADJ', 'INTJ'].includes(holder.pos) || capitalised(holder) && !opensSentence(holder)) continue
+    holder.pos = 'VERB'
+    holder.tag = 'VB'
+    holder.lemma = holder.lower
+    changed++
+  }
+
+  // 35. Nor does a singular noun take the base form of a present verb as its subject: a lone word that opens the message,
+  //     which the parser made the subject of such a verb right after it, with no auxiliary ("pleese make the two branches
+  //     joined at a shared child node"), is no subject but a word said to the listener, and the verb commands.
+  for (const subject of units) {
+    if (!subject.word || subject.quoted || subject.dep !== 'nsubj' || !['NN', 'NNP'].includes(subject.tag) || under(subject).length || subject.index !== units.findIndex(unit => unit.word)) continue
+    const verb = units[subject.head]
+    if (verb.index !== subject.index + 1 || verb.pos !== 'VERB' || verb.tag !== 'VBP' || verb.lower !== verb.lemma || under(verb).some(part => ['aux', 'auxpass'].includes(part.dep))) continue
+    subject.pos = 'INTJ'
+    subject.tag = 'UH'
+    subject.dep = 'intj'
+    changed++
+  }
+
+  // 36. A determiner opens a nominal that runs to its last noun. A noun with a determiner of its own that the parser hung
+  //     by no named relation on the noun right after it, which has none ("update a grin mouth purple"), is a word of that
+  //     noun's nominal, and the determiner opens it.
+  for (const noun of units) {
+    if (!noun.word || noun.quoted || noun.pos !== 'NOUN' || noun.dep !== 'dep' || noun.head !== noun.index + 1 || capitalised(noun)) continue
+    const next = units[noun.head], determiner = under(noun).find(part => part.dep === 'det' && part.index < noun.index)
+    if (!determiner || !['NOUN', 'PROPN'].includes(next.pos) || under(next).some(part => ['det', 'poss', 'nummod'].includes(part.dep) && part.index < next.index)) continue
+    if (under(noun).some(part => part.index > noun.index)) continue
+    noun.dep = 'compound'
+    for (const part of under(noun)) part.head = next.index
+    changed++
+  }
+
+  // 37. A word that says what the object is made follows that object ("make the box red"). One right after the object of a
+  //     verb that the parser hung as such a word on a word before the verb ("a small cat way off on the left, then save the
+  //     right empty") belongs to that verb.
+  for (const word of units) {
+    if (!word.word || word.quoted || !['oprd', 'acomp'].includes(word.dep) || word.head > word.index || under(word).length) continue
+    const holder = units[word.head]
+    const verb = units.find(other => verbal(other) && other.index > holder.index && other.index < word.index && under(other).some(part => part.dep === 'dobj' && lastOf(part) === word.index - 1))
+    if (!verb || within(verb, word)) continue
+    word.head = verb.index
+    changed++
+  }
+
+  // 38. A list joins its items one after the other. A number right after a noun, followed by a comma and a number that
+  //     the parser also hung on that noun and that opens the rest of a list joined by a conjunction ("the pages 9, 10 and
+  //     7"), is the first item of that list. So is a quotation right before a comma and another quotation that the parser
+  //     hung on the first, or beside it, on the word the first describes ("with items "Review draft 9", "Check numbers 9",
+  //     "Send notes 9""): the later quotations are the next items.
+  for (const later of units) {
+    if (!later.word || later.pos !== 'NUM' || !['appos', 'dep', 'npadvmod'].includes(later.dep) || later.head > later.index) continue
+    const noun = units[later.head], comma = units[firstOf(later) - 1], first = units[firstOf(later) - 2]
+    if (comma?.value !== ',' || !first?.word || first.pos !== 'NUM' || first.head !== noun.index || under(first).length || first.index !== noun.index + 1) continue
+    if (!under(later).some(part => part.dep === 'conj') || !under(later).some(part => part.dep === 'cc')) continue
+    later.head = first.index
+    later.dep = 'conj'
+    changed++
+  }
+  for (const later of units) {
+    if (!later.word || !later.quoted || later.head === later.index) continue
+    const between = units.slice(0, later.index).reverse()
+    const first = between.find(other => other.word)
+    const marks = units.slice(first?.index + 1, later.index)
+    // (a quotation before a colon names what follows it, as a key does: "label": "North", "data": [8, 10])
+    const after = units.slice(later.index + 1).find(mark => mark.word || !/^["“”'‘’]$/u.test(mark.value))
+    if (!first?.quoted || !marks.some(mark => mark.value === ',') || marks.some(mark => !/^[,"“”'‘’]$/u.test(mark.value)) || later.head === first.index && later.dep === 'conj') continue
+    if (after && !after.word && after.value === ':') continue
+    // the first item of the list the earlier quotation stands in
+    let item = first
+    for (let steps = 0; item.dep === 'conj' && item.head < item.index && units[item.head].quoted && steps < units.length; steps++) item = units[item.head]
+    if (!(later.head === first.index || later.head === item.head)) continue
+    later.head = item.index
+    later.dep = 'conj'
+    changed++
+  }
+
+  // 39. A measure says how far the verb goes, not which thing it acts on: a numeral and a plural noun right after the object
+  //     of a verb, set beside that object by the parser, with a word after them that says where ("move block 6 two spaces
+  //     left"), measure the verb: a nominal of the clause, and that word a modifier of the clause (Rule 5).
+  for (const measure of units) {
+    if (!measure.word || measure.pos !== 'NOUN' || measure.tag !== 'NNS' || measure.dep !== 'appos' || measure.head > measure.index) continue
+    const object = units[measure.head], verb = units[object.head]
+    if (object.dep !== 'dobj' || !verbal(verb) || !under(measure).some(part => part.dep === 'nummod' && part.index === measure.index - 1) || !units[firstOf(measure) - 1]?.word) continue
+    if (!under(measure).some(part => part.index > measure.index && ['amod', 'advmod'].includes(part.dep) && !under(part).length)) continue
+    measure.head = verb.index
+    measure.dep = 'npadvmod'
+    for (const part of under(measure)) if (part.index > measure.index && ['amod', 'advmod'].includes(part.dep)) { part.head = verb.index; part.dep = 'advmod' }
+    changed++
+  }
+
+  // 40. A word of thanks after a full stop opens a sentence of its own ("…labelled Jan. Thanks!"), whatever word with a
+  //     full stop of its own the parser joined it to: it is said to the listener.
+  for (const word of units) {
+    if (!word.word || word.quoted || !['thanks', 'thank'].includes(word.lower) || !capitalised(word) || word.head === word.index) continue
+    const previous = units[word.index - 1]
+    // (the full stop may stand in the parser's token of that word, "Jan.", with no unit of its own)
+    const stop = previous?.value.endsWith('.') || previous?.tokens?.some(token => token.text.endsWith('.') && token.text.length > 1)
+    if (!previous?.word || !stop || previous.head !== word.index) continue
+    previous.head = word.head
+    previous.dep = word.dep
+    word.head = word.index
+    word.dep = 'ROOT'
+    word.pos = 'INTJ'
+    word.tag = 'UH'
+    changed++
+  }
+
+  // 41. Words joined by a hyphen before a noun form one word that describes it ("a zero-based y axis", "the shading
+  //     filled-in colour"): an adjective, whatever the tag of its last part, and so a verb of no clause. A subject the
+  //     parser gave it is a nominal of the clause the described noun stands in: another thing the verb takes.
+  for (const word of units) {
+    if (!word.word || word.quoted || word.word[1] === word.word[0] || word.pos !== 'VERB' || word.tag !== 'VBN' || word.dep !== 'amod' || word.head < word.index) continue
+    const noun = units[word.head], verb = units[noun.head]
+    const subjects = under(word).filter(part => SUBJECT.has(part.dep) && part.index < word.index)
+    if (subjects.length && (!['dobj', 'attr', 'oprd'].includes(noun.dep) || !verbal(verb))) continue
+    word.pos = 'ADJ'
+    word.tag = 'JJ'
+    for (const subject of subjects) { subject.head = verb.index; subject.dep = 'dobj' }
+    changed++
+  }
+
+  // 42. A determiner determines the noun after it. "a" with nothing after it in its clause, right after a noun ("what
+  //     colour is face a?"), determines nothing: it is a letter that names that noun, as "face B" would.
+  for (const unit of units) {
+    if (!unit.word || unit.quoted || unit.lower !== 'a' || unit.tag !== 'DT' || units[unit.index + 1]?.word || under(unit).length) continue
+    const noun = units[unit.index - 1]
+    if (!noun?.word || !['NOUN', 'PROPN'].includes(noun.pos) || unit.head === noun.index && unit.dep === 'appos') continue
+    unit.pos = 'PROPN'
+    unit.tag = 'NNP'
+    unit.head = noun.index
+    unit.dep = 'appos'
+    changed++
+  }
+
+  // 43. A subordinator opens a clause, not a nominal. An adjective that a subordinator governs ("I deleted a whole pile of
+  //     stuff earlier while half asleep") is the main word of a clause with no verb, which the subordinator ties to the
+  //     clause it was hung on.
+  for (const marker of units) {
+    if (!marker.word || marker.pos !== 'SCONJ' || marker.dep !== 'prep' || marker.head === marker.index) continue
+    const parts = under(marker)
+    if (parts.length !== 1 || parts[0].pos !== 'ADJ' || parts[0].index < marker.index || !verbal(units[marker.head])) continue
+    const [adjective] = parts
+    adjective.head = marker.head
+    adjective.dep = 'advcl'
+    marker.head = adjective.index
+    marker.dep = 'mark'
     changed++
   }
   return changed
