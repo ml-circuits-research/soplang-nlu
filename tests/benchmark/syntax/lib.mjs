@@ -189,16 +189,55 @@ export function withCores(rows) {
 }
 
 // ---- the registry of judged circuits
-// One line per circuit a judge read in this schema: {text, sop, core, verdict, grade, note, judge, run, source}.
-// The first line read for a circuit counts; judge-publish.mjs never writes a second one.
-export function emptyRegistry() { return {files: [], rows: 0, ignored: 0, byText: new Map()} }
-export function addToRegistry(registry, row) {
+// One line per decision of a judge in this schema: {text, sop, core, verdict, grade, note, judge, run, source}. A line
+// that publishes a circuit judged again after the rules changed (rejudge.mjs, judge-publish.mjs) also has
+// `supersedes`: the name of the registry file whose line for the same message and core it replaces.
+// For every message and core one line counts, the newest (newestLine); lookup returns it.
+// `rows` counts the lines read, `older` the lines that do not count because another line of their circuit does.
+export function emptyRegistry() { return {files: [], rows: 0, ignored: 0, older: 0, byText: new Map(), history: new Map()} }
+/**
+ * Adds one line. `file` is the name of the registry file it stands in, or will stand in: a line of another file
+ * can name it in `supersedes`. The entry keeps it as `file`, a property that is not enumerable, so it is never
+ * written out with the line.
+ */
+export function addToRegistry(registry, row, file = null) {
   const normal = normalForm(row.text, row.sop)
   if (!normal?.core || !['accepted', 'rejected'].includes(row.verdict)) { registry.ignored++; return false }
   registry.rows++
+  const entry = Object.defineProperty({...row, core: normal.core}, 'file', {value: file, enumerable: false})
   const circuits = registry.byText.get(row.text) ?? registry.byText.set(row.text, new Map()).get(row.text)
-  if (!circuits.has(normal.core)) circuits.set(normal.core, {...row, core: normal.core})
+  const current = circuits.get(normal.core)
+  if (!current) { circuits.set(normal.core, entry); return true }
+  // a second line for the circuit: every line of it is kept, in the order read, and the newest counts
+  const key = row.text + '\0' + normal.core
+  const lines = registry.history.get(key) ?? registry.history.set(key, [current]).get(key)
+  lines.push(entry)
+  registry.older++
+  circuits.set(normal.core, newestLine(lines))
   return true
+}
+/**
+ * Of the lines of one message and one core, in the order they were read, the one that counts:
+ *   1. a line is replaced when another line of the same message and core names its file in `supersedes`;
+ *   2. of the lines that are not replaced, the one with the longest chain of `supersedes` behind it counts: a
+ *      judgment made again counts before the first one, a third judgment before the second;
+ *   3. of lines still equal, the first read counts. readRegistry reads the files in the order of their names,
+ *      compared by code point (Array.prototype.sort), not in the order the file system lists them, and the lines
+ *      of a file in their order.
+ * Rules 1 and 2 do not depend on the names of the files: a line that supersedes another counts also when its file
+ * is read first. A registry with no `supersedes` is read by rule 3 alone, as before judgments were made again.
+ */
+export function newestLine(lines) {
+  const named = line => typeof line.supersedes === 'string' ? line.supersedes : null
+  const replaced = line => typeof line.file === 'string' && lines.some(other => other !== line && named(other) === line.file)
+  const chain = (line, seen = new Set([line])) => {
+    if (!named(line)) return 0
+    const before = lines.find(other => !seen.has(other) && other.file === named(line))
+    return 1 + (before ? chain(before, seen.add(before)) : 0)
+  }
+  const standing = lines.filter(line => !replaced(line))
+  // lines that replace each other in a circle are all replaced: then rules 2 and 3 choose among them all
+  return (standing.length ? standing : lines).reduce((best, line) => chain(line) > chain(best) ? line : best)
 }
 /** Reads every *.jsonl of the folder, in the order of their names. The core is computed again from the circuit. */
 export function readRegistry(dir = defaultRegistryDir) {
@@ -206,10 +245,11 @@ export function readRegistry(dir = defaultRegistryDir) {
   if (!existsSync(dir)) return registry
   for (const name of readdirSync(dir).filter(file => file.endsWith('.jsonl')).sort()) {
     registry.files.push(name)
-    for (const row of readJsonl(join(dir, name))) addToRegistry(registry, row)
+    for (const row of readJsonl(join(dir, name))) addToRegistry(registry, row, name)
   }
   return registry
 }
+/** The decision that counts for a circuit of a message: the newest line (newestLine), or undefined. */
 export const lookup = (registry, text, core) => core ? registry.byText.get(text)?.get(core) : undefined
 
 // ---- the labels of the messages
@@ -289,6 +329,112 @@ export function labelChanges(labels, accepted) {
   return {changes, first, replaced}
 }
 /**
+ * What circuits judged again (rejudge.mjs) change in the labels. A label changes only where it must:
+ *   - the label is a circuit the judge now rejects: an accepted circuit of the message takes its place, first one
+ *     the judge accepted in the same judging again (the one most strategies wrote, then the first by number), then
+ *     those `alternativesOf` gives; when there is none, the cells are emptied and the message has no label again,
+ *     as before any circuit of it was accepted;
+ *   - the label is a circuit the judge now accepts: it stays; a label settled by agreement becomes accepted_by
+ *     "judge", since a judge has read it now;
+ *   - the message has no label and the judge now accepts a circuit of it: that circuit becomes the label, as a
+ *     round fills an empty cell;
+ *   - any other label stays, also when the judge now accepts another circuit of the message.
+ * @param labels the labels as they are (a Map text -> label line)
+ * @param rejudged the newest verdicts on the circuits judged again: [{n, text, sop, core, sources, grade}]
+ * @param alternativesOf (text) => [{sop, core, sources, accepted_by}]: the other accepted circuits of a message, the
+ *   best first (acceptedCircuitsOf); a circuit rejected in this judging again is never taken
+ * @returns {changes: Map text -> {text, label, source, accepted_by}, replaced, cleared, confirmed, filled}; a cleared
+ *   label is {label: '', source: '', accepted_by: ''}
+ */
+export function rejudgedLabelChanges(labels, rejudged, alternativesOf = () => []) {
+  const changes = new Map(), counts = {replaced: 0, cleared: 0, confirmed: 0, filled: 0}
+  const byText = new Map()
+  for (const item of rejudged) (byText.get(item.text) ?? byText.set(item.text, []).get(item.text)).push(item)
+  for (const [text, judged] of byText) {
+    const label = labels.get(text)
+    const rejected = new Set(judged.filter(item => item.grade !== 'L8').map(item => item.core))
+    const accepted = judged.filter(item => item.grade === 'L8' && !rejected.has(item.core))
+    const best = chooseLabels(accepted).get(text)
+    if (label?.core && rejected.has(label.core)) {
+      const instead = best ? {sop: best.sop, sources: best.sources, accepted_by: 'judge'} : alternativesOf(text).find(circuit => !rejected.has(circuit.core))
+      if (instead) { changes.set(text, {text, label: instead.sop, source: instead.sources.join('+'), accepted_by: instead.accepted_by ?? 'judge'}); counts.replaced++ }
+      else { changes.set(text, {text, label: '', source: '', accepted_by: ''}); counts.cleared++ }
+    } else if (label) {
+      if (label.core && label.accepted_by === 'agreement' && accepted.some(item => item.core === label.core)) {
+        changes.set(text, {text, label: label.label, source: label.source, accepted_by: 'judge'}); counts.confirmed++
+      }
+    } else if (best) { changes.set(text, {text, label: best.sop, source: best.sources.join('+'), accepted_by: 'judge'}); counts.filled++ }
+  }
+  return {changes, ...counts}
+}
+/**
+ * The accepted circuits of a message, the best first: those a judge accepted in the run (by the newest verdict of
+ * the run), then those settled by agreement in the run, then those the registry holds as accepted; within each,
+ * the one most strategies wrote first, then the first by number, or the first read. A circuit whose decision in the
+ * registry is a rejection is left out.
+ * @param verdicts the verdicts of the run (runVerdicts); they carry the circuit as `sop`
+ * @returns [{sop, core, sources, accepted_by}]
+ */
+export function acceptedCircuitsOf(text, verdicts, registry) {
+  const found = [], seen = new Set()
+  const ofRun = [...verdicts.get(text) ?? []].filter(([core, verdict]) => verdict.grade === 'L8' && verdict.sop && lookup(registry, text, core)?.verdict !== 'rejected')
+  for (const by of ['judge', 'agreement']) {
+    for (const [core, verdict] of ofRun.filter(([, verdict]) => verdict.by === by).sort(([, a], [, b]) => b.sources.length - a.sources.length || (a.n ?? 0) - (b.n ?? 0))) {
+      if (!seen.has(core)) { seen.add(core); found.push({sop: verdict.sop, core, sources: verdict.sources, accepted_by: by}) }
+    }
+  }
+  const sourcesOf = line => String(line.source ?? '').split('+').filter(Boolean)
+  for (const line of [...registry.byText.get(text)?.values() ?? []].filter(line => line.verdict === 'accepted' && !seen.has(line.core)).sort((a, b) => sourcesOf(b).length - sourcesOf(a).length)) {
+    found.push({sop: line.sop, core: line.core, sources: sourcesOf(line), accepted_by: line.judge === 'agreement' ? 'agreement' : line.source === 'judge' ? 'written' : 'judge'})
+  }
+  return found
+}
+/**
+ * What publishing the verdicts of a run adds to the registry. Of the items of one circuit (a circuit judged again
+ * has two or more), only the newest counts: the one with the highest number, which stands in the latest packet.
+ *   - An item that is not a judgment made again: published when the registry holds nothing of its circuit, else
+ *     left as it is (a circuit is decided once, unless it is judged again).
+ *   - An item judged again (`rejudge` set by rejudge.mjs): published when the registry holds nothing of its circuit,
+ *     and with `supersedes` when the registry's decision is the line it was judged again against
+ *     (`rejudge.against`). When the registry holds another, later decision (published since), it is left as it is.
+ *   - The newest item of a circuit with no verdict yet waits: an earlier verdict on its circuit is not published
+ *     meanwhile, so that it never needs to be replaced.
+ * @param verdicts the verdicts of the run (runVerdicts)
+ * @param rejudgedOnly publish only the circuits judged again
+ * @returns {rows, accepted: the accepted items not judged again, rejudged: [{...item, grade}] the items judged again
+ *   that are published, counts: {judged, waiting, waitingAgain, alreadySame, alreadyOther, newer, superseding, left}}
+ */
+export function publication(items, verdicts, registry, {tag, judge = 'unknown', rejudgedOnly = false} = {}) {
+  const newest = new Map()
+  for (const item of items) { const key = item.text + '\0' + item.core; if (!newest.has(key) || item.n > newest.get(key).n) newest.set(key, item) }
+  const rows = [], accepted = [], rejudged = []
+  const counts = {judged: 0, waiting: 0, waitingAgain: 0, alreadySame: 0, alreadyOther: 0, newer: 0, superseding: 0, left: 0}
+  for (const item of items) {
+    if (newest.get(item.text + '\0' + item.core) !== item) continue
+    if (rejudgedOnly && !item.rejudge) { counts.left++; continue }
+    const verdict = verdicts.get(item.text)?.get(item.core)
+    if (verdict?.by !== 'judge' || verdict.n !== item.n) { counts[item.rejudge ? 'waitingAgain' : 'waiting']++; continue }
+    counts.judged++
+    const good = verdict.grade === 'L8', known = lookup(registry, item.text, item.core)
+    const line = {text: item.text, sop: item.sop, core: coreOf(item.text, item.sop), verdict: good ? 'accepted' : 'rejected', grade: verdict.grade, note: verdict.note,
+      judge, run: tag, source: item.sources.join('+')}
+    if (!item.rejudge) {
+      if (known) { if ((known.verdict === 'accepted') === good) counts.alreadySame++; else counts.alreadyOther++; continue }
+      rows.push(line)
+      if (good) accepted.push(item)
+      continue
+    }
+    if (known) {
+      if (typeof known.file !== 'string' || known.file !== item.rejudge.against) { counts.newer++; continue }
+      line.supersedes = known.file
+      counts.superseding++
+    }
+    rows.push(line)
+    rejudged.push({...item, grade: verdict.grade})
+  }
+  return {rows, accepted, rejudged, counts}
+}
+/**
  * Writes labels into the syntactic files: the cells sop, source and accepted_by of the row of each
  * message. Only the files that change are written; the order of the rows, the line ends, the
  * message cell as it is written and every row the changes do not name stay as they are.
@@ -365,22 +511,29 @@ export function packetsOf(items, size = 200) {
 
 // ---- verdicts and levels
 /**
- * The verdicts of one run: Map text -> Map core -> {grade, note, sources, by}. `items` carry the
+ * The verdicts of one run: Map text -> Map core -> {grade, note, sources, by, sop, n, rejudge}. `items` carry the
  * numbers the verdicts use. `by` is "judge", or "agreement" for a circuit that strategies of
  * different families wrote alike and that no judge of the run has read: it counts as accepted.
- * @param agreed circuits settled by agreement: [{text, core, sources}]
+ * `n` is the item whose verdict counts, and `rejudge` is set when that item is a judgment made again (rejudge.mjs).
+ * A circuit judged again has several items in the run, each in its own packet. The newest verdict counts: the one
+ * from the packet with the highest number (`packet`, which readVerdictFiles adds), and within one packet, or for
+ * verdicts with no packet, the one of the item with the highest number. Packets are numbered in the order they are
+ * written, and a judgment made again stands in a packet after the one it repeats, so the earlier verdict counts
+ * until the judge has written the new one.
+ * @param agreed circuits settled by agreement: [{text, sop, core, sources}]
  */
 export function runVerdicts(items, verdicts, agreed = []) {
-  const byNumber = new Map(verdicts.map(verdict => [verdict.n, verdict]))
+  const itemOf = new Map(items.map(item => [item.n, item]))
   const found = new Map()
   const circuitsOf = text => found.get(text) ?? found.set(text, new Map()).get(text)
-  for (const item of items) {
-    const verdict = byNumber.get(item.n)
-    if (!verdict || !GRADES.includes(verdict.grade)) continue
-    circuitsOf(item.text).set(item.core, {grade: verdict.grade, note: verdict.note ?? '', sources: item.sources, by: 'judge'})
+  const ordered = verdicts.map((verdict, index) => ({verdict, index})).filter(({verdict}) => itemOf.has(verdict.n) && GRADES.includes(verdict.grade))
+    .sort((a, b) => (a.verdict.packet ?? 0) - (b.verdict.packet ?? 0) || a.verdict.n - b.verdict.n || a.index - b.index)
+  for (const {verdict} of ordered) {
+    const item = itemOf.get(verdict.n)
+    circuitsOf(item.text).set(item.core, {grade: verdict.grade, note: verdict.note ?? '', sources: item.sources, by: 'judge', sop: item.sop, n: item.n, ...item.rejudge ? {rejudge: item.rejudge} : {}})
   }
   for (const circuit of agreed) {
-    if (!circuitsOf(circuit.text).has(circuit.core)) circuitsOf(circuit.text).set(circuit.core, {grade: 'L8', note: '', sources: circuit.sources, by: 'agreement'})
+    if (!circuitsOf(circuit.text).has(circuit.core)) circuitsOf(circuit.text).set(circuit.core, {grade: 'L8', note: '', sources: circuit.sources, by: 'agreement', sop: circuit.sop})
   }
   return found
 }
@@ -397,6 +550,8 @@ export function runVerdicts(items, verdicts, agreed = []) {
  *             the label is replaced
  *   waiting   no judge has read the circuit yet
  * L7 is unused: a strategy returns one circuit.
+ * A circuit judged again in this run (rejudge.mjs) counts by its newest verdict, also when it is the label the
+ * message had before the run.
  * @param labelsBefore Map text -> {core}: the labels as they were before the run
  * @param labelsNow the labels of now, or a function that reads them; asked only for a circuit that
  *   nothing else knows
@@ -404,9 +559,9 @@ export function runVerdicts(items, verdicts, agreed = []) {
 export function levelOf(row, registry, verdicts = new Map(), labelsBefore = new Map(), labelsNow = new Map()) {
   if (!row.core) return 'L0'
   const label = labelsBefore.get(row.text)
-  if (label?.core === row.core) return 'L9'
   const now = verdicts.get(row.text)?.get(row.core)
-  if (now) return now.grade !== 'L8' ? now.grade : label ? 'L10' : 'L8'
+  if (label?.core === row.core && !now?.rejudge) return 'L9'
+  if (now) return now.grade !== 'L8' ? now.grade : label?.core === row.core ? 'L9' : label ? 'L10' : 'L8'
   const before = lookup(registry, row.text, row.core)
   if (before) return before.verdict === 'accepted' ? 'L8' : before.grade
   return (typeof labelsNow === 'function' ? labelsNow() : labelsNow).get(row.text)?.core === row.core ? 'L8' : 'waiting'
@@ -900,7 +1055,8 @@ export function readLabelsBefore(runDir, labels = new Labels()) {
 }
 export function readItems(runDir) { return existsSync(itemsFile(runDir)) ? readJsonl(itemsFile(runDir)) : [] }
 /**
- * The verdicts of the run that pass the check of check.mjs: {verdicts: [{n, grade, note}], problems}.
+ * The verdicts of the run that pass the check of check.mjs: {verdicts: [{n, grade, note, packet}], problems}.
+ * `packet` is the number k of the packet: runVerdicts lets the latest packet's verdict count.
  * A line with a format problem does not count until it is corrected; `problems` names such lines.
  */
 export function readVerdictFiles(runDir) {
@@ -908,7 +1064,7 @@ export function readVerdictFiles(runDir) {
   if (!existsSync(folder)) return {verdicts, problems}
   for (const k of packetNumbers(folder)) {
     const result = checkPacket(folder, k)
-    verdicts.push(...result.verdicts)
+    verdicts.push(...result.verdicts.map(verdict => ({...verdict, packet: k})))
     problems.push(...result.problems.map(problem => `verdicts-${k}.jsonl ${problem}`))
   }
   return {verdicts, problems}

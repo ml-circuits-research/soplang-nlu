@@ -367,12 +367,19 @@ function write(roundDir, named) {
   }
   const fresh = item => !lookup(registry, item.text, item.core)
   const judged = new Set()
+  // a circuit sent to a judge again (rejudge.mjs) is published by judge-publish.mjs, which knows which registry line
+  // it replaces and changes the labels only where they must; this command leaves it out, also its earlier verdict
+  const newest = new Map()
+  for (const item of round.run.items) { const key = item.text + '\0' + item.core; if (!newest.has(key) || item.n > newest.get(key).n) newest.set(key, item) }
+  const again = [...newest.values()].filter(item => item.rejudge).length
   for (const item of round.run.items) {
     const verdict = round.run.verdicts.get(item.text)?.get(item.core)
     if (verdict?.by !== 'judge') continue
     judged.add(item.text + '\0' + item.core)
+    if (newest.get(item.text + '\0' + item.core).rejudge) continue
     if (fresh(item)) add(item, {verdict: verdict.grade === 'L8' ? 'accepted' : 'rejected', grade: verdict.grade, note: verdict.note, source: item.sources.join('+')})
   }
+  if (again) console.log(`${again} circuits of the round are sent to a judge again (rejudge.mjs): this command does not publish them. Once judged, publish them with: node tests/benchmark/syntax/judge-publish.mjs ${relative(process.cwd(), roundDir)} --tag <name> --rejudged-only`)
   // the agreed circuits this round newly settles: not read by a judge, not in the registry, not the label already
   const agreed = readAgreement(roundDir).filter(circuit => !judged.has(circuit.text + '\0' + circuit.core) && fresh(circuit) && labels.get(circuit.text)?.core !== circuit.core)
   agreed.forEach((circuit, index) => accepted.push({...circuit, n: 1e9 + index, accepted_by: 'agreement'}))

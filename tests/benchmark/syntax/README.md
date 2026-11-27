@@ -7,7 +7,7 @@ A circuit is acceptable when a judge, a language model that follows `rules.md`, 
 - the **registry** `webmeet-dataset/annotations/syntax/v1/judged/` holds what a judge decided: every circuit a judge read, accepted or rejected, and every circuit a judge wrote;
 - the **labels** are the circuits in the syntactic files `webmeet-dataset/syntactic/**/*.csv`: the row of a message holds its circuit (`sop`), who wrote it (`source`) and how it was accepted (`accepted_by`: `judge`, `written` or `agreement`). No other file holds labels.
 
-A circuit that the registry already holds needs no judge again. Neither does a circuit that is the label of its message, also when formalizers agreed on it and no registry line records it.
+A circuit that the registry already holds needs no judge again. Neither does a circuit that is the label of its message, also when formalizers agreed on it and no registry line records it. When the judges' rules change, circuits whose verdict the new rules contradict are judged again, and the newest verdict counts: see "Judging again when the rules change".
 
 All commands are run from the folder `soplang-nlu`. No tool here reads the knowledge repository or the `nlu` schema, except `convert-nlu.mjs`.
 
@@ -73,7 +73,7 @@ It reports format problems and how many lines are judged. A line with a format p
 node tests/benchmark/syntax/judge-publish.mjs eval-results/2026-11-27-syntax-benchmark-a --tag 2026-11-27-syntax-benchmark-a --judge <model>
 ```
 
-This writes one new file `<tag>.jsonl` into the registry; an existing file is never overwritten. It also sets the labels, in the syntactic files: every circuit accepted in this run becomes the label of its message, whatever the row held before, also a circuit settled by agreement. The cells `sop`, `source` and `accepted_by` ("judge") of the message's row are set. Only the files that change are written, and in them only the rows of these messages, so `node tools/layers.mjs check` in the dataset still passes. Nothing is committed: committing the dataset is a separate decision.
+This writes one new file `<tag>.jsonl` into the registry; an existing file is never overwritten. When a circuit was judged again in the run, only its newest verdict is published, once it is written (see "Judging again when the rules change"). It also sets the labels, in the syntactic files: every circuit accepted in this run becomes the label of its message, whatever the row held before, also a circuit settled by agreement. The cells `sop`, `source` and `accepted_by` ("judge") of the message's row are set. Only the files that change are written, and in them only the rows of these messages, so `node tools/layers.mjs check` in the dataset still passes. Nothing is committed: committing the dataset is a separate decision.
 
 **5. Print the table.**
 
@@ -163,13 +163,55 @@ node tests/benchmark/syntax/round.mjs report <round>
 
 It can be called at any time. It says how the messages of the round are settled (by agreement, accepted by a judge, written by a judge, still open), how many of the agreed circuits sent to the judge were accepted, and gives the table of levels per formalizer. A circuit settled by agreement counts as accepted for the formalizers that wrote it: L8, or L9 or L10 against the label the message had before the round.
 
+## Judging again when the rules change
+
+When `rules.md` gains or changes a rule, verdicts given before can contradict it. The circuits of those verdicts go to a judge again. The earlier verdicts stay where they are, as the history; the newest verdict counts.
+
+**1. Prepare.** A list of the verdicts to judge again is a JSON array, as the consistency check of the rules writes it (`eval-results/2026-11-27-rules-consistency/rejudge.json`). An entry names its message (`text`), where its verdict stands (`file`, a path from the folder that holds `soplang-nlu` and `webmeet-dataset`, and `n`) and why it is judged again (`settled_case`, `why`, `grade_by_rules`). `file` is a verdict file of a run (`<run>/judging/verdicts-<k>.jsonl`, `n` the number of the item), a verdict file of a pool of `pool.mjs` (`n` the pooled number; the pool's `key.jsonl` names the round and the item), a registry file (`n` its line, from 1) or a syntactic file (the label of the message, `n` its record).
+
+```sh
+node tests/benchmark/syntax/rejudge.mjs prepare <run-folder> <list.json>…
+node tests/benchmark/syntax/rejudge.mjs prepare <folder> <list.json>… --from <file or folder>…
+```
+
+The first form takes the entries whose verdict stands in the run folder. The second takes the entries whose `file` is one of the paths after `--from` or lies inside one of them, wherever their verdict stands; the folder is then one of its own, for circuits that have no run folder (the fixed sample is known from the registry only) or whose run folder git does not keep (`eval-results/conversion/`). Each circuit gets a new item, numbered after the last item of the folder, in new packets numbered after the last packet. Its record in `key/items.jsonl` has the field `rejudge`: the list entry it came from (`from`), the earlier item of the circuit in the folder (`of`), the registry file whose line the new verdict will supersede (`against`, or null), the decision before (`before`), the settled case, the reason and the grade the rules now give (`case`, `why`, `expected`), and the version of the rules (`rules`, the first 12 hexadecimal digits of the sha256 of `rules.md`): a circuit is sent again once per version of the rules. The packet line is like any other, the number, the message and the circuit, so the judge does not know that the circuit is judged again. `judging/RULES.md` and `check.mjs` are copied again from this folder. The packets and verdict files already there are not touched. A folder of its own also keeps `key/labels-before.jsonl`.
+
+**2. Judge**, as in step 3 of a benchmark.
+
+**3. Publish.**
+
+```sh
+node tests/benchmark/syntax/judge-publish.mjs <folder> --tag <name> --judge <model> --rejudged-only
+```
+
+`--rejudged-only` publishes the circuits judged again and nothing else; without it the command also publishes the other verdicts of the run that the registry does not hold yet, as in step 4 of a benchmark. `round.mjs write` leaves circuits judged again to this command, and says so.
+
+**The newest verdict in a run.** When a circuit has several verdicts in a run, the verdict of the latest packet counts (`runVerdicts` in `lib.mjs`: the highest packet number, then the highest item number). Packets are numbered in the order they are written, so a judgment made again always stands after the one it repeats, and until its verdict is written the earlier verdict counts: in `table.mjs`, `agree.mjs`, `round.mjs settle` and `report`. `judge-publish.mjs` publishes neither verdict of a circuit whose newest item still waits, so that a published line never needs replacing because a newer verdict was on its way. In the table, a circuit judged again counts by its newest verdict, also when it is equal to the label the message had before the run (it is then L9 only if accepted again). `round.mjs settle`, `rewrite-prepare` and `write` take the registry's word before the run's, as before: a judgment made again counts there once it is published.
+
+**The newest decision in the registry.** The new verdict goes into a new registry file, `<tag>.jsonl`. When the registry holds the decision the circuit was judged again against, the new line names that line's file in `supersedes` (for example `"supersedes": "2026-11-27-benchmark-random.jsonl"`). `readRegistry` keeps every line (`registry.history` for a circuit with several), and `lookup` gives, for a message and a core, the line that counts (`newestLine`):
+
+1. never a line whose file another line of the same message and core names in `supersedes`;
+2. of the others, the line with the longest chain of `supersedes` behind it: a judgment made again before the first one, a third before the second;
+3. of lines still equal, the first read: the files in the order of their names compared by code point (as `Array.prototype.sort` compares them, never in the order the file system lists them), the lines in their order in the file.
+
+Rules 1 and 2 depend on no file name: a file that supersedes another counts also when its name sorts first. A registry without `supersedes` is read by rule 3 alone, which is how it was read before any judgment was made again. When the registry holds a later decision than the one the circuit was judged again against (published since by another run), the new verdict is not published, and the command says so.
+
+**The labels.** A judgment made again changes a label only where it must:
+
+- the label is the circuit the judge now rejects: another accepted circuit of the message takes its place, first one the judge accepted in the same judging again, then one the judge accepted in the run, then one settled by agreement in the run, then one the registry holds as accepted (in each, the one most strategies wrote, then the first). When there is none, the cells `sop`, `source` and `accepted_by` are emptied: the message has no label and is open again, like any message for which no circuit was accepted (`round.mjs rewrite-prepare` of its file's round sends it to be written, and `write` fills the empty cell);
+- the label is the circuit the judge now accepts: it stays, and a label settled by agreement becomes `accepted_by` "judge";
+- a message with no label gets the circuit the judge now accepts;
+- every other label stays, also when the judge now accepts another circuit of the message.
+
+This keeps to the rules of the labels above. A judge's word counts before agreement, so a label that a judge rejects never stays as accepted. A benchmark publication makes an accepted circuit the label, so when an accepted reading of the message is known it takes the place of the rejected one rather than an empty cell. But a label that is still accepted is not replaced, as a round fills only empty cells: judging a few circuits again is a correction, not a new benchmark.
+
 ## The labels
 
 A label is the accepted circuit of a message. The labels are the syntactic files of the dataset, and only they: `webmeet-dataset/syntactic/<tab>/<file>.csv` has one row per message with the columns `text`, `sop`, `source` and `accepted_by`. A message whose `sop` cell is empty has no label.
 
 `readLabels` in `lib.mjs` reads them. It gives, for a message, its circuit, its `source` and its `accepted_by`. The core of the circuit, by which circuits are compared, is computed the first time it is asked for, so a tool that looks up the messages of one run computes the cores of those messages only.
 
-`judge-publish.mjs` writes the labels of a benchmark run and `round.mjs write` those of a conversion round. A message has one label. When several circuits of one message were accepted in one run, the label is the one most strategies wrote, and among equals the first by its number in the packets. The other circuits a judge accepted stay accepted in the registry.
+`judge-publish.mjs` writes the labels of a benchmark run and `round.mjs write` those of a conversion round; circuits judged again change labels as "Judging again when the rules change" says. A message has one label. When several circuits of one message were accepted in one run, the label is the one most strategies wrote, and among equals the first by its number in the packets. The other circuits a judge accepted stay accepted in the registry.
 
 Nothing repeats the labels. Until 2026-11-27 a file `labels.jsonl` did, and so did registry lines with the judge "agreement". `drop-duplicates.mjs` removed them, after checking each against the syntactic files; it reports before it changes anything, and changes nothing without `--apply`.
 
@@ -244,9 +286,9 @@ Every pair added with one circuit accepted and the other rejected was read. They
 | `<strategy>.jsonl` | `run.mjs` | One line per message: `{"id", "text", "sop", "error", "ms"}`. `sop` is the circuit or null. `error` starts with its kind: `invalid circuit`, `no circuit`, `crash` or `timeout`. |
 | `summary.json` | `run.mjs` | The sample, and per strategy: status, messages, valid circuits, errors by kind, median milliseconds per message. |
 | `logs/<strategy>.log` | `run.mjs` | What the strategy printed. |
-| `judging/packet-<k>.jsonl`, `RULES.md`, `check.mjs` | `judge-prepare.mjs` | What a judge needs. |
+| `judging/packet-<k>.jsonl`, `RULES.md`, `check.mjs` | `judge-prepare.mjs`, `rejudge.mjs` | What a judge needs. |
 | `judging/verdicts-<k>.jsonl` | a judge | The verdicts. |
-| `key/items.jsonl` | `judge-prepare.mjs` | Which strategies wrote circuit `n`. Not for the judge. |
+| `key/items.jsonl` | `judge-prepare.mjs`, `rejudge.mjs` | Which strategies wrote circuit `n`; an item judged again has `rejudge`. Not for the judge. |
 | `key/labels-before.jsonl` | `judge-prepare.mjs` | The labels that the messages of the run had before the run. |
 | `table.md`, `table.json` | `table.mjs` | The levels. |
 | `agreement.md`, `agreement.json` | `agree.mjs` | The agreement between strategies. |

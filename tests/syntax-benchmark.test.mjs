@@ -15,7 +15,8 @@ import {coreOf, validateSyntax, writeCircuit} from '../lib/index.mjs'
 import {normalForm, withCores, emptyRegistry, addToRegistry, lookup, collectItems, packetsOf, runVerdicts, levelOf, tableOf, renderTable,
   agreementOf, renderAgreement, chooseLabels, labelChanges, readLabels, writeLabels, labelLine, Labels, keepLabelsBefore, readLabelsBefore, readArguments, readSample,
   readJsonl, readJson, LEVELS, defaultSyntacticDir, defaultRegistryDir, syntacticDirOf, readCsv, writeCsv, csvCell, rawRows, agreedCircuits, chooseAudit, packageRoot,
-  relaxedCore, agreementKey, agreementKeysOf, writtenAlike, AGREEMENT_KEYS} from './benchmark/syntax/lib.mjs'
+  relaxedCore, agreementKey, agreementKeysOf, writtenAlike, AGREEMENT_KEYS, newestLine, readRegistry, rejudgedLabelChanges, acceptedCircuitsOf, publication} from './benchmark/syntax/lib.mjs'
+import {rejudgeItems, rulesVersion} from './benchmark/syntax/rejudge.mjs'
 import {checkLabelsFile, checkRegistryLines} from './benchmark/syntax/drop-duplicates.mjs'
 import {messagesOfCsv, distinctMessages, drawSample, messageFiles} from './benchmark/syntax/sample.mjs'
 import {pickFiles, planRounds, messagesOfFile, roundState, chooseCircuit, syntacticRows, SYNTACTIC_HEADER} from './benchmark/syntax/round.mjs'
@@ -398,7 +399,8 @@ test('the rules for judges use the key names of version 3 only', () => {
   assert.doesNotMatch(rules, /syntax\.(fact|thing|link|list)\b|`(action|helper|doer|describing|cue|member|asks|how|word|kind)`/u)
   for (const key of ['form', 'verb', 'auxiliary', 'negation', 'subject', 'complement', 'modifier', 'discourse', 'ellipsis', 'head', 'dependent', 'from', 'to', 'marker', 'attachment', 'conjunct', 'conjunction']) assert.match(rules, new RegExp('`' + key + '`', 'u'), key)
   for (const grade of ['L8', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']) assert.match(rules, new RegExp('\\| ' + grade + ' \\|', 'u'))
-  assert.ok(rules.split('\n').length < 110, 'short enough to be read again often')
+  // 117 lines since the ten settled cases of the consistency check (7ffdbd4)
+  assert.ok(rules.split('\n').length < 120, 'short enough to be read again often')
 })
 
 test('an nlu circuit is rewritten by the rules of the specification', () => {
@@ -1192,4 +1194,241 @@ test('what the syntactic files hold is not kept a second time', () => {
   const kept = emptyRegistry()
   for (const line of readJsonl(join(registry, 'mixed.jsonl'))) addToRegistry(kept, line)
   assert.equal(lookup(kept, 'lift it', normalForm('lift it', full('lift')).core).verdict, 'accepted')
+})
+
+test('a circuit judged again: the newest verdict of the run counts', () => {
+  const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const item = (n, message, sop, sources, more = {}) => ({n, text: message, sop: normalForm(message, sop).sop, core: normalForm(message, sop).core, sources, ...more})
+  const items = [item(1, 'move it', full('move'), ['alpha']), item(2, 'move it', flat('move'), ['beta']), item(3, 'drop it', full('drop'), ['alpha']),
+    item(4, 'move it', full('move'), ['alpha'], {rejudge: {of: 1, against: 'round-1.jsonl', rules: 'x'}})]
+  const first = [{n: 1, grade: 'L8', note: '', packet: 1}, {n: 2, grade: 'L3', note: "'it'", packet: 1}, {n: 3, grade: 'L8', note: '', packet: 2}]
+  // until the judge has written the new verdict, the earlier one counts
+  assert.deepEqual([runVerdicts(items, first).get('move it').get(items[0].core)].map(verdict => [verdict.grade, verdict.n, verdict.rejudge]), [['L8', 1, undefined]])
+  const later = [...first, {n: 4, grade: 'L1', note: "'move' is no command", packet: 3}]
+  for (const verdicts of [later, [...later].reverse(), later.map(({packet, ...verdict}) => verdict)]) {
+    const newest = runVerdicts(items, verdicts).get('move it').get(items[0].core)
+    assert.deepEqual([newest.grade, newest.note, newest.n, newest.sop, newest.rejudge.of], ['L1', "'move' is no command", 4, items[0].sop, 1], 'the latest packet counts, in whatever order the verdicts are read')
+  }
+  // the packet decides before the number: a verdict of a later packet counts also for an item with a lower number
+  assert.equal(runVerdicts(items, [{n: 4, grade: 'L1', note: "'move'", packet: 1}, {n: 1, grade: 'L8', note: '', packet: 2}]).get('move it').get(items[0].core).grade, 'L8')
+  // the levels: a circuit judged again counts by its newest verdict, also when it was the label before the run
+  const rows = withCores([row('1', 'move it', full('move')), row('2', 'drop it', full('drop'))])
+  const verdicts = runVerdicts(items, later)
+  assert.deepEqual(rows.map(line => levelOf(line, emptyRegistry(), verdicts)), ['L1', 'L8'])
+  const before = new Map([['move it', labelLine({text: 'move it', label: full('move'), source: 'alpha', accepted_by: 'agreement'})]])
+  assert.equal(levelOf(rows[0], emptyRegistry(), verdicts, before), 'L1')
+  assert.equal(levelOf(rows[0], emptyRegistry(), runVerdicts(items, [...first, {n: 4, grade: 'L8', note: '', packet: 3}]), before), 'L9')
+  assert.equal(levelOf(rows[0], emptyRegistry(), runVerdicts(items.slice(0, 3), first), before), 'L9', 'a circuit not judged again that was the label stays L9')
+  assert.deepEqual(tableOf([{strategy: 'alpha', rows}], emptyRegistry(), verdicts)[0].levels.L1, 1)
+
+  // publishing: only the newest item of a circuit; a circuit whose judgment made again is not written yet waits
+  const registry = emptyRegistry()
+  addToRegistry(registry, judged('move it', full('move'), 'accepted', {run: 'round-1'}), 'round-1.jsonl')
+  const waiting = publication(items, runVerdicts(items, first), registry, {tag: 'round-2', judge: 'test'})
+  assert.deepEqual([waiting.rows.map(line => [line.text, line.verdict]), waiting.counts.waitingAgain, waiting.counts.judged], [[['move it', 'rejected'], ['drop it', 'accepted']], 1, 2])
+  const done = publication(items, verdicts, registry, {tag: 'round-2', judge: 'test'})
+  assert.deepEqual(done.rows.map(line => [line.text, line.verdict, line.grade, line.supersedes]), [['move it', 'rejected', 'L3', undefined], ['drop it', 'accepted', 'L8', undefined], ['move it', 'rejected', 'L1', 'round-1.jsonl']])
+  assert.deepEqual([done.accepted.map(one => one.n), done.rejudged.map(one => [one.n, one.grade]), done.counts.superseding], [[3], [[4, 'L1']], 1])
+  assert.deepEqual(publication(items, verdicts, registry, {tag: 'round-2', rejudgedOnly: true}).rows.map(line => line.supersedes), ['round-1.jsonl'])
+  // a later decision in the registry than the one the circuit was judged again against is left as it is
+  addToRegistry(registry, judged('move it', full('move'), 'accepted', {run: 'other', supersedes: 'round-1.jsonl'}), 'other.jsonl')
+  assert.deepEqual([publication(items, verdicts, registry, {tag: 'round-3', rejudgedOnly: true}).rows.length, publication(items, verdicts, registry, {tag: 'round-3', rejudgedOnly: true}).counts.newer], [0, 1])
+})
+
+test('the registry: a line that supersedes another counts, whatever the order of the files', () => {
+  const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const core = normalForm('move it', full('move')).core
+  const first = judged('move it', full('move'), 'accepted', {run: 'fixed'}), again = judged('move it', full('move'), 'rejected', {run: 'again', grade: 'L1', supersedes: 'fixed.jsonl'})
+  const third = judged('move it', full('move'), 'accepted', {run: 'third', supersedes: 'again.jsonl'}), plain = judged('move it', full('move'), 'rejected', {run: 'later'})
+  const read = lines => { const registry = emptyRegistry(); for (const [line, file] of lines) addToRegistry(registry, line, file); return registry }
+  for (const order of [[[first, 'fixed.jsonl'], [again, 'again.jsonl']], [[again, 'again.jsonl'], [first, 'fixed.jsonl']]]) {
+    const registry = read(order)
+    assert.deepEqual([lookup(registry, 'move it', core).run, lookup(registry, 'move it', core).file, registry.rows, registry.older], ['again', 'again.jsonl', 2, 1])
+  }
+  // a third judgment counts before the second; a line that supersedes nothing never replaces another (the first read counts)
+  assert.equal(lookup(read([[third, 'third.jsonl'], [first, 'fixed.jsonl'], [again, 'again.jsonl']]), 'move it', core).run, 'third')
+  assert.equal(lookup(read([[first, 'fixed.jsonl'], [plain, 'later.jsonl']]), 'move it', core).run, 'fixed')
+  assert.equal(lookup(read([[first, 'fixed.jsonl'], [again, 'again.jsonl'], [plain, 'later.jsonl']]), 'move it', core).run, 'again')
+  // lines that supersede each other in a circle: the longest chain, then the first read
+  assert.equal(newestLine([Object.defineProperty({run: 'a', supersedes: 'b.jsonl'}, 'file', {value: 'a.jsonl'}), Object.defineProperty({run: 'b', supersedes: 'a.jsonl'}, 'file', {value: 'b.jsonl'})]).run, 'a')
+  // read from a folder: the file that supersedes is read first by its name, and still counts
+  const dir = join(mkdtempSync(join(tmpdir(), 'syntax-registry-')), 'judged')
+  mkdirSync(dir, {recursive: true})
+  writeFileSync(join(dir, 'fixed.jsonl'), JSON.stringify(first) + '\n' + JSON.stringify(judged('drop it', full('drop'), 'accepted', {run: 'fixed'})) + '\n')
+  writeFileSync(join(dir, 'again.jsonl'), JSON.stringify(again) + '\n')
+  const registry = readRegistry(dir)
+  assert.deepEqual(registry.files, ['again.jsonl', 'fixed.jsonl'])
+  assert.deepEqual([lookup(registry, 'move it', core).verdict, lookup(registry, 'move it', core).grade, lookup(registry, 'drop it', normalForm('drop it', full('drop')).core).verdict], ['rejected', 'L1', 'accepted'])
+  assert.deepEqual(registry.history.get('move it\0' + core).map(line => line.file), ['again.jsonl', 'fixed.jsonl'], 'every line is kept')
+  assert.doesNotMatch(JSON.stringify(lookup(registry, 'move it', core)), /"file"/u, 'the file of a line is never written out with it')
+})
+
+test('a label the judge now rejects is replaced by another accepted circuit, or emptied', () => {
+  const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const item = (n, message, sop, sources, grade) => ({n, text: message, sop: normalForm(message, sop).sop, core: normalForm(message, sop).core, sources, grade})
+  const label = (message, sop, accepted_by = 'judge', source = 'vss') => [message, labelLine({text: message, label: sop, source, accepted_by})]
+  const labels = new Map([label('move it', full('move')), label('drop it', full('drop')), label('lift it', full('lift')), label('turn it', flat('turn'), 'agreement', 'alpha+beta+gamma'),
+    label('bend it', full('bend')), label('show it', full('show'))])
+  const rejudged = [
+    item(1, 'move it', full('move'), ['vss'], 'L3'), item(2, 'move it', flat('move'), ['spacy'], 'L8'),   // the label rejected, another circuit of the same judging accepted
+    item(3, 'drop it', full('drop'), ['vss'], 'L3'),                                                    // the label rejected, another accepted circuit elsewhere
+    item(4, 'lift it', full('lift'), ['vss'], 'L1'),                                                    // the label rejected, nothing else accepted
+    item(5, 'turn it', flat('turn'), ['alpha', 'beta', 'gamma'], 'L8'),                                 // a label settled by agreement, accepted now
+    item(6, 'hide it', flat('hide'), ['vss'], 'L8'),                                                    // no label, accepted now
+    item(7, 'bend it', flat('bend'), ['vss'], 'L8'),                                                    // another label, still accepted: it stays
+    item(8, 'show it', full('show'), ['vss'], 'L8')]                                                    // the label accepted again by a judge: nothing changes
+  const elsewhere = {'drop it': [{sop: normalForm('drop it', full('drop')).sop, core: normalForm('drop it', full('drop')).core, sources: ['vss'], accepted_by: 'judge'},
+    {sop: normalForm('drop it', flat('drop')).sop, core: normalForm('drop it', flat('drop')).core, sources: ['spacy', 'z3'], accepted_by: 'judge'}]}
+  const result = rejudgedLabelChanges(labels, rejudged, text => elsewhere[text] ?? [])
+  assert.deepEqual([result.replaced, result.cleared, result.confirmed, result.filled], [2, 1, 1, 1])
+  assert.deepEqual([...result.changes.values()].map(line => [line.text, line.label, line.source, line.accepted_by]), [
+    ['move it', normalForm('move it', flat('move')).sop, 'spacy', 'judge'],
+    ['drop it', normalForm('drop it', flat('drop')).sop, 'spacy+z3', 'judge'],                         // never the rejected circuit itself
+    ['lift it', '', '', ''],
+    ['turn it', flat('turn'), 'alpha+beta+gamma', 'judge'],
+    ['hide it', normalForm('hide it', flat('hide')).sop, 'vss', 'judge']])
+
+  // the other accepted circuits of a message: the run's judge first, then agreement in the run, then the registry
+  const registry = emptyRegistry()
+  addToRegistry(registry, judged('drop it', flat('drop'), 'accepted', {source: 'spacy+z3'}), 'old.jsonl')
+  addToRegistry(registry, judged('drop it', full('drop'), 'rejected', {grade: 'L3'}), 'old.jsonl')
+  const items = [{...item(1, 'drop it', full('drop'), ['vss']), grade: undefined}, item(2, 'drop it', '@c1 syntax.clause form=imperative verb="drop" discourse="it"', ['prolog'])]
+  const verdicts = runVerdicts(items, [{n: 1, grade: 'L8', note: ''}, {n: 2, grade: 'L8', note: ''}],
+    [{text: 'drop it', sop: normalForm('drop it', '@c1 syntax.clause form=fragment discourse="drop" discourse="it"').sop, core: normalForm('drop it', '@c1 syntax.clause form=fragment discourse="drop" discourse="it"').core, sources: ['a', 'b', 'c']}])
+  assert.deepEqual(acceptedCircuitsOf('drop it', verdicts, registry).map(circuit => [circuit.sources.join('+'), circuit.accepted_by]), [['prolog', 'judge'], ['a+b+c', 'agreement'], ['spacy+z3', 'judge']],
+    'a circuit the registry holds as rejected is left out, also when the run accepted it')
+
+  // an emptied label is written as empty cells: the message has no label again
+  const dir = join(mkdtempSync(join(tmpdir(), 'syntax-rejudge-labels-')), 'syntactic')
+  mkdirSync(join(dir, 'things'), {recursive: true})
+  writeFileSync(join(dir, 'things/a.csv'), writeCsv(SYNTACTIC_HEADER, [['lift it', full('lift'), 'vss', 'judge'], ['rest here', '', '', '']]))
+  const read = readLabels(dir)
+  assert.deepEqual(writeLabels(read, new Map([['lift it', {text: 'lift it', label: '', source: '', accepted_by: ''}]])), {rows: 1, files: ['things/a.csv'], missing: []})
+  assert.equal(readFileSync(join(dir, 'things/a.csv'), 'utf8'), 'text,sop,source,accepted_by\nlift it,,,\nrest here,,,\n')
+  assert.equal(readLabels(dir).has('lift it'), false)
+})
+
+test('judging again from start to publication: packets after the old ones, the registry superseded, the labels changed where they must', () => {
+  const datasetBefore = datasetFiles()
+  const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const flat = verb => `@c1 syntax.clause form=imperative verb="${verb}" modifier="it"`
+  const normal = (message, sop) => normalForm(message, sop).sop
+  const folder = mkdtempSync(join(tmpdir(), 'syntax-rejudge-'))
+  const registry = join(folder, 'registry'), syntactic = join(folder, 'syntactic'), labelsFile = join(syntactic, 'things/a.csv')
+  mkdirSync(join(syntactic, 'things'), {recursive: true})
+  mkdirSync(registry, {recursive: true})
+  writeFileSync(labelsFile, writeCsv(SYNTACTIC_HEADER, [['move it', '', '', ''], ['drop it', '', '', ''], ['bend it', normal('bend it', full('bend')), 'vss', 'judge'],
+    ['fold it', normal('fold it', full('fold')), 'vss', 'judge'], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'agreement'], ['hide it', '', '', ''], ['rest here', '', '', '']]))
+  // a sample known from the registry only: its judgments stand in fixed-sample.jsonl
+  writeFileSync(join(registry, 'fixed-sample.jsonl'), [judged('bend it', normal('bend it', full('bend')), 'accepted', {run: 'fixed-sample'}),
+    judged('bend it', normal('bend it', flat('bend')), 'accepted', {run: 'fixed-sample', source: 'vss+spacy'}), judged('fold it', normal('fold it', full('fold')), 'accepted', {run: 'fixed-sample'}),
+    judged('hide it', normal('hide it', flat('hide')), 'rejected', {run: 'fixed-sample', note: "'it' is no modifier"})].map(line => JSON.stringify(line)).join('\n') + '\n')
+  const node = (tool, ...args) => spawnSync(process.execPath, [join(tools, tool), ...args], {encoding: 'utf8', env: {...process.env, SOP_KNOWLEDGE_DIR: '/nowhere'}})
+
+  // a run, judged and published
+  const run = join(folder, 'run'), judging = join(run, 'judging')
+  mkdirSync(run, {recursive: true})
+  writeFileSync(join(run, 'alpha.jsonl'), [row('1', 'move it', full('move')), row('2', 'drop it', full('drop'))].map(line => JSON.stringify(line)).join('\n') + '\n')
+  writeFileSync(join(run, 'beta.jsonl'), [row('1', 'move it', flat('move')), row('2', 'drop it', full('drop'))].map(line => JSON.stringify(line)).join('\n') + '\n')
+  assert.equal(node('judge-prepare.mjs', run, '--registry', registry, '--size', '2').status, 0)
+  const packet = [...readJsonl(join(judging, 'packet-1.jsonl')), ...readJsonl(join(judging, 'packet-2.jsonl'))]
+  const numberOf = (message, sop) => packet.find(line => line.text === message && line.sop === normal(message, sop)).n
+  const verdictsOf = numbers => numbers.map(n => JSON.stringify({n, grade: 'L8', note: ''})).join('\n') + '\n'
+  writeFileSync(join(judging, 'verdicts-1.jsonl'), verdictsOf([1, 2]))
+  writeFileSync(join(judging, 'verdicts-2.jsonl'), verdictsOf([3]))
+  assert.equal(node('judge-publish.mjs', run, '--tag', 'round-1', '--judge', 'test-judge', '--registry', registry).status, 0)
+  const labelOf = message => readLabels(syntactic).get(message)
+  const moveLabel = labelOf('move it')
+  assert.equal(moveLabel.core, normalForm('move it', full('move')).core, 'one source each: the first by number is the label')
+  assert.equal(node('table.mjs', run, '--registry', registry).status, 0)
+  const tableBefore = readFileSync(join(run, 'table.md'), 'utf8')
+
+  // the rules change: two circuits of the run are judged again
+  const list = join(folder, 'rejudge.json')
+  writeFileSync(list, JSON.stringify([
+    {settled_case: 'a new case', file: join(judging, 'verdicts-1.jsonl'), n: numberOf('move it', full('move')), text: 'move it', why: "'it'", grade_by_rules: 'L3'},
+    {settled_case: 'a new case', file: join(judging, 'verdicts-2.jsonl'), n: numberOf('drop it', full('drop')), text: 'drop it', grade_by_rules: 'L8'},
+    {file: join(registry, 'fixed-sample.jsonl'), n: 1, text: 'bend it', grade_by_rules: 'L3'}, {file: join(registry, 'fixed-sample.jsonl'), n: 3, text: 'fold it'},
+    {file: join(registry, 'fixed-sample.jsonl'), n: 4, text: 'hide it', grade_by_rules: 'L8'}, {file: labelsFile, n: 5, text: 'turn it'}]))
+  writeFileSync(join(judging, 'RULES.md'), 'the rules as they were\n')
+  const history = ['verdicts-1.jsonl', 'verdicts-2.jsonl', 'packet-1.jsonl', 'packet-2.jsonl'].map(name => readFileSync(join(judging, name), 'utf8'))
+  const prepared = node('rejudge.mjs', 'prepare', run, list, '--registry', registry)
+  assert.equal(prepared.status, 0, prepared.stderr)
+  assert.match(prepared.stdout, /6 entries in .*: 2 for \S*run\. 2 circuits are sent to a judge again\.[\s\S]*New packets: packet-3\.jsonl \(2\)/u)
+  assert.deepEqual(readdirSync(judging).sort(), ['RULES.md', 'check.mjs', 'packet-1.jsonl', 'packet-2.jsonl', 'packet-3.jsonl', 'verdicts-1.jsonl', 'verdicts-2.jsonl'])
+  assert.deepEqual(['verdicts-1.jsonl', 'verdicts-2.jsonl', 'packet-1.jsonl', 'packet-2.jsonl'].map(name => readFileSync(join(judging, name), 'utf8')), history, 'the old packets and verdicts stay as they were')
+  assert.equal(readFileSync(join(judging, 'RULES.md'), 'utf8'), readFileSync(join(tools, 'rules.md'), 'utf8'), 'the judge reads the rules as they are now')
+  const again = readJsonl(join(judging, 'packet-3.jsonl'))
+  assert.deepEqual(again.map(line => [line.n, line.text, Object.keys(line).join()]), [[4, 'move it', 'n,text,sop'], [5, 'drop it', 'n,text,sop']])
+  const items = readJsonl(join(run, 'key/items.jsonl'))
+  assert.deepEqual(items.slice(3).map(one => [one.n, one.core === items.find(other => other.n === one.rejudge.of).core, one.rejudge.of, one.rejudge.against, one.rejudge.before.verdict, one.rejudge.expected, one.rejudge.rules]),
+    [[4, true, numberOf('move it', full('move')), 'round-1.jsonl', 'accepted', 'L3', rulesVersion()], [5, true, numberOf('drop it', full('drop')), 'round-1.jsonl', 'accepted', 'L8', rulesVersion()]])
+  assert.match(node('rejudge.mjs', 'prepare', run, list, '--registry', registry).stdout, /2 were sent again already under these rules[\s\S]*No new packet/u, 'a circuit is sent again once under the same rules')
+  // until the judge has written the new verdicts, the table and the registry stay as they were
+  assert.equal(node('table.mjs', run, '--registry', registry).status, 0)
+  assert.equal(readFileSync(join(run, 'table.md'), 'utf8'), tableBefore)
+  const early = node('judge-publish.mjs', run, '--tag', 'round-2', '--registry', registry)
+  assert.match(early.stdout, /2 of them judged again, whose new verdict is not written yet[\s\S]*Nothing new to publish/u)
+  assert.equal(existsSync(join(registry, 'round-2.jsonl')), false)
+
+  // the judge rejects the label of "move it" and accepts the circuit of "drop it" again
+  writeFileSync(join(judging, 'verdicts-3.jsonl'), JSON.stringify({n: 4, grade: 'L3', note: "'it' is no complement"}) + '\n' + JSON.stringify({n: 5, grade: 'L8', note: ''}) + '\n')
+  assert.equal(spawnSync(process.execPath, [join(judging, 'check.mjs'), '3'], {encoding: 'utf8'}).status, 0)
+  assert.equal(node('table.mjs', run, '--registry', registry).status, 0)
+  assert.deepEqual(readJson(join(run, 'table.json')).strategies.map(line => [line.strategy, line.levels.L3, line.levels.L8]), [['alpha', 1, 1], ['beta', 0, 2]])
+  const published = node('judge-publish.mjs', run, '--tag', 'round-2', '--judge', 'test-judge', '--rejudged-only', '--registry', registry)
+  assert.equal(published.status, 0, published.stderr)
+  assert.match(published.stdout, /Of them, 2 were judged again: 1 accepted, 1 rejected; 2 lines supersede/u)
+  assert.match(published.stdout, /Labels after judging again: 1 labels the judge now rejects were replaced by another accepted circuit, 0 were emptied/u)
+  assert.deepEqual(readJsonl(join(registry, 'round-2.jsonl')).map(line => [line.text, line.verdict, line.supersedes, line.run]), [['move it', 'rejected', 'round-1.jsonl', 'round-2'], ['drop it', 'accepted', 'round-1.jsonl', 'round-2']])
+  const now = readRegistry(registry)
+  assert.equal(lookup(now, 'move it', normalForm('move it', full('move')).core).grade, 'L3', 'the registry returns the newest decision')
+  assert.deepEqual([labelOf('move it').core, labelOf('move it').accepted_by], [normalForm('move it', flat('move')).core, 'judge'], 'the other circuit the judge accepted in the run is the label now')
+  assert.deepEqual([labelOf('drop it').core, labelOf('drop it').accepted_by], [normalForm('drop it', full('drop')).core, 'judge'])
+  // published once: a second call finds the registry's decision newer than the one the circuits were judged again against
+  assert.match(node('judge-publish.mjs', run, '--tag', 'round-3', '--rejudged-only', '--registry', registry).stdout, /2 circuits judged again have a later decision[\s\S]*Nothing new to publish/u)
+
+  // a folder of its own for circuits known from the registry or the labels only
+  const own = join(folder, 'rejudge-fixed-sample')
+  const made = node('rejudge.mjs', 'prepare', own, list, '--from', join(registry, 'fixed-sample.jsonl'), syntactic, '--registry', registry)
+  assert.equal(made.status, 0, made.stderr)
+  assert.match(made.stdout, /4 for \S*rejudge-fixed-sample\. 4 circuits are sent to a judge again\.\nTheir decision now: 3 accepted, 1 rejected; 3 have a registry line[\s\S]*packet-1\.jsonl \(4\)/u)
+  assert.deepEqual(readJsonl(join(own, 'key/items.jsonl')).map(one => [one.n, one.text, one.sources.join('+'), one.rejudge.against, one.rejudge.before.by, 'of' in one.rejudge]),
+    [[1, 'bend it', 'vss', 'fixed-sample.jsonl', 'judge', false], [2, 'fold it', 'vss', 'fixed-sample.jsonl', 'judge', false], [3, 'hide it', 'vss', 'fixed-sample.jsonl', 'judge', false],
+      [4, 'turn it', 'alpha+beta+gamma', null, 'agreement', false]])
+  assert.deepEqual(readJsonl(join(own, 'key/labels-before.jsonl')).map(line => [line.text, line.accepted_by]), [['bend it', 'judge'], ['fold it', 'judge'], ['turn it', 'agreement']])
+  assert.deepEqual(readdirSync(join(own, 'judging')).sort(), ['RULES.md', 'check.mjs', 'packet-1.jsonl'])
+  writeFileSync(join(own, 'judging/verdicts-1.jsonl'), [{n: 1, grade: 'L3', note: "'it'"}, {n: 2, grade: 'L1', note: "'fold'"}, {n: 3, grade: 'L8', note: ''}, {n: 4, grade: 'L8', note: ''}].map(line => JSON.stringify(line)).join('\n') + '\n')
+  // "again-fixed.jsonl" is read before "fixed-sample.jsonl", and its lines count all the same
+  const fixed = node('judge-publish.mjs', own, '--tag', 'again-fixed', '--judge', 'test-judge', '--registry', registry)
+  assert.equal(fixed.status, 0, fixed.stderr)
+  assert.match(fixed.stdout, /Labels after judging again: 1 labels the judge now rejects were replaced by another accepted circuit, 1 were emptied \(no accepted circuit is left, so the message is open again\), 1 labels settled by agreement were accepted by the judge, 1 messages with no label got the circuit the judge now accepts\./u)
+  assert.deepEqual(readJsonl(join(registry, 'again-fixed.jsonl')).map(line => [line.text, line.verdict, line.supersedes ?? null]),
+    [['bend it', 'rejected', 'fixed-sample.jsonl'], ['fold it', 'rejected', 'fixed-sample.jsonl'], ['hide it', 'accepted', 'fixed-sample.jsonl'], ['turn it', 'accepted', null]])
+  const after = readRegistry(registry)
+  assert.equal(lookup(after, 'hide it', normalForm('hide it', flat('hide')).core).verdict, 'accepted')
+  assert.equal(lookup(after, 'bend it', normalForm('bend it', full('bend')).core).verdict, 'rejected')
+  assert.equal(readFileSync(labelsFile, 'utf8'), writeCsv(SYNTACTIC_HEADER, [['move it', normal('move it', flat('move')), 'beta', 'judge'], ['drop it', normal('drop it', full('drop')), 'alpha+beta', 'judge'],
+    ['bend it', normal('bend it', flat('bend')), 'vss+spacy', 'judge'], ['fold it', '', '', ''], ['turn it', normal('turn it', flat('turn')), 'alpha+beta+gamma', 'judge'],
+    ['hide it', normal('hide it', flat('hide')), 'vss', 'judge'], ['rest here', '', '', '']]))
+
+  // none of this touched the syntactic files of the dataset
+  assert.equal(datasetFiles(), datasetBefore)
+})
+
+test('the new items of a judgment made again: numbered after the last one, taken once per circuit', () => {
+  const full = verb => `@c1 syntax.clause form=imperative verb="${verb}" complement=$n1\n@n1 syntax.nominal head="it"`
+  const where = (message, sop, more = {}) => ({kind: 'registry', text: message, sop, sources: ['vss'], before: {verdict: 'accepted', grade: 'L8', note: '', by: 'judge'}, ...more})
+  const located = [{entry: {file: 'a.jsonl', n: 1, text: 'move it', settled_case: 'case 1'}, where: where('move it', full('move'))},
+    {entry: {file: 'a.jsonl', n: 2, text: 'move it'}, where: where('move it', full('move'))},                          // the same circuit twice
+    {entry: {file: 'a.jsonl', n: 3, text: 'drop it'}, where: where('drop it', 'not a circuit')},
+    {entry: {file: 'b.jsonl', n: 1, text: 'lift it'}, where: {problem: 'line 1 of b.jsonl is another message'}}]
+  const items = [{n: 7, text: 'turn it', sop: 'x', core: 'y', sources: []}]
+  const result = rejudgeItems(items, located, emptyRegistry(), {take: entry => entry.file === 'a.jsonl', rules: 'r1'})
+  assert.deepEqual([result.added.map(one => [one.n, one.text, one.rejudge.from, one.rejudge.case, one.rejudge.against]), result.taken, result.again], [[[8, 'move it', 'a.jsonl:1', 'case 1', null]], 3, 1])
+  assert.deepEqual(result.problems, ['a.jsonl:3 holds no valid circuit of its message'], 'an entry of another folder with a problem is not reported here')
+  assert.equal(rejudgeItems([...items, ...result.added], located.slice(0, 1), emptyRegistry(), {rules: 'r1'}).again, 1)
+  assert.equal(rejudgeItems([...items, ...result.added], located.slice(0, 1), emptyRegistry(), {rules: 'r2'}).added.length, 1, 'new rules send the circuit again')
 })
