@@ -1,0 +1,85 @@
+{
+  "name": "gold-only",
+  "checkpoint": "/home/salboaie/work/sopworlds/soplang-nlu/.local-models/distilbert/syntax-v1/checkpoint",
+  "training": {
+    "messages": {
+      "gold": {
+        "file": "/home/salboaie/work/sopworlds/webmeet-dataset/annotations/syntax/v1/labels.jsonl",
+        "sha256": "d4721175857fb8947f2eeae93c790608802edbeedfb93c399f5b07ff29d30639",
+        "lines": 2328,
+        "train": 2103,
+        "development": 225,
+        "excluded": 0
+      },
+      "silver": []
+    },
+    "trainRows": 2103,
+    "trainWeight": 2103,
+    "developmentRows": 225,
+    "selectedEpoch": 20,
+    "seed": 20261127,
+    "base": "distilbert-base-uncased",
+    "baseRevision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "thresholds": {
+      "node": 0.5,
+      "tie": 0.5
+    }
+  },
+  "development": {
+    "messages": 225,
+    "valid": {
+      "count": 225,
+      "of": 225,
+      "percent": 100
+    },
+    "equalToGoldByCore": {
+      "count": 121,
+      "of": 225,
+      "percent": 53.8
+    },
+    "errors": {}
+  },
+  "round02": {
+    "messages": 598,
+    "valid": {
+      "count": 598,
+      "of": 598,
+      "percent": 100
+    },
+    "sameAsVssFirstRun": {
+      "count": 271,
+      "of": 598,
+      "percent": 45.3
+    },
+    "sameAsSpacyDirect": {
+      "count": 349,
+      "of": 590,
+      "percent": 59.2
+    },
+    "cpuAndGpuWriteTheSameCircuit": {
+      "count": 598,
+      "of": 598,
+      "percent": 100
+    },
+    "messagesTheCheckpointWasTrainedOn": 543,
+    "messagesAmongItsDevelopmentMessages": 55,
+    "errors": {}
+  },
+  "time": {
+    "messages": 598,
+    "cpu": {
+      "device": "cpu",
+      "startupMs": 1808,
+      "meanMs": 62,
+      "medianMs": 61.5,
+      "p95Ms": 74.8
+    },
+    "gpu": {
+      "device": "cuda",
+      "startupMs": 3646,
+      "meanMs": 4.8,
+      "medianMs": 4.1,
+      "p95Ms": 5.7
+    }
+  }
+}

@@ -1,12 +1,20 @@
-// The DistilBERT strategy: a fine-tuned DistilBERT model in a persistent Python worker predicts
-// the structure of one message, and `syntax.mjs` writes that prediction as one circuit of the
-// `syntax` schema. Nothing is read from a knowledge repository.
+// The DistilBERT strategy: a DistilBERT model trained on circuits of the `syntax` schema, in a
+// persistent Python worker, predicts the wires of one message, the key of every word and the
+// ties; `circuit.mjs` writes that prediction as one circuit. Nothing is read from a knowledge
+// repository, and nothing that was learned from the older `nlu` annotations is used.
 import {spawn} from 'node:child_process'
+import {existsSync, readFileSync} from 'node:fs'
 import {createInterface} from 'node:readline'
+import {join} from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {modelTokens, writeSyntax} from './syntax.mjs'
+import {modelTokens} from './targets.mjs'
+import {writeSyntaxCircuit} from './circuit.mjs'
 
-const defaultWorker = fileURLToPath(new URL('./worker.py',import.meta.url))
+const syntaxWorker = fileURLToPath(new URL('./syntax_worker.py',import.meta.url))
+const olderWorker = fileURLToPath(new URL('./worker.py',import.meta.url))
+// where retrain.mjs puts the checkpoint; the weights are not part of the package
+export const installedModel = fileURLToPath(new URL('../../.local-models/distilbert/syntax-v1/checkpoint',import.meta.url))
+export const modelFormat = 'syntax-distilbert-v1'
 
 async function deadline(action, timeoutMs, description) {
   let timer
@@ -20,18 +28,17 @@ async function deadline(action, timeoutMs, description) {
 }
 
 /**
- * Open the worker and return {analyse, close}.
+ * Open a worker and return {ask, diagnostics, close}. `ask(text, fields)` sends one message with
+ * its tokens and returns {tokens, reply}; it throws when the worker has no answer for it.
  * @param tokenize the tokens of a message, as the model was trained to receive them
- * @param render (text, tokens, reply) => the circuit as text; it may throw
- * @param detail ask the worker for the ranked choices beside each prediction
  */
 async function openWorker({
   python = process.env.SOP_NLU_DISTILBERT_PYTHON ?? 'python3',
-  modelPath = process.env.SOP_NLU_DISTILBERT_MODEL,
+  modelPath,
   device = process.env.SOP_NLU_DISTILBERT_DEVICE ?? 'auto',
-  workerPath = defaultWorker,
+  workerPath,
   timeoutMs = 120000
-} = {}, {modelFlag = '--model', tokenize, render, detail = false} = {}) {
+} = {}, {modelFlag = '--model', tokenize} = {}) {
   if (!modelPath) throw Error('Set SOP_NLU_DISTILBERT_MODEL or pass modelPath.')
   if (!['auto','cpu','cuda'].includes(device)) throw Error('Expected DistilBERT device auto, cpu or cuda.')
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647) {
@@ -78,20 +85,17 @@ async function openWorker({
   let pending = Promise.resolve()
   let closing
   let requestId = 0
-  // `error` is what the common reader of a syntax strategy reports; the diagnostics keep the older shape.
-  function failure(error, status = 'error') {
-    return {analyses:[],error:error.message,analysisDiagnostics:{...diagnostics,status,error:error.message}}
-  }
+  const none = message => Object.assign(Error(message),{status:'no-graph'})
 
-  async function run(text,draftNodes) {
-    if (fatal) return failure(fatal)
-    if (typeof text !== 'string' || !text.trim()) return failure(Error('Expected a nonempty source string.'))
+  async function run(text,fields) {
+    if (fatal) throw fatal
+    if (typeof text !== 'string' || !text.trim()) throw Error('Expected a nonempty source string.')
     const tokens = tokenize(text)
-    if (!tokens.length) return failure(Error('The message has no words.'),'no-graph')
+    if (!tokens.length) throw none('The message has no words.')
     const id = ++requestId
     let response
     try {
-      const line = JSON.stringify({id,text,tokens,...(detail ? {detail:true} : {}),...(draftNodes === undefined ? {} : {draftNodes})})+'\n'
+      const line = JSON.stringify({id,text,tokens,...fields})+'\n'
       await deadline(new Promise((resolve,reject)=>{
         child.stdin.write(line,error=>error ? reject(error) : resolve())
       }),timeoutMs,'DistilBERT request write')
@@ -102,27 +106,22 @@ async function openWorker({
       }
     } catch (error) {
       terminate(error)
-      return failure(error)
+      throw error
     }
-    if (typeof response.error === 'string') return failure(Error(response.error))
-    if (response.status === 'input-too-long') return failure(Error('The message is longer than the model can read.'),'no-graph')
-    if (!response.nodes.length) return failure(Error('The model found no node in the message.'),'no-graph')
-    try {
-      const sop = render(text,tokens,response)
-      return {analyses:[{sop}],analysisDiagnostics:{...diagnostics,status:'ok'}}
-    } catch (error) {
-      return failure(error)
-    }
+    if (typeof response.error === 'string') throw Error(response.error)
+    if (response.status === 'input-too-long') throw none('The message is longer than the model can read.')
+    if (!response.nodes.length) throw none('The model found no wire in the message.')
+    return {tokens,reply:response}
   }
 
-  function analyse(text,draftNodes) {
-    if (closing) return Promise.resolve(failure(Error('DistilBERT reader is closed.')))
-    const next = pending.then(()=>run(text,draftNodes))
+  function ask(text,fields = {}) {
+    if (closing) return Promise.reject(Error('DistilBERT reader is closed.'))
+    const next = pending.then(()=>run(text,fields))
     pending = next.catch(()=>{})
     return next
   }
 
-  return {analyse,propose:analyse,async close() {
+  return {ask,diagnostics,async close() {
     closing ??= pending.then(async ()=>{
       child.stdin.end()
       try { await deadline(exited,timeoutMs,'DistilBERT shutdown') }
@@ -133,24 +132,78 @@ async function openWorker({
 }
 
 /**
- * The strategy. `open` takes {python, modelPath, device, workerPath, timeoutMs, attachmentMargin};
+ * Open the syntax model. The checkpoint is `modelPath`, else SOP_NLU_DISTILBERT_MODEL, else the one
+ * retrain.mjs installed under .local-models/distilbert/syntax-v1. A checkpoint that was trained
+ * on the older `nlu` annotations is refused.
+ * @returns {predict(text, {nodeThreshold}?) → {tokens, prediction}, thresholds: {node, tie}, diagnostics, close}
+ */
+export async function openSyntaxModel({modelPath = process.env.SOP_NLU_DISTILBERT_MODEL, workerPath = syntaxWorker, ...options} = {}) {
+  const checkpoint = modelPath ?? (existsSync(join(installedModel,'manifest.json')) ? installedModel : undefined)
+  if (!checkpoint) throw Error('No checkpoint of the syntax model is installed. Train one with strategies/distilbert/retrain.mjs, or set SOP_NLU_DISTILBERT_MODEL or pass modelPath.')
+  let manifest = null
+  if (workerPath === syntaxWorker) {
+    const file = join(checkpoint,'manifest.json')
+    if (!existsSync(file)) throw Error('There is no checkpoint of the syntax model at ' + checkpoint + ' (no manifest.json).')
+    manifest = JSON.parse(readFileSync(file,'utf8'))
+    if (manifest.format !== modelFormat) {
+      throw Error(`The checkpoint at ${checkpoint} is no syntax model (format ${JSON.stringify(manifest.format)}, expected ${JSON.stringify(modelFormat)}). ` +
+        'A checkpoint trained on the older nlu annotations is not read any more.')
+    }
+  }
+  const worker = await openWorker({...options,modelPath:checkpoint,workerPath},{tokenize:modelTokens})
+  return {
+    thresholds:{node:manifest?.nodeThreshold ?? .5,tie:manifest?.tieThreshold ?? .5},
+    diagnostics:worker.diagnostics,
+    async predict(text,{nodeThreshold} = {}) {
+      const {tokens,reply} = await worker.ask(text,nodeThreshold === undefined ? {} : {nodeThreshold})
+      return {tokens,prediction:reply}
+    },
+    close:worker.close
+  }
+}
+
+/**
+ * The strategy. `open` takes {python, modelPath, device, workerPath, timeoutMs, nodeThreshold, tie};
  * the first three can also be given as SOP_NLU_DISTILBERT_PYTHON, SOP_NLU_DISTILBERT_MODEL and
- * SOP_NLU_DISTILBERT_DEVICE. `analyse(text)` returns {analyses: [{sop}]} with one circuit of the
- * syntax schema, or {analyses: [], error}.
+ * SOP_NLU_DISTILBERT_DEVICE. The two thresholds are those chosen at training unless given.
+ * `analyse(text)` returns {analyses: [{sop}]} with one circuit of the syntax schema, or
+ * {analyses: [], error}.
  */
 export const distilBert = {
   name:'distilbert',
   schema:'syntax',
-  open:({attachmentMargin,...options} = {}) => openWorker(options,{detail:true,tokenize:modelTokens,
-    render:(text,tokens,reply) => writeSyntax(text,tokens,reply,attachmentMargin === undefined ? {} : {attachmentMargin})})
+  async open({nodeThreshold,tie,...options} = {}) {
+    const model = await openSyntaxModel(options)
+    const call = nodeThreshold === undefined ? {} : {nodeThreshold}
+    const writing = {tie:tie ?? model.thresholds.tie}
+    async function analyse(text) {
+      try {
+        const {tokens,prediction} = await model.predict(text,call)
+        return {analyses:[{sop:writeSyntaxCircuit(text,tokens,prediction,writing)}],analysisDiagnostics:{...model.diagnostics,status:'ok'}}
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        return {analyses:[],error:message,analysisDiagnostics:{...model.diagnostics,status:error?.status ?? 'error',error:message}}
+      }
+    }
+    return {analyse,propose:analyse,close:model.close}
+  }
 }
 
 /**
- * Not used by the strategy any more: the same worker with its nodes written in the old `nlu`
- * schema. Kept for the experiments that open other workers through it; `graph.mjs` is loaded
- * only when this is called.
+ * Not used by the strategy: the worker of the older model (worker.py), with its nodes written in
+ * the old `nlu` schema. Kept for the experiments that open other workers through it; `graph.mjs`
+ * is loaded only when this is called.
  */
-export async function openGraphWorker(options = {}, extra = {}) {
+export async function openGraphWorker({modelPath = process.env.SOP_NLU_DISTILBERT_MODEL, workerPath = olderWorker, ...options} = {}, extra = {}) {
   const {renderGraph, tokenizeSource} = await import('./graph.mjs')
-  return openWorker(options,{...extra,tokenize:tokenizeSource,render:(text,tokens,reply) => renderGraph(text,tokens,reply.nodes)})
+  const worker = await openWorker({...options,modelPath,workerPath},{...extra,tokenize:tokenizeSource})
+  async function analyse(text,draftNodes) {
+    try {
+      const {tokens,reply} = await worker.ask(text,draftNodes === undefined ? {} : {draftNodes})
+      return {analyses:[{sop:renderGraph(text,tokens,reply.nodes)}],analysisDiagnostics:{...worker.diagnostics,status:'ok'}}
+    } catch (error) {
+      return {analyses:[],error:error.message,analysisDiagnostics:{...worker.diagnostics,status:error.status ?? 'error',error:error.message}}
+    }
+  }
+  return {analyse,propose:analyse,close:worker.close}
 }

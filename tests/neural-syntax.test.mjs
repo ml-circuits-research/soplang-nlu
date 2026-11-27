@@ -9,12 +9,15 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {existsSync} from 'node:fs'
-import {homedir} from 'node:os'
+import {mkdtemp, rm, writeFile} from 'node:fs/promises'
+import {homedir, tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {createReader, validateSyntax, parseCircuit, coreOf, wordsOf} from '../lib/index.mjs'
 import {distilBert} from '../strategies/distilbert/index.mjs'
-import {modelTokens, writeSyntax} from '../strategies/distilbert/syntax.mjs'
+import {modelTokens, encodeCircuit, certainPrediction, modelSchema} from '../strategies/distilbert/targets.mjs'
+import {writeSyntaxCircuit} from '../strategies/distilbert/circuit.mjs'
+import {normalForm} from './benchmark/syntax/lib.mjs'
 import {neuroSelector} from '../strategies/neuro-selector/index.mjs'
 import {settleAttachments} from '../strategies/neuro-selector/attachments.mjs'
 import {selectorDistilBert, pairCircuits} from '../strategies/selector-distilbert/index.mjs'
@@ -23,7 +26,7 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const found = (variable, ...places) => process.env[variable] ?? places.find(place => existsSync(place))
 const settings = {
   distilbertPython: found('SOP_NLU_DISTILBERT_PYTHON', join(homedir(), 'nlp-venv/bin/python')),
-  distilbertModel: found('SOP_NLU_DISTILBERT_MODEL', join(root, '.local-models/distilbert/curated-ownership-v2/checkpoint')),
+  distilbertModel: found('SOP_NLU_DISTILBERT_MODEL', join(root, '.local-models/distilbert/syntax-v1/checkpoint')),
   python: found('SOP_NLU_SYNTAX_PYTHON', '/tmp/sop-nlu-trf-model/python-trf-one'),
   model: found('SOP_NLU_SYNTAX_MODEL', '/tmp/sop-nlu-trf-model/en_core_web_trf/en_core_web_trf-3.8.0'),
   adaptedModel: found('SOP_NLU_ADAPTED_TRF_MODEL', '/tmp/wm-spacy-trf-heads/adapted-model'),
@@ -90,103 +93,135 @@ test('the tests run with no knowledge repository', () => {
   for (const strategy of [distilBert, neuroSelector, selectorDistilBert]) assert.equal(strategy.schema, 'syntax')
 })
 
-// ---- the output stage of the DistilBERT strategy, on predictions written by hand (no model needed)
-const entity = (anchor, ...attrs) => ({anchor, type: 'nlu.entity', attrs})
-const clause = (anchor, form, ...attrs) => ({anchor, type: 'nlu.clause', attrs: [{key: 'form', atom: form}, ...attrs]})
-const relation = (anchor, ...attrs) => ({anchor, type: 'nlu.relation', attrs})
-const span = (key, start, end = start + 1) => ({key, start, end})
-const to = (key, target, ranked) => ({key, target, ...(ranked ? {ranked} : {})})
-const written = (text, nodes, owners) => writeSyntax(text, modelTokens(text), {nodes, owners})
-
-test('output stage: a measure before a marker is a nominal and the relation starts at it (Rule 4)', () => {
-  const text = 'put the lamp two inches from the edge.'
-  const sop = written(text, [
-    clause(0, 'imperative', span('predicate', 0), to('direct_object', 1), span('terminator', 8)),
-    entity(2, span('determiner', 1), span('head', 2)),
-    entity(4, span('quantity', 3), span('head', 4)),
-    relation(4, to('from', 0), {key: 'kind', atom: 'extent'}, to('to', 2)),
-    relation(5, to('from', 0), {key: 'kind', atom: 'from'}, to('measure', 2), to('to', 5), span('cue', 5)),
-    entity(7, span('determiner', 6), span('head', 7))])
-  sameCircuit(text, sop, `@c1 syntax.clause form=imperative verb="put" complement=$n1 complement=$n2
-@n1 syntax.nominal dependent="the" head="lamp"
-@n2 syntax.nominal dependent="two" head="inches"
-@r1 syntax.relation from=$n2 to=$n3 marker="from"
-@n3 syntax.nominal dependent="the" head="edge"`)
-})
-
-test('output stage: the "to" of an infinitive marks the relation between the two clauses (Rule 5.4)', () => {
-  const text = 'I want to delete it'
-  const sop = written(text, [entity(0, span('pronoun', 0)),
-    clause(1, 'declarative', span('predicate', 1), to('subject', 0), to('clausal_complement', 2)),
-    clause(3, 'nonfinite', span('predicate', 3), span('marker', 2), to('direct_object', 3)),
-    entity(4, span('pronoun', 4))])
-  sameCircuit(text, sop, `@c1 syntax.clause form=declarative verb="want" subject=$n1
-@n1 syntax.nominal head="I"
-@c2 syntax.clause form=nonfinite verb="delete" complement=$n2
-@n2 syntax.nominal head="it"
-@r1 syntax.relation from=$c1 to=$c2 marker="to"`)
-  // nothing stands before the marker: the relation starts at the main clause
-  const fronted = 'to fix the details, edit the members'
-  const wires = shape(fronted, written(fronted, [
-    clause(1, 'nonfinite', span('predicate', 1), span('marker', 0), to('direct_object', 1)), entity(3, span('determiner', 2), span('head', 3)),
-    clause(5, 'imperative', span('predicate', 5), to('direct_object', 3)), entity(7, span('determiner', 6), span('head', 7))]))
-  assert.equal(relationOf(wires, 'to').to.from[0], clauseOf(wires, 'edit'))
-  assert.equal(relationOf(wires, 'to').to.to[0], clauseOf(wires, 'fix'))
-})
-
-test('output stage: a conjunct without a verb names the clause whose verb it shares (Rule 3)', () => {
-  const gapped = 'make A blue and B green'
-  sameCircuit(gapped, written(gapped, [
-    clause(0, 'imperative', span('predicate', 0), to('direct_object', 1), span('result_complement', 2)), entity(1, span('head', 1)),
-    {anchor: 3, type: 'nlu.coordination', attrs: [to('member', 0), to('member', 3), span('cue', 3)]},
-    clause(4, 'fragment', to('topic', 4), span('result_complement', 5)), entity(4, span('head', 4))]),
-  `@c1 syntax.clause form=imperative verb="make" complement=$n1 modifier="blue"
+// ---- the targets of the DistilBERT model and its output stage (no model needed)
+const sameAsWritten = (text, sop, expected) => assert.equal(normalForm(text, sop).core, normalForm(text, expected).core, sop)
+const specCircuits = [
+  ['move the blue box next to the red circle, and make it bigger.', `@c1 syntax.clause form=imperative verb="move" complement=$n1
+@n1 syntax.nominal dependent="the" dependent="blue" head="box"
+@r1 syntax.relation from=$c1 to=$n2 marker="next to" attachment=ambiguous
+@n2 syntax.nominal dependent="the" dependent="red" head="circle"
+@c2 syntax.clause form=imperative verb="make" complement=$n3 modifier="bigger"
+@n3 syntax.nominal head="it"
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunction="and"`],
+  ['make A blue and B green', `@c1 syntax.clause form=imperative verb="make" complement=$n1 modifier="blue"
 @n1 syntax.nominal head="A"
 @c2 syntax.clause form=fragment complement=$n2 modifier="green" ellipsis=$c1
 @n2 syntax.nominal head="B"
-@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunction="and"`)
-  // a conjunct that holds a discourse word only shares nothing
-  const thanks = 'move the box, and thanks'
-  const wires = shape(thanks, written(thanks, [
-    clause(0, 'imperative', span('predicate', 0), to('direct_object', 1)), entity(2, span('determiner', 1), span('head', 2)),
-    {anchor: 4, type: 'nlu.coordination', attrs: [to('member', 0), to('member', 3), span('cue', 3), span('cue', 4)]},
-    clause(5, 'fragment', span('expression', 5))]))
-  assert.equal(wires.some(wire => wire.to.ellipsis), false)
-  assert.deepEqual(wires.find(wire => wire.type === 'coordination').words.conjunction, ['and'])
-})
-
-test('output stage: an attachment the model hesitates on is left unsettled (Rule 2)', () => {
-  const text = 'put the cat on the table'
-  const nodes = ranked => [clause(0, 'imperative', span('predicate', 0), to('direct_object', 1)), entity(2, span('determiner', 1), span('head', 2)),
-    relation(3, to('from', ranked[0].target, ranked), to('to', 3), span('cue', 3)), entity(5, span('determiner', 4), span('head', 5))]
-  const unsettled = `@c1 syntax.clause form=imperative verb="put" complement=$n1
-@n1 syntax.nominal dependent="the" head="cat"
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunction="and"`],
+  ['put the lamp two inches from the edge', `@c1 syntax.clause form=imperative verb="put" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent="the" head="lamp"
+@n2 syntax.nominal dependent="two" head="inches"
+@r1 syntax.relation from=$n2 to=$n3 marker="from"
+@n3 syntax.nominal dependent="the" head="edge"`],
+  ['put it near Ben but not behind Jo', `@c1 syntax.clause form=imperative verb="put" complement=$n1
+@n1 syntax.nominal head="it"
+@r1 syntax.relation from=$c1 to=$n2 marker="near"
+@n2 syntax.nominal head="Ben"
+@r2 syntax.relation from=$c1 to=$n3 marker="behind" negation="not"
+@n3 syntax.nominal head="Jo"
+@k1 syntax.coordination conjunct=$r1 conjunct=$r2 conjunction="but"`],
+  ['a bird facing left', `@c1 syntax.clause form=fragment complement=$n1
+@n1 syntax.nominal dependent="a" head="bird"
+@c2 syntax.clause form=nonfinite verb="facing" modifier="left"
+@r1 syntax.relation from=$n1 to=$c2`],
+  ['put the box on the box', `@c1 syntax.clause form=imperative verb="put" complement=$n1
+@n1 syntax.nominal dependent="the" head="box"
 @r1 syntax.relation from=$c1 to=$n2 marker="on" attachment=ambiguous
-@n2 syntax.nominal dependent="the" head="table"`
-  sameCircuit(text, written(text, nodes([{target: 0, p: .55}, {target: 1, p: .45}])), unsettled)
-  sameCircuit(text, written(text, nodes([{target: 1, p: .6}, {target: 0, p: .4}])), unsettled)
-  sameCircuit(text, written(text, nodes([{target: 0, p: .95}, {target: 1, p: .05}])), unsettled.replace(' attachment=ambiguous', ''))
-  sameCircuit(text, written(text, nodes([{target: 1, p: .95}, {target: 0, p: .05}])), unsettled.replace(' attachment=ambiguous', '').replace('from=$c1', 'from=$n1'))
+@n2 syntax.nominal dependent="the" head="box"`],
+  ['I want to delete it', `@c1 syntax.clause form=declarative verb="want" subject=$n1
+@n1 syntax.nominal head="I"
+@c2 syntax.clause form=nonfinite verb="delete" complement=$n2
+@n2 syntax.nominal head="it"
+@r1 syntax.relation from=$c1 to=$c2 marker="to"`]
+]
+
+test('targets: the keys of the model are those of the schema', () => {
+  const types = modelSchema()
+  assert.deepEqual(Object.keys(types), ['clause', 'nominal', 'relation', 'coordination'])
+  assert.deepEqual(types.clause.words, ['verb', 'auxiliary', 'negation', 'modifier', 'discourse'])
+  assert.deepEqual(Object.keys(types.clause.edges), ['subject', 'complement', 'ellipsis'])
+  assert.deepEqual(types.relation.edges.from, {targets: ['clause', 'nominal', 'coordination'], many: false, required: true})
+  assert.deepEqual(types.clause.atoms.form.options, ['imperative', 'declarative', 'interrogative', 'fragment', 'nonfinite'])
+  const names = [...Object.values(types).flatMap(type => [...type.words, ...Object.keys(type.edges), ...Object.keys(type.atoms)])]
+  assert.equal(new Set(names).size, 17)   // the 18 keys of the schema; `negation` stands on two wire types
 })
 
-test('output stage: every word gets one place and punctuation none', () => {
-  // the model left "red" and "now" without a slot; its ownership head names where they belong
-  const text = 'move the red box, now.'
-  const owners = modelTokens(text).map(() => [])
-  owners[2] = [{node: 1, key: 'modifier', inside: false, p: .4}]
-  owners[5] = [{node: 0, key: 'adverb', inside: false, p: .3}]
-  sameCircuit(text, written(text, [clause(0, 'imperative', span('predicate', 0), to('direct_object', 1), span('separator', 4), span('terminator', 6)),
-    entity(3, span('determiner', 1), span('head', 3))], owners),
-  `@c1 syntax.clause form=imperative verb="move" modifier="now" complement=$n1
-@n1 syntax.nominal dependent="the" dependent="red" head="box"`)
-  // with no clause from the model, the nominal stands in a fragment
-  const bare = 'the level of Intro'
-  sameCircuit(bare, written(bare, [entity(1, span('determiner', 0), span('head', 1)), relation(2, to('from', 0), to('to', 2), span('cue', 2)), entity(3, span('name', 3))]),
-    `@c1 syntax.clause form=fragment complement=$n1
-@n1 syntax.nominal dependent="the" head="level"
-@n2 syntax.nominal head="Intro"
-@r1 syntax.relation from=$n1 to=$n2 marker="of"`)
-  assert.throws(() => written('move it', []), /no node/u)
+test('targets: a circuit encoded for the model and written back says the same', () => {
+  for (const [text, sop] of specCircuits) {
+    const targets = encodeCircuit(text, sop)
+    assert.equal(targets.owners.filter(Boolean).length, wordsOf(text).length, 'every word has one owner: ' + text)
+    sameAsWritten(text, writeSyntaxCircuit(text, targets.tokens, certainPrediction(targets)), sop)
+  }
+  // a wire stands at the word that names it: the clause at its verb, the relation at its marker
+  const {nodes, tokens, owners} = encodeCircuit(...specCircuits[0])
+  assert.deepEqual(nodes.map(node => node.type + '@' + tokens[node.anchor].text), ['clause@move', 'nominal@box', 'relation@next', 'nominal@circle', 'coordination@and', 'clause@make', 'nominal@it'])
+  assert.equal(owners[tokens.findIndex(token => token.text === ',')], null)
+  assert.throws(() => encodeCircuit('move it', '@c1 syntax.clause form=imperative verb="move"'), /not valid/u)
+})
+
+// a prediction written by hand: wires, then for every token its ranked places
+const wire = (type, anchor, edges = {}, atoms = {}) => ({type, anchor, p: 1, edges, atoms})
+const places = (text, list) => modelTokens(text).map((_, token) => list[token] ?? [])
+const cat = 'put the cat on the table'
+const catWires = (relation, clause = {}) => [
+  wire('clause', 0, {subject: [], complement: [[1, .9]], ellipsis: [], ...clause.edges}, {form: clause.form ?? {imperative: .9, fragment: .1}}),
+  wire('nominal', 2), wire('relation', 3, relation.edges, {attachment: {ambiguous: relation.ambiguous ?? 0}}), wire('nominal', 5)]
+const catPlaces = [[[0, 'verb', 1]], [[1, 'dependent', 1]], [[1, 'head', 1]], [[2, 'marker', .6], [0, 'modifier', .3]], [[3, 'dependent', 1]], [[3, 'head', 1]]]
+const onVerbCircuit = `@c1 syntax.clause form=imperative verb="put" complement=$n1
+@n1 syntax.nominal dependent="the" head="cat"
+@r1 syntax.relation from=$c1 to=$n2 marker="on"
+@n2 syntax.nominal dependent="the" head="table"`
+
+test('output stage: the ties and the marks are those the model names', () => {
+  const write = relation => writeSyntaxCircuit(cat, modelTokens(cat), {nodes: catWires(relation), owners: places(cat, catPlaces)})
+  sameAsWritten(cat, write({edges: {from: [[0, .9], [1, .1]], to: [[3, 1]]}}), onVerbCircuit)
+  sameAsWritten(cat, write({edges: {from: [[1, .9], [0, .1]], to: [[3, 1]]}}), onVerbCircuit.replace('from=$c1', 'from=$n1'))
+  sameAsWritten(cat, write({edges: {from: [[0, .9]], to: [[3, 1]]}, ambiguous: .8}), onVerbCircuit.replace('marker="on"', 'marker="on" attachment=ambiguous'))
+  // the mark says "this clause": it is not written on a relation that starts at a nominal
+  sameAsWritten(cat, write({edges: {from: [[1, .9]], to: [[3, 1]]}, ambiguous: .8}), onVerbCircuit.replace('from=$c1', 'from=$n1'))
+})
+
+test('output stage: where first choices do not fit together, the next choice of the model is taken', () => {
+  const tokens = modelTokens(cat)
+  // one wire at both ends of a relation: the best pair of different ends
+  sameAsWritten(cat, writeSyntaxCircuit(cat, tokens, {nodes: catWires({edges: {from: [[1, .9], [0, .2]], to: [[1, .8], [3, .7]]}}), owners: places(cat, catPlaces)}),
+    onVerbCircuit.replace('from=$c1', 'from=$n1'))
+  // a relation with no end does not stand: its word takes its next place, and the nominal left
+  // alone takes the tie the model ranks highest for it
+  const alone = catWires({edges: {from: [], to: []}}, {edges: {complement: [[1, .9], [3, .2]]}})
+  sameAsWritten(cat, writeSyntaxCircuit(cat, tokens, {nodes: alone, owners: places(cat, catPlaces)}),
+    `@c1 syntax.clause form=imperative verb="put" modifier="on" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent="the" head="cat"
+@n2 syntax.nominal dependent="the" head="table"`)
+  // a nominal whose words were all named dependents: the word the model ranks highest as its head
+  const headless = catPlaces.with(2, [[1, 'dependent', .5], [1, 'head', .4]])
+  sameAsWritten(cat, writeSyntaxCircuit(cat, tokens, {nodes: catWires({edges: {from: [[0, .9]], to: [[3, 1]]}}), owners: places(cat, headless)}), onVerbCircuit)
+  // the form of a clause agrees with whether it has a verb
+  const asFragment = catWires({edges: {from: [[0, .9]], to: [[3, 1]]}}, {form: {fragment: .6, imperative: .3, declarative: .1}})
+  sameAsWritten(cat, writeSyntaxCircuit(cat, tokens, {nodes: asFragment, owners: places(cat, catPlaces)}), onVerbCircuit)
+  const verbless = catPlaces.with(0, [[0, 'discourse', 1]])
+  assert.match(writeSyntaxCircuit(cat, tokens, {nodes: catWires({edges: {from: [[0, .9]], to: [[3, 1]]}}), owners: places(cat, verbless)}), /form=fragment discourse="put"/u)
+})
+
+test('output stage: a coordination has two conjuncts of one type, and every word one place', () => {
+  const text = 'move it, and delete the row now.'
+  const tokens = modelTokens(text)   // move it , and delete the row now .
+  const nodes = conjunct => [
+    wire('clause', 0, {complement: [[1, .9]]}, {form: {imperative: 1}}), wire('nominal', 1),
+    wire('coordination', 3, {conjunct}), wire('clause', 4, {complement: [[4, .9]]}, {form: {imperative: 1}}), wire('nominal', 6)]
+  const owners = places(text, [[[0, 'verb', 1]], [[1, 'head', 1]], [], [[2, 'conjunction', .7], [3, 'discourse', .2]], [[3, 'verb', 1]], [[4, 'dependent', 1]], [[4, 'head', 1]], []])
+  const both = `@c1 syntax.clause form=imperative verb="move" complement=$n1
+@n1 syntax.nominal head="it"
+@k1 syntax.coordination conjunction="and" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb="delete" discourse="now" complement=$n2
+@n2 syntax.nominal dependent="the" head="row"`
+  // "now" has no place from the model: it is a word of the clause in which it stands; the marks have no place at all
+  sameAsWritten(text, writeSyntaxCircuit(text, tokens, {nodes: nodes([[0, .9], [3, .8]]), owners}), both)
+  // the model is sure of one conjunct only: its best two; a conjunct of another type is left out
+  sameAsWritten(text, writeSyntaxCircuit(text, tokens, {nodes: nodes([[0, .9], [1, .45], [3, .4]]), owners}), both)
+  // a coordination with one possible conjunct does not stand, and its word takes its next place
+  assert.match(writeSyntaxCircuit(text, tokens, {nodes: nodes([[0, .9]]), owners}), /verb="delete" discourse="and" discourse="now"|discourse="and" verb="delete" discourse="now"/u)
+  assert.throws(() => writeSyntaxCircuit(text, tokens, {nodes: [], owners}), /no wire/u)
 })
 
 // ---- the DistilBERT strategy with its model
@@ -241,9 +276,17 @@ test('distilbert: one valid circuit for every message, through the common reader
   }
 })
 
-test('distilbert: opens with no knowledge directory and reports a worker that cannot start', async () => {
-  await assert.rejects(createReader({strategy: distilBert, modelPath: undefined}), /SOP_NLU_DISTILBERT_MODEL|modelPath/u)
-  await assert.rejects(createReader({strategy: distilBert, python: 'node', modelPath: root, workerPath: join(root, 'package.json')}), /DistilBERT/u)
+test('distilbert: refuses a checkpoint of the older model and reports a worker that cannot start', async () => {
+  const folder = await mkdtemp(join(tmpdir(), 'sop-distilbert-'))
+  try {
+    await assert.rejects(createReader({strategy: distilBert, modelPath: folder}), /no manifest/u)
+    // a checkpoint that was trained on the older nlu annotations is not read
+    await writeFile(join(folder, 'manifest.json'), JSON.stringify({format: 'native-distilbert-v2'}))
+    await assert.rejects(createReader({strategy: distilBert, modelPath: folder}), /is no syntax model.*older nlu annotations/su)
+    await assert.rejects(createReader({strategy: distilBert, python: 'node', modelPath: folder, workerPath: join(root, 'package.json')}), /DistilBERT/u)
+  } finally {
+    await rm(folder, {recursive: true, force: true})
+  }
 })
 
 // ---- the selector on fixed circuits (no model needed)
