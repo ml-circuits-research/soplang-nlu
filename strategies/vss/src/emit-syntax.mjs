@@ -147,9 +147,10 @@ export function emitSyntax(text, tokens, wires, knows) {
   // a question word stands where its grammar puts it
   for (const [clause, span] of pendingQuestions) {
     if (!span) continue
-    // ("what colour": the word asks about the noun after it; before a pronoun it stands alone: "what we said")
+    // ("what colour": the word asks about the noun after it; before a pronoun it stands alone: "what we said"; but not before
+    // the pronoun "one", which takes a determiner like a noun: "which one is red")
     const next = [...out.values()].find(wire => wire.type === 'syntax.nominal' && firstWord(wire) === span[1] + 1 && clause.slots.some(slot => slot.ref === wire.id) &&
-      !wire.source?.slots.some(slot => slot[0] === 'pronoun'))
+      !wire.source?.slots.some(slot => slot[0] === 'pronoun' && !knows.substitute?.(String(slot[1]).replace(/^"|"$/gu, '').toLowerCase())))
     const word = text.slice(words[span[0]].start, words[span[1]].end).toLowerCase()
     // ("how the picture goes": a single word that asks how, where, when or why asks about no noun; it stands in the clause)
     if (next && (span[0] !== span[1] || knows.nominalQuestion(word))) { add(next, 'dependent', span); continue }

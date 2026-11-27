@@ -4,6 +4,7 @@ import {observe} from './observe.mjs'
 import {readRoutes} from './routes.mjs'
 import {buildUnits} from './units.mjs'
 import {createMemory} from './meaning.mjs'
+import {stemsOf} from './forms.mjs'
 
 const bump = (table, key, by = 1) => { table[key] = (table[key] ?? 0) + by }
 const bump2 = (table, a, b) => { bump(table[a] ??= {}, b) }
@@ -173,6 +174,58 @@ export function learnHabits(opened, texts) {
   const separable = Object.fromEntries(Object.entries(splits).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 2)]).filter(([, list]) => list.length))
   return {nominal, takesClause, takesQuality, gives, asks, directs, names, phrasal, separable, anchored: Object.keys(sureVerbs).filter(word => sureVerbs[word] >= 2), attachSure: sure, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach,
     memory: meanings.dimensions ? memory.store() : null}
+}
+
+// Grammatical number, counted on the raw text. An English verb agrees with its subject: "the box is", "the boxes are",
+// "the box moves". The legend marks the finite forms that agree with one thing ("is", "was", "has", "does") or with
+// several ("are", "were", "have"), the words that stand for one doer ("it", "he", "who", …) and the words that count
+// several things ("these", "two", …).
+//  - number: per word, how often a form that agrees with one thing follows it (one of those marked, or the -s form of a
+//    word the fixed frames show as a verb at least as often as a thing: "the sun goes") and how often a form that agrees
+//    with several follows it. "the board is" says that "board" names one thing; "the people are" that "people" names several.
+//  - sForms: per word in -s, what stands around it. After a word that names one thing or after a word that stands for one
+//    doer ("the board dials", "it faces"), a word in -s is the verb said of it; after a determiner, a count or a word that
+//    says how things are, or before a form that agrees with several ("the highlights", "two labels", "yellow boots", "the
+//    labels are"), it names several things. `nominal` is the learned habit that tells things from qualities.
+export function learnNumber(legend, messages, kinds, nominal = {}) {
+  const tagged = (word, tag) => legend.tags.get(word)?.has(tag) ?? false
+  const station = name => legend.stations.find(entry => entry.name === name)?.index
+  const auxiliary = station('auxiliary'), pronoun = station('pronoun'), determiner = station('determiner')
+  const can = (word, at) => legend.places.get(word)?.stations.has(at) ?? false
+  const agreesWith = (word, tag) => tagged(word, tag) && can(word, auxiliary)
+  const doer = word => tagged(word, 'singular') && can(word, pronoun)
+  // a word the language lists only as a determiner ("the", "a", "my"), or one that counts several things ("these", "two";
+  // not a number written in figures, which is as often a value: "from 0 rises to 10")
+  const opens = token => {
+    const place = legend.places.get(token.word)
+    if (place?.confined && [...place.stations].every(at => at === determiner)) return true
+    return tagged(token.word, 'plural') && !can(token.word, auxiliary)
+  }
+  const plural = legend.forms.find(form => form.name === 'plural')?.endings ?? []
+  const inS = token => token?.shape === 'lower' && /[^s]s$/u.test(token.word) && !legend.places.has(token.word)
+  const verbInS = token => inS(token) && [...stemsOf(token.word, plural), ...plural.filter(ending => token.word.length === ending.length + 2 && token.word.endsWith(ending)).map(ending => token.word.slice(0, -ending.length))]
+    .some(stem => { const [verb, thing] = kinds[stem] ?? [0, 0, 0]; return verb >= 3 && verb >= thing })
+  const named = token => token && ['lower', 'initial', 'capital'].includes(token.shape) && !legend.places.has(token.word)
+  const counts = {}
+  for (const tokens of messages) for (let t = 0; t + 1 < tokens.length; t++) {
+    if (!named(tokens[t])) continue
+    const next = tokens[t + 1]
+    const entry = counts[tokens[t].word] ??= [0, 0]
+    if (agreesWith(next.word, 'singular') || verbInS(next)) entry[0]++
+    else if (agreesWith(next.word, 'plural')) entry[1]++
+  }
+  const one = word => { const [single, several] = counts[word] ?? [0, 0]; return single >= 2 && single >= 3 * several }
+  const forms = {}
+  for (const tokens of messages) for (let t = 1; t < tokens.length; t++) {
+    if (!inS(tokens[t])) continue
+    const before = tokens[t - 1], entry = forms[tokens[t].word] ??= [0, 0, 0]
+    if (doer(before.word)) entry[1]++
+    else if (opens(before) || nominal[before.word] === 0) entry[2]++
+    else if (named(before) && one(before.word)) entry[0]++
+    if (agreesWith(tokens[t + 1]?.word, 'plural')) entry[2]++
+  }
+  const kept = table => Object.fromEntries(Object.entries(table).filter(([, entry]) => entry.reduce((a, b) => a + b, 0) >= 2))
+  return {number: kept(counts), sForms: kept(forms)}
 }
 
 /** What an entity is counted under: its head word, or its class when it is a name or verbatim content. */

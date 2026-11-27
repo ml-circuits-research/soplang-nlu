@@ -103,6 +103,21 @@ export function openModel(model, options = {}) {
       const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
       return stemsOf(word, endings).some(stem => (habits.kinds?.[stem]?.[1] ?? 0) >= 3)
     },
+    // grammatical number, from the forms that agree with the word on the raw text ("the board is", "the people are"):
+    // 'singular', 'plural', or undefined when the text does not say
+    number: word => {
+      const [one, several] = habits.number?.[word] ?? [0, 0]
+      return one >= 2 && one >= 3 * several ? 'singular' : several >= 2 && several >= 3 * one ? 'plural' : undefined
+    },
+    // a word in -s that the raw text shows as the verb said of one thing ("it faces", "the board dials") rather than as the
+    // name of several things ("the highlights", "two labels", "the labels are")
+    // (seen only after words that name one thing, it must have been seen there often, and never naming things, as with
+    // SURELY_A_VERB; not a word that an adverb's ending admits: "sideways")
+    verbOfOne: word => {
+      const [afterOne, afterDoer, things] = habits.sForms?.[word] ?? [0, 0, 0]
+      if (legend.stations[stationIndex.get('adverb')].suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix))) return false
+      return afterDoer > things || things === 0 && afterOne + afterDoer >= SURELY_A_VERB
+    },
     // a verb form in -s: it is said of a subject and never opens a command
     sForm: word => {
       const endings = legend.forms.find(form => form.name === 'plural')?.endings ?? []
@@ -364,7 +379,7 @@ export function createVssReader(model, options = {}) {
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
     if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null,
-      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label', joins: word => lexicon.canBe(word, 'conjunction'), asksWith: word => lexicon.canBe(word, 'question'),
+      quality: word => lexicon.saysHow(word) && !legend.places.has(word), naming: word => context.kindOf('relation', word) === 'label', joins: word => lexicon.canBe(word, 'conjunction'), asksWith: word => lexicon.canBe(word, 'question'), substitute: word => lexicon.tagged(word, 'substitute'),
       result: word => lexicon.takesQuality(word) || [word, ...stemsOf(word, legend.endings)].some(form => legend.links.get(form) === 'predicative')}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
