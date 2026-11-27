@@ -100,6 +100,26 @@ messages, where it does worse.
   labels and are held out of every training.
 - **Carry the VSS rules into Z3** later, if a fourth independent voice is needed (owner's remark).
 
+## Making VSS reusable (owner's question of 2026-11-27: general rules or particular ones?)
+
+The rules added so far are statements about English that name only function words and use what VSS learns
+from text; the analysis was split by area (drawing, diagram, calendar) only to find the faults where they
+occur. What is not yet general: some thresholds measured on this dataset (a word seen as a thing at least 20
+times, the likeness 0.3), the choice of which constructions to cover (driven by the frequent faults of
+commands to a drawing application), and a few borderline legend words (left/right as direction adverbs,
+today/tomorrow, thanks). The steps that would make VSS a reusable engine with a standard grammar:
+
+- **Audit of generality**, after the current batch of rules: agents list every rule and word list of VSS and
+  try to show each one particular; each is classed as general English, a threshold tuned on this data, or
+  particular. Particular ones are rewritten or removed.
+- **Rules as data.** Move the rules out of JavaScript into constructions declared in the legend (SOP Lang),
+  over stations and word marks: the engine stays generic, the grammar of English becomes a file that can be
+  read, checked and extended.
+- **Thresholds learned, not set.** The code names the features of each decision; the weights are learned
+  from the accepted circuits (as DistilBERT learns), so no number is tuned by hand on this dataset.
+- **A test outside the dataset.** Run VSS on English it was never tuned on (other kinds of messages or a
+  public corpus) and have a judge read a sample, to measure how general it is.
+
 ## Open points for the owner
 
 - The 20 agreement lines kept in the registry (a second agreed circuit for the same message, recorded nowhere
