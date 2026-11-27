@@ -116,14 +116,25 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const unit = list[i]
       const helping = unit.type === 'aux' || unit.type === 'verb' && !unit.auxiliary.length && !unit.form &&
         lexicon.canBe(tokens[unit.predicate[0]].word, 'auxiliary') &&
-        (list[i + 1]?.pronoun || list[i - 1]?.type === 'question' || list[i - 2]?.type === 'question')
+        (list[i + 1]?.pronoun || list[i - 1]?.type === 'question' || list[i - 2]?.type === 'question' ||
+         // "does this diagram make sense": opening its clause before a thing; not a verb that makes its object do something ("have the fan become …")
+         context.open !== false && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(list[i - 1]?.type)) &&
+           list[i + 1]?.type === 'entity' && !lexicon.takesClause(tokens[unit.predicate[0]].word))
       if (!helping) continue
       const own = unit.type === 'aux' ? unit.auxiliary : [unit.predicate[0]]
       let k = i + 1
       if (list[k]?.type === 'entity') {
         k++
         while (['adverb', 'filler', 'negation'].includes(list[k]?.type)) k++
-        if (list[k]?.type === 'verb' && list[k] !== unit) {
+        // "what values does Sales show": after the helping verb and its subject, a word known as a verb is the verb
+        const late = list[k]
+        const at = late?.type === 'complement' && late.value[0] === late.value[1] ? late.value[0]
+          : late?.type === 'entity' && late.head && late.head[0] === late.last ? late.last : -1
+        if (context.open !== false && at >= 0 && (list[i - 1]?.type === 'question' || list[i - 2]?.type === 'question') &&
+            lexicon.kindsOf(tokens[at].word).verb >= 3) doubts.push({position: at, is: 'verb'})
+        // "have" helps a form that says what was done; before a bare verb it makes its object do something
+        const perfect = context.linkOf(tokens[own.at(-1)].word) === 'perfect' && list[k]?.type === 'verb' && list[k].form !== 'past'
+        if (list[k]?.type === 'verb' && list[k] !== unit && !perfect) {
           const verb = list[k]
           verb.auxiliary = [...own, ...verb.auxiliary]
           verb.negation = [...unit.negation, ...verb.negation]
@@ -291,6 +302,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       if (verb.negation.length || clause.pre.some(unit => unit.type === 'negation')) target.slots.push(['polarity', 'negative'])
       for (const unit of clause.pre) put(target, unit.type, unit.first, unit.last)
       if (clause.subject) target.slots.push(['subject', '$' + entityWire(clause.subject).id])
+      if (clause.asked) { const slot = ['direct_object', '$' + entityWire(clause.asked).id]; target.slots.push(slot); clause.asked.holder = slot }
       for (const [cue, entity, from] of clause.chain ?? []) relate(entityWire(from), cue, entityWire(entity))
       // "Please, create …": a courtesy word before the first clause belongs to it
       while (polite.length) { const unit = polite.shift(); put(target, 'filler', unit.first, unit.last) }
@@ -401,6 +413,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const unit = list[j]
         if (!unit) break
         if (unit.type === 'adverb' || unit.type === 'filler' || unit.type === 'negation') { clause.pre.push(unit); j--; continue }
+        // "what values does Sales show": before the helping verb, the thing a question word asks for is what the verb acts on
+        if (context.open !== false && unit.type === 'entity' && clause.subject && verb.inverted && !clause.asked && !unit.pronoun &&
+            list[j - 1]?.type === 'question' && !clause.question) {
+          clause.asked = unit
+          clause.question = list[j - 1]
+          j -= 2
+          continue
+        }
         if (unit.type === 'entity' && !clause.subject) {
           let head = j
           const chain = []

@@ -114,6 +114,17 @@ export function buildUnits(tokens, stations, lexicon) {
     delete thing.name
     units.splice(k + 1, 0, label)
   }
+  // "two more clouds": a count, a word that grades it and the thing counted are one thing
+  for (let k = 0; k + 2 < units.length; k++) {
+    const count = units[k], grade = units[k + 1], thing = units[k + 2]
+    if (!lexicon.leans || count.type !== 'entity' || count.first !== count.last || !(count.literal || count.quantity?.length)) continue
+    if (grade.type !== 'adverb' || grade.first !== grade.last || grade.first !== count.last + 1 || !lexicon.canBe(tokens[grade.first].word, 'degree')) continue
+    if (thing.type !== 'entity' || thing.pronoun || thing.literal || thing.determiner?.length || thing.quantity?.length || thing.first !== grade.last + 1) continue
+    thing.quantity = [count.first]
+    thing.degree = [grade.first, ...thing.degree ?? []]
+    thing.first = count.first
+    units.splice(k, 2)
+  }
   // "520 across and 410 down": a measure and the direction right after it are one group
   for (let k = 0; k + 1 < units.length; k++) {
     const measure = units[k], direction = units[k + 1]

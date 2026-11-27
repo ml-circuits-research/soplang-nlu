@@ -393,6 +393,8 @@ function budgetPath(book, legend, symbols, tokens, emit, budget) {
     if (kind === 'thing') return register === 0 ? 1 : register
     if (kind !== 'verb') return register
     const word = tokens[t].word
+    // a word that can help another verb does not use up the clause's verb
+    if (budget.helper?.(word)) return register
     if (register >= 2 && !(register === 3 && !budget.describes(word)) && !budget.describes(word)) return -1
     if (register >= 2) return register === 3 && !budget.describes(word) ? (budget.makesDo(word) ? 3 : 2) : register
     return budget.makesDo(word) ? 3 : 2

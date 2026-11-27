@@ -189,6 +189,7 @@ export function createVssReader(model, options = {}) {
   }
   const sharp = options.occurrenceWeight ?? 4
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
+  const otherStations = new Set(legend.stations.filter(station => station.key !== 'predicate').map(station => station.index))
   // the stations that say how a thing is, and the verb stations: a word kept off both names a thing
   const qualityStations = new Set(legend.stations.filter(station => station.key === 'predicate' || ['modifier', 'result_complement', 'degree'].includes(station.key)).map(station => station.index))
   // the stations that name what an entity is, and the verb stations: a word kept off both says how something is
@@ -228,6 +229,7 @@ export function createVssReader(model, options = {}) {
       makesDo: word => lexicon.takesClause(word) || lexicon.directs(word),
       describes: word => lexicon.formOf(word) !== null,
       doer: word => legend.links.get(word) === 'subject',
+      helper: word => lexicon.canBe(word, 'auxiliary'),
       known: word => lexicon.kindsOf(word).verb >= 3 ? (options.verbLead ?? 0) : 0
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
@@ -251,7 +253,7 @@ export function createVssReader(model, options = {}) {
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
     for (let again = 0; again < 3 && first.doubts.length; again++) {
-      for (const {position, not} of first.doubts) tried.set(position, not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations)
+      for (const {position, not, is} of first.doubts) tried.set(position, is === 'verb' ? otherStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations)
       const banned = new Map(tried)
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift, budget))
       first = read(new Set())
