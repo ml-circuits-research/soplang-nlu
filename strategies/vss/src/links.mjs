@@ -140,6 +140,12 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       unit.auxiliary = unit.auxiliary.slice(0, -1)
       unit.form = null
       unit.station = 'predicate'
+      // "…, would you": a helping verb with only the one it asks after it is a question with that one as its subject
+      const asked = list[i + 1], beyond = list[i + 2]
+      if (context.open !== false && asked?.pronoun && (!beyond || beyond.type === 'separator') && !unit.auxiliary.length && list[i - 1]?.type !== 'entity') {
+        unit.inverted = {aux: unit, subject: asked}
+        unit.asked = asked
+      }
     }
 
     // ---- what each verb is to its neighbours, and where its clause starts
@@ -190,6 +196,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // a word never seen as a verb where the frame leaves no doubt, and seen as a thing there,
         // is not stated to be the action ("pie radius smaller")
         else if (context.open !== false && bare && !verb.form && kinds.verb === 0 && kinds.thing >= 3 && !clause.subject?.pronoun) doubts.push({position: verb.predicate[0], not: 'verb'})
+        // "make runway orange": a bare word right after another verb, never shown to be a verb, is the thing that verb acts on
+        if (context.open !== false && bare && !verb.form && previous?.type === 'verb' && kinds.verb === 0 && !clause.subject && tokens[verb.predicate[0]].shape === 'lower') doubts.push({position: verb.predicate[0], not: 'verb'})
         if (stranded && lexicon.thingFirst(clause.predicate)) doubts.push({position: verb.predicate[0], not: 'verb'})
         else if (stranded && list[i - 2]?.type === 'verb') {
           // "make the chart show its gridlines": the thing before it is the one that does it
@@ -215,7 +223,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     clauses.forEach((clause, k) => {
       const verb = clause.verb
       const end = k + 1 < clauses.length ? clauses[k + 1].start : list.length
-      let region = list.slice(clause.index + 1, end), returned = []
+      let region = list.slice(clause.index + 1, end).filter(unit => unit !== verb.asked), returned = []
       if (clause.role === 'modifier') {
         // what a participle says about a thing ends at the next separator; the list it stood in goes on
         const cut = clause.modifiesHost ? -1 : region.findIndex(unit => unit.type === 'separator')
