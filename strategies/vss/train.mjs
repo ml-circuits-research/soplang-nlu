@@ -13,6 +13,7 @@ import {learnHabits} from './src/habits.mjs'
 import {learnMeanings, openMeanings} from './src/meaning.mjs'
 import {findVariants} from './src/variants.mjs'
 import {createOccurrences, learnPrototypes} from './src/occurrence.mjs'
+import {anchoredFrames} from './src/anchors.mjs'
 import {readRoutes} from './src/routes.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -20,7 +21,7 @@ const args = Object.fromEntries(process.argv.slice(2).join(' ').split(/\s*--/u).
 const dataset = resolve(args.dataset ?? resolve(here, '../../../webmeet-dataset'))
 const out = resolve(args.out ?? resolve(here, 'model/model.json'))
 const iterations = Number(args.iterations ?? 25), minCount = Number(args['min-count'] ?? 3)
-const options = Object.fromEntries(['sharpen', 'warmup', 'kinship', 'formLean'].filter(key => args[key] !== undefined).map(key => [key, Number(args[key])]))
+const options = Object.fromEntries(['sharpen', 'warmup', 'kinship', 'formLean', 'anchoring'].filter(key => args[key] !== undefined).map(key => [key, Number(args[key])]))
 
 const started = Date.now()
 const legendSource = readFileSync(resolve(here, args.legend ?? 'legend.sop'), 'utf8')
@@ -74,7 +75,10 @@ starts.push(at)
 corpus.starts = Int32Array.from(starts)
 console.log(`${texts.length} messages, ${starts.length - 1} sentences, ${total} tokens, ${symbols.length} symbols`)
 
-const book = learnRoutes({legend, symbols, corpus, iterations, ...options, log: line => console.log(line)})
+// Anchored frames measured worse than the plain model (see docs/strategies/vss.md); they are
+// counted and used only when --anchoring <strength> is given.
+const anchors = args.anchoring === undefined ? null : anchoredFrames(legend, messages, index)
+const book = learnRoutes({legend, symbols, corpus, iterations, anchors, ...options, log: line => console.log(line)})
 const n = legend.stations.length, v = symbols.length
 const round = value => Number(value.toPrecision(5))
 const model = {

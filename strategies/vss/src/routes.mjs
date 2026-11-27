@@ -69,7 +69,7 @@ function prior(legend) {
  * @param corpus {symbols: Int32Array, shapes: Int8Array, starts: Int32Array} flattened messages
  * @returns the route book {symbols, transition, start, end, emission, shape, base, active}
  */
-export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen = 1.5, warmup = 6, kinship = 0.5, formLean = 8, log = () => {}}) {
+export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen = 1.5, warmup = 6, kinship = 0.5, formLean = 8, anchors = null, anchoring = 1, log = () => {}}) {
   const n = legend.stations.length, v = symbols.length, k = SHAPES.length
   const base = Int32Array.from(legend.stations, station => station.like ?? station.index)
   const active = admission(legend, symbols)
@@ -246,6 +246,37 @@ export function learnRoutes({legend, symbols, corpus, iterations = 30, sharpen =
         if (!(any > 0)) continue
         for (let row = 0; row < n; row++) cEmission[row * v + symbol] = (1 - kinship) * cEmission[row * v + symbol] + inherited[row * v + symbol]
       }
+    }
+    if (anchors && anchoring > 0) {
+      // What the anchored frames say of a word outweighs where the model itself has been
+      // putting it: a word anchored as a quality is pulled off the stations of things.
+      const kindOf = legend.stations.map(station => {
+        const name = legend.stations[base[station.index]].name
+        return name === 'predicate' ? 0 : name === 'noun' ? 1 : name === 'modifier' ? (station.name === 'modifier' ? 3 : 2) : -1
+      })
+      for (let symbol = 0; symbol < v; symbol++) {
+        if (!free[symbol]) continue
+        const verb = anchors[symbol * 3], thing = anchors[symbol * 3 + 1], quality = anchors[symbol * 3 + 2]
+        const seen = verb + thing + quality
+        if (seen < 3) continue
+        const share = [(verb + 1) / (seen + 3), (thing + 1) / (seen + 3), (quality + 1) / (seen + 3)]
+        let sum = 0, pulled = 0
+        const rowsOf = new Map()
+        for (const station of active[symbol]) rowsOf.set(base[station], station)
+        for (const [row, station] of rowsOf) {
+          const kind = legend.stations[row].name === 'predicate' ? 0 : legend.stations[row].name === 'noun' ? 1 : legend.stations[row].name === 'modifier' ? 2 : -1
+          // before a head both things and qualities stand, so that row keeps the larger of the two
+          const weight = kind < 0 ? 1 / 3 : kind === 2 ? Math.max(share[2], share[1] * 0.5) : share[kind]
+          const count = cEmission[row * v + symbol]
+          sum += count
+          rowsOf.set(row, count * weight ** anchoring)
+          pulled += count * weight ** anchoring
+          void station
+        }
+        if (!(pulled > 0)) continue
+        for (const [row, value] of rowsOf) cEmission[row * v + symbol] = value * sum / pulled
+      }
+      void kindOf
     }
     if (round >= warmup && sharpen !== 1) {
       for (let symbol = 0; symbol < v; symbol++) {

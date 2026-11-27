@@ -11,6 +11,7 @@ import {attachment, headKey} from './habits.mjs'
 import {openMeanings, openMemory} from './meaning.mjs'
 import {identity, bind, bundleInto, normalise, dot, DIMENSIONS} from './space.mjs'
 import {createOccurrences, matchPrototypes} from './occurrence.mjs'
+import {symptomsOf} from './flags.mjs'
 
 const AMBIGUOUS = 0.7
 
@@ -181,7 +182,8 @@ export function createVssReader(model, options = {}) {
       ;({stations, confidence} = readRoutes(book, legend, index, tokens, banned, lift))
       first = read(new Set())
     }
-    const analyses = [{sop: first.sop, confidence: Math.min(...confidence)}]
+    const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
+    const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way
     const doubtful = options.alternatives === false ? null : first.decisions.filter(decision => decision.margin < (options.ambiguous ?? AMBIGUOUS)).sort((a, b) => a.margin - b.margin)[0]
     if (doubtful) {

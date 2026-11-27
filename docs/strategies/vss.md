@@ -54,9 +54,16 @@ Training on 183,497 messages (2.6 million tokens) takes about 30 seconds on one 
 
 ## Measurements
 
-The [frozen one-percent run](../../eval-results/2026-11-27-vss-frozen-one-percent/README.md) used the 1,831 utterances of the earlier eight-strategy comparison. VSS returned a schema-valid reading for all of them and accounted for every word in 1,828. Median latency was 0.13 ms. In a blind paired review of 240 of those utterances, three independent reviewers accepted every returned circuit of that first model for 45.0% and every spaCy direct circuit for 67.5%. The model has changed since and has not been reviewed again on that sample.
+Two blind paired reviews used the 1,831 utterances of the earlier eight-strategy comparison. In each, three independent reviewers graded 240 utterances with the VSS and spaCy direct candidate sets shown anonymously.
 
-`evaluate.mjs` compares the reader with the native circuits saved in the dataset. Those circuits are fallible and no learning step reads them. On the 11,138 reviewed texts, the current model returns a valid circuit for all, accounts for every word in 99.4%, gives the same graph as a reference for 17.5%, places 86.2% of the tokens in the reference's slot and finds 83.7% F1 of the entities and 64.0% F1 of the links with their role.
+| Review | VSS, every circuit acceptable | spaCy direct | Gap |
+| --- | ---: | ---: | ---: |
+| [First model](../../eval-results/2026-11-27-vss-frozen-one-percent/README.md) | 45.0% | 67.5% | 22.5 |
+| [Model at `d98b426`](../../eval-results/2026-11-27-vss-frozen-one-percent-round3/README.md) | 50.8% | 63.8% | 13.0 |
+
+VSS almost never leaves source unaccounted. Its failures are words read as the wrong kind of predicate or clause (L1) and wrong roles or attachments (L3). On the sample it returns a schema-valid reading for every utterance and accounts for every word in 1,828 of 1,831.
+
+`evaluate.mjs` compares the reader with the native circuits saved in the dataset. Those circuits are fallible and no learning step reads them. On the 11,138 reviewed texts, the current model returns a valid circuit for all, accounts for every word in 99.4%, gives the same graph as a reference for 17.7%, places 86.5% of the tokens in the reference's slot and finds 83.9% F1 of the entities and 64.6% F1 of the links with their role.
 
 ```sh
 node strategies/vss/evaluate.mjs --part all --brief 1
@@ -70,10 +77,17 @@ node strategies/vss/evaluate.mjs --part all --brief 1 --against gapping     # wh
 | The same, with meaning vectors | 63.1 | 63.5 |
 | The same, with the build of each entity as a vector | 63.5 | 63.8 |
 | Role-filler memory in attachment | 63.8 | 64.0 |
+| Occurrence prototypes as a second opinion on stations | 64.4 | 64.6 |
 
-Two experiments measured worse and are off: letting a rare word borrow the habits of its neighbours in the semantic space, and attaching a participle to the action when the memory shows no thing it is said of.
+Four experiments measured worse and are off by default: letting a rare word borrow the habits of its neighbours in the semantic space; attaching a participle to the action when the memory shows no thing it is said of; doubting a clause-opening verb never seen as a verb beyond doubt; and pulling each word towards the kind that frames fixed by the legend show (`train.mjs --anchoring 1`).
+
+Each reading carries `flags`: symptoms read off the circuit without any reference, such as a second bare thing the verb is not known to take, an open word in an adverb slot, a thing with no role or a clause attached to nothing. On 500 judged readings of an earlier model, 51.2% were acceptable overall and 62.8% of the 58% that carried no flag.
 
 `triage.mjs` sorts saved proposals by how far the VSS reading agrees with them. Of 66,360 texts with a drafted circuit, an earlier model gave the same graph for 11.1%, the same slots and links for 6.6% and a different structure for 62.0%; 18.0% of the drafts failed the static check and 2.3% were empty.
+
+## Where the design stands
+
+An independent review of the code and the judged failures found that most lost acceptance comes from the station of a word, not from linking, and that the cause is structural: one committed station path from a one-step model decides the cut and the roles, the linker is a single pass of fixed policy, and habits are counted on the reader's own readings. It estimated 60 to 65% acceptance as the ceiling of this design, 70 to 78% for a design that keeps a lattice of stations and assembles whole circuits from constructions declared in the legend, and 83 to 88% if the factors of that design were trained on the drafted circuits. Readings identical to an accepted circuit were themselves accepted 93% of the time, so no design can measure near 99%.
 
 ## Limits
 
