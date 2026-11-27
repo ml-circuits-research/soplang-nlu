@@ -49,6 +49,7 @@ The owner keeps at most four strategies, each with a different source of analysi
 ## Being built
 
 - **rvss** (folder `strategies/rvss/`): the real vector-symbolic reader, a separate formalizer the owner asked for, which reads a message the way the earlier vector-symbolic reader did ([History in brief](../project/history.md#rvss)). It is not measured yet; its design is being written in [strategies/rvss/DESIGN.md](../../strategies/rvss/DESIGN.md). The strategy once called `vss` is a different reader, now named `hmm-rules` ([hmm-rules: Name](hmm-rules.md#name)).
+  - [rVSS](../rvss/README.md): the section on rvss: the story, the formulas, rvss as an HMM plus a VSA memory, what research says, the milestones. *Explanation.*
 
 ## Others
 

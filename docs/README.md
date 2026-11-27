@@ -53,6 +53,8 @@ Each line is one wire: a clause (the command "Move"), two nominals (the box, the
   [Judge a packet](guides/judge-a-packet.md) › [Levels and GOAL](evaluation/levels.md).
 - **Change hmm-rules**: [hmm-rules in depth](hmm-rules/README.md) › [Known limits of hmm-rules](hmm-rules/limits.md) ›
   [Find faults](guides/find-faults.md) › [Add a rule to hmm-rules](guides/add-hmm-rules-rule.md).
+- **Understand rvss, the reader being built**: [rVSS](rvss/README.md) › [The story](rvss/story.md) ›
+  [rvss as an HMM plus a VSA memory](rvss/hmm-plus-vsa.md) › [What research says](rvss/what-research-says.md).
 - **Review the method**: [What is new here](project/what-is-new.md) ›
   [Related work](schema/related-work.md) › [Judges](evaluation/judging.md) ›
   [Limits of the measurements](evaluation/validity.md).
@@ -72,6 +74,8 @@ Each line is one wire: a clause (the command "Move"), two nominals (the box, the
 - [hmm-rules in depth](hmm-rules/README.md): the project's own reader, from training to the written circuit. It sits
   under Formalizers › hmm-rules and is listed here as a section of its own; hmm-rules, called vss until
   2026-11-27, is experimental now.
+- [rVSS](rvss/README.md): the vector-symbolic reader being built: the story in the words of the original
+  reader, the formulas, rvss as an HMM plus a VSA memory, what research says for it, and its milestones.
 - [How-to guides](guides/README.md): run, test, benchmark, judge, convert, find faults, add rules, retrain,
   write a formalizer.
 - [Reference](reference/README.md): glossary, SOP Lang rules, library API, tools and options, storage, folders.
