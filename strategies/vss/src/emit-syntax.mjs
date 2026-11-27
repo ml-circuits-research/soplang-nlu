@@ -39,6 +39,7 @@ export function emitSyntax(text, tokens, wires, knows) {
   }
   const clauses = [...out.values()].filter(wire => wire.type === 'syntax.clause')
   const firstWord = wire => Math.min(...wire.slots.filter(slot => slot.span).map(slot => slot.span[0]), Infinity)
+  const lastWord = wire => Math.max(...wire.slots.filter(slot => slot.span).map(slot => slot.span[1]), -1)
   const pendingMarkers = [], pendingQuestions = [], completes = [], relationAdverbs = [], strays = []
 
   for (const wire of out.values()) {
@@ -184,7 +185,14 @@ export function emitSyntax(text, tokens, wires, knows) {
     const others = [...out.values()].filter(other => other.type === 'syntax.clause' && other !== wire)
     const home = others.filter(other => firstWord(other) > firstWord(wire)).sort((a, b) => firstWord(a) - firstWord(b))[0] ?? others.filter(other => firstWord(other) < firstWord(wire)).sort((a, b) => firstWord(b) - firstWord(a))[0]
     if (!home) continue
-    home.slots.push(...wire.slots.slice(1))
+    // "Perfect. Now add a title": a quality that is a sentence of its own stays one; it says how something is
+    const [left, right] = firstWord(home) > firstWord(wire) ? [wire, home] : [home, wire]
+    const between = text.slice(words[lastWord(left)]?.end ?? 0, words[firstWord(right)]?.start ?? text.length)
+    // a word that the text showed as saying how things are, and that the language does not list among its linking words
+    const quality = slot => slot.key === 'modifier' && slot.span[0] === slot.span[1] && knows.quality?.(words[slot.span[0]].text.toLowerCase())
+    if (wire.slots.some(quality) && /[.!?]/u.test(between)) continue
+    // "Great, now move the box": set off from a clause that has its own verb, a quality describes nothing in it; it is said in passing
+    home.slots.push(...wire.slots.slice(1).map(slot => quality(slot) ? {key: 'discourse', span: slot.span} : slot))
     out.delete(wire.id)
   }
   const kept = [...out.values()]

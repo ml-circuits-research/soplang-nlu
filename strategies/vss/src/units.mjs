@@ -181,6 +181,47 @@ export function buildUnits(tokens, stations, lexicon) {
     const word = tokens[next.first].word
     if (lexicon.kindsOf(word).verb >= 1 || lexicon.sForm(word) || lexicon.formOf(word)) units.doubts.push({position: next.first, is: 'verb'})
   }
+  // "in the top right", "labelled Right side": two words that the text shows standing together inside one
+  // thing are one thing, also where the route took one of them for a word that says where or how
+  for (let k = 0; k + 1 < units.length; k++) {
+    const left = units[k], right = units[k + 1]
+    if (!lexicon.together || !lexicon.kindsOf || left.last + 1 !== right.first || !lexicon.together(tokens[left.last].word, tokens[right.first].word)) continue
+    if (left.type === 'entity' && left.head?.[0] === left.last && ['adverb', 'complement'].includes(right.type) && right.first === right.last &&
+        lexicon.kindsOf(tokens[right.first].word).thing >= 3) units.doubts.push({position: right.first, is: 'head'})
+    else if (left.type === 'adverb' && left.first === left.last && right.type === 'entity' && !right.pronoun && !right.determiner?.length &&
+             right.head?.[0] === right.first && lexicon.kindsOf(tokens[left.first].word).thing >= 3) units.doubts.push({position: left.first, is: 'head'})
+  }
+  // "more readable": a word that grades is followed by what it grades, a quality; a word never shown as a verb is not one there
+  for (let t = 1; t < tokens.length; t++) {
+    if (!lexicon.kindsOf || !['predicate', 'following'].includes(stations[t]) || lexicon.kindsOf(tokens[t].word).verb >= 3) continue
+    if (stations[t - 1] === 'degree' || stations[t - 1] === 'adverb' && lexicon.canBe(tokens[t - 1].word, 'degree')) units.doubts.push({position: t, not: 'verb'})
+  }
+  // "teal-edged", "left-aligned": two words joined by a hyphen, the second with a past ending, say how a thing is.
+  // The joined word is a verb only where a word that does it stands before it or what it acts on follows.
+  for (let t = 0; t < tokens.length; t++) {
+    if (!['predicate', 'following'].includes(stations[t]) || !/^[^-]+-[^-]+ed$/u.test(tokens[t].word)) continue
+    if (['pronoun', 'auxiliary', 'infinitive'].includes(stations[t - 1]) || ['determiner', 'pronoun', 'noun', 'name', 'quantity', 'modifier'].includes(stations[t + 1])) continue
+    units.doubts.push({position: t, not: 'verb'})
+  }
+  // "put all removed shapes back": right after a verb, a word that can open a thing, a past form and a noun are one
+  // thing; the past form describes the noun
+  for (let t = 2; t + 1 < tokens.length; t++) {
+    if (!lexicon.formOf || stations[t] !== 'predicate' || lexicon.formOf(tokens[t].word) !== 'past' || stations[t + 1] !== 'noun') continue
+    if (stations[t - 1] === 'pronoun' && lexicon.canBe(tokens[t - 1].word, 'determiner') && ['predicate', 'following'].includes(stations[t - 2])) units.doubts.push({position: t, not: 'verb'})
+  }
+  // "so it no longer cuts through the box": a word that stands for a thing, then words that say when or how,
+  // then the s-form of a known verb: that form is the verb of the first. The same right after a word that opens a clause.
+  for (let k = 0; k + 1 < units.length; k++) {
+    const doer = units[k]
+    if (!lexicon.sForm || doer.type !== 'entity' || !doer.pronoun) continue
+    let m = k + 1
+    while (['adverb', 'negation'].includes(units[m]?.type)) m++
+    const next = units[m]
+    if (m === k + 1 && units[k - 1]?.type !== 'marker') continue
+    if (!next || next.type !== 'entity' || next.pronoun || next.determiner?.length || next.quantity?.length || next.head?.[0] !== next.first || tokens[next.first].shape !== 'lower') continue
+    const word = tokens[next.first].word
+    if (lexicon.sForm(word) && lexicon.kindsOf(word).verb >= 3) units.doubts.push({position: next.first, is: 'verb'})
+  }
   // "where the path bends": a word that opens a clause needs a verb. When only one group of words follows
   // it, the last word of the group is that verb if it can be one.
   for (let k = 0; k + 1 < units.length; k++) {

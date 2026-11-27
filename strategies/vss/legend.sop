@@ -39,7 +39,7 @@
 # A predicate that follows its subject stands in another neighbourhood than one that opens its clause.
 @st.following vss.station unit=clause key=predicate core=true like=predicate
 @st.complement vss.station unit=clause key=result_complement core=true like=modifier
-@st.adverb vss.station unit=clause key=adverb core=true closed=true suffix=ly
+@st.adverb vss.station unit=clause key=adverb core=true closed=true suffix=ly suffix=wise suffix=ward suffix=wards suffix=ways
 @st.expression vss.station unit=clause key=expression core=true closed=true follows=expression
 @st.filler vss.station unit=clause key=filler core=true closed=true
 @st.separator vss.station clause=opens unit=clause key=separator core=true shape=mark
@@ -80,26 +80,26 @@
 # A listed word with a space is a compound: its words are read as one when they stand together.
 @w.cue.compound vss.words station=cue word="next to" word="in front of" word="on top of" word="out of" word="instead of" word="because of" word="according to" word="due to" word="close to" word="such as" word="as well as" word="up to" word="prior to" word="regardless of" word="away from" word="apart from" word="ahead of" word="thanks to" word="in between" word="along with" word="together with" word="as for" word="as per" word="rather than" word="other than" word="in place of" word="on behalf of" word="in line with"
 # link=selects: the word picks among counted things; it stands between the determiner and the count ("the first two rows").
-@w.selector vss.words station=modifier open=true link=selects word="first" word="second" word="third" word="fourth" word="fifth" word="last" word="next" word="previous" word="other" word="same" word="top" word="bottom" word="left" word="right" word="middle" word="upper" word="lower" word="inner" word="outer" word="remaining"
+@w.selector vss.words station=modifier open=true link=selects word="first" word="second" word="third" word="fourth" word="fifth" word="last" word="next" word="previous" word="other" word="same"
 # link=belongs: the cue says what the thing right before it is of; the relation starts at that thing.
 @w.cue.belongs vss.words station=cue open=true link=belongs word="of"
 @w.cue.open vss.words station=cue open=true word="near" word="inside" word="outside" word="opposite" word="past"
 # link=particle: right after the verb or its object the word moves with the verb ("put it back").
 @w.particle vss.words station=adverb link=particle open=true word="up" word="down" word="out" word="off" word="in" word="on" word="over" word="back" word="away" word="around" word="apart" word="together" word="through" word="along"
-@w.adverb.compound vss.words station=adverb word="from now on" word="all the way" word="side by side" word="as well" word="at all" word="after all" word="at once" word="of course" word="so far" word="at least" word="at most" word="in fact" word="after that" word="before that" word="right now" word="for now" word="right away" word="straight away" word="once more" word="one more time" word="no longer" word="any more" word="anymore"
+@w.adverb.compound vss.words station=adverb word="from now on" word="all the way" word="side by side" word="upside down" word="inside out" word="as well" word="at all" word="after all" word="at once" word="of course" word="so far" word="at least" word="at most" word="in fact" word="after that" word="before that" word="right now" word="for now" word="right away" word="straight away" word="once more" word="one more time" word="no longer" word="any more" word="anymore"
 @w.degree.compound vss.words station=degree word="a bit" word="a lot" word="a little bit" word="a tad" word="a touch"
 @w.question.compound vss.words station=question word="how many" word="how much"
 @w.determiner.compound vss.words station=determiner word="a few" word="a couple of" word="a lot of" word="lots of" word="plenty of" word="a bunch of" word="a pair of" word="a number of" word="all of" word="some of" word="each of" word="one of" word="both of" word="none of" word="any of" word="most of" word="many of" word="half of"
-@w.expression.compound vss.words station=expression word="thank you" word="thanks a lot" word="no thanks" word="never mind" word="by the way" word="good job" word="well done" word="my bad"
+@w.expression.compound vss.words station=expression word="thank you" word="thanks a lot" word="no thanks" word="never mind" word="by the way"
 @w.filler vss.words station=filler word="please" word="kindly" word="uh" word="um" word="erm" word="hmm"
 @w.conjunction vss.words station=conjunction word="and" word="or" word="but" word="nor" word="then" word="so" word="&" word="plus"
 @w.terminator vss.words station=terminator word="." word="!" word="?"
 @w.separator vss.words station=separator word="," word=";" word=":" word="—" word="–" word="-" word="." word="!" word="?" word="&"
-@w.degree vss.words station=degree open=true word="approximately" word="roughly" word="nearly" word="almost" word="very" word="really" word="quite" word="rather" word="slightly" word="somewhat" word="too" word="so" word="much" word="more" word="most" word="less" word="least" word="pretty" word="super" word="extra" word="fairly" word="extremely" word="bit" word="little" word="lot" word="far" word="way" word="almost" word="nearly" word="totally" word="completely" word="entirely"
+@w.degree vss.words station=degree open=true word="approximately" word="roughly" word="nearly" word="almost" word="very" word="really" word="quite" word="rather" word="slightly" word="somewhat" word="too" word="so" word="much" word="more" word="most" word="less" word="least" word="pretty" word="fairly" word="extremely" word="bit" word="little" word="lot" word="far" word="way" word="almost" word="nearly" word="totally" word="completely" word="entirely"
 @w.quantity vss.words station=quantity open=true word="one" word="two" word="three" word="four" word="five" word="six" word="seven" word="eight" word="nine" word="ten" word="eleven" word="twelve" word="twenty" word="thirty" word="forty" word="fifty" word="hundred" word="thousand" word="dozen" word="few" word="several" word="many" word="couple" word="half" word="double" word="multiple" word="fewer"
 @w.adverb vss.words station=adverb word="now" word="then" word="here" word="there" word="also" word="just" word="again" word="too" word="instead" word="already" word="still" word="only" word="even" word="maybe" word="perhaps" word="always" word="never" word="soon" word="later" word="once" word="twice" word="else" word="though" word="almost" word="somewhere" word="anywhere" word="everywhere" word="nowhere" word="afterwards" word="meanwhile" word="otherwise" word="anyway" word="somehow" word="yet" word="ever" word="often" word="sometimes" word="thus" word="hence" word="indeed" word="altogether" word="so" word="as" word="in" word="on" word="when" word="where" word="why" word="how" word="up" word="down" word="out" word="off" word="over" word="away" word="around" word="about" word="along" word="across" word="through" word="before" word="after" word="above" word="below" word="behind" word="quite" word="rather" word="much" word="more" word="less"
-@w.adverb.open vss.words station=adverb open=true word="together" word="apart" word="back" word="forward" word="backward" word="forwards" word="backwards" word="next" word="straight" word="halfway" word="clockwise" word="counterclockwise" word="anticlockwise" word="sideways" word="upward" word="upwards" word="downward" word="downwards" word="inward" word="outward" word="further" word="fast" word="well" word="first" word="last" word="ahead" word="aside" word="today" word="tomorrow" word="yesterday" word="tonight" word="right" word="left" word="far" word="alone" word="likewise" word="overall" word="upside" word="inside" word="outside" word="nearby" word="higher" word="lower" word="closer" word="farther"
-@w.expression vss.words station=expression open=true word="thanks" word="thank" word="hey" word="hi" word="hello" word="ok" word="okay" word="yes" word="no" word="yeah" word="yep" word="nope" word="sorry" word="cheers" word="oops" word="hmm" word="um" word="uh" word="well" word="oh" word="ah" word="wow" word="sure" word="great" word="perfect" word="nice" word="cool" word="awesome" word="lovely" word="brilliant" word="bye" word="goodbye" word="alright" word="right" word="fine" word="good"
+@w.adverb.open vss.words station=adverb open=true word="together" word="apart" word="back" word="next" word="halfway" word="further" word="well" word="first" word="last" word="ahead" word="aside" word="today" word="tomorrow" word="yesterday" word="tonight" word="right" word="left" word="far" word="alone" word="likewise" word="overall" word="inside" word="outside" word="nearby"
+@w.expression vss.words station=expression open=true word="thanks" word="thank" word="hey" word="hi" word="hello" word="ok" word="okay" word="yes" word="no" word="yeah" word="yep" word="nope" word="sorry" word="cheers" word="oops" word="hmm" word="um" word="uh" word="well" word="oh" word="ah" word="wow" word="bye" word="goodbye" word="alright"
 
 # Endings that relate the forms of one word. Forms of one word share what is learned about them.
 @forms vss.endings ending=s ending=es ending=ed ending=ing ending=er ending=est
@@ -137,7 +137,7 @@
 # What a detached expression does.
 @a.gratitude vss.kind unit=clause kind=gratitude cue="thanks" cue="thank you" cue="thanks a lot" cue="cheers"
 @a.greeting vss.kind unit=clause kind=greeting cue="hey" cue="hi" cue="hello"
-@a.apology vss.kind unit=clause kind=apology cue="sorry" cue="oops" cue="my bad"
-@a.acknowledgment vss.kind unit=clause kind=acknowledgment cue="ok" cue="okay" cue="yes" cue="yeah" cue="yep" cue="sure" cue="alright" cue="great" cue="perfect" cue="nice" cue="cool" cue="good" cue="fine"
+@a.apology vss.kind unit=clause kind=apology cue="sorry" cue="oops"
+@a.acknowledgment vss.kind unit=clause kind=acknowledgment cue="ok" cue="okay" cue="yes" cue="yeah" cue="yep" cue="alright"
 @a.rejection vss.kind unit=clause kind=rejection cue="no" cue="nope" cue="no thanks"
 @a.hesitation vss.kind unit=clause kind=hesitation cue="um" cue="uh" cue="hmm" cue="well" cue="oh" cue="ah"

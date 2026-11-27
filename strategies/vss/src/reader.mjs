@@ -204,6 +204,8 @@ export function createVssReader(model, options = {}) {
   const verbStations = new Set(legend.stations.filter(station => station.key === 'predicate').map(station => station.index))
   const exclaimStations = new Set(legend.stations.filter(station => ['expression', 'filler'].includes(station.name)).map(station => station.index))
   const otherStations = new Set(legend.stations.filter(station => station.key !== 'predicate').map(station => station.index))
+  // every place but the one of the word a thing is named by
+  const notHeadStations = new Set(legend.stations.filter(station => !(station.unit === 'entity' && station.key === 'head')).map(station => station.index))
   // the stations that say how a thing is, and the verb stations: a word kept off both names a thing
   const qualityStations = new Set(legend.stations.filter(station => station.key === 'predicate' || ['modifier', 'result_complement', 'degree'].includes(station.key)).map(station => station.index))
   // the stations that name what an entity is, and the verb stations: a word kept off both says how something is
@@ -248,7 +250,7 @@ export function createVssReader(model, options = {}) {
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     // what a doubt keeps a word off, and whether that is news: a word can be doubted more than once, for different reasons
-    const barred = ({not, is}) => is === 'verb' ? otherStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
+    const barred = ({not, is}) => is === 'verb' ? otherStations : is === 'head' ? notHeadStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
     const fresh = doubt => {
       const have = tried.get(doubt.position), more = barred(doubt)
       if (!have) return true
@@ -266,9 +268,12 @@ export function createVssReader(model, options = {}) {
     // is a thing nearly everywhere and was never shown to be a verb is not read as the action here, and
     // the other way round.
     const leaning = () => stations.flatMap((station, t) => {
-      if (tried.has(t) || tokens[t].shape !== 'lower') return []
+      // the capital of the first word of a sentence says nothing about the word
+      if (tried.has(t) || !['lower', 'initial'].includes(tokens[t].shape)) return []
       const leans = lexicon.leans(tokens[t].word), seen = lexicon.kindsOf(tokens[t].word)
       if (verbStations.has(station) && leans === 'thing' && seen.verb === 0) return [{position: t, not: 'verb'}]
+      // a word shown only as saying how things are, never as a verb, is not the action
+      if (verbStations.has(station) && seen.verb === 0 && seen.quality >= 3 && seen.quality > seen.thing) return [{position: t, not: 'verb'}]
       // a word the legend lists as a linking word or an adverb is a verb only where the text showed it as one beyond doubt
       const listed = legend.places.get(tokens[t].word)
       if (verbStations.has(station) && listed && seen.verb < 3 && ![...listed.stations].some(place => verbStations.has(place)) &&
@@ -277,6 +282,7 @@ export function createVssReader(model, options = {}) {
       return []
     })
     first.doubts.push(...leaning())
+    if (options.trace) console.log('first stations', stations.map((station, t) => tokens[t].word + '/' + names[station]).join(' '), '| doubts', JSON.stringify(first.doubts))
     // A verb that the structure cannot place was probably not a verb: the sentence is read
     // again with that word kept off the verb stations.
     for (let again = 0; again < 4 && first.doubts.some(fresh); again++) {
@@ -288,7 +294,8 @@ export function createVssReader(model, options = {}) {
       first.doubts.push(...leaning())
     }
     // the reading in the syntax schema: one circuit, written from the linker's wires
-    if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
+    if (options.schema === 'syntax') return {analyses: [{sop: emitSyntax(text, tokens, first.wires, {nominalQuestion: word => legend.links.get(word) === 'nominal', verbForm: word => lexicon.formOf(word) !== null,
+      quality: word => lexicon.saysHow(word) && !legend.places.has(word)}), confidence: Math.min(...confidence)}], tokens, stations: stations.map(station => names[station]), confidence}
     const flags = symptomsOf(first.sop, lexicon, {confidence, fold: word => legend.variants.get(word.toLowerCase()) ?? word.toLowerCase()})
     const analyses = [{sop: first.sop, confidence: Math.min(...confidence), flags}]
     // language can be ambiguous: the least certain attachment is also read the other way
