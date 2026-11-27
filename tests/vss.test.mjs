@@ -77,6 +77,29 @@ test('a segment built like the one before it is a clause that shares the verb', 
   assert.match(read('put a man on the path wearing a blue cap'), /kind=nominal_clause from=\$e1 to=\$c2/)
 })
 
+test('pairs that differ in one point of structure are read differently', () => {
+  const read = text => createVssReader(model).analyse(text).analyses[0].sop
+  // each measure keeps its own direction; swapping the directions swaps the pairs
+  const first = read('move it 520 across and 410 down'), swapped = read('move it 520 down and 410 across')
+  assert.match(first, /literal="520" adverb="across"/)
+  assert.match(first, /literal="410" adverb="down"/)
+  assert.match(swapped, /literal="520" adverb="down"/)
+  assert.match(swapped, /literal="410" adverb="across"/)
+  // two bare things after a verb: given to someone, or made into something
+  assert.match(read('Give the snowman a smile'), /indirect_object=\$e1 direct_object=\$e2/)
+  assert.match(read('Make the snowman a hero'), /direct_object=\$e1 predicative_entity=\$e2/)
+  // "if" after a verb that takes questions is what is asked; elsewhere it is a condition
+  assert.match(read('tell me if the box is red'), /clausal_complement=\$c2/)
+  assert.match(read('move it if it fits'), /nlu\.relation kind=condition from=\$c1 to=\$c2 cue="if"/)
+  // an opening clause hangs on the instruction that follows it; a bare mention stays on its own
+  assert.match(read("while you're there, thin the lines"), /nlu\.relation kind=time from=\$c2 to=\$c1 cue="while"/)
+  const mention = read('before I forget, a fireplace')
+  assert.match(mention, /form=fragment topic=\$e2/)
+  assert.doesNotMatch(mention, /direct_object/)
+  // a number placed against a number is one measure
+  assert.match(read('resize it to 240 by 160'), /kind=by from=\$e2 to=\$e3/)
+})
+
 test('a person given something is the indirect object', () => {
   const sop = createVssReader(model).analyse('give me a red circle').analyses[0].sop
   assert.match(sop, /indirect_object=\$e1 direct_object=\$e2/)
