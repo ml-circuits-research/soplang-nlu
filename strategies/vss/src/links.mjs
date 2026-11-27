@@ -24,6 +24,12 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
   }
   const put = (target, key, first, last = first) => target.slots.push([key, span(first, last)])
   const has = (target, key) => target.slots.some(slot => slot[0] === key)
+  // a clause that completes a verb; a verb that already has one is tied to the second with no word saying how
+  const completes = (governor, clause) => {
+    if (!has(governor, 'clausal_complement')) { governor.slots.push(['clausal_complement', '$' + clause.id]); return }
+    const relation = wire('r', 'nlu.relation')
+    relation.slots.push(['kind', 'open'], ['from', '$' + governor.id], ['to', '$' + clause.id])
+  }
   const fragmentClause = () => {
     const made = {wire: wire('c', 'nlu.clause'), fragment: true}
     made.wire.slots.push(['form', 'fragment'])
@@ -307,7 +313,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       }
       if (clause.role === 'infinitive' || clause.role === 'complement') {
         const governor = made.slice(0, k).findLast(other => !other.fragment)
-        if (governor) governor.wire.slots.push(['clausal_complement', '$' + clause.wire.id])
+        if (governor) completes(governor.wire, clause.wire)
         return
       }
       if (clause.relativeTo) {
@@ -330,7 +336,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         if (clause.after?.type === 'entity') {
           const relation = wire('r', 'nlu.relation')
           relation.slots.push(['kind', context.kindOf('relation', null)], ['from', '$' + entityWire(clause.after).id], ['to', '$' + clause.wire.id])
-        } else if (clause.after?.type === 'verb' && !before.fragment) before.wire.slots.push(['clausal_complement', '$' + clause.wire.id])
+        } else if (clause.after?.type === 'verb' && !before.fragment) completes(before.wire, clause.wire)
         return
       }
       if (clause.conjunction && before) {
