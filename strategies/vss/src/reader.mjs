@@ -275,8 +275,26 @@ export function createVssReader(model, options = {}) {
     // (a word the text showed often as a verb and never as a thing may still be the verb of the opener itself: "excuse me")
     const cut = tokens.findIndex(token => token.shape === 'mark' && /^[,:;!—–-]$/u.test(token.text))
     const surelyVerb = word => { const seen = lexicon.kindsOf(word); return seen.verb >= SURELY_A_VERB && seen.thing === 0 }
+    // (so may a word right before a pronoun that can only be what a verb acts on: "excuse me")
+    const objectOnly = word => legend.links.get(word) === 'recipient' && !lexicon.canBe(word, 'determiner')
     if (options.openers !== false && cut >= 1 && cut <= 2 && openers.has(tokens.slice(0, cut).map(token => token.word).join(' '))) {
-      for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word) && !surelyVerb(tokens[position].word)) tried.set(position, verbStations)
+      for (let position = 0; position < cut; position++) if (!lexicon.anchoredVerb(tokens[position].word) && !surelyVerb(tokens[position].word) && !objectOnly(tokens[position + 1]?.word)) tried.set(position, verbStations)
+    }
+    // "Ana - remove", "Roadmap Rough — add a document", "thnx, looks good": one or two words that open the message, closed by
+    // a comma or a dash and followed by a clause with a verb the text knows, are a heading, a name or a word said to the
+    // listener. A word there that the text never showed as a verb is no verb.
+    // (not when a word that joins clauses opens the part after the mark: "Reschedule, then send the invite" is two commands)
+    else if (options.openers !== false && cut >= 1 && cut <= 2 && /^[,—–-]$/u.test(tokens[cut].text) && !lexicon.canBe(tokens[cut + 1]?.word, 'conjunction') &&
+             tokens.slice(cut + 1).some(token => lexicon.anchoredVerb(token.word) || lexicon.kindsOf(token.word).verb >= 3 || lexicon.canBe(token.word, 'auxiliary'))) {
+      for (let position = 0; position < cut; position++) {
+        // (not right after a word that stands for a thing: "we overestimated — take 5 off")
+        if (position > 0 && lexicon.canBe(tokens[position - 1].word, 'pronoun')) continue
+        const word = tokens[position].word, next = position + 1 < cut ? tokens[position + 1] : null
+        // (a word followed by what it could act on stays free to be a verb: "scratch that", "unflip it", "reschedule Review";
+        // a capital on the first word with a capital after it marks a name of two words: "Roadmap Rough")
+        if (next && (lexicon.canBe(next.word, 'pronoun') || lexicon.canBe(next.word, 'determiner') || next.shape === 'capital' && tokens[position].shape !== 'initial')) continue
+        if (!lexicon.listed(word) && !lexicon.anchoredVerb(word) && lexicon.kindsOf(word).verb === 0) tried.set(position, verbStations)
+      }
     }
     // a second opinion on every word from the outside of its occurrence
     let lift = null
@@ -285,8 +303,10 @@ export function createVssReader(model, options = {}) {
       lift = (t, s) => Math.exp(sharp * matches[t][s])
     }
     // one verb per clause, unless the verb before makes its object do something or the word describes
+    // (a verb takes a second one after it when the text showed it taking a clause, or when the legend lists it among the verbs
+    // that make their object do something: "watch him run")
     const budget = options.budget === false ? null : {
-      makesDo: word => lexicon.takesClause(word) || lexicon.directs(word),
+      makesDo: word => lexicon.takesClause(word) || lexicon.directs(word) || lexicon.makesDo(word),
       describes: word => lexicon.formOf(word) !== null,
       doer: word => legend.links.get(word) === 'subject',
       helper: word => lexicon.canBe(word, 'auxiliary'),

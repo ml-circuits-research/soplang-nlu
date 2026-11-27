@@ -271,7 +271,9 @@ export function buildUnits(tokens, stations, lexicon) {
     const cue = units[k - 1], thing = units[k], last = units[k + 1], after = units[k + 2]
     if (!lexicon.kindsOf || cue.type !== 'cue' || thing.type !== 'entity' || !thing.determiner?.length || thing.pronoun || thing.head?.[0] !== thing.last) continue
     if (last.type !== 'complement' || last.first !== last.last || last.degree?.length || last.first !== thing.last + 1) continue
-    if (after && !['separator', 'terminator', 'conjunction', 'cue', 'marker'].includes(after.type)) continue
+    // ("for medium width bar border": a bare noun right after it goes on naming the same thing)
+    const bareNoun = after?.type === 'entity' && !after.determiner?.length && !after.pronoun && !after.literal && after.first === last.last + 1
+    if (after && !bareNoun && !['separator', 'terminator', 'conjunction', 'cue', 'marker'].includes(after.type)) continue
     // (a word with its own "of" phrase says how the thing is: "a city street full of traffic")
     if (after?.type === 'cue' && lexicon.linkOf?.(tokens[after.first].word) === 'belongs') continue
     const seen = lexicon.kindsOf(tokens[last.first].word)
@@ -283,6 +285,44 @@ export function buildUnits(tokens, stations, lexicon) {
     }
     if (wanted || lexicon.listed(tokens[last.first].word)) continue
     if (tokens[last.first].shape === 'lower' && seen.thing >= 3 && seen.thing >= 3 * seen.quality && !lexicon.saysHow(tokens[last.first].word)) units.doubts.push({position: last.first, is: 'head'})
+  }
+  // "keep the colour bar medium", "show the unit profit for each category", "make Lunch orders yellow": a noun that
+  // describes another noun stands right before it, inside one thing. A word the text showed as a thing (and not as saying
+  // how things are), right after the noun or the name that closes a thing, goes on naming that thing:
+  //  - when another word follows it before the next linking word or break, for only the last word after a thing can be
+  //    what a verb makes the thing ("make the bars purple");
+  //  - or when it is the last word and no verb that says what its object becomes waits for it.
+  const thingWord = position => {
+    const word = tokens[position].word, seen = lexicon.kindsOf(word)
+    if (tokens[position].shape !== 'lower' || lexicon.listed(word) || lexicon.saysHow(word) || lexicon.formOf(word)) return false
+    // (a word whose plural heads things, never seen otherwise, is a thing as well: "the review score")
+    if (lexicon.nominal(word) === true && seen.verb + seen.thing + seen.quality === 0) return true
+    return seen.thing >= 3 && seen.thing >= 3 * seen.quality && (lexicon.nominal(word) !== false || seen.thing >= 10 * Math.max(1, seen.quality))
+  }
+  const mostlyThing = position => { const word = tokens[position].word, seen = lexicon.kindsOf(word); return lexicon.nominal(word) !== false && seen.thing >= 10 * Math.max(1, seen.quality) }
+  for (let k = 1; lexicon.kindsOf && k < units.length; k++) {
+    const thing = units[k - 1], run = units[k], after = units[k + 1]
+    if (thing.type !== 'entity' || thing.pronoun || thing.literal || run.type !== 'complement' || run.degree?.length || run.first !== thing.last + 1) continue
+    // (the word before must close the thing; a plural noun ends it: "the bars horizontal")
+    const end = thing.head?.[0] === thing.last || thing.name?.[1] === thing.last ? thing.last : -1
+    if (end < 0 || /[^s]s$/u.test(tokens[end].word) && tokens[end].shape === 'lower' && lexicon.pluralThing(tokens[end].word)) continue
+    // (and must be a word things are named by, not one the language lists: "the other way round")
+    if (lexicon.listed(tokens[end].word) || !thingWord(run.first)) continue
+    // (before another word, only a noun whose plural the text showed heading things: "the colour bar medium", not "the hair
+    // front left", where the word grades the next one)
+    if (run.last > run.first) { if (lexicon.nominal(tokens[run.first].word) === true) units.doubts.push({position: run.first, is: 'head'}); continue }
+    const bareNoun = after?.type === 'entity' && !after.determiner?.length && !after.pronoun && !after.literal && after.first === run.last + 1
+    if (after && !bareNoun && !['separator', 'terminator', 'conjunction', 'cue', 'marker'].includes(after.type)) continue
+    // (a thing that a determiner opens, or one of two words or more)
+    if (!thing.determiner?.length && thing.first === thing.last) continue
+    let wanted = false
+    for (let j = k - 2; j >= 0 && !['separator', 'terminator', 'conjunction'].includes(units[j].type); j--) {
+      if (units[j].type === 'complement') break
+      if (units[j].type === 'verb') { wanted = lexicon.takesQuality(tokens[units[j].predicate[0]].word); break }
+    }
+    // (after a name, a word the text knows mostly as a thing goes on naming it: "the Crush flow")
+    const named = ['capital', 'upper'].includes(tokens[end].shape) && mostlyThing(run.first)
+    if (!wanted || named || bareNoun) units.doubts.push({position: run.first, is: 'head'})
   }
   // inside a thing that a determiner opens, a plural noun is the last word: the nouns that describe a noun
   // stand in the singular. A word after it that is not itself known as a thing does not belong to the thing.
@@ -385,6 +425,47 @@ export function buildUnits(tokens, stations, lexicon) {
     const seen = lexicon.kindsOf(tokens[t].word.toLowerCase())
     if (seen.verb >= 3 && seen.verb > seen.thing) units.doubts.push({position: t, is: 'verb'})
   }
+  // "so focus on the arrow", "Then Use a palette", "— circle it", ", pop in a hexagon": a clause needs its verb, and a
+  // command opens with its bare form. At the start of a part of the sentence (the message, a break, a word said in passing,
+  // or a word that joins clauses or says when, right after a break), a word the text showed as a verb, right before what a
+  // verb acts on (a determiner, or a pronoun that cannot be a subject), opens a command. Right before a word that moves with
+  // a verb or links, and then such a thing, it does so when the text never showed it as a thing or as saying how things are.
+  // Not when another verb follows before the next break, and never a form in -s or a plural (no command uses them).
+  const actedOn = position => position < tokens.length && (stations[position] === 'determiner' || stations[position] === 'pronoun' && lexicon.linkOf?.(tokens[position].word) !== 'subject')
+  for (let t = 0; lexicon.kindsOf && lexicon.listed && t + 1 < tokens.length; t++) {
+    if (!['noun', 'name', 'modifier', 'complement'].includes(stations[t]) || !['lower', 'initial', 'capital'].includes(tokens[t].shape)) continue
+    const opens = t === 0 || ['separator', 'terminator'].includes(stations[t - 1]) ||
+      // (a word said in passing that is written with a capital inside the sentence is mentioned, not said: "a paragraph that says
+      // Please review the draft")
+      ['expression', 'filler'].includes(stations[t - 1]) && !(tokens[t - 1].shape === 'capital' && t > 1 && !['separator', 'terminator'].includes(stations[t - 2])) ||
+      ['conjunction', 'marker', 'adverb'].includes(stations[t - 1]) && (t === 1 || ['separator', 'terminator'].includes(stations[t - 2]))
+    if (!opens) continue
+    const word = tokens[t].word.toLowerCase(), seen = lexicon.kindsOf(word)
+    if (lexicon.sForm(word) || lexicon.formOf(word) || /[^s]s$/u.test(word) && lexicon.pluralThing(word) || lexicon.listed(word)) continue
+    const direct = actedOn(t + 1) && seen.verb >= 1
+    // (a capital inside a sentence marks a name: there the word must have been shown as a verb, "— Main on the label")
+    const named = tokens[t].shape === 'capital' && t > 0 && stations[t - 1] !== 'terminator'
+    const moved = ['adverb', 'cue'].includes(stations[t + 1]) && actedOn(t + 2) && seen.thing === 0 && seen.quality === 0 && (!named || seen.verb >= 1)
+    if (!direct && !moved) continue
+    let other = false
+    for (let p = t + 1; p < tokens.length && !['separator', 'terminator', 'conjunction'].includes(stations[p]); p++)
+      if (['predicate', 'following'].includes(stations[p]) && !lexicon.formOf(tokens[p].word)) other = true
+    if (!other) units.doubts.push({position: t, is: 'verb'})
+  }
+  // "add two nodes, labelled Step", "a column chart of profit, ordered by margin", "nodes, coloured blue": a past tense needs
+  // its subject. After a clause and a comma or a dash, a past form of a known verb that opens the next part with no subject
+  // is a participle: the verb of a clause that says how the thing before is. So when what follows it is a linking word, a
+  // word that moves with a verb, a word that says how, a name or a number, or nothing.
+  for (let t = 2; lexicon.formOf && lexicon.kindsOf && t < tokens.length; t++) {
+    if (stations[t - 1] !== 'separator' || !/^[,—–-]$/u.test(tokens[t - 1].text) || ['predicate', 'following'].includes(stations[t]) && t + 1 < tokens.length) continue
+    if (lexicon.formOf(tokens[t].word) !== 'past' || lexicon.kindsOf(tokens[t].word).verb < 3) continue
+    // (a clause with its verb stands before the comma)
+    let verb = false
+    for (let p = t - 2; p >= 0 && stations[p] !== 'terminator'; p--) if (['predicate', 'following'].includes(stations[p])) verb = true
+    if (!verb) continue
+    const next = stations[t + 1]
+    if (t + 1 >= tokens.length || ['cue', 'adverb', 'complement', 'modifier', 'name', 'quantity'].includes(next) || ['capital', 'upper', 'number'].includes(tokens[t + 1].shape)) units.doubts.push({position: t, is: 'verb'})
+  }
   // "a paragraph saying Thank you": a capital inside a sentence marks a name or quoted words; such a word is not said in passing
   for (let t = 1; t < tokens.length; t++) {
     if (['expression', 'filler'].includes(stations[t]) && tokens[t].shape === 'capital' && !['separator', 'terminator', 'expression', 'filler'].includes(stations[t - 1])) units.doubts.push({position: t, not: 'expression'})
@@ -434,6 +515,42 @@ export function buildUnits(tokens, stations, lexicon) {
     // (after a verb that says what its object becomes, the word says that: "turn the nose open")
     if (lexicon.formOf(word) || lexicon.sForm(word) || lexicon.makesDo(lead) || lexicon.directs(lead) || lexicon.takesQuality(lead) || lexicon.canBe(lead, 'auxiliary')) continue
     units.doubts.push({position: second.first, is: 'head'})
+  }
+  // "have the dog run to the boy", "make the bird on the fence face left", "let it drift": after a verb that makes its
+  // object do something (the legend's list), the object, with the place phrases and "and"-joined things that hang on it, is
+  // followed by the bare verb of what it does. The word that closes the last of those things right after a noun, when the
+  // text showed it as a verb at least as often as a thing, is that verb; so is a lone word right after an object pronoun
+  // that the text showed as a verb and never as a thing.
+  for (let k = 0; lexicon.makesDo && k + 1 < units.length; k++) {
+    const lead = units[k]
+    const leadWord = lead.type === 'verb' ? tokens[lead.predicate[0]].word : lead.type === 'aux' && lead.auxiliary?.length ? tokens[lead.auxiliary.at(-1)].word : null
+    if (!leadWord || !lexicon.makesDo(leadWord) || units[k + 1]?.type !== 'entity') continue
+    let m = k + 1
+    while (['cue', 'conjunction'].includes(units[m + 1]?.type) && units[m + 2]?.type === 'entity') m += 2
+    const object = units[m], after = units[m + 1]
+    if (after && ['verb', 'aux'].includes(after.type)) continue
+    // (not a word the legend lists as a linking word, a graded form or a word that says how things are more often than it
+    // is done; not a form in -s or with a past or -ing ending)
+    const plain = word => !lexicon.canBe(word, 'cue') && !lexicon.gradedForm?.(word) && lexicon.kindsOf(word).quality <= lexicon.kindsOf(word).verb
+    const verbish = word => { const seen = lexicon.kindsOf(word); return seen.verb >= 3 && seen.verb >= seen.thing && !lexicon.sForm(word) && !lexicon.formOf(word) && plain(word) }
+    // (after a verb that says what its object becomes, a quality after the word is that outcome: "make the wire route orthogonal")
+    const outcome = lexicon.takesQuality(leadWord) && after?.type === 'complement'
+    const head = object.head?.[0] ?? -1
+    // (the object opens with a determiner or is a pronoun: a thing in its own right; a verb is never followed by "of": "make a
+    // scatter plot of sales")
+    const opened = units[k + 1].determiner?.length > 0 || Boolean(units[k + 1].pronoun)
+    const belongs = after?.type === 'cue' && lexicon.linkOf?.(tokens[after.first].word) === 'belongs'
+    // (nor a word the text shows standing together with the noun before it inside one thing: "make a scatter plot with …")
+    if (opened && !belongs && !outcome && object.determiner?.length && head === object.last && head > object.first && ['noun', 'modifier'].includes(stations[head - 1]) &&
+        tokens[head].shape === 'lower' && verbish(tokens[head].word) && !lexicon.together(tokens[head - 1].word, tokens[head].word)) {
+      units.doubts.push({position: head, is: 'verb'})
+      continue
+    }
+    if (object.pronoun && m === k + 1 && lexicon.linkOf?.(tokens[object.pronoun[0]].word) !== 'subject' && after?.type === 'entity' && after.first === object.last + 1 &&
+        !after.pronoun && !after.determiner?.length && !after.quantity?.length && tokens[after.first].shape === 'lower') {
+      const word = tokens[after.first].word, seen = lexicon.kindsOf(word)
+      if ((verbish(word) || seen.thing === 0 && (seen.verb >= 1 || !lexicon.thingFirst(word))) && !lexicon.sForm(word)) units.doubts.push({position: after.first, is: 'verb'})
+    }
   }
   // "level 2", "scale 1.5": a word the text showed as a thing more often than as a verb, right before a number that
   // no unit follows, is that thing with its number ("set 2023 to 20" keeps its verb)
@@ -563,6 +680,15 @@ export function buildUnits(tokens, stations, lexicon) {
       else if (station === 'modifier' && !core.length && lexicon.leans && j > start && stations[j - 1] === 'modifier' && lexicon.pluralThing(tokens[j - 1].word) &&
                lexicon.saysHow(tokens[j].word)) break
       else if (station === 'modifier' && !core.length) modifier.push(j)
+      // "about Oat biscuits recipe", "place Market entry proposal": a thing whose words so far are a name written with a
+      // capital goes on through a lower-case word before a lower-case noun; the nouns of a name stack up to the last one.
+      // A word the text showed saying how things are still ends it ("give Ana red flowers"), and so does a verb that hands
+      // something to someone right before the name, whose first bare thing is the one who receives ("give Ana birthday flowers").
+      else if (station === 'modifier' && core.length && lexicon.kindsOf && lexicon.listed && !determiner.length && !quantity.length && !modifier.length &&
+               core.every(position => stations[position] === 'name' && tokens[position].shape === 'capital') &&
+               !(start > 0 && ['predicate', 'following'].includes(stations[start - 1]) && lexicon.gives?.(tokens[start - 1].word)) &&
+               tokens[j].shape === 'lower' && at(j + 1) === 'noun' && tokens[j + 1].shape === 'lower' && !lexicon.listed(tokens[j].word) && lexicon.nominal(tokens[j].word) !== false &&
+               !(lexicon.kindsOf(tokens[j].word).quality >= 3 && lexicon.kindsOf(tokens[j].word).quality >= lexicon.kindsOf(tokens[j].word).thing)) core.push(j)
       // "the Introduction heading level 2", "the eyes scale 1.5": a noun with its number or value after it begins a thing
       // of its own, unless the text showed it standing together with the noun before it
       else if (station === 'noun' && core.length && determiner.length && lexicon.leans && stations[core.at(-1)] === 'noun' && j === core.at(-1) + 1 &&

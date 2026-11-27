@@ -134,6 +134,35 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       }
       before = other
     }
+    // "the trees should be gone, the two of them", "mouth blue — change a neutral, please", "cancelled — rewind that": the
+    // words of one sentence hang together. A part of the sentence that no wire ties to the rest (a clause, or a group of
+    // words with no verb, together with what hangs on it) is tied to the sentence's main clause, the first one with a verb
+    // that can make a sentence by itself; no word says how. Words said in passing ("thanks", "next") need no tie, and a
+    // clause whose own linking word ties it is tied when its circuit is written.
+    if (!made.length) return
+    const all = wires.slice(wires.indexOf(made[0]))
+    const root = new Map(all.map(other => [other.id, other.id]))
+    const find = id => { while (root.get(id) !== id) id = root.get(id); return id }
+    const join = (a, b) => { if (root.has(a) && root.has(b)) root.set(find(a), find(b)) }
+    for (const other of all) {
+      for (const slot of other.slots) if (typeof slot[1] === 'string' && slot[1].startsWith('$')) join(other.id, slot[1].slice(1))
+      if (other.shares) join(other.id, other.shares)
+    }
+    const groups = new Map()
+    for (const other of all) if (other.type === 'nlu.clause') (groups.get(find(other.id)) ?? groups.set(find(other.id), []).get(find(other.id))).push(other)
+    const acts = clause => clause.slots.some(slot => slot[0] === 'predicate')
+    const finite = clause => acts(clause) && !['nonfinite', 'fragment'].includes(clause.slots.find(slot => slot[0] === 'form')[1])
+    const marked = group => group.some(clause => clause.slots.some(slot => slot[0] === 'marker'))
+    const passing = group => group.every(clause => clause.slots.every(slot => slot[0] !== 'predicate' && !(typeof slot[1] === 'string' && slot[1].startsWith('$'))))
+    const parts = [...groups.values()].filter(group => !marked(group) && !passing(group))
+    const main = parts.find(group => group.some(finite)) ?? parts.find(group => group.some(acts)) ?? parts[0]
+    if (!main) return
+    const anchor = main.find(finite) ?? main.find(acts) ?? main[0]
+    for (const group of parts) {
+      if (group === main) continue
+      const relation = wire('r', 'nlu.relation')
+      relation.slots.push(['kind', 'open'], ['from', '$' + anchor.id], ['to', '$' + group[0].id])
+    }
   }
 
   function linkSentence(all) {
@@ -146,9 +175,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       const helping = unit.type === 'aux' || unit.type === 'verb' && !unit.auxiliary.length && !unit.form &&
         lexicon.canBe(tokens[unit.predicate[0]].word, 'auxiliary') &&
         (list[i + 1]?.pronoun || list[i - 1]?.type === 'question' || list[i - 2]?.type === 'question' ||
-         // "does this diagram make sense": opening its clause before a thing; not a verb that makes its object do something ("have the fan become …")
+         // "does this diagram make sense": opening its clause before a thing; not a verb that makes its object do something ("have the fan become …",
+         // "have the counter top painted ivory": the legend's list of such verbs, or a verb the text showed taking a clause)
          context.open !== false && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(list[i - 1]?.type)) &&
-           list[i + 1]?.type === 'entity' && !lexicon.takesClause(tokens[unit.predicate[0]].word))
+           list[i + 1]?.type === 'entity' && !lexicon.takesClause(tokens[unit.predicate[0]].word) && !lexicon.makesDo(tokens[unit.predicate[0]].word))
       if (!helping) continue
       const own = unit.type === 'aux' ? unit.auxiliary : [unit.predicate[0]]
       let k = i + 1
@@ -208,12 +238,38 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     }
 
     // ---- what each verb is to its neighbours, and where its clause starts
+    // "have the car on the path face the house", "make the man in the purple shirt and no hat go right", "let's also set
+    // the interval": a verb that makes its object do something (the legend's list: let, make, have, help, see, watch, hear,
+    // feel) takes that object and then the bare verb of what the object does. The object runs from the first thing after
+    // that verb over the place phrases and the "and"-joined things that hang on it; words that say when or how may stand
+    // between it and the bare verb. Returns {object, lead, start} for the verb at i, or null.
+    const causedBy = i => {
+      let h = i - 1
+      while (['adverb', 'negation'].includes(list[h]?.type)) h--
+      if (list[h]?.type !== 'entity') return null
+      const start = h + 1
+      while (['cue', 'conjunction'].includes(list[h - 1]?.type) && list[h - 2]?.type === 'entity') h -= 2
+      const lead = list[h - 1]
+      return lead?.type === 'verb' && lexicon.makesDo(tokens[lead.predicate[0]].word) ? {object: list[h], lead, start} : null
+    }
+    // the bare "be" of a passive ("let the bird be turned into an owl") is no finite helping verb
+    const bareBe = verb => verb.auxiliary.length === 1 && context.tagged(tokens[verb.auxiliary[0]].word, 'bare')
     const clauses = []
     for (let i = 0; i < list.length; i++) {
       const verb = list[i]
       if (verb.type !== 'verb') continue
       const previous = list[i - 1], bare = !verb.auxiliary.length
       const clause = {verb, index: i, start: i, pre: [], role: 'main', predicate: tokens[verb.predicate[0]].word}
+      // (the word must be a plain verb: not a word the legend lists as a linking word, not a graded form, not one the text
+      // showed saying how things are more often than as a verb: "make the avatar like him", "have the bars thicker")
+      const plainVerb = !lexicon.canBe(clause.predicate, 'cue') && !lexicon.gradedForm(clause.predicate) &&
+        lexicon.kindsOf(clause.predicate).quality <= lexicon.kindsOf(clause.predicate).verb
+      // (a word the fixed frames never showed as a verb must act on a thing or take a phrase: "let it drift a little away
+      // from the shore", not "have the distance farthest out")
+      const evident = lexicon.kindsOf(clause.predicate).verb > 0 || ['entity', 'cue'].includes(list[i + 1]?.type)
+      // (nor a word the text shows standing together with the noun right before it inside one thing: "have the font colour black")
+      const joined = previous?.type === 'entity' && previous.last + 1 === verb.first && lexicon.together(tokens[previous.last].word, clause.predicate)
+      const caused = context.open !== false && (bareBe(verb) || bare && !verb.form && plainVerb && evident && !joined) ? causedBy(i) : null
       // "a girl facing left sitting on the bench": a word that says where or how (an adverb or a particle) stands after its
       // verb, so between two verb forms it belongs to the first; the second form, with no helping verb, goes on describing
       // the thing that the first describes
@@ -247,6 +303,14 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         clause.modifiesHost = true
         clause.separator = previous
         clause.start = i - 1
+      } else if (caused) {
+        // the bare verb heads a clause that completes the verb before it; the whole object is its subject, and the words
+        // that say when or how right before the bare verb belong to its clause
+        clause.role = 'complement'
+        clause.subject = caused.object
+        clause.causedBy = caused.lead
+        clause.start = caused.start
+        clause.pre.push(...list.slice(caused.start, i))
       } else if (previous?.type === 'entity' && bare && !verb.form && list[i - 2]?.type === 'verb' &&
                  lexicon.takesClause(tokens[list[i - 2].predicate[0]].word)) {
         clause.role = 'complement'
@@ -282,10 +346,15 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         }
       }
       // "selected event": a form that says what was done, opening its clause right before a bare noun, describes that noun
+      // (not a form of a naming verb before a name written with a capital, which is the name it gives: "…, labelled Step")
+      const label = list[i + 1]?.name && !list[i + 1].head && ['capital', 'upper'].includes(tokens[list[i + 1].first].shape) && lexicon.names(clause.predicate)
       if (context.open !== false && bare && verb.form === 'past' && !clause.subject && (i === 0 || ['separator', 'conjunction', 'filler', 'expression'].includes(previous?.type)) &&
-          list[i + 1]?.type === 'entity' && !list[i + 1].determiner?.length && !list[i + 1].pronoun && list[i + 1].first === verb.last + 1) doubts.push({position: verb.predicate[0], not: 'verb'})
+          list[i + 1]?.type === 'entity' && !list[i + 1].determiner?.length && !list[i + 1].pronoun && list[i + 1].first === verb.last + 1 && !label) doubts.push({position: verb.predicate[0], not: 'verb'})
       // "leave it tidy": the verb of a clause that completes another verb must have been seen as a verb somewhere
-      if (context.open !== false && clause.role === 'complement' && bare && !verb.form && lexicon.kindsOf(clause.predicate).verb === 0 &&
+      // (after a verb of the legend's list that makes its object do something, it is enough that the text showed the word more
+      // often as a verb than as a thing and never saying how things are: "let it drift", "have everything come out")
+      const madeToDo = caused && !lexicon.thingFirst(clause.predicate) && lexicon.kindsOf(clause.predicate).quality === 0
+      if (context.open !== false && clause.role === 'complement' && bare && !verb.form && lexicon.kindsOf(clause.predicate).verb === 0 && !madeToDo &&
           tokens[verb.predicate[0]].shape === 'lower') doubts.push({position: verb.predicate[0], not: 'verb'})
       // "keep the axis labels larger": the verb of a clause that completes another verb is never a form in -s
       // (with a word that stands for a thing right before it, the form in -s is the verb of a full clause: "make sure it fits")
@@ -369,7 +438,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         !((context.linkOf(clause.predicate) === 'predicative' || context.tagged(clause.predicate, 'finite')) && list[clause.index + 1]?.type === 'entity')
       const stated = context.open !== false && (Boolean(ownSubject) || embedded) && !verb.inverted
       const asks = Boolean(question && !stated || verb.inverted) || !embedded && last && terminator && /\?/u.test(text.slice(tokens[terminator.first].start, tokens[terminator.last].end)) && clause.role === 'main'
-      const finite = verb.auxiliary.length > 0 || lexicon.sForm(clause.predicate) ||
+      const finite = verb.auxiliary.some(position => !context.tagged(tokens[position].word, 'bare')) || lexicon.sForm(clause.predicate) ||
         Boolean(clause.subject?.pronoun) && context.linkOf(tokens[clause.subject.pronoun[0]].word) === 'subject'
       const form = clause.role !== 'main' ? (context.open !== false && clause.role === 'complement' && finite ? 'declarative' : 'nonfinite')
         // a bare form in -ing describes; it makes no statement by itself ("a dog lying down")
@@ -414,7 +483,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
       for (const position of verb.adverb) put(target, 'adverb', position)
       if (verb.negation.length || clause.pre.some(unit => unit.type === 'negation')) target.slots.push(['polarity', 'negative'])
       for (const unit of clause.pre) put(target, unit.type, unit.first, unit.last)
-      if (clause.subject) target.slots.push(['subject', '$' + entityWire(clause.subject).id])
+      // ("have the boy in the green hat and the boy in the yellow hat trade hats": the object joined with "and" does it together)
+      if (clause.subject) target.slots.push(['subject', '$' + (clause.causedBy && clause.subject.group ? clause.subject.group : entityWire(clause.subject)).id])
       if (clause.asked) { const slot = ['direct_object', '$' + entityWire(clause.asked).id]; target.slots.push(slot); clause.asked.holder = slot }
       for (const [cue, entity, from] of clause.chain ?? []) relate(entityWire(from), cue, entityWire(entity))
       // "Please, create …": a courtesy word before the first clause belongs to it
@@ -440,8 +510,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // "a man on the path wearing a cap": the participle describes the thing that was placed,
         // unless the text shows it said of the place more often
         if (clause.modifiesHost) {
-          // ", coloured by region": the thing the clause before it is about
-          const thing = before?.state?.objects[0] ?? before?.subject
+          // ", coloured by region": the thing the clause before it is about. A participle describes a thing named in the
+          // words, never a pronoun ("give me a bar chart of the spend, broken out by category": the chart, not "me"); with
+          // no such thing among what the clause acts on, the nearest one before the comma
+          const objects = before?.state?.objects ?? []
+          const at = list.indexOf(clause.separator ?? clause.verb)
+          const nearest = list.slice(0, at).findLast(unit => unit.type === 'entity' && !unit.pronoun && unit.wire)
+          const thing = objects.find(unit => !unit.pronoun) ?? (objects[0]?.pronoun && nearest) ?? objects[0] ?? before?.subject
           if (clause.separator) put((before ?? clause).wire, 'separator', clause.separator.first, clause.separator.last)
           if (!thing) return
           clause.modifies = thing
@@ -461,7 +536,8 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         return
       }
       if (clause.role === 'infinitive' || clause.role === 'complement') {
-        const governor = made.slice(0, k).findLast(other => !other.fragment)
+        // (what an object is made to do completes the verb that makes it do so, also past a participle between them)
+        const governor = (clause.causedBy && made.slice(0, k).findLast(other => other.verb === clause.causedBy)) || made.slice(0, k).findLast(other => !other.fragment)
         if (governor) completes(governor.wire, clause.wire)
         return
       }
