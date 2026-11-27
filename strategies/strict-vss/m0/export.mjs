@@ -7,7 +7,7 @@ const {circuitToTree} = await import(root + 'experiments/syntax-learned/parser/t
 const norm = t => t.toLowerCase().replace(/\s+/gu, ' ').trim()
 const bench = new Set(readSample(root + 'eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz').map(r => norm(r.text)))
 const out = []
-for (const [text, row] of readLabels()) {
+for (const [text, row] of readLabels(process.env.SYNTACTIC_DIR || undefined)) {   // SYNTACTIC_DIR: frozen snapshot
   if (bench.has(norm(text))) continue
   const t = circuitToTree(text, row.label)
   if (t.error) continue

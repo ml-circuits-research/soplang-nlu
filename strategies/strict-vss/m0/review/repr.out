@@ -1,0 +1,71 @@
+random sample of 200: n=200 encode-fail=2 decode-fail=0 roundtrip(content heads)=198 tree-unrehead-identical=198 roundtrip(re-headed)=198
+constructions in the sample (n / round trip content heads / round trip re-headed):
+  form=imperative                    144 143 143
+  wire referenced twice              113 111 111
+  rel clause->nominal                88 87 87
+  rel nominal->nominal               80 79 79
+  clauses>=2                         69 68 68
+  form=declarative                   53 52 52
+  form=nonfinite                     39 39 39
+  relations>=3                       34 33 33
+  coord of clause                    24 24 24
+  rel nominal->clause (no marker)    23 23 23
+  form=interrogative                 19 19 19
+  form=fragment                      18 18 18
+  rel clause->clause                 16 15 15
+  rel clause->clause (no marker)     16 16 16
+  clauses>=4                         11 11 11
+  ambiguous                          10 10 10
+  coord of nominal                   9 8 8
+  coord no conjunction               5 5 5
+  coord conjuncts>=3                 5 5 5
+  words>=25                          4 4 4
+  rel nominal->coordination (no marker) 4 4 4
+  rel nominal->nominal (no marker)   3 3 3
+  clause-negation                    2 2 2
+  rel clause->coordination           2 1 1
+  coord of relation                  2 0 0
+  relation-negation                  1 0 0
+  coordinations>=2                   1 0 0
+  NOT BACK: encode: inner-tie relN | now — put the green block level with the blue block but not under the red block
+  NOT BACK: encode: inner-tie relC | i wonder if you could place a purple row on the northern edge and between the red column and the yellow column
+ALL with ellipsis (48): n=48 encode-fail=2 decode-fail=0 roundtrip(content heads)=41 tree-unrehead-identical=44 roundtrip(re-headed)=41
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00 and for 30 minutes
+    x lost by tree | set the title of Weekly review to Quarterly plan and the room to Cedar room and the notes to bring the slides
+    x encode: inner-tie relC~amb | change Weekly review on Monday at 10:00 and for 30 minutes and the calendar to Work
+    x lost by tree | drop the date 7.18 onto page 0, then walk the picture up top, corner to corner
+ALL with relation-negation (111): n=111 encode-fail=26 decode-fail=0 roundtrip(content heads)=85 tree-unrehead-identical=85 roundtrip(re-headed)=85
+    x encode: inner-tie relN | return the figure to the identical position in the row, not next to it and not at either end
+    x encode: inner-tie relC~amb | I would like a small tower by the side of the barn, near the water trough but not in the mud.
+    x encode: inner-tie relN | put an old fence by the side of the barn, near the water trough but not in the mud.
+    x encode: inner-tie relN | I want a wooden fence next to the barn, near the water trough but not in the mud.
+ALL with clause-negation (243): n=243 encode-fail=5 decode-fail=0 roundtrip(content heads)=238 tree-unrehead-identical=238 roundtrip(re-headed)=238
+    x encode: inner-tie relC | Keep IDs shown in every tab and in every new diagram, so I do not have to switch it on again.
+    x encode: inner-tie relC | Keep new objects on the right in every tab and in every new diagram, so I do not have to switch it on again.
+    x encode: inner-tie relC | Keep grid lines visible in every tab and in every new diagram, so I do not have to switch it on again.
+    x encode: inner-tie relC | Keep legends visible in every tab and in every new diagram, so I do not have to switch it on again.
+ALL with coord of relation (158): n=158 encode-fail=156 decode-fail=0 roundtrip(content heads)=2 tree-unrehead-identical=2 roundtrip(re-headed)=2
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and for 30 minutes
+    x encode: inner-tie relC~amb | change Weekly review on Monday at 10:00 and for 30 minutes
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00 and for 30 minutes
+ALL with coordinations>=2 (437): n=437 encode-fail=24 decode-fail=0 roundtrip(content heads)=385 tree-unrehead-identical=409 roundtrip(re-headed)=385
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with participants Ana and Lee and notes bring the slides and title Quarterly plan and room Cedar room
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with calendar Work and notes bring the slides and title Quarterly plan and participants Ana and Lee and room Cedar room
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00 and for 30 minutes
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00 and the notes to bring the slides
+ALL with ambiguous (5084, every 2th): n=2542 encode-fail=8 decode-fail=0 roundtrip(content heads)=2526 tree-unrehead-identical=2534 roundtrip(re-headed)=2526
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with participants Ana and Lee and notes bring the slides and title Quarterly plan and room Cedar room
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with calendar Work and notes bring the slides and title Quarterly plan and participants Ana and Lee and room Cedar room
+    x encode: inner-tie relC | set the title of Weekly review to Quarterly plan and on Monday at 10:00 and the notes to bring the slides
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with room Cedar room and notes bring the slides and title Quarterly plan and participants Ana and Lee
+ALL with words>=25 (1440): n=1440 encode-fail=2 decode-fail=0 roundtrip(content heads)=1421 tree-unrehead-identical=1437 roundtrip(re-headed)=1421
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with participants Ana and Lee and notes bring the slides and title Quarterly plan and room Cedar room
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with calendar Work and notes bring the slides and title Quarterly plan and participants Ana and Lee and room Cedar room
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with room Cedar room and notes bring the slides and title Quarterly plan and participants Ana and Lee
+    x lost by tree | add a meeting for 30 minutes on Monday at 10:00 with calendar Work and notes bring the slides and title Quarterly plan and participants Ana and Lee and room Cedar room
+ALL with wire referenced twice (43783, every 15th): n=2919 encode-fail=15 decode-fail=0 roundtrip(content heads)=2902 tree-unrehead-identical=2904 roundtrip(re-headed)=2902
+    x lost by tree | add a meeting on Monday at 10:00 for 30 minutes with room Cedar room and notes bring the slides and title Quarterly plan and participants Ana and Lee
+    x encode: inner-tie relN | do the tick numbers at the top and on the right on the revenue trend
+    x encode: inner-tie relN | set the axis labels on the top and to the right, also drop the legend on the right
+    x encode: inner-tie relN | and Revenue trend on the profit chart needs the same on the top and to the right, please

@@ -1,0 +1,25 @@
+Checks for the hierarchical strict-vss design (DESIGN.md, sections 2, 4.3, 7, 9), 2026-11-27.
+Data: labels of webmeet-dataset/syntactic outside the benchmark (eval-results/2026-11-27-syntax-benchmark-random,
+compared lowercased with spaces collapsed): 81,870 messages. Nothing learned; read-only on the repository.
+
+Run order (node from this folder; python = /home/salboaie/nlp-venv/bin/python):
+  node holding.mjs > holding.out            tree of wires: top wires, depth, re-entrance, terms per constellation,
+                                            writer ceilings (spans known / words only in tree order)
+  node oracle.mjs > oracle.out              static oracle: moves derived from each label, executed without it,
+                                            written with writeCircuit, core compared (oracle-fail-examples.json)
+  node oracle-stats.mjs > oracle-stats.out  messages needing each move, open constellations at once, short messages
+  node export-trees.mjs 6000                trees-h.json (7,705 messages: every label of 25+ words and a random
+                                            sample of the rest; regenerable, not kept here)
+  python m1probe.py trees-h.json 128,256,512,1024 atlas      read-back from the message star and the atlas
+  THETA=6 python m1probe.py trees-h.json 256,512,1024,2048 atlas  same with a 6 sigma threshold
+  python m1probe.py trees-h.json 1024 noatlas 2000           read-back without clean-up memory
+  node export-pairs.mjs; python equiv.py > equiv.out          message-star similarity of accepted/rejected pairs
+  python fails.py 1024                                       the read-back failures of long messages
+
+Results:
+  writer ceiling: spans known 81,870/81,870; words only, wires in tree order 80,932 (98.85%)
+  oracle: 81,761/81,870 (99.87%) derived and written back with the identical core; 2.33 moves per word
+  read-back exact (7,705): D=128 73.2%; D=256 99.30% (5 sigma); D=512 99.99%, D=1024 99.99%, D=2048 100% (6 sigma);
+                           without atlas D=1024 19.0%, D=4096 31.9% (2,000 messages)
+  equivalence (389 judged pairs, D=1024): median similarity 0.728 (1-2 core lines differ) ... 0.446 (9+);
+                           Spearman -0.48

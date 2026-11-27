@@ -1,0 +1,63 @@
+Checks behind the third revision of DESIGN.md (rvss), 2026-11-27, read-only on the repository.
+
+SNAPSHOT
+  webmeet-dataset commit 0a01d23 (2026-11-27 22:01:48), syntactic/ unchanged against the working tree at 22:28.
+  snapshot-0a01d23.sha1: the 238 CSV files of syntactic/ with their sha1.
+  Extracted with `git archive 0a01d23 syntactic annotations/syntax/v1/judged` (read-only) into the scratch folder
+  strict-vss/snapshot-0a01d23/ (regenerable); every script below reads it through SYNTACTIC_DIR / REGISTRY_DIR.
+  Labels outside the benchmark (eval-results/2026-11-27-syntax-benchmark-random, lowercased, spaces collapsed): 88,106
+  (agreement 83,921, judge 4,153, written 32). Holding trees exported: 88,105 (one holding cycle).
+
+RUN ORDER (S = scratch folder strict-vss; python = /home/salboaie/nlp-venv/bin/python; from hierarchy-checks/)
+  export SYNTACTIC_DIR=$S/snapshot-0a01d23/syntactic
+  node holding.mjs > v2/holding.out                      tree statistics, writer ceilings
+  FAIL_OUT=v2/oracle-fail-examples.json node oracle.mjs > v2/oracle.out          the first draft's oracle
+  node oracle-stats.mjs > v2/oracle-stats.out
+  TREES_OUT=$S/h/trees-all-0a01d23.json node export-trees.mjs all   > v2/export-all.out   (88,105 trees)
+  TREES_OUT=$S/h/trees-h-0a01d23.json   node export-trees.mjs 6000  > v2/export-h.out     (8,537: all 2,203 of 25+ words)
+  OMP_NUM_THREADS=1 python v2/m1star.py $S/h/trees-h-0a01d23.json 128,256,512,1024 18 > v2/m1star-sample.out
+  OMP_NUM_THREADS=1 python v2/m1star.py $S/h/trees-all-0a01d23.json 256,512,1024 18   > v2/m1star-all.out
+  python m1probe.py $S/h/trees-rand2000-0a01d23.json 1024,4096 noatlas > v2/m1-noatlas-rand2000.out
+        (trees-rand2000: 2,000 drawn at random, seed 11, from trees-all)
+  (cd $S/flat-0a01d23 && SYNTACTIC_DIR=... node ../../../m0/export.mjs && python .../m0/capacity.py trees.json 256,512,1024) > v2/flat-capacity.out
+  node v2/oracle2.mjs > v2/oracle2.out                    base and late conventions, moves with arguments, replay
+  node v2/oracle2-diff.mjs > v2/oracle2-diff.out          every failure of both, in v2/oracle2-failures.json
+  REGISTRY_DIR=$S/snapshot-0a01d23/annotations/syntax/v1/judged PAIRS_OUT=$S/h/pairs-0a01d23.json node export-pairs.mjs
+  python v2/equiv2.py $S/h/pairs-0a01d23.json 1024 > v2/equiv2.out
+
+RESULTS (0a01d23)
+  writer ceiling: spans known 88,106 / 88,106; words only, wires in tree order 86,672 (98.37%)
+  largest constellation per message: at most 12 terms in 88,101 of 88,106; depth 9+ in 1,328 (1.5%)
+
+  read-back from the message star through the atlas (m1star.py: type atom at the holder for words and wires,
+  atlas items Z^(a_Y) (x) c(Y), one cleanup per key over the message's words and the atlas, 5 sigma fixed in advance):
+    all 88,105:  D=256 99.892%   D=512 99.993%   D=1024 99.997% (3 messages with one spurious edge)
+    8,537 (all 2,203 of 25+ words): D=128 73.53%  D=256 99.285%  D=512 99.953%  D=1024 100%
+    decoding: median 0.49 ms, p99 2.98 ms per message at D=1024 (numpy, one core)
+  controls:
+    no atlas (m1probe encoding, random 2,000): D=1024 33.45%, D=4096 53.55%
+    flat chart with its answers given (m0/capacity.py, its own sample of 5,201): by length bucket
+      D=256: <10 1862/1862, 10-24 946/1138, 25-39 1/1149, 40+ 0/1052
+      D=512: <10 1862/1862, 10-24 1133/1138, 25-39 751/1149, 40+ 0/1052
+      D=1024: <10 1862/1862, 10-24 1138/1138, 25-39 1147/1149, 40+ 765/1052
+    weighted by the population of length buckets (<10 52,099; 10-24 33,803; 25-39 1,151; 40+ 1,052):
+      flat 91.03% / 98.18% / 99.67% at D=256/512/1024; no atlas 33.55% (1024), 53.72% (4096);
+      rvss read-back 99.892% / 99.993% / 99.997% (measured on all, no weighting needed)
+
+  oracle (oracle2.mjs; "replayed" = words + moves only, written with writeCircuit, identical core):
+    base: 87,842 (99.70%) derived and replayed; failures 264 (closed with held items 198, first conjunct not found 53,
+          re-entry 9, other 4); by accepted_by agreement 216, judge 41, written 7
+    late: 88,083 (99.97%) derived and replayed; failures 23 (re-entry 20, closed with held items 2, cycle 1);
+          agreement 19, judge 3, written 1; 9 of the 23 are derived by base
+          the 195 "closed with held items (clause)" labels of base (mostly drawing/scenes) are derived by late,
+          through reopen, with no new move
+    moves per word 2.33 (both)
+    opening lookahead (words from the decision to its evidence):
+      base: 544,075 openings, 6,926 with lookahead (1: 3,711; 2: 794; 3: 249; 4-6: 956; 7+: 1,216)
+      late: 549,035 openings, none
+    aside decisions taken while another constellation is open, words until the claim:
+      base 8,859 (367 beyond 3 words); late 9,514 (442 beyond 3 words)
+
+  equivalence (390 judged accepted/rejected pairs, D=1024):
+    message star: Spearman with differing core lines -0.496; partial, controlling for the number of wires -0.512
+    identical subtrees (atlas-to-atlas): Spearman -0.171; partial -0.468

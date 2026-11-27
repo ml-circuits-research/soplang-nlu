@@ -1,0 +1,29 @@
+Checks behind the second revision of DESIGN.md (2026-11-27), read-only on the repository.
+Data: webmeet-dataset commit 0a01d23 (2026-11-27 22:01), 88,106 labels outside the benchmark
+(eval-results/2026-11-27-syntax-benchmark-random, compared lowercased with spaces collapsed).
+
+Origin: the critic's scripts were copied from the scratch folder strict-vss/critic/ unchanged; some still read
+scratch paths (depthbias.py and m1abs.py read hierarchy-checks/m1probe.py and the exported trees-h.json in the
+scratch folder strict-vss/h/). holding.mjs is a copy of hierarchy-checks/holding.mjs, rerun here.
+
+Run order (node from this folder; python = /home/salboaie/nlp-venv/bin/python):
+  node runlate.mjs > runlate.out          oracle coverage, base (oracle-instr.mjs) and claim from any open
+                                          constellation (oracle-claimstack.mjs)
+  node bysource2.mjs > bysource2.out      oracle failures (claim from any open) by source, accepted_by, folder
+  node contiguous.mjs > contiguous.out    labels where every wire's words form one run (bottom-up reader)
+  node holding.mjs > holding.out          tree statistics and writer ceilings (writes examples.json, sample400.json)
+  node analyze.mjs > analyze.out          (critic) constructions on 200 labels and on all; lookahead per convention;
+                                          aside decisions made while a possible holder is open
+  python m1abs.py trees-h.json 256,512,1024 holder 5   (critic) read-back with origin-bound atlas items and the
+                                          type in the holder's term, one 5 sigma rule (abs-holder-5.out)
+  python depthbias.py                     (critic) message-star similarity after one wrong word, by depth
+                                          (output quoted in DESIGN.md section 10; not saved by the critic)
+
+Results (0a01d23):
+  writer ceiling: spans known 88,106/88,106; words only in tree order 86,672 (98.37%)
+  oracle base 87,841 (99.70%); claim from any open 88,036 (99.92%), 70 failures:
+    agreement 27/83,921, judge 36/4,153, written 7/32
+  contiguity: 80,987 of 88,036 (91.99%)
+  largest constellation: at most 12 terms in 88,101 of 88,106
+Results (earlier state, 81,870 labels; sample of 7,705):
+  read-back, holder variant, 5 sigma: D=256 99.86%, D=512 100%, D=1024 99.97%

@@ -1,616 +1,997 @@
-# strict-vss: a reader whose analysis goes through a vector-symbolic state
+# rvss: a message as a constellation of constellations
 
-Status: design, 2026-11-27. Nothing here is trained yet. The measurements in section 2 and in
-`m0/RESULTS.txt` were taken on the labels for this design.
+Status: design, third revision, 2026-11-27. Nothing is trained yet.
 
-## Why a second strategy
+**Names.** The owner named this strategy `rvss` (recursive VSS). Its folder will be `strategies/rvss/`
+and its models `.local-models/rvss/`; until the folder is renamed, this file and its checks live in
+`strategies/strict-vss/`. The earlier reader `vss` is now `hmm-rules` (`strategies/hmm-rules/`). In the
+data, the `source` column may still say `vss`.
 
-The strategy `vss` (`strategies/vss`) is a hidden-Markov tagger with hand-written general rules. Of the
-original vector-symbolic reader (`/home/salboaie/work/sopworlds/vsa-semantic-space`, described in the
-book *Meaning as a Path*) it kept the name and a small vector helper. The owner asked for a separate
-strategy, `strict-vss`, that reads a message the way the original did: in a vector symbolic
-architecture (VSA, also called hyperdimensional computing). `vss` stays as it is and keeps its name.
+**Earlier versions, kept unchanged:**
+- `DESIGN-flat.md`: the flat design (one vector for the whole message), which the owner rejected;
+- `DESIGN-hier-v1.md`: the first hierarchical draft, the version the first critic reviewed;
+- `DESIGN-hier-v2.md`: the second revision, written before the detailed critique of the owner's
+  technical points.
 
-"Strict" means four things:
-- The message is composed into one state only by VSA operations: binding, bundling, permutation,
-  and learned keys and gates like the original's.
-- The circuit is read out of that state by unbinding and cleanup. Cleanup means taking the nearest
-  item in a codebook.
-- No rule names a word. There are no word lists, no parser, no transformer and no knowledge worlds.
-- Section 7 lists every part that is not VSA.
+**Data snapshot.** `webmeet-dataset` commit `0a01d23` (2026-11-27 22:01). The 238 CSV files of
+`syntactic/` are listed with their sha1 in `hierarchy-checks/v2/snapshot-0a01d23.sha1`, and every check
+of this revision reads a copy extracted from that commit. Outside the benchmark (its texts compared
+lowercased, with spaces collapsed) there are 88,106 labels: agreement 83,921, judge 4,153, written 32.
 
-## 0. In short
+**Scripts and outputs:**
+- `hierarchy-checks/v2/`: this revision's checks on `0a01d23`, run order in `RESULTS.txt`;
+- `revision-checks/`: the first critic's scripts, rerun on `0a01d23`;
+- `hierarchy-checks/`: the first draft's checks (81,870 labels, before 22:01);
+- `m0/`: the flat design's measurements.
 
-- **One world, one legend.** The legend is the syntax schema. The book says so itself (§11): "The
-  legend is the system's schema". There is one named star per key and per form value. With a single
-  world there is a single route book, and the book's choice among worlds (§5) is not needed.
-- **Encoding.** Each word is a star: a fixed random phasor vector made from its written form, so a word
-  never seen before still has one. The pilot draws each star into one chart S at an address. The address
-  has two parts:
-  - the domain the word lies in (which key it fills). This part comes from the original's route book:
-    keys per kind and per pair of kinds, and gates.
-  - the beacon of the wire it belongs to. A beacon is the position code of that wire's anchor word,
-    placed there by an opener.
-- **Decoding, star by star.** For every word, unbind its own star and position from S. Two cleanups
-  follow: one over the named stars (its domain) and one over the beacons of this message (its wire).
-  Every word therefore gets exactly one place, which is Rule 1 of the schema. A deterministic writer
-  turns these per-word answers into wires.
-- **Many wires in one vector.** The chart regroups exactly into one constellation per wire, each bound
-  to its beacon: S = Σ_j ρ(y^j) ⊙ C_j. This is the book's "many charts, linked by keys" (§12) held in
-  one vector.
-- **Measured before any training (M0).**
-  - Capacity. With the right answers given, a chart of D = 2048 dimensions gives back every word of
-    4,438 messages, including all 1,438 messages of 25 words or more. At D = 1024, 99.6% of words
-    come back.
-  - The writer. Going from per-word answers to a circuit gives back the label's core for 99.77% of
-    81,870 labels.
-  - So superposition and the writer cost almost nothing. Any loss will come from the learned
-    encoder.
-- **Honest expectation.** The earlier learned prototypes reached 55% known accepted (a transition parser)
-  and 65% (fine-tuned spaCy) on the benchmark. The original reader lost information that its kinds
-  carried (SNIPS slots 0.387 against 0.831). strict-vss will probably start below `vss`. The first goal
-  is to measure whether a VSA state can carry the analysis at all. Its margin and remainder give a
-  confidence per message that is useful even if its circuits are not adopted.
+## The owner's direction
 
-## 1. The book's terms and the technical terms
+> "ideea nu e să pui tot textul într-o singură reprezentare, ci să faci reprezentări de
+> reprezentări, cum e și graful unui circuit SOP Lang, acolo e focusul, să învețe cum se pun
+> stelele în spațiu, cum să le miște ca să se formeze constelație de constelații."
 
-| Book (*Meaning as a Path*) | In this design | Established technical term |
-| --- | --- | --- |
-| star | the vector of one word, made from its form | atomic hypervector; FHRR phasor (Plate 1995, 2003) |
-| named star R[r] | one fixed vector per key of the syntax schema and per value of `form` | role vector |
-| legend | the syntax schema, `schemas/syntax/schema.sop` | role codebook |
-| world | one only: syntax | — |
-| route book | the learned keys per kind and per pair of kinds, and the gates | learned phase tables |
-| pilot | the encoder that reads the message and draws the chart | — |
-| kind (category) | a word class found without labels (section 4.3) | cluster of distributional vectors |
-| drawing | one placement of a star at an address. The book draws each word three times (§13 step 9); here four times | one address code in a bundle |
-| opener, gate | a word whose kind has an open gate places a beacon (§3.5; §13 step 8) | learned sigmoid per kind |
-| beacon | the position code of a wire's anchor word. Other words take it as the wire they belong to | pointer, slot identity; fractional power code of a position |
-| held-aside word | a word that comes before the word it belongs to ("the" before "box", a subject before its verb). It is drawn at an opener after it (§13 step 9) | backward chain |
-| chart | the bundle S of every drawn star | superposition state |
-| constellation | the stars of one wire, bound to that wire's beacon | sub-bundle C_j |
-| frame | the circuit read from the chart | decoded role–filler structure |
-| domain | the region of one named star: the key a word fills | role subspace |
-| margin | the best cleanup score minus the second best (§3.3) | decision margin |
-| remainder | the chart minus the chart compiled back from the frame (§8) | residual |
+In English: the idea is not to put the whole text into one representation, but to build
+representations of representations, like the graph of a SOP Lang circuit. That is the focus: learn
+how the stars are placed in the space, and how to move them so that a constellation of
+constellations forms.
 
-Operations, all on complex phasor vectors of D dimensions (Plate's Fourier holographic reduced
-representation, FHRR, as in the original):
-- binding is the elementwise product `⊙`, and unbinding multiplies by the conjugate;
-- bundling is the sum `+`;
-- ρ is a fixed random permutation of the dimensions (Gayler's MAP, 1998 and 2003; Kanerva 2009);
-- a fractional power `z^k` is the phasor `exp(i·k·φ)` for a fixed random phase vector φ (Plate 1995;
-  Komer et al. 2019; Frady et al. 2021);
-- cleanup is the argmax of `Re⟨u, c⟩ / D` over a codebook.
+## In short
 
-## 2. What the labels look like (measured, `m0/stats.out`)
+- **One constellation per wire.** Every wire of the circuit (clause, nominal, relation,
+  coordination) is a small constellation of its own terms: its words, each at the named star of its
+  key and at its position, and the stars of the wires it holds. The book calls a constellation a
+  chart. In 88,101 of the 88,106 labels no wire has more than 12 terms, however long the message.
+- **Condensing.** A finished constellation is condensed into one star (a reduced description, Hinton
+  1990; a chunk, Plate 2003). That star is placed in the constellation of the wire that holds it,
+  exactly like a word. The message star holds the top wires.
+- **The atlas** (the book's store of constellations; a clean-up memory in Plate's terms) keeps one
+  star per wire, bound with the wire's origin. The content lives there; the message star points at
+  the top wires, and the circuit is read by unfolding one level at a time.
+- **Measured on the snapshot, structure given, nothing learned:** the whole circuit comes back from
+  the message star through the atlas, with one 5σ threshold fixed in advance, for 99.993% of all
+  88,105 labels at D = 512 and 99.997% at D = 1024, and for all 2,203 messages of 25 words or more at
+  D = 1024. Like for like, without the atlas only 33.5% come back at D = 1024; the flat chart of
+  `DESIGN-flat.md` (which has no atlas either) reads an estimated 99.7% of the population at
+  D = 1024 but only 765 of the 1,052 messages of 40 words or more, and none of them at D = 512.
+- **Splitting the text into wires** is the pilot's moves: open, place, close, hold aside, claim,
+  gather into a coordination, reopen, point. Every move now records which star it moves, and an
+  executor that sees only the words and the moves rebuilds the label's circuit for 99.97% of the
+  labels. Under the adopted conventions no constellation opens before the word that shows it; the
+  only decisions that wait for later words are 9,514 "hold aside" decisions (442 of them more than
+  three words before the word that claims the star).
+- **Learning to place stars** is the book's route book, brought back inside each constellation: the
+  key of every star comes from learned keys counted from the constellation's opener, from the
+  previous word (pair of kinds), along the path, and backwards at a claim. The drawings vote, and
+  the key is read by cleanup against the named stars. Pairs of kinds go through VSA key–value
+  memories, not tables. Training is the original's `1 − cos(built, target)` at every wire.
+- **Learning to move stars** is the book's gates (close, open) and choices among stars (claim,
+  gather, reopen, point, attach), each read from the VSA state. Candidate stars are found by
+  unbinding and atlas cleanup.
+- **The output is read back from the pilot's own stars**, with the same decoder as above; the
+  pilot's explicit list of what it built is a check, and every disagreement is counted.
+- **What is not VSA is listed** (section 12).
 
-The data: 83,619 messages have a circuit. 1,749 of them are benchmark messages (compared case- and
-space-insensitively) and are removed, leaving 81,870 for training and development. Of these:
-- 95.0% are agreement labels, written by `vss` together with a spaCy strategy;
-- 4.9% (4,042) were judged by a judge;
-- 32 were written by hand.
+## 1. The extension, in the book's words
 
-The judged registry outside the benchmark adds 5,110 accepted and 1,431 rejected circuits, over 4,896
-messages. Its 6,202 circuits inside the benchmark are never used for training.
+**What the book does.**
+- A sentence is one chart. The probe walks the words. Every word is written at the probe's address,
+  which the route book computes from learned keys per kind of word and per pair of kinds.
+- Gates (one learned number per kind) say which words open a frame: "to", "from" and "that" open;
+  verbs and nouns do not.
+- A reported clause moves the whole legend to a new origin by one power of `R_reported`. So nesting
+  is a power of one key, but every term still lands in the same single chart.
+- That is why the book says "the honest range of a chart is a single event"; long texts would need
+  "structures of states" (chapter 12), which the book does not build.
+- Training maximises `cos(S, S*)`, where `S*` is the world's constellation built from the answers.
 
-| Per message | Distribution |
+**What rvss adds.**
+1. **A chart per wire.** When a gate opens, a new chart starts with its own origin (the book's
+   opener), instead of shifting the same chart.
+2. **Condensing replaces the powers of `R_reported`.** When a gate closes a chart, it is condensed
+   into one star and placed in the chart below at a key, like a word. Depth costs nothing per chart,
+   because each chart holds only its own terms.
+3. **The atlas holds the condensed charts**, so that they can be unfolded when reading and reopened
+   when a late word belongs to them.
+4. **The route book places every star inside its chart** with the book's own drawings (from the
+   opener, from the previous word, along the path, backwards for a held star), counted from the
+   opener of that chart.
+5. **Stars are moved.** A star that comes before its opener is held aside (the book's mechanism) and
+   claimed when the opener comes; a coordination gathers the stars already drawn at the same key; a
+   closed chart is reopened for a late part; a key can point at a star drawn elsewhere.
+6. **The constellation of constellations** is the message star together with the atlas: a tree of
+   charts of a few terms each, linked by condensed stars.
+
+**How the text is split into wires.** At each word the pilot asks the open charts, from the innermost
+outwards, "do you close before this word?". It then asks the chart that stays, "does this word open
+a new chart in you, and of which kind?". Both answers are learned from the kinds of the words
+involved and from what the chart already holds and still expects (section 8). A chart opens only at
+the word that shows it: a relation at its marker, a coordination at its conjunction.
+
+**A walk through one message**, "move the blue box next to the red circle and make it bigger"
+(positions 0–12). Gold circuit: a coordination of two imperative clauses; the first has `verb`
+"move", a nominal at `complement` and a relation "next to" whose `to` is "the red circle"; the second
+has `verb` "make", the nominal "it" at `complement` and `modifier` "bigger".
+
+| Word | What happens |
 | --- | --- |
-| words | mean 9.6, median 8, 90th percentile 16, 99th 28, maximum 67 |
-| clauses | 1: 66.1%, 2: 20.0%, 3: 9.8%, 4: 2.4%, 5–6: 1.7% |
-| nominals | 1: 16.5%, 2: 31.8%, 3: 21.9%, 4: 12.9%, 5–7: 13.8%, 8 or more: 2.7% |
-| relations | 0: 30.3%, 1: 31.9%, 2: 22.9%, 3: 8.3%, 4 or more: 6.6% |
-| coordinations | 0: 80.8%, 1: 18.6%, 2 or more: 0.6% |
-| wires | 2–5: 53%, 6–10: 33.9%, 11–20: 11.7%, 21–40: 0.9% |
+| move | a clause chart opens in the message (the gate opens); "move" lands at `verb` |
+| the | a nominal chart opens inside the clause; "the" lands at `dependent` |
+| blue, box | continue the nominal: `dependent`, `head` |
+| next | the nominal closes; its star lands in the clause at `complement`. "next" opens a relation chart in the clause and lands at `marker` |
+| to | continues the relation at `marker` (adjacent words of one key are joined when written) |
+| the red circle | a nominal opens inside the relation: `dependent`, `dependent`, `head` |
+| and | the nominal closes into the relation at `to`; the relation closes into the clause at `rel` (an attachment choice between the clause and "box"; a small margin writes `attachment=ambiguous`); the clause closes into the message. A coordination opens at "and" and gathers the clause's star from the message as its first conjunct; "and" lands at `conjunction` |
+| make | a clause opens inside the coordination at `conjunct`; `verb` |
+| it, bigger | "it" opens a nominal (`head`); at "bigger" it closes into the clause at `complement`; "bigger" lands at `modifier` |
+| end | the clause closes into the coordination, the coordination into the message |
 
-| Keys over all labels | Count |
-| --- | ---: |
-| nominal.head / dependent | 247,318 / 211,457 |
-| clause.form / verb / complement / subject | 125,874 / 119,141 / 113,952 / 41,598 |
-| relation.from = relation.to | 110,950 (15% without a marker; 54% start at a clause, 46% at a nominal; 20% end at a clause) |
-| relation.marker | 94,274 (91,220 one word, 3,031 two words, 23 three words) |
-| coordination.conjunct / conjunction | 36,341 / 14,741 (conjuncts: 12,174 clauses, 3,842 nominals, 158 relations; 9.5% of coordinations have no conjunction word) |
-| clause.modifier / discourse / auxiliary | 32,536 / 18,778 / 18,360 |
-| relation.attachment=ambiguous | 5,704 |
-| clause.negation / relation.negation / clause.ellipsis | 243 / 112 / 55 |
-| form values | imperative 64,987; declarative 23,884; nonfinite 19,088; interrogative 11,182; fragment 6,733 |
+## 2. What changed from the flat design and why
 
-What this means for the design:
-- **Messages are short.** The per-word answers of a whole message fit in one chart (section 4.5).
-- **Rare keys.** Negation, relation negation and ellipsis occur a few hundred times or less, so a
-  learner will hardly learn them. They are measured on their own.
-- **Ambiguous attachment.** `attachment=ambiguous` is used inconsistently across the strategies that
-  wrote the labels. In the benchmark's accepted circuits it ranges from 6% (`vss`) to 48% (`prolog`).
-  It is therefore not learned as a label; it is read from the margin (section 5.4).
+- **The flat design.** One vector held the whole message. Every word was placed at a key path and
+  all terms were summed together. Its argument was about capacity: 21–60 terms in one vector for a
+  quarter of the messages, so D had to grow with the text.
+- **The owner's direction.** Not one representation for the whole text, but representations of
+  representations, shaped like the circuit graph; the focus is learning how stars are placed and
+  moved.
+- **Now.** One constellation per wire, condensed into one star and placed in its parent, with the
+  atlas as clean-up memory. Each constellation holds at most about 12 terms whatever the length of
+  the message. Long texts make deeper or wider trees of small constellations, not bigger vectors.
+- **The learning is about placing and moving stars**, with the book's route book inside each
+  constellation and the pilot's moves between constellations, not about the capacity of one vector.
+- **The extra cost:** one atlas star per wire.
+- **Kept from the flat design:** word stars from the form plus letter trigrams; the label statistics;
+  the writer (`writeCircuit`, `validateSyntax`); the held-out rules (benchmark texts removed,
+  lowercased, spaces collapsed); the dev splits.
 
-**The per-word view.** The mapping of `experiments/syntax-learned/parser/tree.mjs` gives every word one
-answer: a word label, or an anchor label (the tie of the word's wire to its parent wire, times what the
-word anchors), together with the word it points at.
-- It encodes 81,714 of 81,870 labels. The other 156 have an inner wire with two parents.
-- 44 different answers occur. 3.4% of messages have crossing arcs, which does not matter here: a chart
-  has no projectivity limit.
-- A word points at a word at most 2 positions away in 70.6% of cases, at most 5 away in 92.8%, and
-  more than 10 away in 1.54%.
-- If a relation is anchored at its marker (the preposition takes the arc to the wire it attaches to,
-  and the end noun points at the preposition) and conjuncts are chained (each points at the previous
-  one): 76.5%, 94.9% and 0.79% (`m0/rehead.mjs`). This is the book's picture, in which a preposition is
-  an opener.
+## 3. What changed after the two reviews
 
-## 3. The legend, and what makes two readings the same
+**First review** (16 points, on `DESIGN-hier-v1.md`):
 
-The named stars are fixed random phasors, one each for the following.
-- **Answers of a word that anchors no wire.** `nominal.dependent`, `clause.auxiliary`,
-  `clause.negation`, `clause.modifier`, `clause.discourse`, `relation.marker`, `relation.negation`,
-  `coordination.conjunction`. One more star, *continuation*, is not a key of the schema: it says that
-  a word continues the head or the verb before it (a head of several words, a verb run).
-- **What a word anchors (its own wire).** `nominal.head`; `clause.verb` bound with one of four
-  `form` values (imperative, declarative, interrogative, nonfinite); a fragment, with the key of its
-  first own word (complement, subject, relation, modifier, discourse, negation, auxiliary); `ellipsis`
-  bound on a fragment.
-- **How that wire is tied to its parent.**
-  - none: a top clause, which takes the root beacon;
-  - `clause.subject`;
-  - `clause.complement`;
-  - a relation from the clause at the beacon;
-  - a relation from the nominal at the beacon;
-  - `coordination.conjunct`;
-  - a conjunct relation;
-  - complement of one clause and subject of the next ("let us move").
-
-An anchor word's domain is the product of two named stars: its tie and what it anchors. There are 44
-answers in the labels, and the cleanup runs over these.
-
-**Meaning, and equivalence.** In the book, the meaning of a sentence is its answers to the legend's
-questions. Two formulations are equivalent exactly when they give the same answers: "the same S*,
-because they give the same answers to the same questions" (§13 step 4). With the syntax legend, the
-same answers means the same circuit core (`normalForm` in `tests/benchmark/syntax/lib.mjs`), up to the
-readings that the judges' rules let pass either way. That class is the agreement key `variants`
-(`relaxedCore` or `agreementKey` in the same file). Charts of two such readings are only similar, since
-the stars carry positions; their frames are equal. This equivalence is used in two places:
-- in training: when a message has several accepted circuits, the target is the nearest one (section 6);
-- in evaluation: development accuracy is reported both by core and by `variants`.
-
-## 4. Encoding: how a message becomes a chart
-
-### 4.1 Stars (word identities)
-
-The star of a word is fixed and never learned, so an unseen word works:
-
-    f_w = phase( id(w) + λ · Σ_i ρ^i( t(g_i) ) )
-
-- `id(w)` is a random phasor drawn from a hash of the exact written form, as the original did
-  (`sha256("sop-stars-v1:id:<word>")`).
-- `g_i` are the letter trigrams of `#form#`, case kept. `t(g)` is a phasor from the hash of the trigram.
-  The power `ρ^i` keeps the order of the trigrams (letter n-gram vectors with permutation: Joshi,
-  Halseth and Kanerva 2016).
-- `phase(·)` keeps the phase of each component, so the result is a phasor again.
-
-So "widnshield" lies near "windshield", and a capitalised or numeric form carries that in its letters.
-No list of words is involved.
-
-Punctuation marks are not words of the schema (`wordsOf` leaves them out), but they are drawn into the
-chart as stars: a question mark is evidence for `form=interrogative` and a comma for a split between
-clauses. They are never asked a question in the readout.
-
-### 4.2 Positions and beacons
-
-- The token code of the k-th word is `f_k ⊙ z^k`, a fractional power of a fixed random base. Tokens at
-  different positions are nearly orthogonal whatever their words, so two "the" in one message do not
-  collide.
-- The beacon of word j is `y^j`, a power of a second, independent base. A fixed random vector `y^root`
-  is the beacon of "no parent".
-- Beacons are always used under the permutation, as `ρ(y^j)`, so a position code and a beacon code
-  never commute into each other.
-
-### 4.3 Kinds (categories)
-
-The book takes kinds from a dictionary or a tagger, and says they "do not arise on their own" (§13,
-§15). The original took the 40 most frequent words as their own kinds and put every other word into
-48 k-means clusters of skip-gram vectors. That is the cause of its SNIPS failure: unseen names fell
-into clusters unrelated to their role.
-
-Here:
-- **Type vectors.** The type vector of a word is a random-indexing context vector over all 183,497 raw
-  messages, with no labels. Each neighbour's `id` is permuted by its offset
-  (`Σ_{d=−2..2, d≠0} ρ^d(id(w_{k+d}))`), so order enters the vector (Kanerva, Kristoferson and Holst
-  2000; Sahlgren, Holst and Kanerva 2008; BEAGLE: Jones and Mewhort 2007).
-- **K kinds.** The type vectors of words seen at least twice are clustered into K = 48 kinds by
-  k-means. The kind prototypes are the cluster centres.
-- **The kind of one occurrence** is the cleanup of `phase(m_w + λ1·form_w + λ2·Σ_d ρ^d(K[c_{k+d}]))`
-  against the prototypes:
-  - `m_w` is the word's type vector, which is absent for an unseen word;
-  - `form_w` is its trigram code;
-  - the last term is the bundle of its neighbours' kind prototypes.
-
-  So an unseen name gets its kind from its letters and from the words around it, not from a cluster
-  computed without context.
-- **M1** uses hard kinds as the original did. **M2** lets the prototypes be learned with the route book
-  (a codebook, which is allowed). This makes the kinds partly supervised, and section 7 says so.
-
-Ablation, not the default: the stations that `vss` learns as kinds. They come from a hidden-Markov
-model over a hand-written legend that fixes the places of English function words, so using them
-imports `vss`'s rules. They are measured only to see how much better kinds would help, and reported
-as not strict. The book itself warns against this (see SNIPS: the tagger alone 0.886, tagger and
-reader 0.798).
-
-### 4.4 The route book and the four drawings
-
-For word k with kind c_k, the domain address is the vote of four drawings. The first three are the
-original's (V8 in `experiment/v8_gates.py`; book §13 step 9). The fourth is the backward drawing the
-book's own limit calls for.
-
-    path_k     = ρ(path_{k−1}) ⊙ E(θ_path[c_k])                 keys since the start, order kept by ρ
-    pair_k     = E(θ_pair[c_{k−1}, c_k])                         the key of the pair of kinds
-    forward_k  = Σ_{q<k} α^F_{kq} · E(A[c_q, c_k])               from the openers before it
-    backward_k = Σ_{q>k} α^B_{kq} · E(L[c_q, c_k])               from the openers after it (held-aside words)
-    d_k        = path_k + pair_k + forward_k + backward_k
-
-`E(θ) = exp(iθ)`. The permutation in `path` answers the book's limit that "an address remembers
-which keys were used, not in what order" (§13 step 10): the paths no longer form "a grid, not a tree"
-(§8).
-
-The beacon taken by word k is a weighted bundle of the beacons of the message:
-
-    b_k = h_k · Σ_{q<k} α^F_{kq} · y^q  +  (1 − h_k) · Σ_{q>k} α^B_{kq} · y^q  +  (leftover weight) · y^root
-
-- **M1**, the original's gates. Two gates per kind: `g^F` opens a beacon for later words and `g^B` for
-  earlier ones. Then
-  - `α^F_{kq} = g^F_{c_q} · Π_{q<i<k} (1 − g^F_{c_i})` (the last opener before k);
-  - `α^B_{kq} = g^B_{c_q} · Π_{k<i<q} (1 − g^B_{c_i})`. This counts every opener after k, not only the
-    first one, which is the remedy the book left as a hypothesis (§13 step 9);
-  - `h_k = σ(s_{c_k})` per kind.
-
-  This is V8's `chainL`, with the address of the opener replaced by its beacon. The original's chain
-  was already a pointer whose weights came from gates.
-- **M2**, a beacon memory read by similarity. Every word q places `g_q · ρ(y^q) ⊙ P[c_q]` in a memory
-  (a bundle). Word k reads it by unbinding its expectation key `E[c_k]` and cleaning up over the
-  beacons, with a soft cleanup:
-  `α_{kq} ∝ exp(τ · g_q · Re⟨P[c_q], E[c_k]⟩ / D + κ_{c_k}(q − k))`. Here κ is a learned kernel over
-  distance, which is shift-invariant through fractional powers (Frady et al. 2021).
-
-  This is the book's beacon (§3.5): an opener places a beacon for the kinds that may follow, and a
-  later word takes the one that matches its kind. Unlike M1, it can skip a nearer opener of the wrong
-  kind, which attachment and the scope of a coordination need. Section 7 says what this is
-  mathematically.
-
-### 4.5 The chart
-
-    S = Σ_k  f_k ⊙ z^k ⊙ d_k ⊙ ρ(b_k)
-
-The target chart compiled from a label (section 6) is the same expression with the right answers:
-
-    S* = Σ_k  f_k ⊙ z^k ⊙ R[l_k] ⊙ ρ(y^{beacon_k})
-
-- `l_k` is the word's answer: a named star, or the product of its tie and what it anchors.
-- `beacon_k` is its anchor word, or root.
-
-Grouping the words by beacon gives
-
-    S* = Σ_j ρ(y^j) ⊙ C_j,    where C_j = Σ_{k : beacon_k = j} f_k ⊙ z^k ⊙ R[l_k]
-
-that is, one constellation per wire (a nominal is `R[head] ⊙ star + Σ R[dependent] ⊙ star`), bound to
-its beacon. Constellations are linked by the anchor words' ties. This is the book's structure of
-states for long texts ("many charts, linked by keys", §12), held in one vector. The book's capacity
-warning ("a few dozen terms sit cleanly in a constellation", §2.5; "the honest range of a chart is a
-single event", §8) is met because each constellation holds the words of one wire, at most about a
-dozen. The whole chart holds one term per word (at most 67) and was measured:
-
-| Capacity (`m0/capacity.py`, `m0/soft.py`; 4,438 messages, 1,438 of them of 25 words or more) | Result |
+| Point | What this revision does |
 | --- | --- |
-| right answers given, D = 1024 | 99.56% of words; 96.0% of messages exact (messages of 40+ words: 253 of 427) |
-| right answers given, D = 2048 | 100% of words and of messages, every length |
-| diffuse addresses, 60% of the weight on the right answer, D = 2048 | all exact except 4 of 427 messages of 40+ words |
-| diffuse, 45% on the right answer, D = 2048 / D = 4096 | 40+ words: 135 / 363 of 427 exact; 25–39 words: 886 / 1,007 of 1,011 |
+| 1. learned placement | Adopted as the main mechanism (section 7), now with key–value memories over pair codes instead of the second revision's pair tables (second review, point 5). The first draft's place classifier is a control in M2a. |
+| 2. gates | Adopted: close and open gates, the book's learned number extended to the pair (the chart's opener, the incoming star), plus terms read from the chart's parts (section 8.4). |
+| 3. what the per-wire loss reaches | Adopted: receivers are soft during training, so the per-wire loss reaches the gates and the attachment choice; a table says what each loss reaches (section 9.3). The message-star loss is dropped (it is depth-biased). |
+| 4. scoring by parts | Adopted: each part of the view has its own prototypes and holds at most about 12 terms (section 8.5). |
+| 5. choices bilinear in two kinds | Adopted, through a key–value memory read with the pair code of the two kinds (section 8.6). |
+| 6. smooth distances | Adopted: decisions use a band-limited position code; targets keep the exact one (section 5.1). |
+| 7. claims from any open constellation | Adopted, and coordination gathers every conjunct already built (section 8.2): replay coverage 99.97%. |
+| 8. arguments in moves, a replay executor | Done: `hierarchy-checks/v2/oracle2.mjs`. Words plus moves give the identical core for 88,083 labels (99.97%) under the adopted conventions. |
+| 9. conventions as a variable | Done: two conventions measured with their lookahead (section 8.3). Under the adopted one no opening needs lookahead. The "take as `to`" move of the second revision is not needed: the relation opens at its marker and claims its `to`. |
+| 10. judged and written failures | Under the adopted conventions 3 judge and 1 written label fail (from 41 and 7); all 23 failures are listed in `v2/oracle2-failures.json`. |
+| 11. VSA carries the structure when reading | Adopted: the output is the read-back from the pilot's stars; candidates come from unbinding and atlas cleanup; the explicit lists are a check. The order of the open constellations stays an explicit list (declared). |
+| 12. M1 | Mostly done on the snapshot: all labels, one threshold fixed in advance, flat and no-atlas controls weighted to the same population, equivalence with partial correlation. The rest is listed in section 14. |
+| 13. bars for the learned reader | Adopted in M2c: the `experiments/syntax-learned` parser retrained on the same split and length cap; roll-in; three seeds. |
+| 14. data snapshot | Done (`0a01d23`, sha1 list). |
+| 15. summary corrections | Done: one threshold; "read back through the atlas"; the replay claim now rests on the executor. |
+| 16. a bottom-up reader | Kept as a comparison in M2c (easy-first, Goldberg and Elhadad 2010). |
 
-So D = 2048 is enough while the encoder is sharp. If it stays diffuse, long messages need D = 4096, or
-charts split by learned gates of clause openers (section 9).
+**Second review** (the detailed critique of the owner's technical points):
 
-Why per-word pointers and not the original's nested compilation (`R_role ⊙ value`, `Σ R_next^i ⊙ item`,
-in `tool/sop/world.py`, class `Compiler`)? Two complements of one clause bundled under one role,
-`R_complement ⊙ (val(n1) + val(n2))`, mix their dependents. "the red box" and "a blue circle" can no
-longer say which colour is whose. This is the superposition catastrophe that binding was introduced
-to solve (von der Malsburg 1986; Plate 2003). Indexed roles would avoid it, but at the price of
-decoding paths of variable depth. Giving every wire its own identity, the beacon of its anchor word,
-avoids both. The book's beacons already are such identities.
-
-## 5. Decoding: reading the circuit out of the chart, star by star
-
-### 5.1 The readout
-
-For every word k of the message (punctuation marks excluded):
-
-    u_k = S ⊙ conj(f_k ⊙ z^k)
-    score_k(l, j) = Re⟨ u_k , R[l] ⊙ ρ(y^j) ⟩ / D     for the 44 answers l and every beacon j ≠ k of this message and root
-    answer_k = argmax (l, j);   margin_k = best − second best
-
-The readout always goes through S. Reading `d_k ⊙ ρ(b_k)` directly, before the bundle, would skip the
-superposition. That shortcut is measured, to know what the bundle costs, and is not the strategy.
-
-| Way to read a variable number of wires | Chosen? | Why |
-| --- | --- | --- |
-| per word: unbind its star, then clean up over named stars × beacons (exhaustive) | yes | Every word gets exactly one place, so Rule 1 holds by construction. It reads in parallel and is exact. The search is small: 44 × (n+1) candidates, about 3,000 for the longest message. Cost n·44·(n+1)·D: about 6.5 M complex products for a median message, 0.4 G for the longest. |
-| iterative peeling: read one wire, subtract it, read the next | no, only as a refinement | Errors compound and the result depends on the order. Used only in M3: subtract the terms of the confident words and read the uncertain ones again (explaining away, with the remainder). |
-| resonator network that factors answer ⊗ beacon (Frady, Kent, Olshausen and Sommer 2020; Kent et al. 2020) | not needed now | It pays off when the product space is large (10^5 or more). Here exhaustive search is exact and cheap. It stays available if the answers are split into more factors later. |
-
-### 5.2 From per-word answers to wires: the writer
-
-A deterministic step turns the per-word answers into wires:
-1. Group the words by beacon into wires.
-2. Type each wire by what its anchor anchors.
-3. Tie each wire to its parent by the anchor's tie.
-4. Order the wires with `writeCircuit` (`lib/syntax.mjs`).
-
-This is `treeToCircuit` of `experiments/syntax-learned/parser/tree.mjs`, which will be copied into this
-folder. It names no word. When every answer is right it gives back the label's core for 81,681 of
-81,870 labels (99.77%; `m0/roundtrip.mjs`). The rest are the 156 labels that cannot be encoded.
-
-When answers do not form a tree, its repairs apply:
-- a word answer with dependents hands them to its head;
-- a word under root becomes a fragment;
-- a lone nominal is wrapped in a fragment;
-- a second subject becomes a complement;
-- a coordination with fewer than two conjuncts hands its words on.
-
-These repairs are not VSA. How often each one fires is counted and reported. Option for M3, off by
-default: decide all answers together under the constraint that they form a tree, using a maximum
-spanning tree over the cleanup scores (Chu–Liu/Edmonds). The original already decided jointly, with a
-one-to-one assignment over the sentence's words (`vss-vs-bert/sop`). This is the one place that
-borrows from parsing, and section 7 lists it.
-
-### 5.3 How each key of the schema is read
-
-| Key | Read from |
+| Point | What this revision does |
 | --- | --- |
-| clause.form | what the verb's star anchors: `verb` bound with imperative, declarative, interrogative or nonfinite. A clause with no verb is a fragment. |
-| clause.verb | the star whose answer anchors a verb. Continuation stars after it extend the verb. |
-| clause.auxiliary, negation, modifier, discourse | word stars with these named stars. Their beacon is the clause's anchor. |
-| clause.subject / complement | an anchor star tied as subject / complement. Its beacon is the clause's anchor. |
-| clause.ellipsis | a fragment bound with `ellipsis`. The clause it shares the verb with is the first conjunct of its coordination (the writer's rule). Only 55 cases in the labels: measured on its own. |
-| nominal.head / dependent | a star that anchors a nominal, plus its continuation stars / dependent stars whose beacon is that head |
-| relation.from | the beacon of the relation's anchor. The tie says whether it stands for the clause or the nominal anchored at that word. |
-| relation.to | the wire anchored at the end word |
-| relation.marker | marker stars. Their beacon is the end word, or, with the marker as anchor (M2), the marker itself. Adjacent marker words make one value ("next to"). |
-| relation.negation | relation-negation stars, with the end word as beacon |
-| relation without a marker | an anchor tied as a relation, with no marker star pointing at it |
-| relation.attachment=ambiguous | the margin (5.4) |
-| coordination.conjunct | anchor stars tied as conjuncts. Their beacon is the first conjunct (M1) or the previous one (chained, M2). |
-| coordination.conjunction | conjunction stars, with the following conjunct as beacon |
+| 1. snapshot and reruns | Done. Tree statistics, writer ceilings, oracle and read-back rerun on `0a01d23`. The 195 labels that crossed under the old conventions (a clause closed while a star was still held aside in it, mostly `drawing/scenes-*`) are reported; under the adopted conventions they are rebuilt through reopen, with no new move. |
+| 2. representation | Adopted: the type atom sits at the holder for words too (`R_κ ⊗ T_word ⊗ Z^d ⊗ f(w)`); atlas items carry the wire's identity `Z^(a_Y) ⊗ c(Y)`; one cleanup per key over the message's words and the atlas; one 5σ threshold fixed in advance. Measured on all labels (section 6). |
+| 3. output path | Adopted: the output is the read-back from the pilot's own message star and atlas; the explicit list is a cross-check with disagreements counted (section 6.3). |
+| 4. decide late, move the stars | Adopted (section 8.2). Coordination gathers its built conjuncts at the conjunction; a coordination without a conjunction gathers at the token after its last conjunct; claims come from any held list. Lookahead reported for both conventions (section 8.3). |
+| 5. the book's placement | Adopted as specified (section 7): addresses from the opener, the pair key, the path and the backward key, voted; placement by cleanup against the named stars of the domain; A, B, L as key–value memories over pair codes; loss `1 − cos` per wire plus cross-entropy on the cleanup. |
+| 6. split M2 | Adopted: M2a placement with the grouping given; M2b moves under teacher forcing against a non-VSA control on the same view; M2c free running plus writer, judged by placement accuracy, core-line F1 and exact core. |
+| 7. beam scored by fit | Adopted (section 10); soft stack and "no action loss" are M3 ablations. |
+| 8. evaluation | Adopted (section 15): like-for-like headline, population-weighted M1, the caveat on the 55.3% bar, partial correlation for equivalence, near-duplicates, dev-B first, blind reading. |
+| 9. more parts declared not VSA | Adopted: the join rule, the view template, the opening conventions and the ±3 window are listed (section 12). |
 
-### 5.4 attachment=ambiguous from the margin
+## 4. The circuit as a tree of wires
 
-A relation with a marker that starts at a clause or at one of its nominals has two candidate beacons
-for its start: the clause's anchor, and a nominal of that clause. Its score margin between them is
-compared with a threshold τ. When the margin is below τ, the writer puts the start at the clause and
-adds `attachment=ambiguous`.
-- This is the book's margin, "where 'I'm not sure' lives" (§3.3).
-- The judges' rules accept the clause or any nominal of it that grammar allows, with or without the
-  mark (`judging/RULES.md` line 40), so the mark does not lower acceptance.
-- Labels with `attachment=ambiguous` are trained as plain relations from the clause.
-- τ is fitted on the development split, and the share of relations marked is reported.
+A circuit is a graph: a wire refers to other wires by `$id`. To build constellations of
+constellations, every wire needs one parent: the wire whose constellation holds its star.
 
-### 5.5 Margin, remainder and confidence
+| Reference | Parent in the tree |
+| --- | --- |
+| `subject`, `complement`, `to`, `conjunct` | the wire that refers |
+| `from` | the relation is held by its `from` wire; `from` is not a term |
+| relations coordinated | the coordination is held by their common `from` (165 of 165) |
+| second reference, `ellipsis` | re-entrance: the later key points at the star without holding it |
 
-- **Margin.** Every decision has a margin. A message's margin is its smallest decision margin.
-- **Remainder.** The decoded circuit is compiled back with the same stars, giving Ŝ. The remainder is
-  `‖S − a·Ŝ‖ / ‖S‖` (§8).
-  - Unbinding the remainder at each word's token code shows which words the frame does not explain.
-  - A part of the remainder that no named star explains would point to a question the legend lacks.
-- **Calibration.** The book asks for calibration "reported on every table", and for the "confident and
-  wrong" rate at a threshold fixed in advance.
-  - On the development split: the reliability curve of the probability that the circuit equals its
-    label, against margin and remainder.
-  - On the benchmark: the accepted share per decile of confidence, among the circuits with a known
-    verdict.
-- **Use.** The conversion can send only uncertain messages to judges.
+In 4,400 labels a wire is referred to twice: a nominal that is the complement of one clause and the
+subject of the next ("Let us put Review …", 4,370), two coordinations sharing a conjunct (27), a
+clause that is both a `to` and a conjunct (5). `ellipsis` points in 41 more. The wire that opens
+first holds; the later reference points (re-entrance, as in feature structures).
 
-## 6. Learning
+**The labels as trees** (`v2/holding.out`, 88,106 labels):
 
-**What is trained.** Only what a VSA allows:
-- the route book: `θ_path[K,D]`, `θ_pair[K,K,D]`, `A[K,K,D]`, `L[K,K,D]`;
-- the gates `g^F, g^B, s` per kind;
-- in M2, the beacon keys `P, E[K,D]` and the distance kernel κ, and the kind prototypes `K[K,D]`.
+| Measure | Distribution |
+| --- | --- |
+| top wires | 1: 89.25%; 2: 10.68% (two sentences); 3 or more: 55 |
+| depth | 1: 0.3%; 2: 26.5%; 3: 19.3%; 4: 21.5%; 5: 13.1%; 6: 10.6%; 7: 4.2%; 8: 2.9%; 9 or more: 1.5% |
+| nominal terms | 2–5: 96.0%; at most 8: 99.99%; largest 17–24 (2 wires) |
+| clause terms | at most 8: 99.67%; largest 13–16 (1 wire) |
+| relation, coordination | at most 6; at most 10 |
+| largest per message | at most 8 terms: 99.46%; at most 12: 99.994% (5 messages above) |
+| contiguous wires | every wire's words form one run in 91.99% of labels (`revision-checks/contiguous.out`) |
 
-The stars, named stars, positions and beacons are fixed random vectors, generated from seeds and never
-stored.
+**Constructions that fit** (every label outside the benchmark goes through the tree, the moves and
+the replay):
 
-**Objective.**
-- **A, the book's.** Maximise `cos(S, S*)`, where S* is the label compiled as in 4.5. As in V8: Adam,
-  learning rate 0.02, phases initialised uniform on (−π, π).
-- **B, if A plateaus.** Cross-entropy of the readout of 5.1 over the (answer, beacon) pairs, read from
-  S. It trains the decision itself, through the superposition. Which one was used is reported.
-- **Equivalent readings ("frames equal").** A message may have several accepted circuits: the label,
-  and judged accepted circuits that differ within the `variants` class. The loss uses the nearest of
-  them, `−max_t cos(S, S*_t)`.
-- **Weighting.** Judged circuits weigh 3 times an agreement label. The weight is tuned to 1, 3 or 10 on
-  the judged part of the development split.
-- **Negative examples (the original had none).** There are 1,431 rejected registry circuits outside
-  the benchmark. Each word that a rejected circuit places differently from an accepted one gets a hinge
-  on the readout: `max(0, δ + score_k(rejected) − score_k(accepted))`. Where no accepted circuit is
-  known, the rejected placement is pushed below the best other one.
+| Construction | Example, and how it fits |
+| --- | --- |
+| relation from a clause | put Review **on the Work 6 calendar**: the clause holds the relation, the nominal is at `to` |
+| relation from a nominal | the title **of Weekly review**: the nominal holds the relation |
+| relation without marker | a room **called Board Room 2**: the nominal holds a relation whose `to` is a nonfinite clause; it opens at "called" |
+| subordinate clause first | **if Grace isn't in the people list yet**, add her: the relation waits aside until "add" opens the main clause and claims it |
+| possessive | **the man's** glasses: "the man" waits aside; "'s" opens the relation, which claims it at `to` and waits aside itself until "glasses" claims it |
+| relation before a fragment | **near the tent**: a big yellow balloon: the relation waits aside; at the end a fragment clause wraps the nominal and claims it |
+| coordination | Ana **and** Lee; to Quarterly plan **and** on Monday; Q1, Q2 **and** Q3: at the conjunction the coordination gathers the stars already drawn at the same key |
+| ellipsis | … and **the location to second floor**: the fragment points at the first clause's star at `ellipsis` |
+| shared subject | Let **us** put Review: "Let" holds "us"; "put" points at the same star at `subject` |
+| ambiguous attachment | 5,455 messages: a value star `V_ambiguous` in the relation |
+| multiword values | `head="Board Room 2"`, `marker="next to"`: each word at the same key in adjacent positions, joined when written |
 
-**Data and what is held out.**
-- **Benchmark.** Every message of `eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz`
-  (case- and space-insensitive) is removed from labels and registry before anything is trained.
-- **Development split.** 10% of the rest, chosen by a hash of the normalised text.
-- **Near-duplicates.** The earlier review found 297 benchmark messages within one edit of a training
-  text (`experiments/syntax-learned/review/leak.mjs`). Benchmark numbers are reported with and without
-  them.
-- **Kinds.** The kinds are built from raw text without labels (all corpus lines, as the owner's rule
-  says). One control run builds them without the benchmark texts.
+## 5. The representation: levels, condensing, atlas
 
-**Time on the GB10.**
-- Kinds: about 1–2 minutes.
-- The original trained in 130–234 s per seed (30–40 k sentences, D = 1024, K = 32).
-- Here: about 74 k messages, D = 2048, K = 48, length buckets. The pointer of M1 needs no loop over
-  positions, because the beacons are fixed codes, not recursive addresses. Expected about 1–2 minutes
-  per epoch and 10–20 epochs, so **15–40 minutes per run**. M1's first step measures this before any
-  longer run.
+### 5.1 The space
 
-## 7. Strictness audit
+Fourier holographic reduced representations (FHRR; [Plate 1995](https://doi.org/10.1109/72.377968),
+Plate 2003), as in the original: vectors of D complex numbers of modulus 1.
+- **Binding** `x ⊗ y` is the elementwise product (the book's key, or shift); unbinding multiplies by
+  the complex conjugate (the inverse key).
+- **Bundling** is the sum (the book's tally). `phase(x)` sets every component back to modulus 1.
+- **Similarity** `sim(x, y) = Re⟨x, y⟩ / D`. Cleanup (the book's scanner) takes the nearest item of a
+  codebook.
+- **Protection.** `ρ_c` and `ρ_q` are fixed random permutations (Gayler 2003).
+- **Two position codes**, both fractional power encoding, `Z^d = exp(i·d·φ)`, so
+  `Z^d ⊗ Z^e = Z^(d+e)` ([Komer et al. 2019](https://cogsci.mindmodeling.org/2019/papers/0156/index.html);
+  [Frady et al. 2021](https://arxiv.org/abs/2109.03429)):
+  - **exact** `Z`: φ uniform; different offsets are unrelated. Used in targets and readout, where
+    every span must come back exactly;
+  - **smooth** `Z_s`: φ normal with σ = 0.5, so `sim(Z_s^d, Z_s^e) ≈ exp(−(d−e)²/8)` (0.88 one word
+    apart, 0.61 at two, 0.04 at five). Used in every decision, so that what is learned at one distance
+    carries to nearby distances. σ is an ablation.
+- **D = 1024** by default (512 suffices for the read-back). A term of a phase-normalised bundle of k
+  terms keeps a similarity of about 0.886/√k, while unrelated vectors scatter with standard deviation
+  σ_D = 1/√(2D): at k = 12, 0.256 against 0.022, eleven standard deviations. The book's "a few dozen
+  terms sit cleanly at about 1000 dials" and the original's 32 clean terms say the same.
 
-| Part | VSA? | Note |
-| --- | --- | --- |
-| stars (word identities) | yes | Fixed random phasors from a hash of the form, plus a bundle of letter trigrams. Never learned. |
-| positions, beacons | yes | Fractional powers and a permutation |
-| kinds | partly | The type vectors (random indexing) and the cleanup to prototypes are VSA. The k-means clustering that starts the prototypes is a standard unsupervised step outside VSA. Prototypes learned in M2 make the kinds partly supervised. |
-| route book, gates | yes, learned | Phases per kind and per pair of kinds, and gates per kind, as in V8 |
-| pointer, M1 | yes | Weights from products of gates over the beacons (V8's chain) |
-| pointer, M2 | borderline | A soft cleanup over this message's beacons with a softmax. Mathematically this is one attention head whose values are the fixed beacons, with keys and queries made of route-book phases. There are no learned value maps, no layers and no per-word embeddings. It is named as such and compared with M1. |
-| chart S | yes | One bundle |
-| readout | yes | Unbinding, then cleanup over named stars × beacons. Always read from S. |
-| writer: per-word answers to wires | no | Deterministic. `treeToCircuit` of tree.mjs (about 250 lines, with repairs) and `writeCircuit`. Ceiling 99.77%. The rate of every repair is reported. |
-| joint decision under a tree constraint | no | A combinatorial search over cleanup scores. Off by default, M3 option. |
-| thresholds (τ, calibration) | fitted numbers | On the development split |
-| training | gradient (Adam) | As in the original |
-| tokenizer | no | `wordsOf` of `lib/syntax.mjs`, shared by every strategy. Punctuation is drawn but never asked. |
-| continuation star | outside the schema | Encodes values of several words (a head or verb run). |
-| labels | not a rule, a bias | 95% are agreement labels written by `vss` with spaCy. Their conventions are learned. |
+### 5.2 Level 0: word stars (fixed)
 
-Absent:
-- no rule that names a word, and no list of words;
-- no parser, transformer, spaCy or knowledge world;
-- no output of `vss` at reading time, except in the labelled ablation.
+    f(w) = phase( h("id:" + w) + (1/√t) Σ_{g ∈ trigrams(#w#)} h("tri:" + g) )
 
-## 8. Evaluation
+`h(s)` is a phasor vector seeded from sha256 of the string, as in the original's
+`"sop-stars-v1:id:<word>"`. The form keeps every word distinct; the letter trigrams make "boxes" close
+to "box" (Joshi, Halseth and Kanerva 2016). An unseen word has a star, and no word list is involved.
 
-- **Development split, per word.** Accuracy of the answer, of the beacon and of both. Separately for:
-  - anchor words and word answers;
-  - relations: start, end and marker;
-  - coordinations: conjuncts;
-  - forms;
-  - the rare keys.
-- **Development split, per message.** Exact core, and core or `variants`.
-- **Cost of the bundle.** The same figures read from the per-word addresses before the bundle.
-- **Benchmark (1,831 messages).** Recomputed as in the earlier review
-  (`experiments/syntax-learned/review/recompute.mjs`, with `strict-vss.jsonl` added). A circuit is:
-  - **known accepted** if its core equals a circuit judged L8 in the run (`judging/packet-k` +
-    `verdicts-k`), an accepted registry circuit, or the label before the run (`key/labels-before.jsonl`);
-  - **known rejected** if its core equals a judged rejected circuit;
-  - **unjudged** otherwise.
+### 5.3 Order inside a wire
 
-  All three counts are always reported. As a secondary estimate, `akey.mjs` checks whether an unjudged
-  circuit shares the `variants` key with a known accepted or rejected one. 20 unjudged circuits are
-  read against the judges' rules. No judges are launched, so the unjudged count will be large and the
-  known accepted count is a lower bound.
-- **Comparison** with the same run. GOAL means judged at L8–L10; the medians are of the run. The fair
-  comparison with the others is on the messages where strict-vss's circuit has a known verdict.
+Every constellation X has an **origin** `a_X`: the position of the first word of the wire or of
+anything it holds. A star at position p is placed at `Z^(p − a_X)`. This gives the order inside a key
+("the two small red boxes"), keeps two occurrences of one word apart, and gives back the exact span
+of every value. Because positions are relative, a wire has the same constellation wherever it stands.
+Without positions, writing the wires in tree order gives back 98.37% of the labels; with positions,
+100% (`v2/holding.out`).
 
-| Strategy | Accepted (GOAL) | Median per message |
-| --- | ---: | ---: |
-| vss | 1,417 (77.4%) | 0.44 ms |
-| distilbert | 1,415 (77.3%) | 3.9 ms |
-| spacy | 1,683 (91.9%) | 49 ms |
-| parser prototype (known accepted / rejected / unjudged) | 1,013 / 96 / 722 | 3.3 ms |
+### 5.4 The constellations
 
-- **Speed per message and start-up time**, in the shared runner. Expected:
-  - 2–10 ms per message with numpy on the CPU for a median message, mostly the readout;
-  - well under 1 ms per message when batched on the GPU;
-  - a JavaScript port of the chart and readout (about 150 lines, as in the original's numpy
-    re-implementation) is possible later.
-- **Model size.** The route book at K = 48, D = 2048 is 14.2 M phases, about 28 MB at 16 bits and 14 MB
-  at 8 bits (the book: quantised codes, §14). At K = 32 it is 6.3 M phases, about 13 MB. A table of
-  kinds per known word adds about 1 MB. For comparison: `vss` 3.2 MB, DistilBERT about 66 M parameters.
+Every term carries the type of what it holds: `T_word` for a word, `T_t(Y)` for a held wire of type t
+(the type atom sits at the holder):
 
-## 9. Risks and the fallback
+    C_X =   Σ_{own words p at key κ}       R_κ ⊗ T_word   ⊗ Z^(p − a_X)   ⊗ f(w_p)
+          + Σ_{held wires Y at key κ}      R_κ ⊗ T_{t(Y)} ⊗ Z^(a_Y − a_X) ⊗ c(Y)
+          + Σ_{pointed wires Y at key κ}   R_κ ⊗ T_{t(Y)} ⊗ Z^(a_Y − a_X) ⊗ c(Y)        (offset may be negative)
+          + [ R_attachment ⊗ V_ambiguous ]
+          + while open: Σ_{stars Y held aside here}  R_aside ⊗ T_{t(Y)} ⊗ Z^(a_Y − a_X) ⊗ c(Y)
 
-| Risk | What it would look like | Answer |
-| --- | --- | --- |
-| The route book is a function of kinds and pairs of kinds. Attachment and the scope of a coordination need more. | M1 gets dependents and heads but misplaces relations and conjuncts. The original reached only 0.63–0.68 on new kind transitions. | M2's beacon memory, read by similarity |
-| Kinds lose what the reading needs | Unseen names are misread, as on SNIPS (slots 0.387) | Letters and context in the kind of each occurrence (4.3). The `vss` stations ablation measures how much better kinds would help. |
-| Agreement labels are circular | Close to `vss` on messages like its training data, far below on the rest. The parser prototype: 37.4% known accepted on messages without a label, against 63.7% for `vss`. | Judged weight and negative examples. Report separately on messages that had no label. |
-| Capacity with a diffuse encoder | Long scene messages fail (measured: 45% of the weight on the right answer at D = 2048 leaves 135 of 427 messages of 40+ words exact) | D = 4096, or one chart per segment opened by learned gates of clause openers (the book's structure of states, §12) |
-| Structure announced after its scope | "Q if P", postposed reporting: 0.20–0.44 in the original | The backward drawing, and the backward chain over every following opener |
-| Rare keys | Negation (243), relation negation (112), ellipsis (55) hardly learned | Measured on their own. Not hidden in the averages. |
-| Invalid sets of answers | Repairs fire often | Counted. M3: joint decision under a tree constraint, listed as not VSA. |
+    C_M = Σ_{top wires Y} R_top ⊗ T_{t(Y)} ⊗ Z^(a_Y) ⊗ c(Y)              (the message; a_M = 0)
 
-Fallback, if the circuits stay below `vss`: strict-vss as a VSA scorer of readings. Compile the circuit
-of any strategy into S* and measure `cos(S, S*)`, the margins and the remainder. This is the book's
-"the fit is the classifier" (§5), applied to readings instead of worlds. It can choose among the
-circuits of `vss`, `spacy` and `distilbert`, and flag uncertain messages for judges. Used that way it
-is no longer a strict reader, because its candidates come from other strategies. The scorer itself
-stays VSA.
+- `T_t` is one of 8 fixed type stars (nominal, relation, coordination, and the clause in its five
+  forms) plus `T_word`.
+- The keys of each type (its domain, from the schema): nominal `head`, `dependent`, `rel`; relation
+  `marker`, `negation`, `to`; coordination `conjunct`, `conjunction`, `rel`; clause `verb`,
+  `auxiliary`, `negation`, `modifier`, `discourse`, `subject`, `complement`, `rel`, `ellipsis`.
+- **Held aside** is a term under the named star `R_aside` in the open constellation below the held
+  star. A claim moves the term: it is subtracted there and bound at a key of the claimer. No aside
+  term is left in a finished target.
 
-## 10. Milestones
+The example of section 1, written out (T_w = T_word):
 
-- **M0 (done; `m0/`).**
-  - The structure of the labels.
-  - Capacity with the right answers given, at D = 256 to 4096, sharp and diffuse.
-  - The ceiling of the writer (99.77%).
-  - Distances to the beacon under two anchoring conventions.
-  - The registry outside the benchmark.
-- **M1, the smallest measurable reader (about 1–2 days).**
-  - Kinds as in 4.3, hard.
-  - Stars, positions and beacons.
-  - The route book with the four drawings, and the gated pointer of M1.
-  - The compiler of S*, and objective A.
-  - Training on labels outside the benchmark. Measurements on the development split, including the
-    cost of the bundle.
-  - Benchmark: known accepted / rejected / unjudged, speed, size.
-  - Decision: if the readout from S loses much against reading the addresses directly, the problem is
-    capacity. If the addresses themselves are wrong, the problem is the route book, and M2 is next.
-- **M2.**
-  - The beacon memory, read by similarity.
-  - The marker as the relation's anchor, and chained conjuncts. Their round trip is checked to stay at
-    or above 99.7% before they are used.
-  - Kinds of each occurrence, with learned prototypes. Objective B if needed.
-- **M3.**
-  - Judged weighting, negative examples, the nearest accepted circuit as target.
-  - `attachment=ambiguous` from the margin.
-  - Remainder and calibration curves; the "confident and wrong" rate at a fixed threshold.
-  - Optional: refinement by explaining away; joint decision under a tree constraint.
-- **M4, the strategy.**
-  - `index.mjs` exporting `{name: 'strict-vss', schema: 'syntax', open(configuration)}`. Its engine
-    has `analyse(text) -> {analyses: [{sop}]}` and `close()`.
-  - A Python worker for numpy inference on the pattern of `strategies/distilbert/syntax_worker.py`.
-  - The model files, and the writer in JavaScript.
-  - A benchmark run through the shared runner, and the report.
+    C_n1 = R_dependent ⊗ T_w ⊗ Z^0 ⊗ f(the) + R_dependent ⊗ T_w ⊗ Z^1 ⊗ f(blue) + R_head ⊗ T_w ⊗ Z^2 ⊗ f(box)
+    C_r1 = R_marker ⊗ T_w ⊗ Z^0 ⊗ f(next) + R_marker ⊗ T_w ⊗ Z^1 ⊗ f(to) + R_to ⊗ T_nominal ⊗ Z^2 ⊗ c(n2) + R_attachment ⊗ V_ambiguous
+    C_c1 = R_verb ⊗ T_w ⊗ Z^0 ⊗ f(move) + R_complement ⊗ T_nominal ⊗ Z^1 ⊗ c(n1) + R_rel ⊗ T_relation ⊗ Z^4 ⊗ c(r1)
+    C_k1 = R_conjunct ⊗ T_imperative ⊗ Z^0 ⊗ c(c1) + R_conjunction ⊗ T_w ⊗ Z^9 ⊗ f(and) + R_conjunct ⊗ T_imperative ⊗ Z^10 ⊗ c(c2)
+    C_M  = R_top ⊗ T_coordination ⊗ Z^0 ⊗ c(k1)
 
-Each milestone reports all three benchmark counts, the development figures, speed and size, whatever
-they are.
+Conjuncts are ordered by their positions, so no ordinal key `R_next^i` is needed (an ablation).
 
-## 11. Files
+### 5.5 Condensing
 
-- `m0/stats.mjs`, `m0/stats.out`: the structure of the labels.
-- `m0/export.mjs`: the per-word trees of the labels, as `trees.json`. The file is regenerated, not kept.
-- `m0/capacity.py`, `m0/soft.py`: capacity of the chart.
-- `m0/rehead.mjs`: distances under the two anchoring conventions.
-- `m0/roundtrip.mjs`: the ceiling of the writer.
-- `m0/reg.mjs`: the registry outside the benchmark.
-- `m0/RESULTS.txt`: every figure, with the command that produced it.
+    c(X) = ρ_c( phase( C_X ) )
 
-## 12. References
+- `phase` keeps a unit-modulus star in the same sky as a word star, so it is placed like a word.
+- `ρ_c` protects it: its own terms cannot meet the parent's terms by accident. Expanding is `ρ_c⁻¹`
+  followed by unbinding.
+- This is Hinton's reduced description (1990) and Plate's chunk (2003, chapter 3): noisy when
+  unbound from its parent, made exact again by cleanup against the clean-up memory.
+- Learned variant: `c(X) = ρ_c(K_t ⊗ phase(C_X))`, one learned star per type; still exactly
+  invertible. A learned compression like Pollack's RAAM (1990) is not used: it loses the exact
+  inverse.
 
-- T. A. Plate. Holographic reduced representations. *IEEE Transactions on Neural Networks* 6(3), 1995;
-  and *Holographic Reduced Representations*, CSLI, 2003 (FHRR, fractional powers, the superposition
-  problem).
-- P. Kanerva. Hyperdimensional computing: an introduction to computing in distributed representation
-  with high-dimensional random vectors. *Cognitive Computation* 1(2), 2009.
-- R. W. Gayler. Multiplicative binding, representation operators and analogy, 1998; Vector symbolic
-  architectures answer Jackendoff's challenges for cognitive neuroscience, ICCS/ASCS 2003 (MAP:
-  multiply, add, permute).
-- E. P. Frady, S. J. Kent, B. A. Olshausen, F. T. Sommer. Resonator networks, 1: an efficient solution
-  for factoring high-dimensional, distributed representations of data structures. *Neural Computation*
-  32(12), 2020; S. J. Kent et al., Resonator networks, 2, same issue.
-- E. P. Frady, D. Kleyko, F. T. Sommer. A theory of sequence indexing and working memory in recurrent
-  neural networks. *Neural Computation* 30(6), 2018 (capacity of superposition).
+**Why not the original `Compiler`'s nesting.** The original adds the inner sum under its role without
+normalising (`vsa-semantic-space/tool/sop/world.py`). Every leaf term then ends up in the top vector,
+bound with the product of the keys on its path; products of keys commute, so two paths with the same
+keys in another order collide (the book's "a grid, not a tree"). With condensing, each level holds
+only its own terms and the path is recovered by one cleanup per level.
+
+### 5.6 The atlas
+
+- Every condensed star is kept as an item bound with its origin: `I(Y) = Z^(a_Y) ⊗ c(Y)`. The item is
+  the wire's identity: the same wire is the same item wherever it is referred to, and two identical
+  wires at different places are different items.
+- The atlas grows by one star per wire. What stays fixed is the size of each vector and the number of
+  terms in each constellation.
+
+### 5.7 Two tracks: words and kinds
+
+The word constellations above are the targets, the readout and the equivalence. The pilot's
+decisions need to know what kind of word stands where, not which word, so every open constellation
+also has a **kind constellation**, built the same way with the learned kind stars `κ_p` instead of
+`f(w_p)`, the condensed kind stars `s(Y)` of its children, and the smooth position code `Z_s`. The book
+makes the same split: the chart is written with word identities, the route is learned per kind.
+
+**Kinds** are learned and replace the book's given categories:
+
+    x_k = phase( Σ_{d=−3..3} λ_d ρ^d(f(w_{k+d})) + μ_1 R_first ⊗ f(w_1) + μ_2 R_end ⊗ f(last mark) )
+    π_k(c) = softmax_c( β · sim(x_k, K_c) ),   κ_k = Σ_c π_k(c) K_c            (C = 64 kind stars)
+
+The window is permutation-coded context (BEAGLE, Jones and Mewhort 2007; Sahlgren, Holst and Kanerva
+2008). A closed constellation's kind comes from its condensed kind star `s(Y)` by the same cleanup
+against a second memory of 64 stars.
+
+## 6. Reading the circuit back from stars
+
+This is the strategy's output path (second review, points 2 and 3).
+
+### 6.1 The decoder
+
+Start from the message star with `a_M = 0` and type M. For every node X reached (origin `a_X`, type
+`t_X`, its constellation `C_X = ρ_c⁻¹(c(X))`) and every key κ of `t_X`'s domain:
+
+    U_κ = C_X ⊗ conj(R_κ) ⊗ Z^(a_X)
+    candidates = { T_word ⊗ Z^p ⊗ f(w_p) : every word p of the message }  ∪  { T_{t(Y)} ⊗ I(Y) : every atlas item Y }
+    accept every candidate with sim(U_κ, candidate) > 5 σ_D
+
+- One cleanup per key, over the message's words and the atlas together; the type atom tells words
+  from wires and one wire type from another.
+- A word accepted at several places keeps the best one, so every word has exactly one place (the
+  schema's Rule 1).
+- A wire found for the first time is expanded from its exact atlas star and read in turn; each level
+  is cleaned, so errors do not add up with depth.
+- `attachment=ambiguous` when `sim(C_X, R_attachment ⊗ V_ambiguous) > 5 σ_D`.
+- No scan over offsets: the origin bound into the item does that work.
+
+### 6.2 Measured with the grouping given (`v2/m1star.py`; nothing learned)
+
+Exact means every wire, type, ambiguity mark, reference (holding and re-entrant) and word placement
+as in the label. One threshold, 5σ, fixed before the run.
+
+| Sample | Exact |
+| --- | --- |
+| all labels | 88,105 messages. D = 256: 99.892%; D = 512: 99.993%; D = 1024: 99.997% (3 messages with one spurious edge) |
+| long sample | 8,537 messages, all 2,203 of 25 words or more and a random 6,334 shorter. D = 128: 73.53%; D = 256: 99.285%; D = 512: 99.953%; D = 1024: 100% |
+| 25–39 words | D = 512: 1,148 / 1,151; D = 1024: 1,151 / 1,151 |
+| 40+ words | D = 512: 1,051 / 1,052; D = 1024: 1,052 / 1,052 |
+| time | decoding: median 0.49 ms, 99th percentile 2.98 ms per message at D = 1024 (numpy, one core) |
+
+**Like for like** (second review, point 8). The two controls have no item memory:
+
+| Control | Exact |
+| --- | --- |
+| no atlas | same tree, children decoded from the noisy unbound vector (`hierarchy-checks/m1probe.py`, its own encoding), 2,000 labels drawn at random: 33.5% at D = 1024, 53.6% at D = 4096 |
+| flat chart | `DESIGN-flat.md` with its answers given (`m0/capacity.py`, own sample of 5,201), weighted to the population of length buckets: 91.0% at D = 256, 98.2% at D = 512, 99.7% at D = 1024; for 40+ words 0 / 1,052, 0 / 1,052, 765 / 1,052 |
+
+The hierarchy without the atlas is worse than the flat chart: what makes representations of
+representations readable is the clean-up memory, one star per wire.
+
+**What this does and does not show.** It shows that the representation is lossless with the grouping
+given, at a size fixed in advance, for every length in the data. It is close to guaranteed by
+construction (at most 12 terms per constellation at D ≥ 512), so it is a necessary check, not an
+answer to the owner's question. Whether a reader can learn to place and move stars is M2.
+
+### 6.3 At reading time
+
+- The pilot builds the word constellations as it reads (section 8): hard terms for decided stars,
+  or, when it keeps beliefs, `Σ_κ p(κ) R_κ ⊗ …` for a word and a relation's star added to each
+  candidate holder with its probability.
+- At the end the decoder above runs on the pilot's own message star and atlas. The cleanup then
+  settles each belief: a word goes to its strongest place, a relation to its strongest holder, and
+  the score differences are the margins. This is where the constellations do work at reading time.
+- The pilot's explicit tree (its lists of what it opened, closed and moved) is written as a second
+  circuit. Every disagreement between the two is counted and reported; neither suppresses a circuit.
+- The writer (`writeCircuit`, `validateSyntax`) orders and checks the wires. It joins adjacent words
+  at the same `head`, `verb`, `marker` or `conjunction` into one value and never joins `dependent`,
+  `modifier`, `auxiliary`, `negation` or `discourse` (declared not VSA). With the spans the pilot
+  knows, it gives back 88,106 / 88,106 labels.
+- **Margins and remainder.** Every key and every choice has a margin (best minus second). The
+  remainder of a constellation is `1 − sim(phase(C̃_X), phase(Ĉ_X))`, where `Ĉ_X` is recompiled from
+  the decoded wire. A message's confidence is its smallest margin and its largest remainder, with
+  calibration curves. `attachment=ambiguous` is written from the ambiguity star or when the
+  attachment margin is below τ (fitted on dev-B); both variants are reported.
+
+## 7. Placing stars: the route book
+
+This is the owner's "how the stars are placed in the space" (second review, point 5). Every star s
+(a word at position p, or a closed constellation Y with origin `p = a_Y`) is placed in its
+constellation X at an **address**, the product of a learned key and the fixed position step.
+
+### 7.1 Pair codes and key–value memories
+
+Pairs of kinds are not tables of D-dimensional keys (no `K² × D` table). A pair is bound into one
+code, and a learned associative memory turns the code into a key:
+
+    q(a, b) = a ⊗ ρ_q(b)                                              pair code of two kind stars (order kept by ρ_q)
+    Mem(q) = phase( Σ_{i=1..M} softmax_i( β · sim(q, Q_i) ) · V_i )    key–value memory, M = 256 slots
+
+This is a clean-up memory whose items are paired with values (Kanerva's sparse distributed memory;
+an attention read in today's terms, [Ramsauer et al. 2021](https://arxiv.org/abs/2008.02217)). Its
+keys `Q_i` and values `V_i` are learned stars. Three such memories hold the book's three kinds of
+relative keys: `A` (from the opener), `B` (from the previous word), `L` (backwards, at a claim). A
+fourth serves the choices among stars (section 8.6). Soft kinds give soft pair codes, so nothing is
+discrete inside the reading.
+
+### 7.2 The drawings and the vote (the book's "three drawings")
+
+For an open constellation X with origin `a_X` and opener `o_X` (the word that opened it; for a
+coordination, its conjunction):
+
+    from the opener      d_open(s | X)   = A( q(κ_{o_X}, κ_s) ) ⊗ Z^(p − a_X)
+    pair of neighbours   d_pair(k | X)   = B( q(κ_{k−1}, κ_k) ) ⊗ addr(k−1 | X)            (when word k−1 is in X)
+    path                 d_path(k | X)   = exp( i · Σ_{j = o_X .. k} Σ_c π_j(c) θ_P[c] )   (running product of per-kind keys from the opener)
+    backward, at a claim d_back(Y | X)   = L( q(κ_{o_X}, s_Y) ) ⊗ Z^(a_Y − a_X)             (a star held aside, claimed by X's opener)
+    beacons              d_beacon(s | X) = phase( Σ_{κ still empty in X} b_{t_X,κ} R_κ ) ⊗ Z^(p − a_X)
+
+    addr(s | X) = phase( Σ_d g_d(κ_s) · d_d(s | X) )                 the drawings vote (weights g learned per kind)
+
+- These are the codes of the original reader (`vsa-semantic-space/tool/sop/infer.py`,
+  `Routebook.addresses`: path, bigram, the chain's relative keys `A` and backward keys `L`), applied
+  inside each constellation from its opener instead of across the whole sentence.
+- The beacon drawing is the book's beacon: an expected key of X's type pulls the next star while it
+  is empty and is erased when filled.
+- The pair key composes: for a dependent followed by its head, `B ≈ R_head ⊗ conj(R_dependent) ⊗ Z`,
+  the book's "shift" from one role to the next.
+
+### 7.3 Reading the key, and the terms
+
+    κ̂(s | X) = argmax_{κ ∈ domain(t_X) ∪ {aside}} sim( addr(s | X) ⊗ Z^(−(p − a_X)), R_κ )      margin = best − second
+
+    term of a word:     addr(k | X) ⊗ T_word ⊗ f(w_k)
+    term of a wire:     addr(Y | X) ⊗ T̃(Y) ⊗ c̃(Y)          (T̃: the believed type, Σ_t p(t) T_t)
+
+- The placement is a cleanup against the named stars of X's domain, plus `R_aside` ("no key here
+  yet": the book's held aside). It is not a 9-way prototype classifier: the prototypes are the fixed
+  legend, and what is learned are the drawings that lead to them.
+- When a constellation opens, its opener's key in the holder is read the same way. When it closes,
+  the key is read again from its condensed star.
+
+### 7.4 Training the placement
+
+    L_place = Σ_wires w · ( 1 − sim( phase(C̃_X), phase(C*_X) ) )  +  Σ_stars w · CE( softmax_κ(β · sim(addr ⊗ Z^(−d), R_κ)), κ* )
+
+- `C*_X` is the target constellation compiled bottom-up from the label (as the original `Compiler`
+  does, but with condensing); `C̃_X` is the one the route book builds. The first term is the
+  original's objective, `−cos(S, S*)`, at every wire.
+- Said plainly: the word stars and offsets of one constellation are nearly orthogonal, so the first
+  term works mostly as "land on the right key", weighted per constellation; the cross-entropy makes
+  that explicit and gives the margin a scale.
+- In M2a the grouping is given, so this is the direct test of "learn how the stars are placed".
+
+## 8. Moving stars: the pilot
+
+### 8.1 Tokens and state
+
+The pilot walks the words of `wordsOf(text)`, the punctuation marks between them, and an end token.
+Punctuation can close and open constellations but is never placed. The state at token k:
+- the open constellations, in order from the message to the innermost, `[M, X_1, …, X_m]`; each with
+  its word constellation, its kind constellation (aside terms included) and its expected keys;
+- the atlas;
+- the probe at position k.
+
+### 8.2 Deciding at the evidence (the adopted conventions)
+
+The static oracle that turns a label into training moves needs a time at which each wire opens.
+These times are conventions, and they decide what the pilot must predict before it can see the
+evidence. The adopted conventions open every wire at the word that shows it, and move stars later
+instead of guessing early (second review, point 4):
+
+| Wire | Opens at |
+| --- | --- |
+| nominal, clause | its first own word; a verbless fragment wraps what is held at the token after its words |
+| relation | its first own word (marker or negation), even when its `to` began earlier: it then claims the `to` from the held list; without marker, at the first own word of its `to` (for a clause, its verb or first own word; for a coordination, its first conjunct's) |
+| coordination | its conjunction; it **gathers** every conjunct already built, whether a closed sibling at the same key or a star held aside; without a conjunction word, at the token after its last conjunct |
+
+Before its coordination opens, each conjunct takes the coordination's place: it is placed at the key
+the coordination will have, as if there were no coordination, and is moved in when the conjunction
+comes. Claims come from the held list of any open constellation. When the place a new constellation
+takes is closed, it is reopened.
+
+### 8.3 Coverage and lookahead (`v2/oracle2.mjs`, `v2/oracle2-diff.mjs`)
+
+Every move records its arguments, and the replay executor (`replay` in `oracle2.mjs`) rebuilds the
+circuit from the words and the moves alone, with `writeCircuit`.
+
+| Measure | Result |
+| --- | --- |
+| first-draft conventions | 87,842 / 88,106 (99.70%) derived and replayed to the identical core; 264 failures: a constellation closed while a star was still held aside in it 198 (195 clauses, mostly `drawing/scenes-*`), first conjunct not found 53, re-entry 9, other 4; agreement 216, judge 41, written 7 |
+| adopted conventions | 88,083 / 88,106 (99.97%) derived and replayed to the identical core; 23 failures: re-entry of a held wire 20 (long scene lists), closed with held items 2, holding cycle 1; agreement 19, judge 3, written 1. 9 of the 23 are derived by the first-draft conventions |
+| the 195 crossing labels | rebuilt under the adopted conventions, through reopen; no move was added. Whether they are label errors is left to the data session (they are listed in `v2/oracle2-failures.json`) |
+| openings before their evidence | first draft: 6,926 of 544,075 (1 word: 3,711; 2: 794; 3: 249; 4–6: 956; 7 or more: 1,216; mostly relations whose marker follows their `to`, and coordinations opened at conjunct 2); adopted: none of 549,035 |
+| aside decisions with a possible holder open | first draft 8,859, adopted 9,514. Words until the claiming opener, adopted: nominal 1: 3,329; 2: 4,396; 3: 462; 4–6: 209; 7+: 38; relation 1: 611; 2: 13; 3: 255; 4–6: 189; 7+: 1; other 14. Beyond three words: 442 |
+| moves per word | 2.33 |
+| messages needing a move (adopted) | claim 28,047; open aside 28,046 (a nominal 27,350, a relation 2,759); gather 1 conjunct 13,086, 2: 2,513, 3 or more: 2,046; reopen 3,892 (one star 3,190, a chain of two or more 1,209); point 4,441 |
+
+Lookahead is counted in words from the decision to the word that shows the wire (for a relation
+without marker, the first own word of its `to`). Under the adopted conventions the only decisions
+that need later words are "hold aside or place here": the pilot sees a nominal while a relation is
+open and must decide whether it is the relation's `to` or the subject of a clause still to come.
+These sit mostly within the ±3-word window of the kinds; 442 do not.
+
+**Next variant to measure (M1):** remove even these by **provisional placement**: a star whose holder
+has not opened takes the place of its nearest unopened holder in the open constellation (as
+conjuncts already do), and is moved when the holder opens. Its coverage and the lookahead of the
+remaining decisions decide whether it replaces held aside.
+
+### 8.4 Which constellation receives a star: the gates
+
+For an incoming star s (the word at k, or a constellation that has just closed), the gates are tested
+from the innermost open constellation outwards:
+
+    g_close(X | s) = σ( γ_close( q(κ_{o_X}, κ_s) ) + Σ_part u_part · sim(V_part(X), G_close,part) + b_close )
+    g_open(s | X)  = σ( γ_open( q(κ_{o_X}, κ_s) )  + Σ_part u_part · sim(V_part(X), G_open,part)  + b_open )
+
+    p(s → X_j)          = (1 − g_close(X_j | s)) · Π_{i > j} g_close(X_i | s)      receiver X_j, after closing X_{j+1..m}
+    p(s placed in X_j)  = p(s → X_j) · (1 − g_open(s | X_j))
+    p(s opens in X_j)   = p(s → X_j) · g_open(s | X_j)
+
+- `γ(q)` is the book's gate number per kind, read here from the pair code (the chart's opener, the
+  incoming star) through scalar values stored beside the keys of memory A.
+- The products are the original's chain formula (`Π (1 − g)`), run over the open constellations
+  instead of over earlier words.
+- When s opens a constellation, its type is a choice (section 8.5) and its key in the receiver comes
+  from the route book (section 7), `R_aside` included.
+- At the conjunction of a coordination, the gather is a sequence of yes/no choices over the closed
+  siblings at the same key, from the most recent backwards (section 8.6).
+
+### 8.5 Views and scores by parts
+
+Every part is a small bundle shifted to the probe with `Z_s^(−k)`, with its own prototypes:
+
+| Part | Content (terms) |
+| --- | --- |
+| word | `R_{−1} ⊗ κ_{k−1} + R_0 ⊗ κ_k + R_{+1} ⊗ κ_{k+1}` (3) |
+| current | the kind constellation of the tested constellation (at most about 12) |
+| cur × word | the same bound with `κ_k`: pairs of kinds with keys and offsets (at most about 12) |
+| parent | the same two parts for the constellation below (at most about 12 each) |
+| aside | the aside terms of all open constellations (a few) |
+| last | the last closed child, with its key and offset (1) |
+| expected | the beacons, `Σ_κ b_{t,κ} R_κ ⊗ E` for keys still empty (at most 9) |
+
+    score(m) = Σ_part u_part · (1/β) log Σ_{j=1..P} exp( β · sim(V_part, P_{m,part,j}) ),     P = 4
+
+Used for the structural choices that are not placements: the type of a new constellation, the form
+and the ambiguity at close. No part goes beyond the clean range of one constellation. The choice of
+parts is a hand-made template (declared not VSA).
+
+### 8.6 Choices among stars
+
+For claim, gather, reopen or attach, and point:
+
+    score(Y | s, choice) = sim( C( q(κ_s, s_Y) ) ⊗ G_choice ,  Z_s^(a_Y − p) ⊗ R_{key(Y)} )  +  part terms
+
+- `C` is the fourth key–value memory, read with the pair code of the deciding star's kind and the
+  candidate's kind; `G_choice` is one learned star per kind of choice. In plain words: "is Y where a
+  star of my kind expects a partner of Y's kind, for this choice?". The score is bilinear in the two
+  kinds and smooth in the distance.
+- **Candidates are found by the VSA:** aside stars by unbinding `R_aside` from each open
+  constellation, closed children by unbinding the reference keys of the open constellations, each
+  followed by a cleanup over the atlas. The pilot's lists check them; misses are counted.
+- **Attachment** of a relation is the choice of its receiver among the open constellations and the
+  closed nominals of the current clause (a closed one is reopened); its margin is where
+  `attachment=ambiguous` comes from.
+
+### 8.7 The moves
+
+| Move | Operation on stars, with its recorded arguments |
+| --- | --- |
+| open | a constellation of type t, with origin k, at key κ of the receiver or aside |
+| place | the word's term, `addr ⊗ T_word ⊗ f(w_k)`, is added to the receiving constellation (kind track: `κ_k`, `Z_s`); an expected key is erased |
+| close | condense; add `I(X)` to the atlas; place the star in its receiver at its key, or aside; form and ambiguity read here |
+| claim | a star held aside in any open constellation (which one) moves to a key of the new constellation |
+| gather | a coordination opens and moves in the listed stars (closed siblings at its key, or stars held aside) as conjuncts |
+| reopen | the listed closed stars are unfolded from the atlas back onto the open list; their terms are subtracted from their holders |
+| point | `C_X += R_κ ⊗ T ⊗ Z^(a_Y − a_X) ⊗ c(Y)` for a star Y already placed (which one): re-entrance |
+
+"Move the stars" is literal: claim, gather and reopen subtract an exactly known term from one
+constellation and bind the same star into another.
+
+### 8.8 Held aside, in detail
+
+- "the title is too long": "the title" is an aside term in the message; "is" opens the clause, which
+  claims it at `subject`.
+- "if Grace isn't in the people list yet, add her please": "if" opens a relation aside; its clause is
+  built inside it; "add" opens the main clause, which claims the relation at `rel`.
+- "Chapter and its entire contents removed": "Chapter" is aside; "and" opens a coordination that
+  gathers it and is itself aside; "removed" opens the clause, which claims the coordination at
+  `subject`.
+- "a fireplace": the nominal is aside; at the end token a fragment clause opens and claims it.
+
+### 8.9 The two readers, and what stays symbolic
+
+- **Left-to-right** (the book's pilot; transition-based reading in the field, Nivre 2008). Built
+  first, because its oracle and replay exist.
+- **Bottom-up** (easy-first, Goldberg and Elhadad 2010), a comparison in M2c: it repeatedly takes the
+  best pair of neighbouring items and places one into the other at a key, or opens a constellation
+  holding both, with the same route book, gates and memories. It needs no lookahead and no aside
+  list; for contiguous trees the correct merges are known from any state; 8% of labels need one
+  re-placement step.
+- **Symbolic in both** (declared): the loop over words or items, the list of open constellations, the
+  beam and the re-placement pass. Inside that control the state, the scores, the placements and the
+  moves are VSA.
+
+## 9. Learning
+
+### 9.1 Fixed and learned
+
+At D = 1024, C = 64 kinds, M = 256 memory slots:
+
+| Part | Size, and whether learned |
+| --- | --- |
+| legend | word stars, trigram stars, key stars (with `R_aside`, `R_top`, `R_attachment`), type stars (8 and `T_word`), `V_ambiguous`, `E`, `Z`, `Z_s`, permutations, part keys: fixed, seeded, not stored |
+| kinds | word kinds 64 × D and constellation kinds 64 × D: 131,072 phases; λ, μ, β: about 15 scalars |
+| path keys | `θ_P` 64 × D: 65,536 phases |
+| memories A, B, L, C | 4 × (256 keys + 256 values) × D: 2,097,152 phases; gate values 2 × 256 scalars |
+| vote, beacons | g: 64 × 5 scalars; b: about 70 scalars |
+| part prototypes | type, form, ambiguity: about 16 outcomes × 8 parts × P = 4: 524,288 phases; choice stars 5 × D |
+| fit prototypes | one kind-constellation prototype per type for the beam: 8 × D |
+| options | situation memory 512 × D; condensing stars 8 × D |
+
+The total is about 2.8 M phases (11 MB as float32). The original's route book was 3.1 M phases
+(12.6 MB) at 32 kinds; the second revision's pair tables were 5.1 M. M (64, 128, 256, 512) and C (32,
+64, 128) are ablations.
+
+### 9.2 Targets at every node
+
+The label circuit gives its tree of wires, and from it: the adopted oracle's moves with their
+arguments; the target constellation `C*_X` and target star `c*(X)` of every wire, compiled bottom-up
+with the same fixed stars; the keys of every star.
+
+### 9.3 Losses, and what each one reaches
+
+    L =  L_place                                                    section 7.4: per-wire 1 − cos and key cross-entropy
+       + Σ_gate decisions   w · BCE(g_open, g_close)
+       + Σ_choices          w · CE(type, claim, gather, reopen/attach, point)
+       + Σ_closes           w · CE(form, ambiguity)
+       + λ_neg ·            margins from rejected circuits
+
+The constellation the pilot believes in, under the gold state, has soft receivers:
+
+    C̃_X = Σ_stars s  p(s placed in X) · addr(s | X) ⊗ T̃(s) ⊗ star(s)
+
+`star(s)` is `f(w)` for a word or the pilot's own `c̃(Y)` for a closed constellation; the sum runs over
+every star for which X was a candidate receiver, gold or not.
+
+| Loss | What it reaches |
+| --- | --- |
+| per-wire 1 − cos | the drawings and their vote (keys); the close and open gates, through `p(s → X)`; the attachment choice, through the soft placement of the relation's star; the type choice, through `T̃`; children's keys through `c̃(Y)`, but only weakly (one wrong word one level down still leaves a similarity of 0.69) |
+| key cross-entropy | every placement directly, with a scale for its margin |
+| BCE on gates | every open and close decision, including those at punctuation and the end token, which place no star |
+| CE on choices | type, claim, gather, reopen, point, attachment |
+| not reached | under teacher forcing, the effect of a wrong decision on later ones (exposure bias): handled by roll-in in M2c |
+
+- **Weights w:** judge and written labels ×3, agreement labels ×1. Accepted circuits of the registry
+  outside the benchmark are used where the dataset has no label.
+- **Rejected circuits** outside the benchmark: a margin between the gold move and the rejected
+  circuit's move at the first step where they part, and a per-wire hinge where they share a wire.
+- **Benchmark texts** are removed (lowercased, spaces collapsed) and their registry lines are never
+  used.
+
+### 9.4 Procedure and cost
+
+- **M2a** (placement, grouping given): all wires of a batch in parallel; the per-wire losses computed
+  bottom-up, one depth level at a time.
+- **M2b** (moves, teacher forcing): every state is known, so all views of a batch are built in
+  parallel.
+- **M2c** (roll-in, in the spirit of DAgger, Ross, Gordon and Bagnell 2011): with a probability
+  rising to 0.5 the pilot continues from its own move. The adopted oracle continues from any state
+  still consistent with the gold tree (every closed constellation a gold wire, every open one a
+  prefix of a gold wire): a wrong key with the right receiver keeps the state consistent, and a
+  constellation closed too early can be reopened. At the first move that leaves the gold tree the
+  sequence stops and the loss counts up to there (early update, Collins and Roark 2004). A full
+  dynamic oracle for this move set is not available.
+- **Splits.** dev-B (primary): whole CSV files whose stem has sha1 mod 10 = 0. dev-A: sha1 of the text
+  mod 10 = 0 among the rest. Train: the rest. Text-hash lists are frozen with the snapshot.
+- **Optimisation.** Adam, learning rate 0.02 for phases (the original's), 0.005 for scalars; phases
+  start uniform; batches grouped by length; early stop on dev-B exact core; three seeds before any
+  conclusion.
+- **Cost, from bytes moved and arithmetic.** Elementwise products are limited by memory: at about
+  2 M steps per epoch and some 200 vector operations of 8 KB per step, forward and backward, an epoch
+  moves some tens of TB, minutes at the GB10's 273 GB/s. The memory reads are matrix products
+  (256 × D per read, about four reads per star): about 50 TFLOP per epoch with the backward pass.
+  Expected: minutes per epoch for M2a, 5–20 minutes for M2b and M2c; measured at the first run.
+- **Reading cost.** Sequential: about 2.3 moves per word, each a few memory reads, plus the read-back
+  (0.49 ms median at D = 1024): a few ms per message in numpy, in a Python worker on the pattern of
+  `strategies/distilbert/syntax_worker.py`. For comparison: `hmm-rules` 0.44 ms, spaCy 49 ms.
+
+## 10. The beam, scored by the fit of what it builds
+
+In M3 the pilot keeps a beam of 4. A hypothesis is scored by its moves and by how well its closed
+constellations fit (second review, point 7):
+
+    score(h) = Σ_moves log p(move) + λ · Σ_{closed X in h} fit(X)
+    fit(X)   = margin_type(X) + mean_κ margin_key(X) − remainder(X) + sim( phase(K_X), Π_{t_X} )
+
+`K_X` is X's kind constellation and `Π_t` a learned prototype of well-formed constellations of type t.
+After the end token a re-placement pass tests each closed star against the other possible holders
+with the choice score and moves it when another fits better by a margin (the book's "the copies
+vote", done on stars). Both are symbolic search over VSA scores (declared).
+
+M3 ablations:
+- **soft stack:** the list of open constellations replaced by a superposition (each level bound with
+  a power of a fixed permutation), to see whether the explicit list can go;
+- **no action loss:** train with the per-wire loss alone, no BCE or CE on moves, to see whether the
+  gates emerge from the constellation targets as they did in the original (relation markers open,
+  content words closed, in 5 of 5 seeds).
+
+## 11. Equivalence of analyses
+
+Two circuits with the same tree of wires give the same message star and the same atlas: the
+compilation is deterministic and does not depend on wire names. Two scores compare analyses:
+- **message star:** `sim(m_A, m_B)`. It is biased towards the top: one word replaced in a wire leaves
+  a median similarity of 0.688 at depth 1, 0.847 at 2, 0.931 at 3, 0.964 at 4, 0.985 at 5, 0.997 at
+  7 or more (critic's `depthbias.py`, D = 1024);
+- **identical subtrees:** match the two atlases item by item; an equal item means an equal subtree,
+  as in subtree kernels (Collins and Duffy 2002). Score `2·matched / (|A| + |B|)`; every subtree
+  counts once, whatever its depth.
+
+On the 390 judged messages with an accepted and a rejected circuit (`v2/equiv2.py`, D = 1024):
+
+| Score | Against the number of differing core lines |
+| --- | --- |
+| message star | Spearman −0.50; partial, controlling for the number of wires, −0.51; medians 0.666 (1–2 lines differ), 0.596 (3–4), 0.492 (5–8), 0.321 (9+) |
+| identical subtrees | Spearman −0.17; partial −0.47; medians 0.50, 0.40, 0.33, 0.26 |
+
+The message star's agreement with the size of the difference is not explained by circuit size. Use:
+comparing two strategies' circuits beyond exact identity; a structure-only star (one constant star
+for every word) compares shapes. As the book says, equivalence "is induced by the shared targets",
+not labelled on pairs.
+
+## 12. What is VSA here and what is not
+
+**VSA, inside the reading:**
+
+| Part | How |
+| --- | --- |
+| word stars | hash phasors of the form and letter trigrams, bundled |
+| positions | fractional power encoding relative to each constellation's origin; exact for targets, smooth for decisions |
+| constellations | binding with named stars, type atoms and positions; bundling |
+| condensing | phase projection and a fixed permutation; expanding by its inverse and unbinding |
+| atlas | items bound with their origin; cleanup |
+| kinds | soft cleanup of a permutation-coded context against a learned memory |
+| placement | the route book's drawings (opener, pair, path, backward, beacon) from key–value memories read with pair codes; vote; cleanup against the named stars |
+| gates | the pair code's value in memory A, plus similarities of the parts with learned stars |
+| decisions | cleanup of each part against learned prototypes |
+| choices among stars | the pair code's key from memory C compared with each candidate's place; candidates found by unbinding and atlas cleanup |
+| moving stars | subtracting a known term and binding the star into another constellation |
+| readout | unbinding, cleanup over the message's words and the atlas, margins, remainder |
+
+**Not VSA, declared:**
+
+| Part | Note |
+| --- | --- |
+| tokenizer | `wordsOf`, the contract of all strategies; punctuation marks between words |
+| control loop | the left-to-right walk over words (or the bottom-up loop over pairs) and the explicit list of open constellations, in order |
+| domains | placements and moves are restricted to the keys a type has in the schema |
+| opening conventions | the times at which the oracle opens each wire and the gathering of conjuncts (section 8.2): training only, but a structural prior that shapes what is learned |
+| ±3 window | the width of the context that makes a kind, and the ±1 of the view's word part |
+| view template | which parts the decision view has, and their keys (section 8.5) |
+| oracle, replay, roll-in | derive moves from labels; rebuild circuits for the coverage check; the consistency test of roll-in |
+| beam, re-placement | symbolic search over the VSA scores |
+| training | gradient descent on similarities and cross-entropies |
+| thresholds | 5σ in the read-back; τ for ambiguity |
+| writer | `writeCircuit`, `validateSyntax`, and the join rule of section 6.3; no word is named |
+
+**Not used at all:** word lists and any rule that names a word (not even function words); a
+part-of-speech tagger (the original's `typer.py` is excluded); a parser; a transformer; pretrained
+embeddings; knowledge worlds; any output of `hmm-rules` or spaCy at reading time.
+
+**Said plainly.**
+- In the field's terms this is a learned incremental reader with an explicit list of open
+  constellations: a transition-based reader whose state, scores, placements and structural steps are
+  VSA, and in which no grammar is written.
+- The book's pilot also walks the words in a loop, but its structure comes only from where the
+  learned keys carry the probe, softly, trained by `−cos(S, S*)`. Here the keys inside each chart
+  come from the book's drawings, trained the same way; which chart receives a star is a gate
+  decision, soft during training and settled by the read-back at reading time.
+- With the structure given, the representation carries no decision; M1 measures only the
+  representation and the moves.
+- The labels are mostly `hmm-rules` + spaCy agreement circuits, so what is learned first is their
+  convention.
+
+## 13. Measurements so far
+
+All on `0a01d23` (`hierarchy-checks/v2/`), unless marked:
+
+| Check | Result |
+| --- | --- |
+| writer ceilings | spans known 88,106 / 88,106; words only, wires in tree order 86,672 (98.37%) |
+| constellation size | at most 12 terms in 88,101 of 88,106 labels |
+| read-back | 99.892% / 99.993% / 99.997% of 88,105 at D = 256 / 512 / 1024, one 5σ rule (section 6.2) |
+| controls | no atlas 33.5% (D = 1024); flat 99.7% weighted, 765 / 1,052 of 40+ words (D = 1024) |
+| oracle and replay | first-draft conventions 99.70%; adopted 99.97%; no opening before its evidence (section 8.3) |
+| equivalence | partial Spearman −0.51 (message star), −0.47 (identical subtrees) |
+| contiguity | 91.99% (`revision-checks/contiguous.out`) |
+| depth bias | section 11 (critic, 81,870) |
+
+## 14. Milestones
+
+**M1. Data, moves and representation** (structure given; nothing learned). Done on `0a01d23`:
+snapshot and sha1 list; tree statistics and writer ceilings; the moves with their arguments and the
+replay executor for two conventions, with lookahead; the read-back on all labels with one fixed
+threshold; the flat and no-atlas controls weighted to the same population; equivalence with partial
+correlation. Remaining:
+1. Freeze the text-hash lists of train, dev-A, dev-B and the benchmark exclusions; measure
+   near-duplicates of dev-B (texts with a training text one word substitution away).
+2. The provisional-placement variant of section 8.3: coverage and the lookahead of what remains.
+3. Controls: the soft-belief read-back (each placement keeps a share p of its belief on the right
+   key, p = 0.6 and 0.45, and a relation's star split between two holders), the original
+   `Compiler`'s nesting, ordinal keys against positions.
+4. Clean modules from the checks: `src/tree.mjs`, `src/moves.mjs` (oracle and replay), `m1/readback.py`.
+5. Stop rules, stated in advance and met: replay coverage at least 99.9% (99.97%); read-back at least
+   99.9% at D = 1024 with one rule (99.997%).
+
+**M2a. Placing stars, with the grouping given** (the first direct test of "learn how the stars are
+placed"). The tree and every star's receiver come from the adopted oracle; the route book learns the
+keys.
+1. `model.py`, `train.py`: kinds, path keys, memories A, B, L, beacons and the vote, trained by
+   `L_place` (section 7.4). Minutes on the GB10; three seeds.
+2. Output through the read-back (section 6) with the gold grouping and the learned keys.
+3. Report on dev-B (primary) and dev-A, near-duplicates apart: key accuracy overall and per key, for
+   words and for claimed stars; exact wires; exact core; words unseen in training; constellation
+   similarity per depth; the learned kinds listed by their most frequent words (for inspection,
+   never used as a rule).
+4. Controls on the same inputs: a logistic regression over the same kinds (opener, previous word,
+   word, distance), and the first draft's prototype place classifier. Ablations: each drawing
+   removed; M and C; σ of `Z_s`.
+
+**M2b. Moves under teacher forcing** (messages of at most 12 words: 68,369 replayable labels).
+1. Gates, types, form and ambiguity, and the choices among stars, with soft receivers in the
+   per-wire loss; teacher forcing; three seeds.
+2. Per-move accuracy on dev-B, under teacher forcing only.
+3. Control: a logistic regression and an averaged perceptron on the same view, given as symbolic
+   features (the window kinds, the kinds and keys filled in the open constellations, the aside and
+   last items, the expected keys).
+4. Decision rule: if the VSA decisions are more than 2 points below the control, strengthen them
+   (situation memory, more prototypes, larger M) before M2c.
+
+**M2c. Free running and the writer** (at most 12 words).
+1. The pilot reads alone; roll-in with its own moves (section 9.4); output by the read-back, the
+   explicit tree as a check.
+2. Judged by placement accuracy (each word at the right wire and key), core-line F1 and exact core,
+   on dev-B and dev-A; by construction (aside, claim, gather, reopen, point, ambiguity); unseen
+   words; read-back against the explicit tree.
+3. Bars on the same split and length cap: the `experiments/syntax-learned` parser retrained without
+   the features that come from `hmm-rules` (its stations and word kinds) and, as a reference, with
+   them; the bottom-up reader.
+4. Decision rules: good under teacher forcing but poor free running means exposure bias (more
+   roll-in, the beam); errors on unseen words mean kinds; attachment errors dominant mean the choice
+   memory; far below the parser means comparing with M2b to tell weak decisions from conventions.
+
+**M3. All messages and the benchmark.**
+1. All lengths; beam 4 scored by fit; the re-placement pass; judged weights, registry labels,
+   negatives from rejected circuits. Ablations: soft stack; no action loss.
+2. The strategy: `index.mjs` (`{name: 'rvss', schema: 'syntax', open(configuration)}`,
+   `analyse(text) → {analyses: [{sop}]}`, `close()`) and `worker.py`; ms per message, start-up time,
+   model MB.
+3. The benchmark (1,831 messages), counted with the procedure of `experiments/syntax-learned/review/`
+   (section 15).
+
+## 15. Evaluation rules
+
+- **Snapshot.** Every number names its data snapshot (commit, date, count). Numbers from another
+  state are marked.
+- **Like for like.** Headlines compare controls with the same resources: the read-back with the
+  atlas against its own no-atlas control, and the no-atlas control beside the flat chart; figures are
+  weighted to the population, with length buckets shown.
+- **dev-B first.** dev-B (whole files) is the primary development measure; dev-A is reported beside
+  it, and texts of either with a near-duplicate in training are reported apart.
+- **Benchmark** (1,831 messages, `eval-results/2026-11-27-syntax-benchmark-random`), with a copy of
+  the review procedure writing into the scratch folder, every strategy recounted in the same run and
+  the verdict snapshot recorded:
+  - known accepted, known rejected, unjudged and invalid, by source;
+  - comparisons only on messages where both strategies have verdicts;
+  - exact-core agreement with accepted circuits;
+  - lower and upper bounds;
+  - the 593 messages with an earlier label against the 1,238 without; the clean subset;
+  - at least 60 unjudged circuits read **blind** against `tests/benchmark/syntax/rules.md` (strategy
+    names hidden, order shuffled). No judges are launched.
+- **The bars are context, not success lines.** The learned parser's 55.3% known accepted (37.4% on
+  the 1,238) used `hmm-rules`' stations and word kinds as features and a dynamic oracle (Goldberg and
+  Nivre 2012), and included verdicts from judges run for it; `hmm-rules` reads 78.6%. Every count is
+  reported, whatever it is.
+- **Equivalence** is reported with the identical-subtree score beside the message star, with the
+  partial correlation controlling for size.
+
+## 16. Risks
+
+| Risk | What, and the answer |
+| --- | --- |
+| weak decisions | Similarities with prototypes may not separate moves. Answer: parts with their own prototypes, pair-code memories, the situation memory; tested in M2b against a logistic regression on the same view. |
+| error propagation | A left-to-right reader carries early mistakes. Answer: roll-in, the beam scored by fit, re-placement, the bottom-up reader. |
+| aside decisions | 9,514 need later words, 442 beyond the window. Answer: provisional placement (M1), the beam, the bottom-up reader. |
+| kinds not discovered | The book's limit; the original failed on SNIPS through its kinds (0.107 on new slot heads). Answer: kinds learned from placement, letters and context; measured on unseen words. |
+| memories too small or overfit | Answer: M and C as ablations; dev-B by whole files; unseen words. |
+| soft receivers blur training | Answer: BCE on the gates beside the per-wire loss; λ tuned on dev-B. |
+| VSA candidates missed | Answer: the explicit lists check them; misses are counted. |
+| circular labels | 95% are `hmm-rules` + spaCy agreement circuits. Answer: the 1,238 messages without an earlier label and the clean subset; judged weights; negatives. |
+| rare constructions | ellipsis 41, shared subject 4,370, reopen 3,892 messages, gathering of 3 or more conjuncts 2,046. Recall reported apart. |
+| atlas size | One star per wire; stated. |
+| data moving | The parallel data session rewrites labels. Answer: the frozen snapshot, named in every result. |
+
+**Fallback, in order, every step strict:** more prototypes and the situation memory; larger memories
+and more kinds; the beam and re-placement; the bottom-up reader; negatives from rejected circuits. No
+word rule, tagger or pretrained model is added; a variant with any of those needs its own name. If
+rvss stays far below, it remains a measured research strategy and `hmm-rules` stays the production
+reader.
+
+## 17. Files
+
+| File | Content |
+| --- | --- |
+| `DESIGN.md` | this design (third revision) |
+| `DESIGN-hier-v2.md`, `DESIGN-hier-v1.md`, `DESIGN-flat.md` | earlier versions, unchanged |
+| `hierarchy-checks/v2/` | this revision's checks on `0a01d23`: `snapshot-0a01d23.sha1`, `RESULTS.txt`, `m1star.py`, `oracle2.mjs` (oracle with arguments and replay), `oracle2-diff.mjs`, `oracle2-failures.json`, `equiv2.py`, and their outputs |
+| `hierarchy-checks/` | the first draft's checks; `holding.mjs`, `oracle.mjs`, `oracle-stats.mjs`, `export-trees.mjs`, `export-pairs.mjs` now read a snapshot through `SYNTACTIC_DIR` / `REGISTRY_DIR` |
+| `revision-checks/` | the first critic's scripts, rerun on `0a01d23` |
+| `m0/` | the flat design's measurements (`export.mjs` reads `SYNTACTIC_DIR`) |
+| `src/`, `m1/` | M1 modules |
+| `model.py`, `train.py`, `decode.mjs` | M2a–M2c |
+| `index.mjs`, `worker.py`, `eval/` | M3 |
+
+Models go to `.local-models/rvss/` (now `.local-models/strict-vss/`); exported data and the snapshot
+copy go to the scratch folder `strict-vss/`. Nothing outside the strategy's folder is edited.
+
+## 18. References
+
+- G. E. Hinton. Mapping part-whole hierarchies into connectionist networks. *Artificial
+  Intelligence* 46, 1990 (reduced descriptions).
+- T. A. Plate. Holographic reduced representations. *IEEE Transactions on Neural Networks* 6(3), 1995
+  ([doi](https://doi.org/10.1109/72.377968)); *Holographic Reduced Representations*, CSLI, 2003
+  (FHRR, chunks, clean-up memory, similarity of structures).
+- P. Smolensky. Tensor product variable binding. *Artificial Intelligence* 46, 1990.
+- J. B. Pollack. Recursive distributed representations. *Artificial Intelligence* 46, 1990 (RAAM, not
+  used).
+- P. Kanerva. *Sparse Distributed Memory*, MIT Press, 1988; Hyperdimensional computing, *Cognitive
+  Computation* 1(2), 2009.
+- R. W. Gayler. Vector symbolic architectures answer Jackendoff's challenges, 2003
+  ([arXiv](https://arxiv.org/abs/cs/0412059)).
+- D. Kleyko, D. A. Rachkovskij, E. Osipov, A. Rahimi. A survey on hyperdimensional computing, Parts I
+  and II. *ACM Computing Surveys*, 2022–2023 ([I](https://arxiv.org/abs/2111.06077),
+  [II](https://arxiv.org/abs/2112.15424)).
 - E. P. Frady, D. Kleyko, C. J. Kymn, B. A. Olshausen, F. T. Sommer. Computing on functions using
-  randomized vector representations, 2021 (arXiv 2109.03429).
-- B. Komer, T. C. Stewart, A. R. Voelker, C. Eliasmith. A neural representation of continuous space
-  using fractional binding. CogSci 2019.
-- P. Kanerva, J. Kristoferson, A. Holst. Random indexing of text samples for latent semantic analysis.
-  CogSci 2000.
-- M. Sahlgren, A. Holst, P. Kanerva. Permutations as a means to encode order in word space. CogSci 2008.
+  randomized vector representations, 2021 ([arXiv](https://arxiv.org/abs/2109.03429)); B. Komer et
+  al. A neural representation of continuous space using fractional binding. CogSci 2019 (fractional
+  power encoding; band-limited codes give smooth similarity over distance).
 - M. N. Jones, D. J. K. Mewhort. Representing word meaning and order information in a composite
-  holographic lexicon (BEAGLE). *Psychological Review* 114(1), 2007.
-- A. Joshi, J. T. Halseth, P. Kanerva. Language geometry using random indexing. Quantum Interaction 2016.
-- D. Kleyko, D. A. Rachkovskij, E. Osipov, A. Rahimi. A survey on hyperdimensional computing aka vector
-  symbolic architectures, parts I and II. *ACM Computing Surveys*, 2022–2023.
-- C. von der Malsburg. Am I thinking assemblies? 1986 (the binding problem).
-- H. Ramsauer et al. Hopfield networks is all you need. ICLR 2021 (a soft cleanup equals one attention
-  step; relevant to the M2 pointer).
-- Y. J. Chu, T. H. Liu (1965); J. Edmonds (1967): maximum spanning arborescence (the optional M3
-  decision).
-- The original: `vsa-semantic-space/experiment/v8_gates.py` (V8: path, pair, chain and gates),
-  `tool/sop/infer.py` (readout, margin, presence, remainder), `tool/sop/world.py` (`Compiler`), and
-  the later decoder in `vss-vs-bert/sop` (one-to-one assignment over the sentence's words). The book
-  *Meaning as a Path*: §2.5, §3.3, §3.5, §3.6, §5, §8, §11, §12, §13 steps 2, 4, 8, 9, 10, §14, §15.
+  holographic lexicon. *Psychological Review* 114(1), 2007; M. Sahlgren, A. Holst, P. Kanerva.
+  Permutations as a means to encode order in word space. CogSci 2008.
+- A. Joshi, J. T. Halseth, P. Kanerva. Language geometry using random indexing. Quantum Interaction
+  2016.
+- H. Ramsauer et al. Hopfield networks is all you need. ICLR 2021 (associative memory read as
+  attention).
+- J. Nivre. Algorithms for deterministic incremental dependency parsing. *Computational Linguistics*
+  34(4), 2008; Y. Goldberg, J. Nivre. A dynamic oracle for arc-eager dependency parsing. COLING 2012.
+- Y. Goldberg, M. Elhadad. An efficient algorithm for easy-first non-directional dependency parsing.
+  NAACL 2010.
+- S. Ross, G. Gordon, J. A. Bagnell. A reduction of imitation learning and structured prediction to
+  no-regret online learning (DAgger). AISTATS 2011.
+- M. Collins, B. Roark. Incremental parsing with the perceptron algorithm (early update). ACL 2004.
+- M. Collins, N. Duffy. Convolution kernels for natural language. NeurIPS 2002.
+- The original: `vsa-semantic-space/tool/sop/world.py` (`Compiler`), `tool/sop/infer.py`
+  (`Routebook.addresses`, readout, margin, residual), `experiment/v8_gates.py` (route book, gates,
+  chains).
+- The book: "Meaning as a Path" (digest in the scratch folder `strict-vss/book-digest.md`).
