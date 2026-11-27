@@ -38,6 +38,11 @@ export function openModel(model, options = {}) {
     nominal: word => habits.nominal?.[word] === 1 ? true : habits.nominal?.[word] === 0 ? false : undefined,
     takesClause: word => habits.takesClause?.includes(word) ?? false,
     takesQuality: word => habits.takesQuality?.includes(word) ?? false,
+    gives: word => habits.gives?.includes(word) ?? false,
+    asks: word => habits.asks?.includes(word) ?? false,
+    phrasal: (verb, particle) => habits.phrasal?.[verb]?.includes(particle) ?? false,
+    // is the word more often a thing than something done?
+    thingFirst: word => (habits.attach?.nounTotal?.[word] ?? 0) >= (habits.verbTotal?.[word] ?? 0),
     together: (left, right) => together.has(left + ' ' + right),
     canBe: (word, station) => legend.places.get(word)?.stations.has(stationIndex.get(station)) ?? false,
     formOf: word => {

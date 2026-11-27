@@ -40,7 +40,9 @@ function admission(legend, symbols) {
   return symbols.map(symbol => {
     // a suffix class is admitted where a word with that ending would be
     const word = symbol.startsWith('~') && !classShape[symbol] ? 'xxxx' + symbol.slice(1) : symbol
-    const mask = admitted(legend, word, classShape[symbol] ?? (/^[\p{L}\p{N}~']/u.test(symbol) ? 'lower' : 'mark'))
+    const written = symbol === '~capital' || symbol === '~initial' ? 'capital' : symbol === '~upper' ? 'upper'
+      : symbol.startsWith('~') ? 'lower' : symbol !== symbol.toLowerCase() ? (symbol === symbol.toUpperCase() && symbol.length > 1 ? 'upper' : 'capital') : 'lower'
+    const mask = admitted(legend, word, classShape[symbol] ?? (/^[\p{L}\p{N}~']/u.test(symbol) ? written : 'mark'))
     for (const station of legend.stations) if (station.like !== null) mask[station.index] = mask[station.like]
     const active = []
     mask.forEach((on, station) => { if (on) active.push(station) })

@@ -90,7 +90,8 @@ export function admitted(legend, word, shape) {
   }
   for (const station of legend.stations) {
     if (station.shapes.includes('mark')) continue
-    if (!station.closed || station.suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix))) mask[station.index] = 1
+    // a closed station still admits a word by its ending or by the way it is written
+    if (!station.closed || station.shapes.includes(shape) || station.suffixes.some(suffix => word.length > suffix.length + 2 && word.endsWith(suffix))) mask[station.index] = 1
   }
   return mask
 }

@@ -77,6 +77,24 @@ export function buildUnits(tokens, stations, lexicon) {
     units.push({type: SINGLE.has(station) ? station : 'other', first: i, last: i})
     i++
   }
+  // "all the arrows": a word that could stand alone joins the determiner of what follows it
+  for (let k = 0; k + 1 < units.length; k++) {
+    const lone = units[k], next = units[k + 1]
+    if (lone.type !== 'entity' || !lone.pronoun || next.type !== 'entity' || !next.determiner?.length || next.first !== lone.last + 1) continue
+    if (!lexicon.canBe(tokens[lone.first].word, 'determiner')) continue
+    next.determiner = [lone.first, ...next.determiner]
+    next.first = lone.first
+    units.splice(k, 1)
+  }
+  // "520 across and 410 down": a measure and the direction right after it are one group
+  for (let k = 0; k + 1 < units.length; k++) {
+    const measure = units[k], direction = units[k + 1]
+    if (measure.type !== 'entity' || !(measure.literal || measure.quantity?.length) || measure.pronoun) continue
+    if (direction.type !== 'adverb' || direction.first !== direction.last || units[k + 2]?.type === 'cue') continue
+    measure.adverb = [direction.first]
+    measure.last = direction.last
+    units.splice(k + 1, 1)
+  }
   // "a girl waving": a form of a verb that closes an entity after its noun was not a thing
   units.doubts = []
   for (const unit of units) {

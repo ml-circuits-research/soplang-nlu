@@ -10,8 +10,9 @@ const bump2 = (table, a, b) => { bump(table[a] ??= {}, b) }
 export function learnHabits(opened, texts) {
   const {legend, book, index, lexicon} = opened
   const names = legend.stations.map(station => station.as ?? station.name)
+  const conditions = new Set(legend.kinds.filter(kind => kind.unit === 'relation' && kind.kind === 'condition').flatMap(kind => kind.cues))
   const heads = {}, qualities = {}
-  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}
+  const verbTotal = {}, verb = {}, nounTotal = {}, noun = {}, takes = {}, everyNoun = {}, doubtful = new Map(), becomes = {}, withObject = {}, pairs = {}, said = {}, saidTotal = {}, hands = {}, wonders = {}, moves = {}
   for (const text of texts) {
     const tokens = observe(text, legend.compounds)
     if (!tokens.length) continue
@@ -61,6 +62,15 @@ export function learnHabits(opened, texts) {
           bump(withObject, predicate)
           if (after?.type === 'complement') bump(becomes, predicate)
         }
+        // "sort it out", "zoom in": a word that moves with the verb, seen where it cannot point at anything
+        const lone = next?.type === 'entity' ? after : next
+        const last = next?.type === 'entity' ? third : after
+        if ((lone?.type === 'adverb' || lone?.type === 'cue') && lone.first === lone.last && legend.links.get(tokens[lone.first].word) === 'particle' && last?.type !== 'entity') bump2(moves, predicate, tokens[lone.first].word)
+        // "give me a hand": a verb seen with a person and then a thing hands things over
+        if (next?.pronoun && legend.links.get(tokens[next.pronoun[0]].word) === 'recipient' && after?.type === 'entity' && !after.pronoun) bump(hands, predicate)
+        // "check if …", "tell me whether …", "see what …": a verb that takes a question
+        const asked = next?.type === 'entity' && next.pronoun ? after : next
+        if (asked?.type === 'question' || asked?.type === 'marker' && conditions.has(tokens[asked.last].word)) bump(wonders, predicate)
         // "let us add": a verb whose object is followed by a bare verb takes a clause
         if (next?.type === 'entity' && next.pronoun && after?.type === 'verb' && !after.form && !after.auxiliary.length) bump(takes, predicate)
         governed = predicate
@@ -78,6 +88,8 @@ export function learnHabits(opened, texts) {
     else if (quality >= 3 && quality > thing) nominal[word] = 0
   }
   const takesQuality = Object.keys(becomes).filter(word => becomes[word] >= 3 && becomes[word] / withObject[word] >= 0.03)
+  const gives = Object.keys(hands).filter(word => hands[word] >= 3 && hands[word] / verbTotal[word] >= 0.01)
+  const asks = Object.keys(wonders).filter(word => wonders[word] >= 3 && wonders[word] / verbTotal[word] >= 0.02)
   const takesClause = Object.keys(takes).filter(word => takes[word] >= 5 && takes[word] / verbTotal[word] >= 0.02)
   // Doubtful cases first count half for each side, then by what the counts so far say.
   const perCue = table => { const out = {}; for (const cues of Object.values(table)) for (const [cue, count] of Object.entries(cues)) bump(out, cue, count); return out }
@@ -120,7 +132,8 @@ export function learnHabits(opened, texts) {
   }
   const together = Object.keys(pairs).filter(pair => pairs[pair] >= 2)
   const describes = Object.fromEntries(Object.entries(said).map(([form, heads]) => [form, Object.fromEntries(Object.entries(heads).filter(([, count]) => count >= 2))]).filter(([, heads]) => Object.keys(heads).length))
-  return {nominal, takesClause, takesQuality, together, describes, attach}
+  const phrasal = Object.fromEntries(Object.entries(moves).map(([word, with_]) => [word, Object.keys(with_).filter(particle => with_[particle] >= 3)]).filter(([, list]) => list.length))
+  return {nominal, takesClause, takesQuality, gives, asks, phrasal, together, describes, verbTotal: Object.fromEntries(Object.entries(verbTotal).filter(([, count]) => count >= 3)), attach}
 }
 
 /** What an entity is counted under: its head word, or its class when it is a name or verbatim content. */
