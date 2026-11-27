@@ -1,0 +1,39 @@
+M0 measurements for strict-vss (2026-11-27). Scripts in this folder; data: the labels of
+webmeet-dataset/syntactic outside the benchmark (eval-results/2026-11-27-syntax-benchmark-random),
+81,870 messages. Run order: node stats.mjs > stats.out; node export.mjs (writes trees.json, 81,714
+trees, kept in scratch, regenerable); python capacity.py trees.json 256,512,1024,2048;
+python soft.py trees.json 2048,4096; node rehead.mjs (needs trees.json); node roundtrip.mjs; node reg.mjs.
+
+1. capacity.py: the chart of a label with the right answers given (oracle addresses).
+   S = sum_k f_k * z^k * rho(y^{beacon_k}) * Att(a_k) * rho2(Tag(t_k)); every word read back by
+   unbinding f_k*z^k and exhaustive cleanup over (18 attachments x 11 tags) x (words of the message + root).
+   Sample: all 1,438 messages of >= 25 words plus 3,000 random shorter ones (4,438; 78,129 words). GB10 GPU.
+
+   D=256 : words 0.67568; messages exact 2802/4438 = 0.6314; <10: 1820/1820, 10-24: 981/1180, 25-39: 1/1011, 40+: 0/427
+   D=512 : words 0.91174; messages exact 3684/4438 = 0.8301; <10: 1820/1820, 10-24: 1180/1180, 25-39: 684/1011, 40+: 0/427
+   D=1024: words 0.99557; messages exact 4261/4438 = 0.9601; <10: 1820/1820, 10-24: 1180/1180, 25-39: 1008/1011, 40+: 253/427
+   D=2048: words 1.00000; messages exact 4438/4438 = 1.0000; every length bucket complete
+
+2. soft.py: the same, with diffuse addresses: a share p of each word's address on the right answer,
+   the rest spread over three wrong (beacon, label) pairs (weights 0.5, 0.3, 0.2 of 1-p).
+   Sample: 1,438 long + 2,000 random shorter messages. Median over messages of the smallest margin.
+
+   D=2048 p=0.60: <25: 2000/2000, 25-39: 1011/1011, 40+: 423/427   margins 0.348 / 0.25 / 0.142
+   D=2048 p=0.45: <25: 1996/2000, 25-39:  886/1011, 40+: 135/427   margins 0.129 / 0.049 / 0.01
+   D=4096 p=0.60: <25: 2000/2000, 25-39: 1011/1011, 40+: 427/427   margins 0.363 / 0.295 / 0.243
+   D=4096 p=0.45: <25: 1997/2000, 25-39: 1007/1011, 40+: 363/427   margins 0.143 / 0.083 / 0.038
+
+3. rehead.mjs: distance from a word to the word it points at (its beacon), 691,845 arcs.
+   anchor convention of experiments/syntax-learned/parser/tree.mjs: mean 2.42; <=2: 70.6%; <=5: 92.8%; >10: 1.54%
+   marker heads its relation, conjuncts chained:        mean 2.11; <=2: 76.5%; <=5: 94.9%; >10: 0.79%
+
+4. roundtrip.mjs: label -> per-word (label, beacon) -> circuit with treeToCircuit; same core?
+   81,870 labels; 156 cannot be encoded (two parents of one inner wire); writer errors 0;
+   core equal 81,681 = 99.77%. This is the ceiling of any per-word readout through this convention.
+
+5. reg.mjs: registry of judged circuits (webmeet-dataset/annotations/syntax/v1/judged).
+   inside the benchmark: 3,459 accepted, 2,743 rejected (1,645 messages): never used for training.
+   outside: 5,110 accepted, 1,431 rejected (4,896 messages; 389 messages have both).
+
+6. stats.out: structure of the 81,870 labels (words, clauses, nominals, relations, coordinations,
+   keys, forms, labels of the per-word encoding, head offsets).
