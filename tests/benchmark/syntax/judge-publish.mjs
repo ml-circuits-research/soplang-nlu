@@ -14,7 +14,7 @@
 // Verdict files with format problems are not published: check.mjs names the lines to correct.
 // A circuit that the registry already holds, from an earlier call or from another run, is left as it is.
 import {existsSync} from 'node:fs'
-import {join, resolve} from 'node:path'
+import {dirname, join, resolve} from 'node:path'
 import {coreOf} from '../../../lib/syntax.mjs'
 import {readArguments, readRegistry, readItems, readVerdictFiles, lookup, writeJsonl, readJsonl, readJson, readLabels, writeLabels, labelChanges, keepLabelsBefore,
   defaultRegistryDir, syntacticDirOf} from './lib.mjs'
@@ -63,6 +63,16 @@ if (judge === 'unknown') console.log('No --judge was given: the lines say "judge
 
 const {changes, first, replaced} = labelChanges(labels, accepted)
 const agreed = [...changes.keys()].filter(text => labels.get(text)?.accepted_by === 'agreement').length
+// A circuit settled by agreement that another accepted circuit replaces as the label is still an accepted reading,
+// and no other file holds it once the syntactic cell changes: it goes to the registry, marked as agreement.
+const kept = [...changes.keys()].map(text => labels.get(text)).filter(old => old?.accepted_by === 'agreement' && !lookup(registry, old.text, old.core))
+  .map(old => ({text: old.text, sop: old.label, core: old.core, verdict: 'accepted', grade: 'L8', judge: 'agreement', run: named.tag, source: old.source,
+    note: 'settled by agreement and written as the label without a judge; replaced as the label by a circuit a judge accepted in ' + named.tag}))
+if (kept.length) {
+  const keptFile = join(dirname(file), named.tag + '-replaced-agreement.jsonl')
+  writeJsonl(keptFile, kept)
+  console.log(`${kept.length} circuits settled by agreement were replaced as labels; they are kept as accepted readings in ${keptFile}.`)
+}
 const written = writeLabels(labels, changes)
 const set = changes.size - written.missing.length
 console.log(`Labels: ${set} messages got the circuit accepted in this run as their label (${first - written.missing.length} had no label, ${replaced} had another one` +

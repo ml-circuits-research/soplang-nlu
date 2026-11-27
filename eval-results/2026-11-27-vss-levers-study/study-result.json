@@ -1,0 +1,860 @@
+{
+ "faults": [
+  {
+   "area": "I read all 279 VSS circuits a judge rejected for messages whose id starts with \"drawing/\" (run 2026-11-27-syntax-benchmark-random). Of the 876 drawing messages, 273 were accepted by the judge, 324 were equal to a label and 279 were rejected. All examples and line numbers come from a stable copy of strategies/vss taken at the start of this session (vss-base). In that copy, 60 of the 279 circuits had already changed since the run.\n\nLeft out (91 messages):\n- 21 whose cause is already in VSS: the preposition \"like\" (11) and \"the way the drawing looks\" / \"how the picture goes\" (7) are both now repaired; \"-ing after a linking word\" (3) still fails.\n- 70 whose cause the other agent is adding: lists after place phrases 31, a word grading a relation 17, two participles 8, finite be/have/do 6, \"where\"/\"as\" clauses 5, participle-only forms 2, numbers after a comma 1.\n\n65 messages have causes shared by fewer than 3 messages each. The 19 classes below hold 123.\n\nEverything is in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/drawing/:\n- classes.mjs: the class of every rejected message, by index into rej.jsonl\n- p1-makesdo.patch (copy vss-p1) and p2-sentence-ties.patch (copy vss-p2): the two prototypes\n- try.mjs, rerun.mjs, accepted.mjs: the tools, each taking the VSS folder as a parameter\n\nPrototype P2 uses the trial letter S, because the other agent already uses U for its list rule.",
+   "rejectedRead": 279,
+   "classes": [
+    {
+     "name": "Bare verb after let/make/have/help/see/watch and its object (with place phrases) is not read as a nonfinite clause",
+     "count": 14,
+     "examples": [
+      "could you have the dog run to the boy? -> @n2 nominal dependent=\"the\" dependent=\"dog\" head=\"run\"",
+      "make the bird on the fence behind the house face left -> @n3 nominal dependent=\"the\" dependent=\"house\" head=\"face\"",
+      "let limousines be parked -> @c2 clause form=imperative auxiliary=\"be\" verb=\"parked\" (no subject, untied)",
+      "...and have him wear a striped baseball uniform -> @c3 clause form=imperative verb=\"wear\" (tied to nothing)",
+      "make the man in the purple shirt and no hat go over... -> @c2 clause form=declarative verb=\"go\" subject=$n3 (\"no hat\")"
+     ],
+     "rule": "A few verbs take an object and then the bare form of what the object does: let, make, have, help, see, watch, hear, feel. This is already the legend's makesdo list. The object is a nominal or an object pronoun, together with the place phrases and the \"and\"-joined nominals that hang on it. After such a verb and its object, the next word the text knows as a verb is the bare verb of a nonfinite clause whose subject is that object, tied to the governing clause. A bare \"be\" plus a participle there forms a passive nonfinite clause (\"be turned\"). That word is neither the head of the object's nominal nor a command of its own.",
+     "where": "strategies/vss/src/links.mjs, linkSentence, clause roles:\n- Line 228 looks only one unit back and only at the learned takesClause list. That list fails for \"have\" and \"watch\", because it also requires kindsOf(verb) >= 3. Add a branch that walks back over cue/conjunction + entity pairs to a verb that lexicon.makesDo accepts.\n- Line 327: count a bare \"be\" (legend link=bare) as non-finite.\n- Lines 133-138: a makesdo verb before a determiner-led thing must not open a question (\"have the kitchen counter top painted...\" became interrogative).\n- Lines 265-267 (the \"leave it tidy\" doubt): spare a word after a makesdo object that the text shows more often as a verb than as a thing and never as a quality (\"let it drift\", \"have everything come out\").\nunits.mjs: add a doubt {is:'verb'} next to its inverse, \"undo the last document edit\" (lines 427-437).\nreader.mjs line 285: the tagger's one-verb budget must also accept lexicon.makesDo, otherwise \"watch\" loses its verb.",
+     "risk": "\"make\" and \"have\" also take an object followed by a quality or a compound noun. Before the guards were added, these regressed: \"make a scatter plot of sales\", \"make top face yellow\", \"make the wire route orthogonal\", \"make the axis numbers in decimal form\", \"make the avatar like him\".\n\nThe guards: the nominal opens with a determiner; no \"of\" follows the word; no quality follows it after a verb that takes qualities; the word is not a listed linking word, a graded form or a quality.\n\nWith the guards, 5 of 8,000 accepted circuits change:\n- 4 are accepted labels that were themselves wrong, such as \"have the boy in the green hat and the boy in the yellow hat trade hats\", which had \"trade\" inside a nominal. The prototype makes \"trade\" the verb, but its subject is only the first boy, not the coordination.\n- 1 is a real regression: \"have the percentage distance farthest out\" makes \"farthest\" a verb.",
+     "tried": "Prototyped as P1 (vss-p1, p1-makesdo.patch).\n\nThe judged fault is gone in all 14 messages. 12 should now pass. Two still fail for other reasons:\n- #0 coordinates the bird with \"the house\" and splits \"everything else\".\n- #257 keeps \"and after that\" in the first clause, so \"have\" is left untied.\n\nIt also fixes the judged fault of \"let there be a huge cloud facing forward\".\n\nAccepted circuits that change: 0 of 2,000, and 5 of 8,000 (4 of them wrong labels)."
+    },
+    {
+     "name": "A part of one sentence is tied to nothing (label before a dash, tag \"would you\", \"missing: X\", fronted or trailing phrase, clause after a dash)",
+     "count": 14,
+     "examples": [
+      "drop in a cheesecake, would you -> @c2 clause form=interrogative verb=\"would\" subject=$n2 (no relation)",
+      "mouth blue \u2014 change a neutral, please -> @c1 clause form=fragment complement=$n1 (untied)",
+      "missing: one cloud at the top -> @c1 clause form=nonfinite verb=\"missing\" (untied)",
+      "leave the man where he is \u2014 don't send him left after all -> @c4 clause ... verb=\"send\" (untied)"
+     ],
+     "rule": "The words of one sentence (up to . ! ?) hang together. A clause or verbless group that no wire connects to the rest of its sentence, together with what hangs on it, is tied to the sentence's main clause by a relation without a marker. This is the judges' L6 test: tied to nothing inside its sentence.\n\nTwo exceptions:\n- a group with no verb and no nominal holds only words said in passing (thanks, hey, next) and needs no tie;\n- a clause whose own linking word the writer ties later is left alone.",
+     "where": "strategies/vss/src/links.mjs, tieLoose() (lines 101-124). It already ties a loose nonfinite clause and a clause that opens with a question word.\n\nAdd a connectivity pass over the sentence's wires: every $-reference and the shares links. Then tie the first clause of each extra group from the first finite clause of the main group. Use a free trial letter (S), not U.",
+     "risk": "It adds ties that labels left out: 4 of 2,000 accepted circuits change, and 12 of 8,000. Examples: \"notes for the Intro meeting: put Main there\", \"set the grid lines solid, that's the tweak, also give it the title Orders per day\", \"drop in a library, would you\". Judges have accepted these both tied and untied, so they should still pass, but they no longer equal the label.\n\nCounter-example tried: \"how heavy were the October claims on average?\". A first version tied the verbless \"how heavy\" and blocked the writer's own merge of such words. Exempting groups with no verb and no nominal fixed it.\n\nOn the rejected set it also adds ties in 54 other messages; these do not repair their judged faults.",
+     "tried": "Prototyped as P2 (vss-p2, p2-sentence-ties.patch).\n\nAll 14 messages now carry the tie, and 13 should pass. \"Core Hub \u2014 add an oval\" still reads \"Core\" as a verb.\n\nAccepted circuits that change: 4 of 2,000 and 12 of 8,000, all by an added tie."
+    },
+    {
+     "name": "A comma alone, with no conjunction, coordinates an aside with a thing as if it were a second thing",
+     "count": 13,
+     "examples": [
+      "make a house, size 80 -> @k1 coordination conjunct=$n1 conjunct=$n2",
+      "a flower for me, 260 400 -> @k1 coordination conjunct=$n1 conjunct=$n3",
+      "My avatar, an old man, that is the figure I want. -> @k1 coordination conjunct=$n1 conjunct=$n2",
+      "hold off on the cat for now, hands off -> @k1 coordination conjunct=$n1 (the cat) conjunct=$n2 (hands)"
+     ],
+     "rule": "In English, a list of nominals joined by commas is closed by a conjunction before its last member (A, B and C). Where no conjunction closes the series, the nominal after a comma is not another member. It is an aside on what precedes it: an apposition, a property, a measure or a position. Tie it without a marker to the nominal before it, or to the clause when that nominal ends a relation. Lists of bare names keep their current treatment.\n\nThe same rule also removes the wrong comma-only coordinations in the 6 fronted if/while messages and in 2 \"at y 90\" messages: 21 comma-only coordinations in all, every one of them wrong.",
+     "where": "strategies/vss/src/links.mjs, fill(), the joinable branch (lines 655-690). Today a comma-only join coordinates unless the new thing has no determiner and its likeness is below UNLIKE (line 665).\n\nThe other agent's seriesU code (lines 669-679) already tests whether a conjunction closes the series. Let that test decide every comma-only join of nominals: closed means coordinate, not closed means an aside relation (lines 682-689). Keep the bare-name lists in emit-syntax.mjs (lines 209-248).",
+     "risk": "Lists written without \"and\" become asides. Tried \"draw a circle, a square, a triangle\": today it is one coordination of three, and it would lose that.\n\nThe damage to labels is small: only 56 of 62,066 accepted labels hold a comma-only coordination of nominals. Most are calendar field lists (\"..., notes Draft budget, ID planning\") or chart asides a judge accepted (\"just a pie chart, stores per city\").",
+     "tried": "not tried"
+    },
+    {
+     "name": "A quality after a verb's object, or after a form of \"be\", read as a verb or as the head",
+     "count": 9,
+     "examples": [
+      "...and leave the gate clear. -> @c3 clause form=nonfinite verb=\"clear\" subject=$n3",
+      "hmm ok turn um the trunk on the tree upright -> @c4 clause form=declarative verb=\"upright\" subject=$n1",
+      "...until it is clear of block 4 -> @c8 clause form=declarative auxiliary=\"is\" verb=\"clear\"",
+      "it looks odd, spin the chimney on the house upright -> @n4 nominal dependent=\"the\" dependent=\"house\" head=\"upright\""
+     ],
+     "rule": "A bare verb form stands only where English allows one:\n- opening a command;\n- after a modal, \"do\" or \"to\";\n- after a plural subject or I/you/we/they;\n- after the object of let/make/have/help/see/watch/hear/feel.\n\nRight after a form of \"be\", a bare form makes no verb group, since \"be\" takes only an -ing or past form. Right after the object of any other verb (leave, keep, turn, spin), a word without an -s/-ed/-ing ending says what the object becomes or is. It is a clause modifier, or a dependent of a nominal that ends a relation, never a verb and never the head.",
+     "where": "strategies/vss/src/links.mjs:\n- Lines 188-195 turn a word after \"be\" away only when the text rarely shows it as a verb; \"clear\" has 102 verb counts and slips through. Drop that count condition for bare forms.\n- Line 228 lets learned takesClause verbs (leave, keep, call) take a bare verb. Require lexicon.makesDo there.\nunits.mjs: extend lines 427-437 (\"undo the last document edit\") and 504-517 (\"make the girl ginger\") to a quality before \"and\" or a comma, and to a quality that closes the clause after a place phrase.",
+     "risk": "Non-standard \"be\" plus a bare verb loses its verb. Tried \"all I want is make it red\": the stable copy already garbles it, reading \"is\" as the auxiliary of an imperative \"make\". With the rule, \"make\" would become a modifier. Misspelt participles (\"should be update daily\") lose their verb too.",
+     "tried": "not tried"
+    },
+    {
+     "name": "\"with\" + nominal + describing word (absolute construction) read as a clause, as the head, or tied elsewhere",
+     "count": 8,
+     "examples": [
+      "...with the yard clear between it and the doors... -> @c2 clause form=imperative verb=\"clear\"",
+      "...with the gate stlil reachable. -> @c2 clause form=imperative verb=\"reachable\"",
+      "draw a woman with her arms outstretched -> @n2 nominal dependent=\"her\" dependent=\"arms\" head=\"outstretched\"",
+      "...with both conditions holding -> @r5 relation from=$n3 (the boat) to=$c3 (holding)"
+     ],
+     "rule": "After \"with\" and a nominal, the next describing word is said of that nominal. The describing word can be a quality, an -ing or -ed form, or a word with its own linking phrase (\"parallel to the tarmac\"). It is a dependent of the nominal (schema Rule 5.2), or, for a verb form, a nonfinite clause tied to that nominal. Nothing inside the \"with\" phrase is a finite clause, a command or the head.",
+     "where": "strategies/vss/src/emit-syntax.mjs lines 249-265 already move a single \"said how\" word after a with-nominal into it (\"with outline gold\"). Extend this to a word the linker made into a lone verb or clause.\nunits.mjs: add a doubt {not:'verb'} for a bare form right after the nominal that ends a \"with\" cue.\nlinks.mjs lines 388-404 choose which thing a participle describes (placedBy, said()): prefer the end of the \"with\" relation right before it.",
+     "risk": "A real command after a \"with\" phrase with no comma. Tried \"with each row show the total\": today \"show\" is the imperative verb, and the rule would turn it into a describing word. Limit the rule to words not followed by a determiner-led nominal or a pronoun, since a describing word takes no object.",
+     "tried": "not tried"
+    },
+    {
+     "name": "Count + plural unit + size word (\"make tree 74 pixels wide\")",
+     "count": 7,
+     "examples": [
+      "Please, make tree 74 pixels wide. -> @n1 nominal head=\"tree\" dependent=\"74\" / @n2 nominal dependent=\"pixels\" head=\"wide\"",
+      "Hey, make Tractor 2 62 pixels wide. -> @n1 nominal head=\"Tractor 2 62\""
+     ],
+     "rule": "A cardinal number right before a plural noun counts that noun. It begins a new nominal, also right after a noun or a name that has its own number (\"tree | 74 pixels\", \"Tractor 2 | 62 pixels\"). The plural noun closes that nominal, because nouns that describe a noun stand in the singular. A word after such a measure that the text did not show as a thing (wide, tall, high) is a clause modifier, and the measure is a complement. About 1,400 dataset messages contain \"N pixels wide\".",
+     "where": "strategies/vss/src/units.mjs:\n- readEntity lines 551-557 (\"a number after the noun that counts the next noun begins another thing\") need the next station to be noun and the word before to be a known thing. \"pixels\" is read at the modifier station, and names like \"Fish\" are not known things. Test the plural ending of the next word instead.\n- Lines 287-298 (\"a plural noun closes a thing\") apply only to things opened by a determiner. Extend them to things opened by a count.",
+     "risk": "A name that ends in a number before a plural noun gets split. Tried \"hide Series 2 labels\": today it is one name, \"Series 2 labels\"; with the rule it would become \"Series\" + \"2 labels\".",
+     "tried": "not tried"
+    },
+    {
+     "name": "A verb in -s right after its subject read as the head of the subject's nominal",
+     "count": 7,
+     "examples": [
+      "...on the side where the sun rises, and make it... -> @n5 nominal dependent=\"the\" dependent=\"sun\" head=\"rises\"",
+      "change that: the cloud goes to the top -> @n2 nominal dependent=\"the\" dependent=\"cloud\" head=\"goes\"",
+      "...until the downpour owns the street -> @n3 nominal dependent=\"the\" dependent=\"downpour\" head=\"owns\"",
+      "export wants tidy chunks, so ... -> @n1 nominal dependent=\"wants\" dependent=\"tidy\" head=\"chunks\""
+     ],
+     "rule": "A clause needs a finite verb. Some stretches must be clauses: after a subordinator (where, until, because, while, when), after a colon, or at the start of a sentence. When such a stretch has no other verb, a word with the -s ending that closes a determiner-led nominal is its verb, and the nominal before it is its subject, even when the text does not know the stem as a verb (rises, owns, exits).\n\nAlso, a word in -s whose stem the text knows only as a verb (goes, wants) is the verb after the first nominal of a clause, including when the message starts with a lowercase word.",
+     "where": "strategies/vss/src/units.mjs:\n- Lines 459-474 (\"where the path bends\") require sForm or kinds.verb >= 3, so \"rises\", \"owns\" and \"exits\" fail. After a subordinator, accept the -s ending itself.\n- Lines 372-379 (\"Leadership looks tiny\") apply only when the first word is capitalised. Allow a lowercase first word.\nlinks.mjs scanLeft (lines 545-554) then assigns the subject.",
+     "risk": "Plural nouns. Tried \"only the bar charts\": today it is a fragment with head \"charts\", and a rule that also applied to verbless fragments would make \"charts\" a verb. Keep the rule to stretches that must be clauses, or to stems the text knows only as verbs. \"chart\" has 124 verb and 974 thing counts in the frames, so it is not one.",
+     "tried": "not tried"
+    },
+    {
+     "name": "\"else\" after an indefinite pronoun split from it",
+     "count": 7,
+     "examples": [
+      "place both cats at the left side, keeping everything else where it is -> @c2 clause form=nonfinite verb=\"keeping\" modifier=\"else\" complement=$n3 (head=\"everything\")"
+     ],
+     "rule": "\"else\" right after an indefinite pronoun is a dependent of that nominal: everything, anything, nothing, something, everyone, anyone, someone, nobody, somebody, anybody, everybody. The same holds after a question word (what, who, where). The pattern also appears in 3 messages counted in other classes.",
+     "where": "strategies/vss/src/units.mjs buildUnits: add a pass next to \"all the arrows\" (lines 90-98). A pronoun entity followed at once by the adverb unit \"else\" absorbs it as a modifier, which the writer emits as a dependent. The legend's adverb list already holds \"else\".",
+     "risk": "Minimal. \"else\" meaning \"otherwise\" (\"do it now, or else delete it\") does not follow a pronoun, so it is untouched. Tried \"what else should move\": today \"else\" is a clause modifier, and the rule would make it a dependent of \"what\", which is correct.",
+     "tried": "not tried"
+    },
+    {
+     "name": "Fronted if/while clause followed by a part with no verb",
+     "count": 6,
+     "examples": [
+      "if it is not too much trouble, a sock -> @c1 clause ... modifier=\"if\" ... complement=$k1 / @k1 coordination conjunct=$n2 (trouble) conjunct=$n3 (a sock)",
+      "while you are at it, a rug -> @r1 relation marker=\"at\" from=$c1 to=$k1 (it, a rug)"
+     ],
+     "rule": "A subordinate clause that opens the sentence (if, while, when, because, before, as) ends at the comma after it. What follows the comma is the main part, a clause or a group without a verb. The subordinate clause hangs on that main part, with its subordinator as the marker.",
+     "where": "strategies/vss/src/links.mjs fill(). The \"before I forget, a fireplace\" branch (lines 693-701) makes the part after the break a mention only when the clause has no objects. Also, the joinable branch (lines 655-690) runs first and coordinates \"trouble\" or \"it\" with the new thing.\n\nGive a fronted clause with a subordinator (clause.marker at the start of the sentence, lines 351-357) the mention path at its first comma, before any join. emit-syntax.mjs's fallback for pending markers (lines 139-142) then ties the clause to the fragment with \"if\" or \"while\".",
+     "risk": "A comma inside the fronted clause. Tried \"if the box, the circle and the line fit, group them\": today it is already garbled (\"fit\" is read as a head), and the rule would cut the clause at the first comma. Do not cut when a list closed by \"and\" follows before the next verb.\n\nTried \"if possible, a red box\": it has no clause, so the rule leaves it alone.",
+     "tried": "not tried"
+    },
+    {
+     "name": "\"and\" inside a place phrase joined at the wrong level (\"the man in the yellow shirt and no hat\")",
+     "count": 6,
+     "examples": [
+      "a man in the orange shirt and no hat joins and stands... -> @c2 clause form=declarative verb=\"joins\" subject=$n3 (\"no hat\")",
+      "...the man in the yellow shirt and orange hat next to the man in the green shirt and orange hat -> @k1 coordination conjunct=$n3 conjunct=$n4 conjunct=$n7 (the second \"orange hat\" joined to the first man's list)"
+     ],
+     "rule": "A conjunct after \"and\" that has no determiner of its own, or that opens with \"no\" (\"and orange hat\", \"and no hat\", \"and green shirt\"), joins the nominal right before it inside the same place phrase. Conjuncts are adjacent: a coordination does not reach back over another relation's marker. A verb after such a phrase takes the first nominal of the stretch as its subject (\"the man ... and no hat should go\").",
+     "where": "strategies/vss/src/links.mjs:\n- scanLeft (lines 505-559): the subject chain walks back over cue + entity pairs only. Let it also cross \"and\" followed by such a conjunct.\n- partner() and coordinate() (lines 997-1019): pick the nearest conjunct, which fixes #95 and #99.",
+     "risk": "Tried \"a box on the left and a circle appears on the right\": today it is correctly a fragment coordinated with a clause. A rule that applied to any nominal after \"and\" would damage it. Because the rule is restricted to conjuncts without their own determiner (or with \"no\"), \"and a circle\" keeps its current reading.",
+     "tried": "not tried"
+    },
+    {
+     "name": "Words between a determiner and its noun split off",
+     "count": 5,
+     "examples": [
+      "...a young swan on the still lake -> @c2 clause ... modifier=\"on\" modifier=\"the\" modifier=\"still\"",
+      "...into a bare sandy desert -> @n2 nominal dependent=\"a\" dependent=\"bare\" head=\"sandy\" + clause modifier=\"desert\"",
+      "...into a 1920s deco city -> @n2 nominal dependent=\"a\" head=\"1920s\" / @n3 nominal dependent=\"deco\" head=\"city\""
+     ],
+     "rule": "A determiner opens a nominal that runs to its next noun. Every word between them is a dependent of that nominal: qualities, words that can also be adverbs (still, even), numbers with endings (1920s), and words joined by \"and\" (gentle and still).",
+     "where": "strategies/vss/src/units.mjs readEntity (lines 549-573) stops at an adverb or complement station. When a determiner has been read and a noun follows within the run, take those words in as modifiers, for example through a doubt {is:'modifier'} like the one rule L raises for capitals.\n\nThe existing rule \"nominals after a linking word run to their last noun\" (lines 268-286) covers only a lone word after the nominal, not words inside it.",
+     "risk": "Low. Tried \"make the text even smaller\": \"even\" comes after the noun, not between the determiner and the noun, so it stays a clause modifier.",
+     "tried": "not tried"
+    },
+    {
+     "name": "A number after a noun, a letter or a naming word not kept with it",
+     "count": 5,
+     "examples": [
+      "draw a square called anchor 2; ... -> @n2 nominal head=\"anchor\" / @n3 nominal head=\"2\"",
+      "draw a house, at y 90, 160 wide, ... -> @n2 nominal head=\"y\" / @n3 nominal head=\"90\"",
+      "...and hidden 0.25 -> @n4 nominal head=\"0.25\" as a complement of \"add\""
+     ],
+     "rule": "A number right after a noun, a single letter or a property word belongs to it (schema Rule 5.5): \"anchor 2\", \"y 90\", \"hidden 0.25\". It is a dependent of that nominal, or tied to it without a marker. After a naming verb (called, named), the noun and its number together are the name.",
+     "where": "strategies/vss/src/units.mjs:\n- Lines 108-116 (\"name the x axis Month\") split a head from its name after a naming verb. They should not split when the name is a number right after a lowercase noun.\n- readEntity lines 566-569.\n- Lines 438-445 (\"level 2\", \"scale 1.5\") for a letter or participle before a number.",
+     "risk": "A number that measures the verb rather than naming the thing. Tried \"rotate the box 90\": today 90 is already a dependent of \"box\". A number before a plural noun still begins a new thing, under the count rule of the measure class.",
+     "tried": "not tried"
+    },
+    {
+     "name": "\"one\" after a determiner or quality, or \"that\"/\"which\" before a noun, split into two nominals",
+     "count": 4,
+     "examples": [
+      "which one is red? -> @q1 nominal head=\"which\" / @n1 nominal head=\"one\"",
+      "that flower skewed 20\u00b0 please -> @n1 nominal head=\"that\" / @n2 nominal head=\"flower\"",
+      "...but the big one can stay -> @n2 nominal dependent=\"the\" head=\"big\" dependent=\"one\""
+     ],
+     "rule": "\"one\" or \"ones\" after a determiner or a quality, with no noun after it, is the head of that nominal. Unlike other pronouns, \"one\" takes determiners and qualities. A word that can be a determiner (that, this, which, each) right before a noun or \"one\" is its determiner.",
+     "where": "strategies/vss/src/units.mjs:\n- readEntity line 535 (\"these two\") and line 547 (\"the ones\"): handle \"which\" or \"that\" at the pronoun station before the pronoun \"one\", and \"one\" read as a number after a quality.\n- Lines 90-98 (\"all the arrows\") join a lone determiner-word only with a following entity that has a determiner. Extend them to an entity with none.",
+     "risk": "\"that\" introducing a clause before a bare plural subject. Tried \"make sure that boxes line up\": the stable copy already holds \"that boxes\" as one nominal. The \"that + noun\" part must exclude a noun followed by its verb.",
+     "tried": "not tried"
+    },
+    {
+     "name": "\"like\" followed by a clause (as if)",
+     "count": 3,
+     "examples": [
+      "make the house look like it's seen from the street -> @r1 relation marker=\"like\" to=$n2 (it) / @c3 clause form=imperative auxiliary=\"'s\" verb=\"seen\"",
+      "like a child drew it, turn all the flowers stripes -> @c1 clause form=imperative verb=\"like\""
+     ],
+     "rule": "\"like\", used like \"as if\", introduces a clause when a nominal and a finite verb follow it. The finite verb is a helping verb, a form in -s, or a past form after a subject pronoun or at the start of the sentence. \"like\" is then the marker of a relation to that clause. It is never a verb at the start of a sentence before a nominal and a verb.",
+     "where": "strategies/vss/src/units.mjs lines 339-348 (\"like\" is a verb only after a subject, helper or \"to\") start at t=1, so \"like\" as the first word is never doubted.\nlinks.mjs scanLeft lines 534-544 (\"until its edge meets the edge\") let a cue link a clause when an -s verb follows. Extend this to helping verbs and past forms for \"like\".",
+     "risk": "\"like\" + nominal + participle is no clause. Tried \"draw it like the box painted red\": today it is correctly \"like the box\", with \"painted red\" tied to the box. Regular past forms look the same as participles, so require a helping verb, an -s form or a pronoun subject.",
+     "tried": "not tried"
+    },
+    {
+     "name": "A subject with a place phrase before its verb loses its verb (embedded \"which way ...\", \"could everyone in the scene stay\")",
+     "count": 3,
+     "examples": [
+      "tell me which way the boy on the lawn is facing -> @c2 clause form=imperative auxiliary=\"is\" verb=\"facing\" (no subject, untied)",
+      "could everyone in the scene stay facing the viewer -> @c1 clause verb=\"could\" subject=$n1 / @c2 clause form=imperative verb=\"stay\""
+     ],
+     "rule": "A nominal followed by its place phrases and then a verb (or a helping verb and a verb) is that verb's subject. After \"which way\", \"how\", or a helping verb that opens a question, the clause runs from that word over the subject and its place phrases to the verb.",
+     "where": "strategies/vss/src/links.mjs:\n- scanLeft already walks cue + entity chains (lines 505-512).\n- Rule A (lines 151-159) requires the helping verb's subject to be one group ending right before the verb. Extend that group to group + (cue + entity)*.\n- The tie for embedded questions (tieLoose lines 116-121) should start the clause at the question word.",
+     "risk": "Run-on commands. Tried \"move the box on the left rotate it\": today \"rotate\" is absorbed as a head. With the rule it would become a declarative clause with \"the box\" as subject. Require a finite verb, or a question word or helping verb before the subject.",
+     "tried": "not tried"
+    },
+    {
+     "name": "Verb after the infinitive \"to\" read as a noun",
+     "count": 3,
+     "examples": [
+      "set the avatar to look happier -> @r1 relation marker=\"to\" from=$c1 to=$n2 / @n2 nominal head=\"look\"",
+      "i'd like the dog by the tree to play with the ball -> @n4 nominal head=\"play\"",
+      "I want the entire scene to feel quieter and calmer -> @n3 nominal dependent=\"feel\" head=\"quieter\""
+     ],
+     "rule": "\"to\" is the infinitive marker when it is followed by a bare word with no determiner, and that word is followed by a graded form, a quality, a determiner-led nominal or a linking word. The bare word is then the verb of a nonfinite clause. A bare singular noun after a preposition rarely takes such a follower.",
+     "where": "strategies/vss/src/units.mjs: add a doubt {is:'verb'} for the word after \"to\", built like rule B (lines 197-206, \"-ing after a linking word\"). links.mjs lines 204-210 then form the infinitive clause.",
+     "risk": "Bare place nouns after \"to\". Tried \"move it to top left\": today it reads \"to\" + the nominal \"top left\", and \"top\" can be a verb. Require the fixed frames to show the word as a verb at least as often as a thing.",
+     "tried": "not tried"
+    },
+    {
+     "name": "Linking word + now/then/here/there",
+     "count": 3,
+     "examples": [
+      "...it covers the sun from there -> @c3 clause ... modifier=\"from\" modifier=\"there\"",
+      "only two trees for now -> @n1 nominal dependent=\"two\" head=\"trees\" dependent=\"for now\"",
+      "...in noon light by now -> modifier=\"by\" modifier=\"now\""
+     ],
+     "rule": "A linking word right before now, then, here or there (adverbs the legend lists) forms a fixed phrase of time or place with it: \"for now\", \"by now\", \"from there\", \"until then\". The phrase is held whole as a clause modifier, or as a relation ending at the adverb. The linking word is never a modifier on its own, and never a dependent of a nominal, also in a fragment.",
+     "where": "strategies/vss/src/units.mjs: merge a one-word cue unit with a following adverb unit whose word is one of these listed adverbs into one adverb unit. The legend already does this word by word for compounds like \"for now\" and \"so far\".\nemit-syntax.mjs: in a fragment, a modifier after a nominal stays on the clause (fixes #33).",
+     "risk": "Fixed phrases of three words. Tried \"from then on keep it red\": today \"from\", \"then\" and \"on\" are three clause modifiers, and the rule would make \"from then\" + \"on\". Also, \"from here to the box\" would break the legend's from...to pair unless the relation ends at \"here\".",
+     "tried": "not tried"
+    },
+    {
+     "name": "A measure of a move tied to the nominal before it",
+     "count": 3,
+     "examples": [
+      "bring the second woman from the left in the red dress one spot to the left -> @r3 relation from=$n3 (the red dress) to=$n4 (one spot)",
+      "scoot the second man on the left in the green jacket a single space left -> @r3 relation from=$n3 to=$n4 (a single space)"
+     ],
+     "rule": "A measure stands after the object and its place phrases and before a direction word or a linking word: a count, or \"a\" with a grading word, followed by a noun. It measures the motion, so it is a complement of the clause, and the relation after it starts at it (schema Rule 4). The unmarked noun + value tie (\"x 120\") is only for a number or a name right after a noun.",
+     "where": "strategies/vss/src/links.mjs fill(), lines 759-765 (\"x 120\": a value right after a thing stands with that thing). The \"beside\" test fires for any entity right after the end of a relation the verb does not hold. Restrict it to values (literal, number or name).",
+     "risk": "Low. Tried \"give the girl in the red dress a hat to hold\": \"a hat\" is already a complement of \"give\", and the rule does not change it.",
+     "tried": "not tried"
+    },
+    {
+     "name": "A grading word before a particle read as the head (\"a small cat way off\")",
+     "count": 3,
+     "examples": [
+      "a small cat way off on the left -> @n1 nominal dependent=\"a\" dependent=\"small\" dependent=\"cat\" head=\"way\""
+     ],
+     "rule": "A grading word that the legend lists (way, right, just, well), standing right after a noun and before a particle or a linking word, grades what follows. It goes to the clause, as Rule 5.6 says for \"right behind\", and does not join the nominal before it.",
+     "where": "strategies/vss/src/units.mjs lines 317-323 (\"way longer\": a grading word before a graded form) cover only graded forms. Extend them to a particle, adverb or cue after the grading word. This may overlap with the other agent's rule for a word grading a relation, which handles \"right\" and \"just\" before a linking word.",
+     "risk": "\"way\" as a noun with its own determiner. Tried \"show me the way out of the maze\": today \"the way\" is a nominal. The rule applies only to \"way\" right after another noun, so this stays as it is.",
+     "tried": "not tried"
+    }
+   ]
+  },
+  {
+   "area": "diagram/ messages (charts, diagrams, layout) of eval-results/2026-11-27-syntax-benchmark-random. VSS wrote 808 diagram circuits: 250 judged acceptable, 316 rejected (L3 172, L1 97, L6 25, L5 20, L2 2), and 242 equal to a label, so not judged. I read all 316 rejected circuits with their reasons. I ran them on a stable copy of VSS taken at 17:04; 67 circuits had changed since the run. Of the 316: 20 are now fixed (for example 'Maybe plot\u2026', 'the budget pie', 'how the broadcasts split', 'tell me what moved'). 36 are left out because rules already in VSS or being added cover them: 15 comma between numbers, 10 lists after place phrases, 2 finite be/have/do, 5 comma asides, 4 participle-only forms such as 'with the values shown on the bars'. 17 are typos or garbled templates ('thegroup', 'Could you what values does\u2026'). 88 have causes with fewer than 3 messages. The 24 classes below hold the rest; two messages sit in two classes. Line numbers refer to the stable copy /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/diagram/vss-base, the unchanged baseline. Folder /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/diagram/ holds: classes.json (every message with its classes), the prototypes vss-compound (the same as vss), vss-cmd and vss-part, and the tools rejected.mjs, rerun.mjs, runall.mjs, vss-accepted.mjs (VSS=<dir>), accdiff.mjs and labels-grep.mjs. Baseline on 2,000 accepted circuits: 1923 equal, 22 equal except attachment, 55 different. The agent working on VSS now has, so far, changed only clause forms (imperative to declarative) in BE_PART and SUB_VERB messages; the verb and subject faults remain.",
+   "rejectedRead": 316,
+   "classes": [
+    {
+     "name": "COMPOUND: a noun that describes the next noun closes the nominal; the following noun goes to the clause as a modifier, or becomes the head or a dependent",
+     "count": 20,
+     "examples": [
+      "keep the colour bar medium in thickness: @n1 dependent=the head=colour; clause modifier=\"bar medium\"",
+      "Show the unit profit for each category: head=\"unit\", clause modifier=\"profit\"",
+      "make Lunch orders yellow: head=\"Lunch\", modifier=\"orders yellow\"",
+      "go for medium width bar border: head=width dependent=bar; border a separate complement"
+     ],
+     "rule": "Inside one nominal, a noun that describes another noun stands before it. A word the text showed as a thing (kindsOf: thing>=3, thing>=3*quality, not saysHow, not listed, not a verb form; or nominal()===true and never seen otherwise), standing right after the noun of a nominal, continues that nominal and becomes its head in two cases. (a) Another word of the same run follows it: only the last word after a nominal can be what a verb makes it. Here the word must also be one whose plural heads things (nominal()===true). (b) It is the last word before a linking word, a break or a bare noun, and no verb that says what its object becomes (takesQuality) waits. After a capitalised name, a word mostly seen as a thing continues the name even then ('the Crush flow'). The rule does not apply when the noun before is plural or is a word the legend lists ('the other way round').",
+     "where": "units.mjs, right after the rule 'after a linking word, a thing that a determiner opens runs to its last noun' (lines 268-286). It widens that rule from 'after a cue' to any nominal. It raises {is:'head'} doubts on the first word of the complement run. Prototype: block '(lever COMPOUND)' in vss-compound/src/units.mjs.",
+     "risk": "Colour names made of a noun and a quality. Counter-example: 'paint Tom's baseball cap brick red' (an accepted label) now gets head=brick. Three regressions were found and removed: 'the axs the other way round' (judged L8, broke; fixed by skipping words the legend lists), 'change a std earring light huge' and 'please shift the hair front left' / 'park the Draft box dead centre' (fixed by requiring a noun with a plural that heads things in case (a)).",
+     "tried": "Prototype. The nominal fault is repaired in 12 of 20 (3, 25, 38, 94, 156, 185, 198, 211, 217, 239, 245, 311); some of these keep other faults. Not repaired: unknown words (food, thickness, workflow, crop), 'versus', and 'title' read as a verb. 2,000 accepted circuits: 2 changed (1 worse, 'brick red'; 1 different to different). 8,000: 4 changed (1 worse, 2 now equal except attachment). Whole benchmark of 1,831 messages: 13 changed, all inside this class's rejected messages."
+    },
+    {
+     "name": "CMD_VERB: the command verb at the start of a sentence part is read as a noun",
+     "count": 13,
+     "examples": [
+      "excuse me \u2014 drop the x axis: @n1 nominal head=\"excuse\" in a fragment",
+      "I want to restyle it, so focus on the arrow: nominal head=\"focus\"",
+      "\u2026sites. Then Use a colour-blind-safe palette: nominal head=\"Use\"",
+      "giving \u2026 was wrong \u2014 circle it: \"circle\" a complement of 'was'"
+     ],
+     "rule": "A clause needs a verb, and a command opens with its bare form. A sentence part can start at the message start, after a break or a word said in passing, after a clause-joining 'so'/'then' that follows a break, or after an opening adverb. When its first word is followed directly by what a verb acts on (a determiner, or a pronoun that is not a subject pronoun: me/it/them/us), that word is the verb if the text showed it as a verb (verb>=1). When it is followed by a particle or linking word and then such a thing, it is the verb only if the text never showed it as a thing or quality; a capital inside a sentence then also needs verb>=1. The rule never applies to an -s form or a plural noun (no command uses them), or when another finite verb follows before the next break. A word right before an object-only pronoun (me/us/him/them) is not barred from the verb by the opener rule.",
+     "where": "units.mjs, next to the rule 'after a comma \u2026 a word written with a capital \u2026 opens a command' (lines 380-387). That rule only takes capitals after a separator, before a determiner or pronoun, with verb>=3. reader.mjs line 275: openers ('excuse me' is a learned opener) bar the verb station, except before an object-only pronoun. Prototype: block '(lever CMD)' in vss-cmd/src/units.mjs and reader.mjs.",
+     "risk": "Verbless fragments that open with a word that is both a noun and a verb, before a determiner ('Chart this year\u2026'). The first version made 'Main' a verb in 'export wants tidy chunks, \u2026 \u2014 Main on the label, Second on the name'; fixed by the capital condition. Tried 'circle on the left, please', 'legend on the right', 'lines the same colour', 'box a bit bigger', 'then label each bar': none changed.",
+     "tried": "Prototype. The command verb is now right in 8 of 13 (138, 161, 173, 214, 250, 278, 289, 291). 138, 278 and 289 show no other fault; the other five keep unrelated faults; in 214, 'me' is now tied to 'the missing piece'. Not repaired: 'just center for', 'even out', 'bridge Sift and Roast', 'Chart revenue against', 'next ask:'. 2,000 and 8,000 accepted circuits: 0 changed. Benchmark of 1,831: 8 changed, all in this class."
+    },
+    {
+     "name": "PART_COMMA: a participle phrase after a comma is not written as a nonfinite clause; it becomes a modifier of the main verb or is tied to the wrong thing",
+     "count": 12,
+     "examples": [
+      "add two blue rectangle nodes, labelled Step: main clause modifier=\"labelled\", Step a complement of 'add'",
+      "Make a column chart \u2026, ordered by profit margin, largest first: modifier=\"ordered\" on 'Make'",
+      "add two rectangle nodes, coloured blue, large: modifier=\"coloured blue\""
+     ],
+     "rule": "A past tense needs a subject. So after a clause and a comma, a past form of a known verb (verb>=3) that opens the next part with no subject is a participle: the verb of a nonfinite clause that describes the thing before the comma. This holds when what follows it is a linking word, a particle, a quality, a name or a number. Also, the 'selected event' rule must not apply before a capitalised name when the verb is a naming verb (habits.names: label, name, call\u2026).",
+     "where": "units.mjs: a new {is:'verb'} doubt beside the command rules (before line 388). links.mjs lines 262-264: the 'selected event' doubt that removes 'labelled' from the verb station. links.mjs lines 223-227 then build the modifier clause and tie it (relation from the host's object, lines 391-404). Prototype: '(lever PART)' blocks in vss-part/src/units.mjs and links.mjs.",
+     "risk": "Lists of past-tense reports after a comma ('\u2026, moved it, then deleted it'). 'coloured blue' now writes 'blue' as a nominal complement of 'coloured', which a strict reading of Rule 5.1 may reject. Counter-example tried: 'draw a house, at y 90, 160 wide, 100 high, size 80, coloured red, labelled Home' (drawing/, judged L3 for this fault) changes for the better.",
+     "tried": "Prototype. The participle clause is written and tied in 7 of 12 (62, 104, 120, 152, 201, 248, 266). Not repaired: 'colour-coded' (hyphen form with no known stem), 'expressed' and 'printed' (unknown words), 'chained', 'sorted high' after a relative clause, and the attachment to 'me' in 13. 2,000 accepted circuits: 1 changed (different to different, better). 8,000: 2 changed (both different to different, better). Benchmark of 1,831: 9 changed, the 7 above plus 2 drawing/ messages with the same pattern."
+    },
+    {
+     "name": "TRAIL_QUALITY: a quality after a noun becomes the head of the nominal, or a dependent where Rule 5.2 wants a clause modifier",
+     "count": 12,
+     "examples": [
+      "I need the claims chart legible from the back: head=\"legible\"",
+      "make Sales per store red: nominal dependent=store head=red",
+      "can you make axis scales log?: head=\"log\"",
+      "bar gap small: head=gap dependent=small (should be a fragment modifier)"
+     ],
+     "rule": "The head of a nominal is its last noun. A word the text showed as a quality at least about as often as a thing, right after a noun that is a thing, does not name the nominal. If the nominal is a subject or complement, the word goes to the clause as a modifier; if it ends a relation, it is a dependent and the noun before is the head (Rule 5.2). This includes a fragment's complement: 'bar gap small', 'line thinner'. 'cm wide' and 'inches high' after a measure belong here too.",
+     "where": "units.mjs lines 485-490: the rule 'a graded form right after a noun does not name the thing' (only -er/-est forms today); widen it to saysHow-like quality counts. Lines 504-517 ('make the girl ginger'): widen from the object right after the verb to nominals held by a relation inside the clause. Rule 5.2 for fragments: links.mjs fill() (line 591 on), where a lone quality after the fragment's nominal is placed.",
+     "risk": "Words seen both ways (red: thing 30 / quality 37; log: thing 111) and names ('Visits by month blue'). Settled counter-case: 'with outline gold', where gold must stay a dependent of 'outline'. The current VSS already writes it as a modifier of 'make' in 'make the box with outline gold', so the relation-end branch must keep the dependent.",
+     "tried": "not tried"
+    },
+    {
+     "name": "SUB_VERB: after a subordinator or 'how', the verb of the subordinate clause is read as a noun",
+     "count": 9,
+     "examples": [
+      "when the board dials in tomorrow morning \u2026: @n1 dependent=the dependent=board head=dials in a fragment (5 messages, one template)",
+      "Report how order value varies by channel: head=\"varies\"",
+      "so the flow makes sense, but \u2026: nominal dependent=makes head=sense",
+      "until the gap between them is even: 'is' with no subject"
+     ],
+     "rule": "A subordinator (when, until, so, while, if, before) or an asking word inside a message opens a clause that needs a finite verb. In the words after it, the -s form of a known verb that follows a singular noun of the opening nominal is that verb (subject-verb agreement), even when a particle, a linking phrase or a nominal follows it. A nominal with a linking phrase ('the gap between them') before a finite form is its subject.",
+     "where": "units.mjs lines 459-474 ('where the path bends'). Today it fires only when a break follows the group, or for asking words with no verb to the end. Compute 'verbless' for markers too, count a marker as a break, and allow a particle or linking word after an -s form whose noun before is singular. links.mjs scanLeft lines 534-544 for the subject chain.",
+     "risk": "Plural noun compounds ('when the box sizes match'): the current VSS reads 'match' as the verb; an agreement rule that takes 'sizes' would break it. The rule must yield when a later bare verb in the same part can take the nominal as subject. In the 'board dials' template a main clause with its own verbs follows, so a 'verbless to the next break' test alone does not work.",
+     "tried": "not tried"
+    },
+    {
+     "name": "ONE_HEAD: a numeral or 'one/ones' closing a nominal is not its head; the word before it becomes the head, or a modifier of the clause",
+     "count": 9,
+     "examples": [
+      "now the adjacent two: head=\"adjacent\" dependent=\"two\"",
+      "quick one: add a thin frame\u2026: clause modifier=\"quick\", nominal head=\"one\"",
+      "the connectors need straight lines only, flat ones: modifier=\"flat\", head=\"ones\""
+     ],
+     "rule": "A numeral word or 'one/ones' with no noun after it stands for the thing and heads the nominal. The words before it (a determiner, a selector such as last/next/first, a quality) are its dependents. This applies to spelled numerals and one/ones after a determiner, a selector or a non-noun word, not to a number right after a noun ('block 2', 'page two', 'box one').",
+     "where": "units.mjs readEntity lines 597-602 (\"the first one\": 'stands' takes a final core word that canBe pronoun as head): extend to a final quantity-station word with no noun after it. Lines 534-535 ('these two') for a bare determiner and count. For the bare 'quick one', join a lone modifier right before a pronoun 'one' into its entity.",
+     "risk": "The judge accepted 'swap the first two' with head 'first' (label, judge-accepted), so the rule changes an accepted circuit; the settled case 'the first one' backs head 'two'. Names such as 'box one plum and bold' and 'page two' must stay. labels-grep found no 'the box two'-type labels.",
+     "tried": "not tried"
+    },
+    {
+     "name": "FUNC_MISSING: function words missing from legend.sop",
+     "count": 8,
+     "examples": [
+      "Render delivery time versus order value: dependent=\"versus\"",
+      "a cloud shape \u2026, wherever it sits best: verb=\"wherever\"",
+      "can u diagram the api: verb=\"u\"",
+      "I keep squinting \u2026 whenever I export it: verb=\"whenever\""
+     ],
+     "rule": "Add 'versus' and 'vs' to the cues (prepositions), 'whenever' and 'wherever' to the markers (subordinators), 'whichever' to the determiners and question words, 'u' to the subject pronouns, and 'thx' to the expressions.",
+     "where": "legend.sop: @w.cue (line 87), @w.marker (85), @w.determiner (54), @w.pronoun and @w.subject (55-57), @w.expression (110). The legend is stored inside model/model.json, so retrain with train.mjs --out <scratch model>.",
+     "risk": "'vs' inside chart names ('a bar chart called Plan vs actual') would become a linking word; 'u' as a letter label ('point u').",
+     "tried": "not tried (needs a retrain)"
+    },
+    {
+     "name": "SPLICE: two clauses of one sentence joined only by a comma are left untied",
+     "count": 8,
+     "examples": [
+      "the change did not take, set it once more: c1 and c2, no tie",
+      "both are obsolete, scrap End and e1: no tie",
+      "I might have deleted it by mistake, is there still a square?: no tie"
+     ],
+     "rule": "Two clauses of one sentence, each with its own verb, separated only by a comma or dash, with no conjunction, subordinator or relative word, are coordinated: a coordination with no conjunction holds both. The judge accepted exactly this for 'the change did not take, set it once more' and 'the stacked bar drops \u2026, bring it back' (labels). A participle left alone before a dash ('cancelled \u2014 rewind that') is tied to the next clause.",
+     "where": "links.mjs lines 473-481: a bare separator between two clauses becomes 'commaOnly' and is put back as plain punctuation when no conjunction takes it. Write a coordination there (members commaHost and the clause) when both have verbs and neither is subordinate.",
+     "risk": "Tag clauses ('make it red, would you') would become coordinated (the judge gave L6 for an untied '\u2026, will you', but may read a coordination as two requests). Also a fragment with a clause ('hmm, that box looks cramped') and parentheticals ('the box, I think, is too big').",
+     "tried": "not tried"
+    },
+    {
+     "name": "PART_NOUN: a past participle right after a nominal (no comma) is read as a finite verb, a head or a dependent",
+     "count": 7,
+     "examples": [
+      "\u2026 a stacked bar chart of order count split by product category: head=\"split\"",
+      "the missing piece: grid lines clipped at the plot edge: head=\"clipped\"",
+      "reference line dashed, grey and horizontal: declarative verb=\"dashed\""
+     ],
+     "rule": "A nominal that a linking word or a verb already holds cannot be the subject of the next word. So a past form right after it is a participle: a nonfinite clause describing it ('a chart of orders grouped by band', 'order count split by \u2026'). At the start of a verbless part (after a colon or comma, or with a fragment before), a past form after a bare nominal and before a linking phrase or a list of qualities is a participle as well.",
+     "where": "units.mjs: add an {is:'verb'} doubt for a past form right after an entity held by a cue or a verb, so that links.mjs lines 216-220 give it role 'modifier' with clause.modifies = that entity. Lines 372-379 ('Lee asked to sync') hold the opposite case and must keep priority for names.",
+     "risk": "Real past-tense statements: 'users clicked on the link' (the current VSS reads it correctly as declarative) would break under the fragment sub-case. Keep that sub-case to parts after a colon, comma or fragment, or drop it.",
+     "tried": "not tried"
+    },
+    {
+     "name": "BARE_OBJ: a bare noun object (no determiner) after a participle or verb becomes a clause modifier",
+     "count": 6,
+     "examples": [
+      "\u2026 a horizontal bar chart showing sales by region: showing modifier=\"sales\"",
+      "Make a bar chart comparing average claim across policy types: modifier=\"average claim\"",
+      "make the grid line style dashes instead of dots: modifier=\"dashes\""
+     ],
+     "rule": "Right after a verb, a word the text showed as a thing and not as saying how is what the verb acts on: a nominal. This holds for an -ing or past participle after a noun ('a chart showing sales'), which takes its object like a command does, and with an adverb such as 'only' in between.",
+     "where": "units.mjs lines 358-371 ('book retro at 15:30'). Its exception 'after a thing that does something, the lone word says how' (units[k-1] is an entity) should not apply when the verb is a participle form; let an adverb stand between.",
+     "risk": "Settled case 'a bird facing left' ('left' is a modifier): listed words and qualities must stay modifiers. Tried 'a bird facing left' on the current VSS: modifier=\"left\"; the rule leaves listed words alone.",
+     "tried": "not tried"
+    },
+    {
+     "name": "CAUSATIVE: make/like/need + nominal + bare verb or participle is split into two clauses or merged into the nominal",
+     "count": 5,
+     "examples": [
+      "make the right sides of Shelf and Bin match: clause match subject=Bin",
+      "maake the edge of Rack meet the edge of Sample: dependent=\"meet\" in Rack",
+      "I need Draft and Review merged into one: declarative merged subject=Review"
+     ],
+     "rule": "A verb that makes its object do or become something (make/let/have/help/see; also like/need/want) takes the whole object nominal, with its 'of' phrase or coordination, and then a bare verb or participle. That verb is the verb of a clause completing the first, with that whole nominal as its subject, not the last noun or the second conjunct. Only when the word was seen as a verb and a linking phrase or an object follows it ('end at Start', 'meet the edge').",
+     "where": "links.mjs lines 228-231 (takesClause) and 255-260 ('make the chart show its gridlines', stranded verb, subject = previous entity): take the subject from the start of the object's relation chain or coordination, and also allow takesQuality verbs.",
+     "risk": "'make the arrow end red': the current VSS reads 'end' as a head, which is right; a looser rule would make 'end' a verb.",
+     "tried": "not tried"
+    },
+    {
+     "name": "BE_PART: be + (subject) + participle: 'be' becomes the verb and the participle a modifier or head",
+     "count": 5,
+     "examples": [
+      "Is discount associated with margin: nominal dependent=discount head=associated",
+      "Are the sales numbers going up or coming down?: verb=Are modifier=going",
+      "\u2026 because the deck is going out: verb=is modifier=going"
+     ],
+     "rule": "A form of 'be' followed by an -ing form, or by a past form of a known verb (after the subject when inverted), is the auxiliary; the participle is the verb (progressive or passive). The same holds for 'did X and Y end up'.",
+     "where": "units.mjs readVerbGroup lines 643-648: 'helps' accepts a following complement only with a past form; add the -ing form and the modifier station. links.mjs lines 131-170: after an inverted helper and its subject, take a past or -ing form of a known verb as the main verb, as rule A does for do/modals at lines 151-159.",
+     "risk": "'is the spacing right' (the -ing word is the head of the subject): the participle must follow a complete subject nominal. The current VSS reads it correctly.",
+     "tried": "not tried"
+    },
+    {
+     "name": "SUB_ATTACH: a subordinate clause that opens a part and is closed by a comma hangs from the clause before it, or is coordinated",
+     "count": 5,
+     "examples": [
+      "\u2026 on the revenue trend \u2014 while you're at it, I'd like the left-hand numbers \u2026: relation 'while' from the clause before the dash",
+      "while you're there, go for \u2026 and have \u2026: coordination holds the 'while' clause",
+      "when you get a moment, create \u2026 and make sure \u2026: coordination holds the 'when' clause"
+     ],
+     "rule": "An adverbial clause that opens a sentence part (at the start, or after a dash, semicolon or colon) and is closed by a comma is fronted. It belongs to the clause after the comma, never to the clause before, and it is no conjunct of a coordination.",
+     "where": "links.mjs: use the 'fronted' mechanism (lines 280-285, 422-427) for marker clauses after a separator, not only at the start. joinedBy (lines 428-442) must not take a host across a dash or semicolon.",
+     "risk": "'drag it there while you're at it, and make it blue': with no break before 'while' the clause stays with 'drag'.",
+     "tried": "not tried"
+    },
+    {
+     "name": "CONTACT_REL: a relative clause with no 'that' (noun + subject + verb) is lost",
+     "count": 4,
+     "examples": [
+      "draw any flowchart you like please: 'you' a complement of draw, modifier=\"like\"",
+      "put back everything the last three steps changed: 'the last three steps' a complement of 'put'",
+      "\u2026 for every diagram I make?: interrogative clause 'I make'"
+     ],
+     "rule": "A nominal followed directly by a subject (a subject pronoun, or a nominal opened by a determiner) and a verb that lacks its object is a relative clause describing that nominal: declarative, tied to the nominal.",
+     "where": "links.mjs scanLeft lines 520-533. 'the positions they began in' already does this, but lines 522-526 ('on Friday I need the chart') block it when a thing follows the verb. Also the clause form for such clauses.",
+     "risk": "'tell the team I need it': the current VSS correctly reads 'I need it' as what 'tell' says. Leave out verbs that take a clause (takesClause/asks).",
+     "tried": "not tried"
+    },
+    {
+     "name": "DECL_START: a statement that opens with a nominal and its finite verb becomes a fragment, or a command with no subject",
+     "count": 4,
+     "examples": [
+      "Archive goes on the left of Check: fragment, dependent=Archive head=goes",
+      "the data lives somewhere, \u2026: fragment",
+      "those Main steps belong to a single stage: imperative belong, no subject"
+     ],
+     "rule": "Subject-verb agreement: a sentence part that opens with a nominal (determiner, name or list) followed by the -s form of a known verb after a singular noun, or by a bare form after a plural noun or list, then by a linking word, determiner or adverb, is declarative. The nominal is its subject.",
+     "where": "units.mjs lines 372-379 ('Leadership looks tiny'): widen from a single first word to an opening nominal. links.mjs lines 545-554 for the subject.",
+     "risk": "Title fragments: 'Revenue forecasts by month as a line chart' (the current VSS keeps a fragment) would get the verb 'forecasts'.",
+     "tried": "not tried"
+    },
+    {
+     "name": "SEMICOLON: a nominal after ';' is listed with a nominal before it",
+     "count": 4,
+     "examples": [
+      "\u2026 every time I paste it into the weekly newsletter; this week, make \u2026: coordination of 'it'/'newsletter' and 'this week' (4 messages, one template)"
+     ],
+     "rule": "A semicolon closes a clause. It joins clauses or whole parts, never one nominal to another across it.",
+     "where": "legend.sop line 131: @k.additive lists ';' with ','/'and'. Move ';' to a clause-joining kind (joins=clause), and in links.mjs partner()/coordinate() (lines 997-1030) do not pair nominals across ';'.",
+     "risk": "Lists of parts separated by semicolons ('page 9: bold words; pages 7 and 8: amber grounds; \u2026') stay joined as parts.",
+     "tried": "not tried"
+    },
+    {
+     "name": "COORD_LIKE: a coordinated command is joined to a subordinate or relative clause instead of the main command",
+     "count": 4,
+     "examples": [
+      "move the star so it sits under the table, then give it a thin outline: coordination 'it sits' + 'give'",
+      "Keep the legend rule for the diagram I have open, plus show the values: 'plus' joins 'I have open' and 'show'",
+      "Let's change \u2026 so the values are \u2026, and sort it: 'so' clause + 'sort'"
+     ],
+     "rule": "A coordination joins alike clauses. An imperative conjunct joins the clause that a subordinate or relative clause hangs from, not that subordinate clause.",
+     "where": "links.mjs line 387: before = made.slice(0,k).findLast(fragment or role==='main'). For an imperative clause, skip clauses that carry a marker or relativeTo.",
+     "risk": "'so that it fits and stays inside': a non-imperative conjunct must stay in the subordinate clause.",
+     "tried": "not tried"
+    },
+    {
+     "name": "ATTR_VALUE: name-value pairs ('width 180 height 90') are not paired",
+     "count": 4,
+     "examples": [
+      "set r1 width 180 height 90: dependent=180 head=height dependent=90",
+      "move Sales by region with y 80 and width 240 and x 120",
+      "display x axis: revenue, y axis: orders: modifier=revenue, modifier=orders"
+     ],
+     "rule": "A number (or a value after a colon) right after a noun belongs to that noun (settled case 5). After a 'noun number' pair, a following bare noun opens the next pair.",
+     "where": "units.mjs readEntity lines 551-557 ('block 2 one space': a count after a noun and its number begins the next thing): also break before a bare noun that follows a noun and its number. links.mjs partner for coordinations of such pairs.",
+     "risk": "Measures ('move it 20 pixels left', 'the colour bar ten steps') must still read the number with the noun after it.",
+     "tried": "not tried"
+    },
+    {
+     "name": "AND_SUBJECT: in a subject with 'of/by A and B' before the verb, 'and B' opens a clause",
+     "count": 3,
+     "examples": [
+      "the colour scale on Sales by weekday and hour should be light bue to purple: subject of 'should be' = hour; 'the colour scale' left in a fragment",
+      "Check whether discount and margin are related: 'discount' a modifier of Check"
+     ],
+     "rule": "'and' + bare noun + finite verb opens a new clause only if the stretch before 'and' in that part already has its verb. Otherwise 'and' joins nominals, and the verb's subject is the first nominal of the part (or the coordination).",
+     "where": "links.mjs scanLeft (lines 505-559) and opensClause (583-589): when the stretch from the clause start to 'and' has no verb, continue the subject chain across the coordination.",
+     "risk": "'move the box and the circle should follow' (a verb before 'and') must stay two clauses.",
+     "tried": "not tried"
+    },
+    {
+     "name": "FREE_REL: a 'what' clause that is the subject or complement of 'be' is written as a question",
+     "count": 3,
+     "examples": [
+      "The middle of the range is what matters: interrogative 'what matters'",
+      "what I want is the matrix cells outlined: interrogative, 'is' an auxiliary of 'outlined'"
+     ],
+     "rule": "'what' + subject + verb with no auxiliary inversion, followed by or following a form of 'be', is a free relative. It is declarative and is that verb's subject or complement; 'is' is the verb of the main declarative clause.",
+     "where": "links.mjs, where the clause form is set from the question word (clause wires, line 316 on); emit-syntax nominalQuestion handling.",
+     "risk": "Real questions 'what do I want?' (do-support) must stay interrogative.",
+     "tried": "not tried"
+    },
+    {
+     "name": "THAT_REL: a relative clause after 'that' gets the wrong form (imperative, interrogative, nonfinite)",
+     "count": 3,
+     "examples": [
+      "\u2026 the chart that is already open: imperative auxiliary=is verb=open",
+      "the month that earned the most revenue: nonfinite 'earned'",
+      "the first slot that is not the same: interrogative"
+     ],
+     "rule": "A clause opened by the relative 'that/which/who' right after a noun is declarative and finite; a past form after the relative word is a past tense.",
+     "where": "units.mjs lines 240-247 ('a chart that counts users') for the verb; the form of a clause with a relative marker in links.mjs.",
+     "risk": "'is that right', 'delete that box': only after a noun and before a verb.",
+     "tried": "not tried"
+    },
+    {
+     "name": "AS_OPENER: 'as a first pass make \u2026': the nominal after 'as' becomes the subject of the command",
+     "count": 3,
+     "examples": [
+      "\u2026 so as a first pass make the z axis inverted: declarative make subject='a first pass' (3 messages, one template)"
+     ],
+     "rule": "Agreement: a nominal opened by a/an/each/every, or with a singular noun, is not the subject of a bare present form. 'as' is then a preposition, and the bare verb opens a command.",
+     "where": "links.mjs scanLeft lines 513-518 ('as it stood': a cue that can be a marker + entity gives a subject): add the agreement test.",
+     "risk": "'as the chart grows' (singular + -s) must stay a subordinate clause.",
+     "tried": "not tried"
+    },
+    {
+     "name": "LETS: 'Let's' + adverb + verb, or 'Let's' + a noun-verb, loses the verb's tie or the verb",
+     "count": 3,
+     "examples": [
+      "Let's also set the tick interval \u2026: the 'set' clause tied to nothing",
+      "Let's only show the enterprise tier \u2026: tied to nothing",
+      "Let's histogram wait time: 'histogram' a nominal"
+     ],
+     "rule": "After 'let's' or 'let us', the bare verb completes 'let' (makesDo), also with an adverb or 'not' in between. The word right after the pronoun is that verb when the text ever showed it as a verb.",
+     "where": "links.mjs lines 228-260 (complement and stranded clauses after a makesDo verb): skip adverbs between the pronoun and the verb. units.mjs: an {is:'verb'} doubt after let + pronoun.",
+     "risk": "'let's not' negation; 'let the bars overlap' is already handled. Tried 'hmm, that box looks cramped, let's resize r1': the current VSS ties it (relation c3\u2192c4).",
+     "tried": "not tried"
+    },
+    {
+     "name": "PLEASE_TO: 'please to VERB' (template wording): 'to' is lost or ties wrongly",
+     "count": 3,
+     "examples": [
+      "please to place flow along the curve: modifier=\"to\"",
+      "please to draw three layers \u2026: 'to' relation from 'pointing'"
+     ],
+     "rule": "'to' before a bare verb marks a nonfinite clause. When only a discourse word stands before it, that clause is the only clause and 'to' needs no host (Rule 5.4).",
+     "where": "links.mjs lines 204-210 (infinitive clause start).",
+     "risk": "'please move it to the left' ('to' + determiner) is untouched. Low value: the wording is ungrammatical and comes from one template.",
+     "tried": "not tried"
+    }
+   ]
+  },
+  {
+   "area": "VSS circuits rejected by the judge for document/ and calendar/ messages, run eval-results/2026-11-27-syntax-benchmark-random. There are 30 rejected (document 20 of 99 judged, calendar 10 of 48): 17 L3, 10 L1, 3 L6. Six are already repaired, or changed in a way that should pass, by rules already in VSS, checked on a copy of VSS taken while the other agent worked: \"change a meeting Second Pass Main Track Hub\", \"change a tassk Second Pass Kickoff\", \"tomorrow morning\", \"shift Review later, same length\", \"name Second\", and \"can't vouch\" (fixed, but \"half asleep\" is still wrong). Of the rest, four classes have 3 or more messages. All four were prototyped in a separate copy of VSS under /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/docal/vss; the unchanged copy is vss-base next to it. Each change can be switched off with LEVER_N, LEVER_P, LEVER_Q or LEVER_S=0. The patch is levers.diff in the same folder.\n\nCombined effect: of the 2,000 accepted circuits (vss-accepted.mjs against the copy), 2 change. Both come from lever P, which adds a coordination where the label had left two parts of a sentence unconnected: \"fort he monthlyreort, aed a pie chart\u2026\" and \"set the grid lines solid, that's the tweak, also give it the title Orders per day\". Equal to the label: 1923 before, 1922 after.\n\nOf the 30 rejected circuits, the levers repair 13 for the judge's stated reason, and 1 more in part (#3, \"object name Summary\").\n\nSingletons left without a rule (one message each, no class of 3):\n- \"Could we retitle \u2026 and set it to run 2?\": the second verb after \"and\" is written as a command; it should stay in the question.\n- \"needs context\": a bare noun after the verb is held as a modifier.\n- \"would be nice to undo\u2026\": a clause opened by a modal is written as a command. This may fall under the rule being added for finite be/have/do, if that rule uses the 'finite' tag, which includes the modals.\n- \"The Fox Who Lost His Tail\": a title in title case, including grammar words, is cut.\n- \"Intro Main 3 justify\": a verb at the end is made the head.\n- \"hmm not sure\": \"not\" with no helping verb opens a command.\n- \"forward one step again\": \"again\" is joined to the measure as if it were a direction.\n- \"my 40th birthday dinner\": the ordinal \"40th\" is made the head.\n- items \"Review draft 9\", \"Check numbers 9\", \u2026: a quoted list with no \"and\".\n- \"the break room\": \"break\" is lifted to a verb by the leaning() rule in reader.mjs, although it stands between a determiner and a noun.\n- \"that room's downstairs\": the \"'s\" here means \"is\".\n- \"characters 4 to 9 of Body\": a range between two numbers.\n- \"half asleep\".",
+   "rejectedRead": 30,
+   "classes": [
+    {
+     "name": "A name of several words that opens with a capital is cut after the capitalised word",
+     "count": 5,
+     "examples": [
+      "Could you write a report about Oat biscuits recipe\u2026 -> @n3 head=\"Oat\" / @n4 dependent=\"biscuits\" head=\"recipe\"",
+      "Please, compose a report about Air fryer review\u2026 -> head=\"Air\" + dependent=\"fryer\" head=\"review\"",
+      "Could you place Market entry proposal after Risks. -> complement=$n2(Market) complement=$n3(entry proposal)",
+      "\u2026a document titled Neighbour noise apology containing \u2026 -> titled complement=$n3(Neighbour) complement=$n4(noise apology)",
+      "\u2026about The Fox Who Lost His Tail\u2026 -> modifier=\"Who\", complement \"Lost\", \"His Tail\" (title-case variant, not repaired)"
+     ],
+     "rule": "English nominals stack nouns before their head. When the words of a nominal so far are a name written with a capital inside the sentence (no determiner), a lower-case word followed by a lower-case noun continues the same nominal; the head is the last noun. The name is not closed by the attributive noun after it. The continuation stops at a word the text showed as describing (nominal(word)===false, or quality>=3 and quality>=thing) and at listed function words. This uses only shape, order and learned habits.",
+     "where": "strategies/vss/src/units.mjs, readEntity() loop. The branch goes right after `else if (station === 'modifier' && !core.length) modifier.push(j)`. Today a modifier-station word after a core ends the entity (`else break`). The existing `label` branch then writes the whole run as one name, which is a passing form (settled case: a name of several words may stand whole in head).",
+     "risk": "Double objects whose second object is a bare compound after a name, for example \"give Ana birthday flowers\". \"give Ana flowers\" already merges in the base, so no change there. The first version also merged \"perhaps give Archive and Ship equal space\" into \"Ship equal space\"; requiring nominal(word)!==false fixed it. One regression is left among the changed raw messages: \"just link Login and Home whichever way reads best\" now reads \"Home whichever way\" as one nominal. The cause is that 'whichever' is missing from the determiner list in legend.sop (a legend fix, not a rule fix).",
+     "tried": "Prototyped (lever N). Repairs 4 of 5 (Oat biscuits recipe, Air fryer review, Market entry proposal, Neighbour noise apology); the title-case 'The Fox Who Lost His Tail' is not repaired. 2,000 accepted: 0 changed. All 10,685 labelled messages with the pattern: 4 changed, all the benchmark repairs, 0 lost. Raw corpus: 270 of 20,802 matching messages change; about 234 are the title templates (titled / labelled / report about / replace \u2026 with / sort X / place X after Y), the rest mostly repairs."
+    },
+    {
+     "name": "Parts of one sentence set side by side with only a comma, dash or semicolon are left untied",
+     "count": 3,
+     "examples": [
+      "b2, make it centred -> @c1 fragment complement=$n1(b2) tied to nothing",
+      "event review notes Bring draft, update it -> @c1 and @c2 with no tie",
+      "let's promote the subchapter, it should be a chapter -> @c3 (should be) tied to nothing"
+     ],
+     "rule": "Two parts of one sentence that only punctuation (comma, semicolon, dash) keeps apart, with no conjunction and no linking word, stand side by side: write a coordination with no conjunction (parataxis). The judge accepted exactly this form from spaCy for all three messages, and labels accepted by the judge use it, for example \"put a plane on the board, would you\" and \"mouth blue \u2014 change a neutral, please\". A third part after another comma joins the same coordination. The rule needs: the first part is a clause with its verb, or a fragment that holds a thing; it has no linking word and is not fronted; the second part is not a bare participle (tieLoose already ties those); no tie exists already, including a fronted clause that hangs on the second part. The colon is left out.",
+     "where": "strategies/vss/src/links.mjs, linkSentence(). The loop is right after made.forEach(\"how the clauses of the sentence hang together\"), where `clause.commaOnly && !clause.commaUsed` today only parks the separator on commaHost. Add an nlu.coordination [commaHost, clause] there, or extend an open one.",
+     "risk": "Over-tying where the judge accepted the parts untied. On the whole run it also ties 31 untied circuits the judge had graded L8, for example \"Goal \u2014 add a boat, please\", \"drop in a library, would you\" and \"leave the wooden bench where it is, the picture is finished\". These need re-judging (possible L4), but the judge accepts the same form in labels. Counter-examples found and fixed: \"since they belong to the same step, place the two boxes\u2026\" (a fronted 'since' clause got coordinated), \", touching the top\" (the coordination replaced the participle tie), \"if I'm right that the Focus pod \u2026, can you\u2026\" and \"if the team agree, move it\u2026\" (a host with a linking word).",
+     "tried": "Prototyped (lever P). Repairs 3 of 3. On the whole benchmark it ties 22 of the 32 untied L6 circuits that are still untied in the base copy. 2,000 accepted: 2 changed. Both gain a coordination where the label left the parts untied: \"fort he monthlyreort, aed a pie chart of saless bymonth\" and \"set the grid lines solid, that's the tweak, also give it the title Orders per day\"."
+    },
+    {
+     "name": "The opening word before a dash or comma is written as a command verb, although a clause with its own verb follows",
+     "count": 3,
+     "examples": [
+      "Ana - remove -> @c1 clause form=imperative verb=\"Ana\"",
+      "Roadmap Rough \u2014 add a document, please -> @c1 imperative verb=\"Roadmap\" complement=$n1(Rough)",
+      "thnx, looks good so far -> @c1 imperative verb=\"thnx\""
+     ],
+     "rule": "One or two words that open a message, closed by a comma or a dash and followed by a clause with a known verb, are a heading, a name or a word said to the listener. A word there that the learned frames never showed as a verb (kindsOf.verb===0, not anchored, not listed) is no verb. Guards:\n- A word stays free to be a verb when what it could act on follows it inside the segment: a pronoun or determiner (\"scratch that\", \"unflip it\"), or a capitalised name after a lower-case word (\"reschedule Review\").\n- A word right after a pronoun stays free (\"we overestimated \u2014\").\n- A known verb or a helping verb must follow the mark.\nThis generalises the existing rule for the learned `openers` list.",
+     "where": "strategies/vss/src/reader.mjs, analyse(), as an `else` of the existing `openers` block (\"an opener stands on its own\", near line 273). It keeps those positions off verbStations through `tried`, before readRoutes.",
+     "risk": "Real verbs the learned frames never saw as verbs (kindsOf.verb===0): reschedule, decline, postpone, unpin. \"Reschedule, then send the invite\" or a capitalised \"Reschedule Review, \u2026\" would lose its verb (L1). In the first version \"scratch that, the man \u2026 goes first\", \"reschedule Review, 2026-11-18 at 10:00 UTC\", \"we overestimated \u2014 take 5 off October\" and \"neaten, generally\" lost their verb; the guards fixed them. One loss is left: \"scratch taht \u2014 park the Pack box\" (a typo hides the pronoun).",
+     "tried": "Prototyped (lever Q). Repairs 3 of 3: Ana, Roadmap Rough and thnx become fragments, coordinated with the clause by lever P. 2,000 accepted: 0 changed. Raw corpus: 102 of 20,612 messages with a short opening segment change; these are mostly interjections and typos (osrry, awit, hy, nevermind) and node names (\"Archive first, then \u2026\")."
+    },
+    {
+     "name": "A bare form after a singular noun that opens its clause is taken as the verb (no agreement)",
+     "count": 3,
+     "examples": [
+      "\u2026text Revised paragraph, object name Summary, justified\u2026 -> @c4 declarative verb=\"name\" subject=$n5(object)",
+      "\u2026that the Focus pod really seats just one person\u2026 -> verb=\"really\", complement \"seats\"",
+      "\u2026while half asleep\u2026 -> @c3 declarative verb=\"asleep\" subject=$n4(half)"
+     ],
+     "rule": "A verb that follows its subject with no helping verb agrees with it. After a thing named in the singular (a lower-case noun not ending in -s, or a capitalised name) that opens its clause (start, comma, or linking word before it), a bare form (no -s, no -ed, not a past form, not a verb whose past is spelt like its bare form) is not its verb. When the s-form of a known verb follows at once, that word is the verb.",
+     "where": "strategies/vss/src/units.mjs, a new doubt rule before \"where they stand\". It pushes {not:'verb'} on the bare form and {is:'verb'} on a following s-form. The short list of verbs whose past is spelt like the bare form (put, set, cut, let, hit, read\u2026) belongs in legend.sop as irregular pairs (common verbs, allowed).",
+     "risk": "Irregular plurals and collective nouns. Counter-example tried: \"the people want a bigger chart\" was correct in the base; with the lever it becomes the nominal \"the people want\" (regression). Raw changes are mixed: improvements (\"a shorter crop now\", \"avatar name Alex\", \"girl look on the avatar's face\") and regressions (\"place a block beyond the last block, gap open, \u2026\", \"balloon half the size of the sun\"). Coordinated subjects (\"Ana and Lee join\") and verbs that make their object do something (\"let the man face left\") are skipped by the opens-its-clause condition.",
+     "tried": "Prototyped (lever S). Repairs 2 of 3 (#3 object name Summary: the name is fixed, but the wrong coordination of 'the first paragraph' with 'text Revised paragraph' remains; #16 now 'really' modifier, 'seats' verb). 'half asleep' is not repaired: 'half' is a quantity word, guarded after the first version made it a verb. 2,000 accepted: 0 changed. Raw: 126 of 40,000 messages change, mixed. The weakest of the four; it needs a learned singular/plural habit (is/are after the noun) before use."
+    }
+   ]
+  }
+ ],
+ "designs": [
+  {
+   "approach": "Semi-supervised EM for the VSS station model. Each accepted circuit in the syntactic files is turned into a set of allowed stations per VSS token. The circuit key gives a role: verb, auxiliary, negation, clause modifier, discourse, nominal head, dependent before or after the head, marker of a relation to a nominal or to a clause, or conjunction. The role then maps to the legend stations that VSS's units turn into that role. The map is narrow, plus \"wide\" equivalences counted from data: in the cases where VSS's circuit equals the label, VSS's own path still puts 4.1% of heads at complement, 0.9% of verbs at auxiliary and 3.2% of clause modifiers at cue.\n\nIn the E-step of learnRoutes (src/routes.mjs), forward-backward runs inside these sets for labelled sentences, and their counts are weighted by \u03bb. Unlabelled text keeps plain EM, so the result is a mixture of supervised and unsupervised counts. The same sets, applied at reading time, give an oracle: what VSS writes when its stations are forced to fit an accepted circuit. That oracle caps what any station-level lever can gain.\n\nCode (scratch copy only, nothing in the repositories touched):\n- /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/map.mjs: the circuit-to-station mapping.\n- /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/vss/src/routes.mjs: the `supervised` option, a constrained and weighted E-step of about 30 lines.\n- /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/vss/train-prior.mjs: adds --supervise \u03bb, --group all|judge|novss and --wide. Benchmark messages and a dev set (1/16 of the labels, chosen by hash) are held out.\n- /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/vss/src/reader.mjs: a constrain hook in analyse(), used only for the oracle.",
+   "summary": "I built the lever end to end and measured it. It works, but the gain is small, because stations are not where most VSS errors come from.\n\n**Mapping.** Accepted circuits map back to stations for 98 to 99.9% of word tokens. When VSS's stations are forced to the sets from a label, it reproduces that label in 98.7% of agreement labels (99.7% unforced), so the mapping is faithful.\n\n**Ceiling.** On the benchmark, 538 messages are not accepted but have a known accepted circuit. For 54% of them, forcing VSS's stations to that circuit changes nothing: the stations already fit and the error is in units.mjs or links.mjs. Perfect stations would turn only 50 messages into accepted ones, which is +2.7 points (65.9% to 68.6%). A further 191 forced circuits are new and not yet judged; if about 30% of them passed, the ceiling would be about 71 to 72%.\n\n**Trained models.** I trained scratch models with the prior. The benchmark's 1,745 labelled messages and a 3,731-message dev set were held out; 56,590 labelled messages were used. Measured only by known verdicts, they are flat or slightly lower (63.2 to 65.5% against 65.9% for the plain model retrained with the same code). They write 80 to 120 more circuits that no judge has seen.\n\n**Estimate.** The best variant keeps the prior's station tables and the plain model's habits (\"swap\"). Counting circuits equal to an accepted one up to where a relation starts, and a 30% pass rate for new circuits, it gives about +1.4 points (range +0.6 to +1.9). It also comes closest to the accepted circuits: 3.84 differing lines on average against 3.97 for plain.\n\n**Recommendation.** Do it only as a cheap add-on: about 6 to 9 hours, no word lists, and the reader stays the same. Confirm it with one judge packet of about 90 changed circuits first. The bigger levers are in units and links.\n\nSuggested line for improvements-ideas.md: \"VSS station prior from accepted circuits: +1.4 pt (estimate, 90 circuits to judge), ceiling of perfect stations +2.7 to 6 pt; 54% of VSS's failures already have the right stations, so units and links are the main target.\"",
+   "steps": [
+    "1. Port the mapping into strategies/vss as a training-time module, for example src/supervise.mjs. It holds the role-to-station sets plus the wide equivalences counted from data (head ~ complement, verb ~ auxiliary, clause modifier ~ cue). Add the `supervised` option to learnRoutes: constrained forward-backward over the allowed stations and a weight \u03bb per labelled sentence. Add --supervise \u03bb, --labels <syntactic dir> and --holdout <texts file> to train.mjs. The reader does not change.",
+    "2. Default training run: \u03bb=1, all labels, narrow sets. Ship the supervised station tables (emission and shape, and optionally transitions) with the habits, prototypes, meanings and memory learned from the plain EM run. That is two EM passes, about 1.5 to 2.5 minutes more training. This 'swap' variant matched the fully retrained one (+1.4 points estimated each) with far fewer side effects: 11 accepted circuits change instead of 55, and there are no mass attachment flips.",
+    "3. Settle the uncertain part with one judge packet before adopting. Under 'swap', about 90 circuits change against plain (78 rejected to new, 11 accepted to new). Adopt only if the judged gain is positive. All other moves are known: 5 rejected become accepted, 2 accepted become equal-up-to-attachment.",
+    "4. Tackle the regression families seen, using only structure or the weights: command verbs lost at the start of a message ('focus on', 'Type \"Draft\"', 'write feeds'), verbs absorbed into names ('Rack meet', 'Bin match'), and participles made nominals ('colour-coded', 'coloured blue'). Tune \u03bb, the mixture weight \u03bc (50% tables gave +0.8 points estimated, with fewer changes), how wide each role's set is, and emission-only against full swap (emission-only +1.1, transitions-only +0.4 and almost risk-free). Rank variants on the held-out benchmark by the share of messages equal to an accepted circuit up to where a relation starts, by the mean distance to an accepted circuit, and by the dev labels.",
+    "5. Hold-out protocol. While the current benchmark is in use, hold its messages out of the supervision; 1,745 of the 1,831 now have labels, because the run rewrote them. When the benchmark is regenerated from the full data (owner's rule), measure with k-fold training (4 folds of about 2 minutes each), then train the final model on all labels.",
+    "6. Retrain after each judging round. The lever grows with judge-accepted labels on which VSS was wrong: today only 3,441 judge-accepted labels are usable outside the benchmark and dev set, and only 478 of them are circuits VSS did not write.",
+    "7. Put most of the effort elsewhere. In 54% of VSS's failures the stations already fit an accepted circuit, so the larger gains are in units.mjs and links.mjs: grouping nominals, choosing heads, finding the verb that opens a command."
+   ],
+   "evidence": "All runs below use my copy of VSS; the scripts are in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/.\n\n**A. Mapping quality** (mapstudy.mjs, current model, labels outside the benchmark, chosen by hash)\n\n| Labels | Messages | Word tokens with an admitted station set | Plain = label | Forced = label | Plain stations already fit the label |\n| --- | ---: | ---: | ---: | ---: | ---: |\n| Agreement | 1,500 | 99.9% | 99.7% | 98.7% | |\n| Judge-accepted | 1,500 | 99.6% | 83.9% | 83.5% | |\n| Judge-accepted, VSS not among sources | 478 | 98.1% | | | 73.2% |\n\n- In the agreement group, forcing breaks 16 circuits. The cause is narrow sets: VSS legitimately uses complement for heads, auxiliary for a lone be/have/do, and cue for particles.\n- In the third group, forcing the stations raises \"equal up to where a relation starts\" from 27.4% to 30.3% (18 fixed, 4 broken).\n\n**B. Oracle on the benchmark** (bench.mjs --oracle narrow, plain model)\n- 538 messages are not accepted but have a known accepted circuit.\n- With stations forced to it: 292 give the identical circuit (54%), 39 become accepted, 11 equal an accepted circuit up to where a relation starts, 191 are new and not judged, 5 are known rejected.\n- Messages fixed, by grade: L1 17 of 122, L3 20 of 240, L5 7 of 26, L6 1 of 34.\n- Strict ceiling: 1,257 of 1,831 = 68.6%, which is +2.7 points.\n\n**C. Trained scratch models**\n- Labels used: 56,590, or 3,441 for the judge group. Held out: 1,745 benchmark messages and 3,731 dev messages.\n- Each training takes about 90 to 140 s and 2.2 GB.\n- The plain model retrained with the same code scores 1,207 accepted (65.9%), 492 rejected, 132 not judged.\n- In the table below, \"u-acc\" means not judged but equal to an accepted circuit up to where a relation starts, and \"new\" means not judged and different from every known circuit. The estimate counts 30% of new circuits as accepted where the plain circuit was rejected, and 50% where it was accepted.\n\n| Model | Known accepted | u-acc | New | Estimate |\n| --- | ---: | ---: | ---: | ---: |\n| plain | 1,207 | 8 | 109 | 68.1% |\n| all-w1 (retrained throughout) | 1,158 | 50 | 209 | 69.6% |\n| all-w1-wide | 1,173 | 24 | 184 | 68.6% |\n| all-w3-wide | 1,165 | 30 | 215 | 69.1% |\n| judge-w5-wide | 1,196 | 10 | 159 | 68.6% |\n| judge-w20-wide | 1,159 | 30 | 228 | 69.0% |\n| swap-all-w1 (prior tables, plain habits) | 1,200 | 12 | 197 | 69.5% |\n| swap, emission only | 1,198 | 11 | 187 | 69.2% |\n| swap, transitions only | 1,206 | 11 | 124 | 68.5% |\n| mix 50% | 1,202 | 10 | 160 | 68.9% |\n\n- Mean distance to the nearest accepted circuit (differing lines of the relaxed core, 1,745 messages): plain 3.970, all-w1 3.842, swap 3.842, emission-only 3.861; the other models 3.97 to 4.03.\n- Dev labels, VSS circuit equal to the label: plain 98.7% (all) and 85.1% (judge); all-w1 93.1% and 80.3%; swap 97.9% and 84.1%. Most of the drop is attachment flips, so it is not a quality signal on its own.\n\n**D. My own reading of changed circuits** (not a judge; review-swap.txt)\n- Of 38 swap circuits that went from rejected to new, about 12 fix the judged error with no visible new one. Examples: 'make Sales per store red', 'make ufo yellow', 'leaving the courses intact', 'make Visits by month blue', 'nudge the cloud a touch downward', 'needs context'.\n- Of 13 that went from accepted to new, about 5 stay acceptable. The others lose a command verb ('focus on', 'Type \"Draft\"') or merge a verb into a name.",
+   "expectedGain": "About +1.4 points of accepted share on the random benchmark (central estimate), with a range of +0.6 to +1.9. The range depends on how a judge grades the roughly 90 circuits the prior changes (78 VSS rejections and 11 acceptances become new circuits).\n\nWhy it is small:\n- With the current units and links, perfect stations add only +2.7 points with certainty, or about +3 to 6 points if new forced circuits pass at about 30%.\n- In 54% of VSS's non-accepted messages the stations already fit an accepted circuit.\n- The prior captures about half of that ceiling.\n- Most fixes are one family: a quality word after a nominal becomes a clause modifier instead of the head of that nominal. That is the 'head <- complement' confusion, which accounts for most of the rejected-to-accepted moves. The regressions partly offset it.\n\nKnown verdicts alone show no gain (65.5% for swap against 65.9% for plain). The estimate rests on the not-yet-judged circuits.",
+   "risks": "- **Self-training.** 91.7% of the labels (56,934 of 62,066) are circuits on which VSS and spaCy agreed, so they are VSS's own output. Most new information comes from the roughly 5,100 judge-accepted labels; only 478 of those outside the benchmark are circuits VSS did not write. The prior can entrench errors VSS shares with spaCy.\n- **Contamination.** Each benchmark run rewrites the labels: 1,745 of the 1,831 benchmark messages now have one. Any supervised training must hold them out, or move to k-fold once the benchmark is regenerated from the full data.\n- **Coupling with the later stages.** units.mjs, links.mjs, the doubts, the verb budget and the habits are tuned to how the EM model uses stations. Retraining everything with narrow sets flipped 40 accepted attachments and caused regressions. The 'swap' variant limits this, but command verbs at the start of a message and verbs absorbed into names still regress.\n- **Uncertain measurement.** The gain depends on about 90 circuits no judge has seen. My 30% pass estimate is an informal reading of 38 examples.\n- **Mapping blind spots.** Some accepted structures cannot be written with VSS units (a pronoun with \"else\"; a dependent after the head, as in 'outline gold'), so about 2% of tokens in the hard group get no supervision.\n- **Low ceiling.** Even a perfect tagger adds only a few points; the work is better spent on units and links.",
+   "effort": "About 6 to 9 hours in total:\n- Port into strategies/vss (training module, the routes.mjs option, train.mjs flags, a hold-out file) and a small test: 2 to 3 h.\n- Build one judge packet of about 90 changed circuits and read the verdicts: about 1 h plus judge time.\n- Tune \u03bb, \u03bc, set width and emission-only against full swap: 2 to 3 h. Each run is about 2 minutes of training and 12 s of benchmark scoring, so 5 or 6 runs fit side by side; my 6 trainings ran in parallel in about 2.5 minutes.\n- Regression families: 1 to 2 h.\n- Each retraining after a judging round: about 5 minutes.",
+   "fitsConstraints": "- **No word lists.** The lever adds none. The mapping names only schema keys (verb, auxiliary, head, dependent, marker and so on) and the stations of the legend. The wide equivalences are counted from data, not written by hand.\n- **Training data.** Everything VSS gains about open-class words comes from training on accepted circuits, which the owner allows. No case from the dataset is hard-coded.\n- **Portability.** The reader is unchanged at runtime. The model JSON keeps its format and size (3.2 to 3.4 MB) and still loads in a browser with no dependencies. Only training reads the syntactic CSV files and uses lib/syntax.mjs (validateSyntax, wordsOf).\n- **Owner's other rules.** It follows \"no JS patches\" (a learned prior, no special cases) and \"use all corpus lines\" (the final model trains on all labels once the benchmark is regenerated; until then, measure with hold-out or k-fold).\n- **This study.** Nothing under soplang-nlu or webmeet-dataset was edited, no git was used, and model/model.json was not overwritten. All models and outputs are in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/prior/ (models/*.json, bench-*.jsonl and .log, dev-*.log, review-swap.txt)."
+  },
+  {
+   "approach": "I replaced rules that use thresholds with small learned classifiers that sit on top of the existing rules. Each classifier gets the rule's own choice as one input, so it learns when to overrule the rule. Training data comes from the accepted circuits, aligned to VSS's units by word position. I tested two of the four named decisions offline, with the 1,831 benchmark messages held out: which earlier thing a listed thing joins (the coordination partner), and whether a word right after a thing names it or says how it is. The scorer is a JSON map of 125 to 262 weights and the score is a dot product, so VSS stays portable JavaScript with no dependencies. The main finding: the decisions get clearly better (errors down 30 to 40%), but the benchmark gain is small today (+0.1 to +0.3 points). There are two reasons. The labels mostly repeat VSS's own choices, so there is little to learn that VSS does not already do. And most rejected messages have two or more independent errors, so fixing one decision rarely makes the whole circuit acceptable. The plan therefore pairs the learned decisions with labels that correct VSS where it is wrong, and covers all the decision types together.",
+   "summary": "Ranking the decisions by the rejections they cause, using 539 of VSS's 625 rejected benchmark circuits that have an accepted circuit to compare with (the first decision on which they differ):\n- which word is the verb: 182, decided by the tagger and the \"doubts\" that make it read again\n- a word right after a thing, taken as part of the nominal or as a clause modifier: 126\n- coordination: 80\n- nominal boundaries: 55\n- clause form: 34\n- head: 26\n- where a relation with a marker starts: 14\n\nCounting only messages with a single kind of error, the ceilings are: nominal grouping 112, coordination 80, verb 31, form 26.\n\nOffline results, benchmark held out:\n- Coordination partner, among benchmark cases where an accepted circuit lists the new thing with one of the earlier things: the current rule gets 283 of 307 right.\n  - Trained on labels only: 285.\n  - Trained on spaCy's circuits plus labels: 293, with 10 fixed and 0 broken.\n- \"Names it or says how\": the rule gets 1,968 of 2,021 right. Trained on labels only: 1,988, with 24 fixed and 4 broken.\n- Both plugged into a copy of VSS and run end to end (baseline 1,207 accepted):\n  - safest setting (only overrule the rule when the classifier is confident): +4 accepted for certain, +1 probable, none lost (+0.3 points)\n  - labels only: +2 (+0.1 points)\n\nWhy the gain is small: the labels VSS and spaCy agreed on make the same partner choice as VSS's rule in 5,249 of 5,251 cases (99.96%). So \"training on labels\" today mostly means training on VSS's own output. The plan has three phases:\n1. Ship the two learned decisions behind a confidence threshold.\n2. Get labels that correct VSS where it is wrong, by having judges grade the messages where VSS and spaCy disagree at these decision points. Then learn where a thing that is not listed should hang.\n3. Bring the verb decision and the nominal boundaries into the same mechanism.\n\nRough expected gain: +0.3 points measured for phase 1, and about +1.5 to 3 points over several judged rounds for the full plan. The second figure is an estimate, not a measurement.",
+   "steps": [
+    "1. Add a decision recorder to VSS, in study mode with no change in behaviour (about 4\u20136 h). At each decision point it writes the candidates, their features and the rule's choice: partner() and the set-aside branch in fill(), attach(), the clause form, and the 'word after a thing' boundary. A hook lets a learned choice replace the rule's. This exists as a working copy in the study folder: vss/src/links.mjs, plus context.newPass so that only the final reading is recorded.",
+    "2. Extract training data by aligning VSS units to label wires (about 3 h; done in extract.mjs, gold.mjs and quality-extract.mjs). Tokens are mapped to words by character position (wordsOf). A VSS thing is matched to the label nominal that contains its head word. The answer for a partner decision is the earlier thing whose nominal is a conjunct of the same coordination; the other answers are 'none' (not listed), 'other' or 'unaligned'. This failed to align in only 2 of about 5,700 label cases. Use the labelled messages minus the benchmark, and weight judge-accepted circuits 10 to 20 times more than VSS\u2013spaCy agreement circuits.",
+    "3. Make 'names it or says how' a learned doubt in the reader (about 6\u20138 h). It is a logistic classifier over the learned word habits (kindsOf counts for the word and the word before it, together(), saysHow, gradedForm, sForm, formOf), the -s and -ly endings, word shapes, the determiner, the nominal's role, whether the verb takes a quality, and the next word or punctuation, plus the rule's own choice. Where the classifier disagrees, the reader reads the sentence again with a doubt on that word: {is:'head'} or a new {is:'quality'}. Only overrule the rule when the score is above a margin of 2. Never apply it across punctuation. Add guards for words the legend lists, -ly words and fixed phrases such as 'side by side', which are the remaining breaks.",
+    "4. Make the coordination partner a learned choice (about 4\u20136 h). It is a softmax over the earlier things, with features: the rule's pick, alike(), meaning similarity, introduced alike (opener), nearest and distance, ends a phrase with a linking word, the role that holds it, already in a group, the linking word of its phrase (a preposition), determiner, name, number and plural agreement, comma-only joiner, and whether a later 'and' closes the series. It only chooses among the candidates; the rule's 'set aside' decision stays as it is.",
+    "5. Store the weights in model.json (about 16 KB) through train.mjs --out <scratch>, written in plain JavaScript with no dependencies (about 4 h). Measure with vss-registry.mjs on the benchmark and vss-accepted.mjs on 8,000 labels to catch regressions. In my in-sample check, 20 of 9,294 labels were lost and 1 gained; most losses were words like 'light' that can be a thing or a quality.",
+    "6. Get labels that correct VSS where it is wrong (about 3\u20134 h of design, plus judge time; the orchestrator launches the judges). spaCy circuits exist for 182k messages (eval-results/conversion/*/spacy-direct.jsonl). Pick the messages where VSS's decision disagrees with spaCy's: 2,627 disagreements on partner choice, 10,853 on whether to list at all, and about 7,200 on 'names it or says how'. Send a few hundred of them to the judge each round. The accepted circuits become labels, which the owner allows as training data, and the models are retrained. The owner decides whether spaCy's circuits, or spaCy and DistilBERT agreeing, may also be used directly as training data without a judge.",
+    "7. Add a second learned decision for a thing that is not listed: where it hangs (about 8\u201310 h). The options are a complement of the clause, a tie from the nearest thing, or a tie from the clause. Then turn on the 'none' option for the partner. The measured decisions improved from 297 to 332 of 368, but end to end 19 to 27 accepted circuits became unjudged, because VSS's way of writing a set-aside thing (a tie from the clause) does not match what accepted circuits do.",
+    "8. Bring the remaining decisions into the same mechanism (about 12\u201316 h). The verb decision is the largest family (182 rejections as the first error). Next come the nominal boundary (a word that begins another thing: 63 errors among those decisions on the benchmark), then clause form (34) and where a relation starts (14).",
+    "9. After every judged run, retrain from the corrected labels and re-measure on a freshly drawn benchmark (about 1 h per round). The rule's choice is an input to every model, so models must also be retrained whenever someone changes a rule. This applies now: the other agent's list-after-place-phrase rule targets the same partner errors."
+   ],
+   "evidence": "All numbers are from scripts in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/learned/. They ran on a frozen copy of VSS in vss/, with hooks added only in that copy. The copy scores 1,207 accepted, 492 rejected and 132 without a verdict on the benchmark, against the run's 1,206 accepted.\n\n(a) Which decisions cause the rejections (bench-diff.mjs and structure.mjs). For each rejected VSS circuit, I took the nearest accepted circuit for the same message (any circuit graded L8, the label before the run, or the label now) and compared them decision by decision. 539 of the 625 rejected circuits had one; 86 had none.\n- First differing decision: verb 182, word after a thing 126, coordination 80, nominal boundary 55, form 34, head 26, start of a marked relation 14, other 22.\n- Kinds of error per message: 249 messages have one kind, 169 have two, 74 three, 11 four.\n- The 126 'word after a thing' cases break down as: 39 where VSS took a word that says how as the head (for example 'pixels wide', 'Bench flush', 'legible'), and 33 where VSS took a naming word as a modifier (for example 'everything else', 'Lunch orders', 'colour bar'); the rest are bare words that should be things.\n\n(b) The labels repeat VSS (stats.mjs).\n- Partner decisions in VSS\u2013spaCy agreement labels: the rule is right 5,249 of 5,251 times.\n- In the 3,618 judge-accepted labels outside the benchmark: 347 of 378 (92%).\n- On the benchmark: 297 of 368 overall, and 283 of 307 where an earlier thing is the answer.\n- 'Names it or says how' in the labels: 50,327 of 50,335 agree with VSS.\n\n(c) Coordination partner on the benchmark (bench-partner.mjs). 471 decisions; 406 have an accepted circuit. The rule is wrong in 71 (in 63 messages): 24 pick the wrong earlier thing and 47 list the new thing when it should not be listed. Training is in train-partner.mjs; results on the 307 cases where an earlier thing is the answer:\n- rule-only baseline: 283\n- labels only: 285\n- spaCy silver only: 296 (15 fixed, 2 broken)\n- silver plus labels: 293 (10 fixed, 0 broken)\n\nBecause accepted benchmark circuits are often spaCy's own, I re-checked using only accepted circuits that are not spaCy's: 203 of 219 for the rule against 210 for the learned model (7 fixed, 0 broken). On the 47 'should not be listed' cases, the accepted circuits hold the thing as a complement of the clause (18), tie it from a nearby thing (9+6) or make it a subject (4); VSS's single way of setting a thing aside does not cover these.\n\n(d) 'Names it or says how' (quality-extract.mjs, train-quality.mjs). 2,021 benchmark cases with an accepted answer; the rule gets 1,968 right, the labels-only classifier 1,988 (24 fixed, 4 broken). Fixed examples: Crush flow, Lunch orders, colour bar, the 'N pixels wide' family, font bigger, unit profit. Broken examples: words ending in -ly ('glaciers exactly'), 'side by side', superlatives ('largest').\n\n(e) End to end (run-both.mjs, eval-bench.mjs, probable.mjs). 'Probable' means a changed circuit with no verdict that differs from the nearest accepted circuit only where several readings pass (the start of a marked relation, or the head of a multi-word name).\n- Labels only, overruling only above the margin of 2: +2 accepted, 0 lost.\n- Labels only, no margin: +4 certain, +2 probable, \u22123 probable.\n- Silver-plus-labels partner with labels-only 'names it or says how', margin 2: +4 certain, +1 probable, 0 lost.\n- Same, no margin: +6 certain, +3 probable, \u22123 probable.\n- Partner with the 'none' option: 19 to 27 accepted circuits became unjudged.\n- In-sample regression check on 9,294 labels: 20 lost, 1 gained.\n\n(f) Cost. VSS runs at about 1 ms per message. Extracting decisions from 180,503 messages takes 39 s on 12 parallel processes. Training takes seconds to a few minutes.",
+   "expectedGain": "Measured: about +0.3 points on the benchmark for phase 1 (+4 to +6 accepted messages for certain, with none lost at the confidence margin), or +0.1 to +0.2 points if training may use only labels. The decisions themselves improve much more: partner errors fall from 24 to 14 and 'names it or says how' errors from 53 to 33.\n\nThe benchmark moves little for three reasons:\n- The errors fixed sit mostly in long scene descriptions that have other errors too: 290 of 539 rejected messages have two or more kinds of error.\n- Reading the sentence again can change other words as a side effect.\n- The labels contain almost no cases where VSS was wrong.\n\nEstimate for the full plan, not measured: if every decision type is covered and corrected labels arrive through judging, and each type's errors fall by about 30 to 40% (as measured here), then a share of the 285 messages with a single kind of error (nominal grouping 112, coordination 80, verb 31, form 26, other 36) would become acceptable. Allowing for the low conversion seen here, that is about +1.5 to 3 points (roughly 30 to 55 messages) over several judged rounds. The upper end requires the verb decision to be learned as well.",
+   "risks": "- Training only on labels largely reproduces the rules, because the labels came mostly from VSS agreeing with spaCy (measured at 99.96%). Without labels that correct VSS where it is wrong, the gain stays near zero.\n- spaCy's circuits follow spaCy's conventions. A model with the 'none' option trained on them got worse when judged only against accepted circuits that are not spaCy's (203 \u2192 193 of 219). Use spaCy's circuits only for the partner choice, or only after a judge confirms them, and only if the owner agrees.\n- Reading the sentence again can change neighbouring words: 3 accepted circuits were lost with no margin, 0 with the margin of 2. Margins and guards are needed.\n- Fixing one decision rarely makes a whole circuit acceptable. The gain only appears when several decision types are learned together.\n- The other agent is changing VSS right now (rules for lists after place phrases, two participles in a row, and more). These target the same partner errors, so the learned partner's gain may shrink and the models must be retrained after their change.\n- The evaluation is uncertain: 132 to 175 changed circuits have no verdict yet. My 'probable' estimate is a heuristic, and a judge should grade the changed circuits before anything ships.\n- Near-identical template messages appear in both training and benchmark (for example 'make X N pixels wide'), so the measured gain may overstate how well this generalises. The owner accepts this for now.\n- Features that name individual open-class words would memorise dataset cases. Keep the features free of such words.",
+   "effort": "About 40 to 55 hours in total.\n- Phase 1, steps 1 to 5 (recorder, alignment and extraction, the two learned decisions, training in train.mjs, measurement): 16 to 20 h. The study code already exists in the study folder and can be ported.\n- Phase 2, steps 6 and 7 (judge packets on disagreements, learning where a set-aside thing hangs, turning on 'none'): 12 to 15 h, plus judge time.\n- Phase 3, steps 8 and 9 (verb decision, nominal boundary, form, relation start, retraining each round): 15 to 20 h.",
+   "fitsConstraints": "- No rule names a noun or an adjective. Feature names contain only function words: the linking word of a phrase (a preposition), determiners, and listed next words such as 'by'. Everything else comes from word endings (-s, -ly and the legend's adverb endings), word shapes (capital, number), punctuation, order, and what VSS has learned (kindsOf counts, together(), meaning similarity, alike(), takesQuality). The learned weights hold no open-class word.\n- Training uses the dataset's text and accepted circuits, which the owner allows; nothing is hard-coded from the dataset. Using spaCy's circuits, or spaCy and DistilBERT agreeing, as training data is not 'accepted circuits'. It stays off unless the owner approves; the allowed route is to have judges grade the disagreements so they become accepted circuits.\n- Portable: the scorer is a dot product over a JSON map of 125 to 262 weights stored in model.json (about 16 KB), with no dependencies, so it runs in a browser. Training is a plain Node script behind train.mjs --out <scratch path>, so model/model.json is never overwritten during study.\n- The rules stay: each model takes the rule's choice as an input and only overrules it when confident, so it fixes rule errors rather than replacing the rules.\n- I changed nothing in soplang-nlu or webmeet-dataset and used no git commands. All work is in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/learned/. The main files there: vss/ (the frozen copy with hooks in src/links.mjs and src/reader.mjs), structure.mjs, bench-diff.mjs, extract.mjs, gold.mjs, partner-model.mjs, train-partner.mjs, quality-extract.mjs, quality-model.mjs, train-quality.mjs, run-both.mjs, eval-bench.mjs, probable.mjs, the weights w-mix.json, w-labels.json and wq-labels.json, and the data under out/."
+  },
+  {
+   "approach": "The lever: let spaCy and DistilBERT (the \"teachers\") tell VSS how each word is used, as evidence that VSS reads again with, not as a reranker. A small per-word table (hashed logistic weights, plain JS) learns from teacher circuits on the corpus which of five classes each word belongs to: verb, nominal word, modifier, marker, other. Where the table is sure (p>0.9) and VSS's reading disagrees, the word is kept off the stations that class rules out, and VSS reads the message again with its own doubt loop, linker and writer. In Node only, an optional second mode applies when teacher circuits are passed in at run time: VSS returns the one of its own alternative readings that equals a teacher circuit. I measured a whole-circuit reranker and do not recommend building it now: VSS's own alternatives rarely contain an accepted circuit.",
+   "summary": "Choosing among VSS's own readings is capped at about +5 points. Its 6 to 14 alternatives per message hold a known-accepted circuit in only 70.5% to 71.6% of messages, against 66.4% for its first reading. A portable reranker trained with a spaCy teacher gave no net gain. Even when the stations, attachment hosts and coordination partners were forced to match an accepted circuit, only 88 of 539 rejections were known to be fixed; 331 more changed to circuits no judge has read.\n\nThe lever that does reach VSS's errors is teacher evidence about how each word is used. A word table distilled from spaCy circuits halves VSS's noun-or-verb errors per word (99.46% against 98.79% agreement with accepted circuits). Used as evidence it changes 350 of VSS's 625 rejected circuits but only 57 of its 1,206 accepted ones. Known gain: +1.1 points (67.0%). Estimated gain: +3 to +6 points, depending on how many of the 325 changed circuits no judge has read would pass. In Node, with teachers present, VSS reaches 70.3% on known verdicts alone.\n\nThe dataset's accepted circuits alone teach nothing here: they were selected where VSS already agreed, and VSS's first reading equals the label in 98.8% of 25,200 labelled messages. So the teacher circuits must first become accepted labels, settled where spaCy and DistilBERT agree and audited by a judge. That needs the owner's consent.\n\nEverything is in /tmp/claude-1000/-home-salboaie-work-sopworlds/e235462f-8553-42ea-b357-85307b023a32/scratchpad/levers/model-evidence/. It holds the scripts, a patched VSS copy in vss/ (snapshot of 17:04 with its own model; reader.mjs and links.mjs have the study hooks), the results, and judge packets in to-judge/. Nothing in the repositories was changed.",
+   "steps": [
+    "1. Settle the training data the owner's way (data step, about 2 h plus GPU and CPU time). Run DistilBERT (GPU, about 15 min) and the spaCy strategy over the unlabelled messages. spaCy-direct circuits already exist for 182k messages under eval-results/conversion/*/spacy-direct.jsonl, but the benchmark's spaCy is the former spacy-beam. Settle the circuits where the two agree as labels in syntactic/, with an audit share read by a judge (round.mjs settle --families 2). On the benchmark that agreement was accepted 539 of 542 times. It covers about 11% of the messages that had no label (135 of 1,238), roughly 13k corpus messages, all of them messages where VSS differs. Without this step the table has nothing to learn from: trained on labels alone it reaches 98.70% per word against VSS's 98.79%.",
+    "2. Add an evidence input to VSS (about 1 h). analyse(text, {evidence}) takes, per word, a distribution over verb / nominal word / modifier / marker / other. Where the most probable class has p>0.9, differs from VSS's reading and is not 'other', the word is kept off the stations that class rules out, and the normal doubt loop runs. The prototype is 5 lines in reader.mjs (extra.bans) plus the class-to-station map in model-evidence/distil-roles.mjs.",
+    "3. Train the distilled word table (about 2-3 h). Use a five-class hashed logistic model over function-word and structure features: the word, endings, capitals, the words around it, punctuation before and after, position. Train on the accepted circuits of syntactic/, now including the settled teacher-agreement circuits, and leave the 1,831 benchmark messages out. Store it quantised (2^18 buckets x 5 classes as int8 is about 1.3 MB) beside model.json; train.mjs writes it with --out. In the prototype, training took 54 s in plain JS on 4.86M word updates.",
+    "4. Have a judge read the circuits nobody has graded yet before trusting the gain: model-evidence/to-judge/packet-distil-roles.jsonl (325 circuits) and packet-distil-verb.jsonl (247), with the keys in key-*.jsonl. The rate at which these pass decides whether the lever is worth +2 or +6 points. Then tune the 0.9 threshold to trade the 35 accepted circuits that changed against the rejected ones that changed.",
+    "5. Optional Node mode (about 1 h). Promote the prototype k-best block in reader.mjs (attachment flips, each uncertain word banned and re-read with the doubt loop, the k-best station paths). When teacher circuits are passed in, return the alternative equal to one of them, up to the start of marked relations (relaxedCore). It is off by default and never runs in the browser.",
+    "6. Extend the evidence to cut decisions (about 3-5 h). Add two more distilled tags per word: 'starts a new nominal / continues the one before' and 'starts a clause'. units.mjs would consult them at its cut points. Wrong nominal grouping is the second most common first difference between VSS's rejected circuits and accepted ones (122 of 539, after the verb at 188).",
+    "7. Leave for later: tables for the attachment host and the coordination partner (the hooks exist in my links.mjs copy). Even perfect choices there fix only 18 and 19 of 539 rejections on their own, 26 together. Also leave the whole-circuit reranker: its ceiling is +4.8 to +5.2 points with today's alternatives, and the trained version gave no net gain.",
+    "8. Re-run the 1% benchmark and report L8+L9+L10 for VSS with evidence and without it, in browser mode (table only) and in Node mode (teachers present)."
+   ],
+   "evidence": "All results are on eval-results/2026-11-27-syntax-benchmark-random. Per-message levels come from the library's own levelOf (model-evidence/levels.mjs -> bench-levels.json). \"Known good\" means accepted (run verdicts, registry, labels) or equal to an accepted circuit up to the start of marked relations (relaxedCore; 325 of 327 such circuits were accepted in earlier rounds). \"Unread\" means no judge has seen the circuit.\n\n(1) Other strategies where VSS is rejected (crosstab.mjs): spaCy is accepted in 460 of VSS's 625 rejections (L3 251/342, L1 140/195, L5 33/39, L6 33/45, L2 3/4), DistilBERT in 256 (149/77/17/13/0), one of the two in 496. Best of VSS and spaCy: 91.0%; of VSS and DistilBERT: 79.8%; of all three: 93.0%. Two strategies writing the same circuit: VSS=spaCy 400 messages, 100% accepted; VSS=DistilBERT 815, 95.5%; spaCy=DistilBERT 542, 99.4%. The selector 'VSS if it agrees with spaCy or DistilBERT, else spaCy' scores 85.1%, but its output is no longer a VSS reading.\n\n(2) VSS's own alternatives (my copy with a kbest option; kbest-eval.mjs, kbest-stats.mjs, kbest-relaxed.mjs): with 6.3 alternatives per message, a known-good one exists in 70.5% of messages against 66.4% for the first reading; with 14.4 alternatives, 71.6%. The first good alternative came from a banned word in 45 cases and from a station path in 48. Rescued by grade: L3 43/273, L1 25/149, L5 10/30, L6 1/37.\n\n(3) Optional Node mode (agree-switch.mjs, combined.mjs): taking the VSS alternative equal to DistilBERT's circuit gives 70.0% known (74 gained, 8 lost); equal to spaCy's or DistilBERT's, 70.0%; adding the evidence re-read as one more candidate, 70.3% with 7 new unread circuits.\n\n(4) Forced readings (oracle-stations.mjs; my links.mjs hooks): keeping every word to the stations an accepted circuit allows fixes 76 of 539 rejections known, plus 285 changed to unread circuits. Forcing only verb against not-verb fixes 46. Adding the attachment host and coordination partner of the accepted circuit: 88 known plus 331 unread. Host alone: 18; partner alone: 19.\n\n(5) The labels carry almost no signal about VSS's errors (train-alts.mjs, train-alts2.mjs): on 25,200 labelled non-benchmark messages VSS's first reading equals the label in 98.8%, and an alternative adds 0.2%. On 29,884 unlabelled messages with a spaCy circuit, the first reading equals spaCy's in 0.8% and some alternative does in 10.2%.\n\n(6) Portable reranker (rerank.mjs: conditional logit, 29 features, trained on 17,997 messages, 2,834 with a non-first positive): at the best threshold, 66.5% known (+0.1), with 106 switches, 17 gained, 14 lost (2 of them to known-rejected circuits) and 83 switches to unread circuits.\n\n(7) Distilled tables (distil-verb*.mjs, distil-roles.mjs; trained on 181,663 messages, benchmark excluded). Verb against not-verb, per word, against the accepted reference: table 99.46%, VSS 98.79% (22,035 words). The five-class table used as evidence changes 350 of 625 rejected circuits (57 known good, 290 unread, 3 rejected) and 57 of 1,206 accepted ones (21 still good, 35 unread, 1 rejected): 67.0% known. The verb-only table: 66.7%, changing 265 rejected and 29 accepted circuits. Labels only: 98.70% per word, 66.1%. Labels plus 13k random spaCy circuits: 99.19%, 66.7%. Two teachers at run time, verb evidence only where both agree: 67.1%, changing 271 rejected and 30 accepted circuits.\n\n(8) My own informal reading of 34 changed, unread circuits, applying rules.md (I am not a judge): about 7 look acceptable, roughly 20%.",
+   "expectedGain": "Browser VSS (table only): +1.1 points on known verdicts (65.9% to 67.0%). The estimate with unread circuits is +3 to +6 points, about 69-72%. If about 20% of the 290 changed rejected circuits pass, and the 35 changed accepted circuits pass at the same rate, the share is about 70.6%. The gain comes from the targeting: when the table disagrees with VSS it is usually VSS that is wrong (86% of the changes fall on rejected circuits). Re-reading also leaves VSS's linker to fix what follows from the corrected word.\n\nNode with teachers at run time: +4.4 points on known verdicts (70.3%), about +5-6 with the re-read as fallback.\n\nIt stays well below spaCy (82.5%). Most of VSS's remaining errors sit in cutting and linking: even perfect stations, hosts and partners fix only 88 known plus an unknown share of 331. Step 6 (distilled cut tags) is the next increment. Some of the gain may overlap with rules the other agent is adding now: participles, a comma between two numbers, place-phrase lists.",
+   "risks": "- The gain rests on circuits no judge has read: 325 for the table mode, and my about-20% estimate comes from 34 circuits I read myself. Step 4 settles it.\n- Losses: 57 accepted circuits change (35 unread, 1 rejected); one I read, 'run the boy ... left one place', becomes wrong. The threshold needs tuning.\n- Owner rule: spaCy circuits are not accepted circuits. They must first be settled as labels (spaCy and DistilBERT agreeing, with an audit), or the owner must allow training on teacher output; on labels alone the table helps nothing. The settled set is also smaller (about 13k messages) and skewed toward messages the teachers find easy.\n- DistilBERT learned from labels where VSS and spaCy agreed, so the two teachers are not fully independent, although their agreement measured 99.4% accepted.\n- The table holds learned weights for open-class words. That is allowed as something VSS learns, but it is a supervised part in a reader meant to be mostly unsupervised.\n- Size: the prototype is 20 MB in float32; it must be hashed smaller and quantised for the browser.\n- Measured on a 17:04 snapshot of VSS; the other agent's edits will shift the base.\n- The whole-circuit reranker looks unpromising; that finding could change if link-level alternatives are added later.",
+   "effort": "About 10-14 hours of work, plus judge time and machine runs. Settling teacher agreement: 2 h, plus DistilBERT on GPU (about 15 min) and spaCy over the unlabelled messages (CPU, parallel). Evidence input: 1 h. Distilled table and storing it in the model: 2-3 h. Judging the 325+247 unread circuits, which needs a judge: 1-2 h of orchestration. Optional Node mode: 1 h. Cut-decision tags: 3-5 h. Benchmark re-run and report: 1 h.",
+   "fitsConstraints": "Portable: inference sums hashed weights read from a JSON table in plain JS, with no dependencies, so it runs in the browser. Teacher circuits passed at run time are an optional input for Node only, off by default. No rule names any word: the table is learned, and its features are the word itself, endings, capitals, neighbouring words, punctuation and position, which is the structure plus what VSS learns. No dataset case is hard-coded. Training must use accepted circuits only, with the benchmark's 1,831 messages left out (done in every experiment here), which is why step 1 settles the teacher circuits as labels first. That step, or a direct permission to train on teacher output, is a decision for the owner. I changed nothing under soplang-nlu or webmeet-dataset, ran no git and launched no agents or judges; I worked only in levers/model-evidence/, in a VSS copy whose one import points to the absolute lib/syntax.mjs, and model.json was never overwritten."
+  }
+ ],
+ "ranking": {
+  "rules": [
+   {
+    "name": "R1 Tie every part of a sentence (merged: drawing untied parts 14 + diagram SPLICE 8 + docal lever P 3)",
+    "messages": 25,
+    "rule": "Inside one sentence (up to . ! ?), two parts kept apart only by a comma, dash or semicolon, each either a clause with its verb or a fragment holding a nominal, with no conjunction and no linking word: write a coordination with no conjunction (the lever P form, which judges accepted from spaCy in labels). After that, any group still tied to nothing gets a relation without a marker from the first finite clause of the main group (the P2 pass). Three exemptions: a group with no verb and no nominal (discourse only); a fronted subordinate clause, which hangs on the part after it (R10); a participle that tieLoose already ties.",
+    "where": "links.mjs linkSentence: the commaOnly/commaUsed branch (docal levers.diff, LEVER_P) first, then the connectivity pass in tieLoose (drawing p2-sentence-ties.patch).",
+    "why": "Expected repairs: 25 x 0.85 = about 21. Prototyped twice: 17 of 17 faults repaired, and P ties 22 of the 32 L6 circuits benchmark-wide that are still untied. L6 is spelled out in rules.md. Damage, checked: P2 changes the kind of 13 of 8,000 accepted circuits and 28 more that already differed, all by an added tie. About 31 circuits graded L8 gain a tie and must be re-judged for L4. Pick one tie form per case; do not ship both prototypes as they are."
+   },
+   {
+    "name": "R2 Causative verb + object + bare verb is a nonfinite clause (merged: drawing makesdo 14 + diagram CAUSATIVE 5 + LETS 3)",
+    "messages": 22,
+    "rule": "After a verb of the legend's makesdo list (let, make, have, help, see, watch, hear, feel) and its object, the next word the text knows as a verb is the bare verb of a nonfinite clause tied to the governing clause. The object is a nominal or object pronoun with its place phrases and its 'and'-coordination. The subject of the new clause is the whole object: the coordination, or the start of the 'of' chain. Adverbs and 'not' between 'let's' and the verb are skipped. A bare 'be' plus a participle makes a passive. P1's guards stay: determiner-led object, no 'of' after the word, no quality after a takesQuality verb, not a listed, graded or quality word. A participle after need/want/like plus an object is the same clause shape. The rule names only common verbs.",
+    "where": "P1 sites: links.mjs 228, 327, 133-138, 265-267; units.mjs doubt next to 427-437; reader.mjs 285. Two additions: the subject reaches the whole coordination (this fixes the 'trade hats' label case) and the let's adverb skip.",
+    "why": "Expected repairs: 22 x 0.85 = about 19. P1 removed the judged fault in all 14 messages; 12 should pass. Checked: 0 of 2,000 accepted circuits change, and 6 of 8,000 change kind (4 of them are wrong labels, 1 is a real regression, 'farthest out'). CAUSATIVE and LETS need the two small additions."
+   },
+   {
+    "name": "R3 A noun that describes the next noun continues the nominal (merged: diagram COMPOUND 20 + docal lever N 5)",
+    "messages": 25,
+    "rule": "After the noun of a nominal, or after a capitalised name with no determiner, a word the text knows as a thing continues the nominal, and the last noun is the head. 'Knows as a thing' comes from learning: kindsOf/nominal(), not saysHow, not listed, not a verb form. It continues in two cases: another such word follows, or it is the last word before a linking word or a break and no takesQuality verb is waiting for it. It stops after a plural noun, at listed words and at words learned as describing.",
+    "where": "units.mjs, after the rule at 268-286 (vss-compound, '(lever COMPOUND)'), and the readEntity modifier-station branch (docal LEVER_N). Ship it with R13's 'whichever'.",
+    "why": "Expected repairs: 25 x 0.62 = about 15. 16 of 25 faults repaired. Checked: COMPOUND changes 2 of 2,000 and 4 of 8,000 accepted circuits (1 worse: 'brick red'); N changes 0 of 10,685 labelled messages with the pattern. N's one raw regression ('Home whichever way') goes away once 'whichever' is in the legend."
+   },
+   {
+    "name": "R4 A describing word after a nominal is neither its head nor a verb (merged: drawing 'quality after object or be' 9 + diagram TRAIL_QUALITY 12 + drawing 'with + nominal + describing word' 8)",
+    "messages": 29,
+    "rule": "A word the text shows as describing at least as often as naming, right after the noun of a nominal, is not the head. After a subject or complement it is a modifier of the clause; at the end of a relation with a marker it is a dependent (Rule 5.2, 'with outline gold'). Right after a form of 'be', a bare form makes no verb group. After 'with' and a nominal, a describing word with no object after it is said of that nominal. Nothing inside a 'with' phrase is a finite clause.",
+    "where": "units.mjs 485-490 (widen from -er/-est forms to the learned quality counts), 504-517, 427-437; links.mjs 188-195 (drop the verb-count condition for bare forms after 'be'); emit-syntax.mjs 249-265 for 'with'.",
+    "why": "Expected repairs: 29 x 0.45 = about 13. Not tried, and it depends on thresholds over words seen both ways (red, log, clear). Settled cases pull in opposite directions. Design 2 measured exactly this decision: errors fall from 53 to 33. Build it as that learned decision, after R3, not as a hand threshold."
+   },
+   {
+    "name": "R5 The opening word of a sentence part: command verb or heading (merged: diagram CMD_VERB 13 + docal lever Q 3)",
+    "messages": 16,
+    "rule": "A part starts at the message start, after a break, after 'so'/'then' that follows a break, or after an opener. Its first word is the command verb when a determiner or an object pronoun follows it directly and the text has seen the word as a verb. This never applies to an -s form or a plural, or when a finite verb follows before the next break. The reverse case: one or two opening words closed by a comma or dash, followed by a clause with a known verb, never seen as a verb, and with no object after them, form a fragment (a heading, a name or a word said to the listener).",
+    "where": "units.mjs near 380-387 (vss-cmd); reader.mjs, the openers block near 273-275 (docal LEVER_Q).",
+    "why": "Expected repairs: 16 x 0.7 = about 11. 11 of 16 repaired. Checked: CMD changes 0 of 2,000 and 0 of 8,000 accepted circuits; Q changes 0 of 2,000. This is the settled case 'A command needs its verb'. The low-damage pick of this group."
+   },
+   {
+    "name": "R6 The finite verb by subject-verb agreement (merged: drawing '-s verb after its subject' 7 + SUB_VERB 9 + DECL_START 4 + 'subject with a place phrase' 3 + AND_SUBJECT 3 + docal lever S 3 + AS_OPENER 3)",
+    "messages": 32,
+    "rule": "Some stretches must hold a clause: after a subordinator, after a colon, or after a question word inside a message. In such a stretch with no other verb, an -s form that closes a nominal whose noun is singular is its verb, and the nominal with its place phrases or coordination is the subject. A bare present form does not follow a singular subject. Whether a noun is singular or plural must be a habit learned from raw text (is/are, was/were and -s verbs after the noun), not a hand rule.",
+    "where": "units.mjs 459-474 and 372-379; links.mjs scanLeft 505-559 (the subject chain across cue + entity pairs and across 'and').",
+    "why": "Expected repairs: 32 x 0.35 = about 11. Untried, except lever S, which regressed ('the people want'). Plural compounds and title fragments are the risk. 8 of the 32 messages come from 2 templates."
+   },
+   {
+    "name": "R7 A numeral or 'one/ones' with no noun after it is the head (merged: drawing 'one' 4 + diagram ONE_HEAD 9)",
+    "messages": 13,
+    "rule": "'one'/'ones', or a spelled numeral, with no noun after it and standing after a determiner, a selector or a quality, heads the nominal; the words before it are dependents. A determiner-word (that, this, which, each) right before a noun or 'one' is its determiner, unless that noun is followed by its own verb. A number right after a noun ('block 2') is unaffected.",
+    "where": "units.mjs readEntity 534-535, 547, 597-602; lines 90-98.",
+    "why": "Expected repairs: 13 x 0.75 = about 10. The settled case 'the first one' supports it. One judge-accepted label ('swap the first two', head 'first') changes; both readings are likely to pass."
+   },
+   {
+    "name": "R8 'else' after an indefinite pronoun or a question word belongs to it",
+    "messages": 10,
+    "rule": "'else' right after an indefinite pronoun (everything, anything, nothing, something, everyone, anyone, someone, nobody, somebody, anybody, everybody) or a question word (what, who, where) is a dependent of that nominal.",
+    "where": "units.mjs buildUnits, a pass next to 90-98.",
+    "why": "Expected repairs: 10 x 0.9 = 9. Seven messages in its class plus 3 counted in other classes. Pronouns only, so no risk to 'or else'. Cheap."
+   },
+   {
+    "name": "R9 Where a number goes (merged: drawing 'number after a noun' 5 + diagram ATTR_VALUE 4 + drawing 'count + plural unit' 7)",
+    "messages": 16,
+    "rule": "A number right after a noun, a single letter or a property word belongs to it (Rule 5.5). After a noun and its number, a bare noun opens the next pair. A cardinal right before a plural noun counts that noun and begins a new nominal, which the plural closes; this is tested by the -s ending, not by the station. After a naming verb, the noun and its number together are the name.",
+    "where": "units.mjs readEntity 551-557, 566-569; lines 108-116, 287-298, 438-445.",
+    "why": "Expected repairs: 16 x 0.55 = about 9. Risk: 'hide Series 2 labels' and measures. The 'N pixels wide' family is a template of about 1,400 messages, so the benchmark may overstate the gain. The rule itself is structural."
+   },
+   {
+    "name": "R10 A fronted subordinate clause hangs on the part after its comma (merged: drawing fronted if/while 6 + diagram SUB_ATTACH 5)",
+    "messages": 11,
+    "rule": "A clause opened by a subordinator at the start of the message or after a dash, semicolon or colon ends at its comma. It hangs on the part that follows (a clause or a fragment), with its subordinator as the marker. It is never a conjunct, it never hangs on the clause before it, and no coordination reaches across its comma. It is not cut when a list closed by 'and' follows before the next verb.",
+    "where": "links.mjs fill(), the mention path at 693-701 before the joinable branch at 655-690; 'fronted' at 280-285 and 422-427 for clauses after a separator; joinedBy 428-442. It must run before R1.",
+    "why": "Expected repairs: 11 x 0.7 = about 8. Untried. It also removes 6 wrong comma coordinations that R11 targets."
+   },
+   {
+    "name": "R11 A comma-only join of nominals is an aside, not a list member",
+    "messages": 13,
+    "rule": "A nominal after a comma joins a series only when a conjunction closes that series. Otherwise it is an aside: tie it without a marker to the nominal before it, or to the clause when that nominal ends a relation. Lists of bare names keep their current treatment.",
+    "where": "links.mjs fill(), joinable branch 655-690, using the seriesU closed-series test. This revises the existing 'comma asides judged by learned likeness' rule; it is not a new rule.",
+    "why": "Expected repairs: 13 x 0.65 = about 8.5. All 21 comma-only coordinations on the rejected set are wrong, and only 56 of 62,066 labels hold one. Risk: unclosed lists ('a circle, a square, a triangle'). It touches the other agent's series code, so it waits until that work lands."
+   },
+   {
+    "name": "R12 Participles: after a comma, after a nominal that is already held, after 'be' (merged: diagram PART_COMMA 12 + PART_NOUN 7 + BE_PART 5)",
+    "messages": 24,
+    "rule": "After a clause and a comma, a past form of a known verb with no subject is a participle describing the thing before the comma. The 'selected event' doubt does not fire before a name after a naming verb. A past form right after a nominal that a linking word or a verb already holds is a participle. A form of 'be' followed, after a complete subject, by an -ing form or a past form of a known verb is the auxiliary.",
+    "where": "vss-part blocks ('(lever PART)' in units.mjs, and links.mjs 262-264); units.mjs readVerbGroup 643-648; links.mjs 131-170.",
+    "why": "Expected repairs: PART_COMMA 7 measured (7 of 12 repaired; changes 1 of 2,000 and 2 of 8,000 accepted circuits, all for the better), plus about 6 from the other two. It overlaps the participle rules the other agent is adding, so re-measure after they land."
+   },
+   {
+    "name": "R13 Missing function words in legend.sop",
+    "messages": 7,
+    "rule": "Add 'versus' and 'vs' as cues, 'whenever' and 'wherever' as markers, 'whichever' as a determiner and question word, and 'u' as a subject pronoun. Retrain to a scratch model with train.mjs --out.",
+    "where": "legend.sop @w.cue 87, @w.marker 85, @w.determiner 54, @w.pronoun/@w.subject 55-57.",
+    "why": "Expected repairs: 7 x 0.8 = about 6. Trivial to write, but it needs a retrain. 'vs' inside chart names is the risk. Required by R3."
+   },
+   {
+    "name": "R14 A coordination joins alike, adjacent conjuncts (merged: drawing 'and' inside a place phrase 6 + diagram COORD_LIKE 4)",
+    "messages": 10,
+    "rule": "A conjunct after 'and' with no determiner of its own, or opening with 'no', joins the nominal right before it inside the same place phrase; a coordination does not reach back over another relation's marker. An imperative conjunct joins the clause that a subordinate or relative clause hangs on, not that subordinate clause.",
+    "where": "links.mjs partner()/coordinate() 997-1030, scanLeft 505-559, line 387.",
+    "why": "Expected repairs: 10 x 0.5 = 5. It overlaps the other agent's rule for lists after place phrases. It is also the decision design 2 learns (the partner)."
+   },
+   {
+    "name": "R15 Relative clauses without 'that', free relatives, 'that' relatives (merged: CONTACT_REL 4 + FREE_REL 3 + THAT_REL 3)",
+    "messages": 10,
+    "rule": "A nominal followed directly by a subject and a verb that lacks its object is a declarative relative clause tied to that nominal; this is not applied after verbs that take a clause. 'what' + subject + verb next to a form of 'be', with no inversion, is a declarative free relative. A clause opened by that/which/who right after a noun is declarative and finite.",
+    "where": "links.mjs scanLeft 520-533; the clause form set at line 316 onward; units.mjs 240-247.",
+    "why": "Expected repairs: 10 x 0.5 = 5. Untried. Risks: 'tell the team I need it' and real questions."
+   },
+   {
+    "name": "R16 Words between a determiner and its noun stay in the nominal",
+    "messages": 5,
+    "rule": "After a determiner and before the next noun of the run, every word is a dependent of that nominal: qualities, words that can also be adverbs (still, even), numbers with endings, and pairs joined by 'and'.",
+    "where": "units.mjs readEntity 549-573, a doubt {is:'modifier'}.",
+    "why": "Expected repairs: 5 x 0.8 = 4. Low risk."
+   },
+   {
+    "name": "R17 Small structural fixes (measure of a move 3, linking word + now/then/here/there 3, infinitive 'to' + bare verb 3, 'like' + clause 3, semicolon closes a clause 4)",
+    "messages": 16,
+    "rule": "A measure after the object and before a direction or linking word is a complement, and the relation after it starts at it (Rule 4); the 'x 120' tie is limited to values. A linking word plus now/then/here/there is one fixed phrase (settled case). 'to' + a bare word that the frames show as a verb at least as often as a thing, with a nominal, quality or linking word after it, opens an infinitive clause. 'like' + a nominal + a helping verb, -s form or pronoun-subject past is the marker of a clause. A semicolon never joins two nominals.",
+    "where": "links.mjs fill() 759-765, scanLeft 534-544, partner(); units.mjs (merging cue + adverb units, a 'to' doubt modelled on rule B, 'like' at t=0); the legend @k.additive at line 131 for ';'.",
+    "why": "Expected repairs: about 2 each, about 10 in all. Low risk, low value. The semicolon class is a single template."
+   }
+  ],
+  "dropped": [
+   "PLEASE_TO ('please to VERB', 3): one ungrammatical template, so it is particular to the dataset.",
+   "'thx' from FUNC_MISSING: an interjection abbreviation, not a function-word class. Discourse words come from the learned openers.",
+   "Grading word before a particle ('a small cat way off', 3): the other agent's rule for a word grading a relation covers it. Re-check after that rule lands.",
+   "AS_OPENER as a rule of its own (3, one template): kept only as the agreement test inside R6.",
+   "Docal lever S as a hand rule: it regresses 'the people want'. R6 replaces it with a learned singular/plural habit.",
+   "'-ing after a linking word' still failing (3): the rule is already in VSS. File it as a bug of existing rule B, not as a new rule.",
+   "Design 3 Node-only mode, which reads spaCy/DistilBERT circuits at run time (70.3%): not portable, and not VSS's own reading.",
+   "Whole-circuit reranker over VSS's alternatives: measured +0.1 pt; the ceiling is about +5 pt.",
+   "spaCy circuits used directly as training data (design 2's silver partner, design 3's table): not accepted circuits. Excluded unless the owner approves, or until the circuits are settled as labels through a judge audit.",
+   "Wire-level duplication: the two sentence-tie prototypes (drawing P2 as a relation, docal P as a coordination) must not both ship as they are. They are merged in R1."
+  ],
+  "designs": [
+   {
+    "approach": "Design 1: a semi-supervised EM station prior from accepted circuits (the 'swap' variant: supervised station tables, plain habits). Scales: higher gain = more gain, higher risk = more risk, higher effort = more work, higher fit = better fit.",
+    "gain": 2,
+    "risk": 5,
+    "effort": 4,
+    "fit": 8,
+    "evidenceHolds": "Only in part. These parts hold: the mapping is faithful (98.7% of forced readings reproduce the label), and the oracle ceiling is right (+2.7 pt strict; in 54% of failures the stations already fit). The +1.4 pt claim does not rest on known verdicts: accepted circuits fall from 1,207 to 1,200 (-0.4 pt), so the whole gain comes from an assumed pass rate for 197 unread circuits. The author's own reading supports about 32% for rejected-to-new (12 of 38), but only 5 of 13 (about 38%) for accepted-to-new, against the 50% the estimate assumes. 91.7% of the supervision is VSS's own output, so there is little new signal. Only the transitions-only variant (+0.4 pt, 124 new circuits) is close to risk-free.",
+    "verdict": "Defer. Judging the existing packet of about 90 swap circuits costs no code, so do it in parallel now. Adopt transitions-only or swap only if the judged net is positive, and only after the judged loop has added labels where VSS was wrong (478 today). Build at most one of designs 1 and 3, since both act on stations."
+   },
+   {
+    "approach": "Design 2: learned per-decision classifiers on top of the rules. Each takes the rule's choice as an input, uses features from structure and learned habits only, and is stored as about 16 KB of dot-product weights in model.json. Coordination partner and 'names it or says how' were tested; a decision recorder and judge packets on VSS-spaCy disagreements are the plan.",
+    "gain": 4,
+    "risk": 4,
+    "effort": 8,
+    "fit": 7,
+    "evidenceHolds": "The decision-level gains hold, with the benchmark held out: partner 283 to 293 of 307, and 'names it or says how' errors 53 to 33 of 2,021. The phase-1 +0.3 pt (+4 to +6 messages) needs spaCy circuits as partner training data, which are not accepted circuits. Labels alone give +2 messages (+0.1 pt). The in-sample check lost 20 and gained 1 of 9,294 labels. The +1.5 to 3 pt for the full plan is an unmeasured extrapolation; it depends on judged disagreement packets producing labels where VSS was wrong. The diagnosis is solid: the first differing decision is verb 182, word after a nominal 126, coordination 80, nominal boundary 55.",
+    "verdict": "Adopt in part, in step 3. The recorder and extraction become the measuring tool for every rule. Ship the 'names it or says how' classifier (labels only, margin 2) as the learned form of R4, after R3 lands, and retrain it after every rule change. The judged disagreement packets (phase 2) are the best source of new labels for every learned lever, and that loop is the owner's stated strategy. Learn the verb decision (phase 3) only after R6's agreement habit exists."
+   },
+   {
+    "approach": "Design 3: teacher evidence. A hashed per-word table with five classes, distilled from spaCy/DistilBERT circuits, bans stations where it is confident (p > 0.9), and VSS reads the message again with its own doubt loop. There is an optional Node mode with teachers at run time.",
+    "gain": 5,
+    "risk": 6,
+    "effort": 5,
+    "fit": 4,
+    "evidenceHolds": "The known +1.1 pt holds only for a table trained on spaCy circuits from 181k messages. Under the owner's rule (accepted circuits only), the labels-only table gives 66.1% (+0.2); labels plus 13k spaCy circuits give +0.8. The +3 to 6 pt estimate rests on a 20% pass rate the author read on 34 circuits, applied to 290 unread circuits. The upper end needs about 40%, and nothing supports that. The 70.3% Node figure needs teachers at run time. Targeting is genuinely good: 86% of the changes fall on rejected circuits. The oracle agrees with design 1: perfect stations, hosts and partners fix only 88 known messages.",
+    "verdict": "Conditional. Send the existing packets (325 + 247 circuits) to the judge now, in parallel; this needs no code. Build the browser table (2^18 x 5 int8, about 1.3 MB) only if at least 25% pass and the owner allows spaCy-and-DistilBERT agreement to be settled as labels with a judge audit. Drop Node mode and the reranker. If both conditions hold, prefer this design over design 1."
+   }
+  ],
+  "plan": [
+   "Step 0, now, alongside the other agent. (a) Judging that needs no VSS code: the orchestrator sends design 3's packets (levers/model-evidence/to-judge, 325 + 247 circuits) and design 1's swap packet (about 90 circuits) to the judge. The verdicts decide step 4 and add judged circuits to the registry. (b) When the other agent's batch lands, take one stable copy and rebaseline: vss-registry.mjs on 2026-11-27-syntax-benchmark-random, and vss-accepted.mjs at --size 2000 and 8000. Write the remaining count per class into the journal. Every prototype above was built on an older snapshot, so all line numbers move.",
+   "Step 1, first code group: the measured, low-damage prototypes, one commit per rule. R1 (lever P coordination, then the P2 fallback, with the R10 exemption stubbed until R10 lands), R2 (P1 plus the coordination subject and the let's adverb skip), R3 (COMPOUND + N) together with R13 (legend words, retrained to a scratch model and then adopted), R5 (CMD + Q), and R12's PART_COMMA. Port them in parallel in separate copies (their sites differ: linkSentence and tieLoose; links 228; units 268+ and readEntity; reader openers; units command rules), then merge in ranking order. Why first: all are prototyped, each changes 0 to 6 of 8,000 accepted circuits, and together they target about 74 judged faults. Measure: registry fixed/broken per class with each lever toggled off and on; vss-accepted at 2,000 and 8,000, reading every changed circuit (expect about 25, most of them added ties); then one judge packet of every changed unjudged circuit, including the roughly 31 L8 circuits that gain a tie (the L4 check). Expected: +1.5 to 2.5 pt, because about half of the repaired faults sit in messages with no other fault.",
+   "Step 2: the untried structural rules, after the other agent's list, participle and comma-number rules land, since they share the seriesU and participle code. Order: R10 (it must run before R1's coordination), R7, R8, R9, R11 (a revision of the existing likeness rule; check the 56 labels that hold a comma-only coordination), the rest of R12, R16, R14, R15, R17. Prototype each in its own copy in parallel and merge in ranking order. Measure as in step 1. Stop a rule that changes more than 0.5% of the 8,000 accepted circuits, or that breaks more than it fixes on the registry. Expected: +1 to 2 pt.",
+   "Step 3: learned decisions where thresholds fail. Port design 2's recorder and alignment. Train the 'names it or says how' classifier (labels only, margin 2) as the learned R4. Learn a singular/plural habit from raw text in habits.mjs (is/are, was/were, -s verbs after the noun) and build R6 on it instead of lever S. In parallel, the orchestrator sends judge packets of VSS-spaCy disagreements at these decision points, a few hundred per round, and the accepted circuits are added as labels; retrain after each round. Measure: decision accuracy on the held-out benchmark (the 2,021 'names it or says how' cases and the 307 partner cases), end to end through the registry plus a judge packet, and the 8,000 accepted circuits. Expected: +1 to 2 pt, rising as judged labels accumulate.",
+   "Step 4, only if step 0's verdicts justify it: station-level learning. If design 3's packets pass at 25% or more and the owner allows settling spaCy-and-DistilBERT agreement as labels with a judge audit, build the browser word table. Otherwise try design 1 transitions-only on the larger set of judged labels. Not both. Measure on a benchmark freshly drawn from the full data (owner's rule) with k-fold training, and report L8+L9+L10 with and without the lever. After every step, record the plan, the measured result and the open items in the journal and in improvements-ideas.md, and commit."
+  ]
+ }
+}
