@@ -297,6 +297,9 @@ These rules make formalizers agree where a free choice would make their circuits
 2. **A word that says how a nominal is, standing after that nominal.** If the nominal is the subject or a complement of the clause, the word is a `modifier` of that clause: "make the box red". If the nominal is the end of a relation with a marker, the word is a `dependent` of that nominal: "with outline gold".
 3. **A greeting or thanks alone.** "Hey" or "Thanks" forms a fragment with the word in `discourse`.
 4. **The "to" of an infinitive is the marker of a relation.** It marks the relation from the clause before it to the nonfinite clause. When nothing stands before it, as in "to fix the details, edit the members", the relation starts at the main clause.
+5. **A number or a name right after a noun.** "block 2", "x 120", "the node Intro": the number or name is a `dependent` in the noun's nominal, or a nominal of its own tied to the noun by a relation without a marker. Both are accepted; neither may leave it tied to nothing.
+6. **A word that grades a linking word.** "right behind", "just above": the word is a `modifier` of the clause the relation belongs to. A relation has no key for it.
+7. **"And", "Then" or "So" at the start of a message.** With nothing before it to join, the word is a `discourse` word.
 
 ## What a formalizer must get right
 
