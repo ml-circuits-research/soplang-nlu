@@ -129,6 +129,8 @@ const TWO_WORD_PREPOSITIONS = new Set(['according to', 'ahead of', 'along with',
   'near to', 'next to', 'off of', 'out of', 'outside of', 'owing to', 'prior to', 'regardless of', 'subsequent to', 'such as', 'thanks to',
   'together with'])
 const INTERROGATIVE = new Set(['WDT', 'WP', 'WP$', 'WRB'])
+// the linking adverbs that put the next item of a sequence after the one before ("…, then one kite")
+const SEQUENCE = new Set(['then', 'next'])
 const TERMINAL = new Set(['.', '!', '?'])
 const BOUNDARY = new Set([';', ':', '—', '–', '.', '!', '?'])
 
@@ -492,9 +494,19 @@ export function wiresOf(units) {
     // no complement of that verb: a fragment beside the clause ("a small dog at the bottom, then drape…")
     if (dep === 'dep' && nominalHere(part) && wire.form !== 'fragment' &&
         units.slice(Math.min(part.index, head.index) + 1, Math.max(part.index, head.index)).some(mark => !mark.word)) {
+      if (part.index > head.index && contrast(wire, part)) return
       const then = part.index < head.index ? openingThen(part, head) : null
       if (then) reserved.add(then.index)
-      const group = join(wire, clause(part))
+      const other = clause(part)
+      // opened by a linking word of sequence after the verb, such a group of words is the next thing the
+      // verb does and shares it, as a conjunct does (Rule 3): "place one bird on the tree, then one kite on
+      // top of it", "add a crown to the girl, next, a red cape". Before the verb it shares nothing ("a small
+      // dog at the bottom, then drape…"), nor does a remark set after it with no such word ("…, hands off").
+      const lender = wire.ellipsis ?? (has(wire, 'verb') && wire.form !== 'nonfinite' ? wire : null)
+      const opening = units.slice(head.index + 1, firstOf(part)).reverse().find(unit => unit.word)
+      const linked = [opening, units[firstOf(part)]].some(word => word?.word && SEQUENCE.has(word.lower) && word.dep === 'advmod' && !under(word).length)
+      if (part.index > head.index && lender && linked && other.form === 'fragment') { other.ellipsis = lender; refer(other, 'ellipsis', lender) }
+      const group = join(wire, other)
       if (group) { joinedFor.set(part.index, group); if (then) put(group, 'conjunction', then) }
       return
     }
@@ -710,10 +722,12 @@ export function wiresOf(units) {
       // a second preposition hung on this one ("at x 120, at y 90"): a second relation from the same start
       else if ((part.dep === 'prep' || part.pos === 'ADP') && markerChain(part).object) prepositional(part, start, home)
       else if (nominalHere(part)) complement(home, nominal(part, home, 'complement'))
-      // a word that grades the relation ("just below", "right next to") stands after the wire the relation
-      // starts at. As any word after a nominal (Rule 5): a modifier of the clause when the relation starts
-      // at the clause or at its subject or complement, a dependent of the nominal otherwise.
-      else if (start.type === 'nominal' && start.role !== 'subject' && start.role !== 'complement') inside(start, part)
+      // a word that grades the relation ("just below", "right next to") stands before its marker and says
+      // how near the relation holds, not what the thing is: a modifier of the clause the relation stands in,
+      // also when the relation starts at a nominal that ends another relation ("with a bear just behind the
+      // pine"). Any other word after a nominal follows Rule 5: a modifier of the clause when the relation
+      // starts at the clause or at its subject or complement, a dependent of the nominal otherwise.
+      else if (start.type === 'nominal' && start.role !== 'subject' && start.role !== 'complement' && part.index > words[0].index) inside(start, part)
       else describe(home, part)
     }
     return wire
@@ -730,6 +744,7 @@ export function wiresOf(units) {
    */
   function conjunct(first, wire, part, home, key, holder) {
     if (taken(part)) return
+    if (contrast(home, part)) return
     const noted = group => { if (group) { joinedFor.set(first.index, group); joinedFor.set(part.index, group) } return group }
     const paired = under(part).some(inner => SUBJECT.has(inner.dep))
     // the clause whose verb a verbless conjunct shares: "make A blue and B green"
@@ -785,6 +800,27 @@ export function wiresOf(units) {
     if (markerChain(part).object && (part.dep === 'prep' || part.pos === 'ADP')) return void prepositional(part, home, home)
     if (nominalHere(part)) return complement(home, nominal(part, home, 'complement'))
     describe(home, part)
+  }
+
+  /**
+   * A word or a group of words set after a comma with "not" in front of it ("the cloud is small, not
+   * big", "have the woman take the next turn, not the man") is set against what the clause says: a
+   * fragment that shares the verb of the clause (Rule 3), with the negation as its own.
+   * @returns the fragment, or null when the part is no such contrast
+   */
+  function contrast(home, part) {
+    const negation = under(part).find(inner => inner.dep === 'neg' && inner.index === firstOf(part) && !taken(inner))
+    if (!negation || units[negation.index - 1]?.value !== ',' || home.type !== 'clause' || formOf(part) !== 'fragment') return null
+    const lender = home.ellipsis ?? (has(home, 'verb') ? home : null)
+    if (!lender) return null
+    reserved.add(negation.index)
+    const other = clause(part)
+    put(other, 'negation', negation)
+    other.ellipsis = lender
+    refer(other, 'ellipsis', lender)
+    const group = join(home, other)
+    if (group) joinedFor.set(part.index, group)
+    return other
   }
 
   // ----- words the parse gave no grammatical place ----------------------------------------------
@@ -843,7 +879,10 @@ export function wiresOf(units) {
     if (group && (unit.dep === 'preconj' || !opens)) put(group, 'conjunction', unit, ...beside)
     else {
       const holder = group ? group.home ?? wire : wire
-      put(holder, group ? 'discourse' : key, unit)
+      // a conjunction is a linking word, never a word that says how: between two words that modify one
+      // clause ("turn the path slick and reflective", "up and left of Draft") the schema has no wire for
+      // the pair, and the conjunction is a word of discourse of that clause
+      put(holder, group || key === 'modifier' && holder.type === 'clause' && unit.pos === 'CCONJ' ? 'discourse' : key, unit)
       for (const part of beside) put(holder.type === 'clause' ? holder : holder.home ?? holder, holder.type === 'clause' ? 'modifier' : key, part)
     }
   }

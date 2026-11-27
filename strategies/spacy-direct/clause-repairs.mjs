@@ -3,9 +3,9 @@
 // A parser trained on edited prose reads a run of short requests ("set the axis, that's the
 // tweak; then drop the legend") as one sentence and hangs each clause on the next as its
 // complement or its adverbial clause. Each rule below states a fact of English clause syntax,
-// checks it on the parser's own tags and relations, and relabels or moves the arc. No rule names
-// a word of the message, except the linking word "then". A relabelled clause is `parataxis`: set
-// side by side with the other.
+// checks it on the parser's own tags and relations, and relabels or moves the arc. The only words a
+// rule names are function words: the linking words "then" and "so" and the "to" of an infinitive. A
+// relabelled clause is `parataxis`: set side by side with the other.
 const STRONG = /^[;:—–.!?]+$/u
 const SUBJECT = new Set(['nsubj', 'nsubjpass', 'expl', 'csubj', 'csubjpass'])
 // the relations that hang a clause on a verb, and those that hang it on a noun
@@ -38,6 +38,30 @@ export function repairClauses(units) {
   }
   let changed = 0
 
+  // 0. "so" after a punctuation mark, at the head of a clause, joins that clause to what stands before
+  //    as its result: "nudge the barn next to the tree, so the view stays open", "it is a hierarchy, so
+  //    lay out the diagram". The parser may read it as an adverb of the second clause and hang the first
+  //    clause on the second; the first is then the main one, and "so" marks the second, hung on it.
+  //    (First, since the rules below read the subordinators it sets.)
+  for (const so of units) {
+    if (!so.word || so.lower !== 'so' || so.dep !== 'advmod' || under(so).length) continue
+    const mark = units[so.index - 1], verb = units[so.head]
+    if (!mark || mark.word || !/^[,;:—–-]+$/u.test(mark.value) || !verbal(verb) || verb.index < so.index) continue
+    const before = under(verb).filter(part => part.index < mark.index)
+    if (verb.head === verb.index) {
+      if (before.length !== 1) continue
+      const [earlier] = before
+      earlier.head = earlier.index
+      earlier.dep = 'ROOT'
+      // an adjective with a determiner and no noun to describe stands for a thing ("the same for a bush")
+      if (earlier.pos === 'ADJ' && under(earlier).some(part => part.dep === 'det')) earlier.pos = 'NOUN'
+      verb.head = earlier.index
+      verb.dep = 'advcl'
+    } else if (before.length) continue
+    so.dep = 'mark'
+    changed++
+  }
+
   for (const unit of units) {
     if (!verbal(unit) || unit.head === unit.index || !HUNG.has(unit.dep) && !DESCRIBING.has(unit.dep)) continue
     const governor = units[unit.head]
@@ -60,11 +84,21 @@ export function repairClauses(units) {
   // 4. Only a main clause puts an auxiliary before its subject: "is anything overlapping the house?"
   //    is a question. A clause so inverted that the parser hung across a punctuation mark on a word
   //    before it, as a clause that completes or describes that word, is a question of its own.
+  //    A subordinator keeps the order of a statement too: one before such an inverted clause that the
+  //    parser hung on a verb before it as an adverbial clause joins the question to what stands before
+  //    ("…, so could you also drop the legend"). With no subordinator an inverted adverbial clause is a
+  //    condition ("should you need it, …") and is left alone.
   for (const unit of units) {
-    if (!verbal(unit) || unit.head === unit.index || !['ccomp', 'xcomp', 'acl', 'relcl'].includes(unit.dep)) continue
+    if (!verbal(unit) || unit.head === unit.index || !['ccomp', 'xcomp', 'acl', 'relcl', 'advcl'].includes(unit.dep)) continue
     const governor = units[unit.head], subject = subjectOf(unit)
     if (governor.index > unit.index || !set(unit, governor) || !subject) continue
-    if (auxiliaries(unit).some(part => part.index < subject.index)) { unit.dep = 'parataxis'; changed++ }
+    const inverted = auxiliaries(unit).filter(part => part.index < subject.index)
+    if (!inverted.length) continue
+    const marks = under(unit).filter(part => part.dep === 'mark' && part.index < inverted[0].index)
+    if (unit.dep === 'advcl' && !marks.length) continue
+    for (const mark of marks) mark.dep = 'cc'
+    unit.dep = 'parataxis'
+    changed++
   }
 
   // 5. An auxiliary stands before the verb it helps. One that the parser hung on a verb before it,
@@ -106,6 +140,89 @@ export function repairClauses(units) {
     const next = units.find(other => other.index > unit.index && other !== governor && first(other) === unit.index + 1 &&
       (verbal(other) && verbal(governor) && ['ROOT', 'conj', 'dep', 'parataxis', 'ccomp', 'advcl'].includes(other.dep) || nominal(other)))
     if (next) { unit.head = next.index; changed++ }
+  }
+
+  // 8. A question word opens its clause: no clause goes on past a personal pronoun or the "to" of an
+  //    infinitive into a question word. One that follows them and opens a question closed by a question
+  //    mark, with its auxiliary before its subject, starts the sentence again: "Could you what values does
+  //    Votes show?", "Let us what colour is tree 1?", "I need you to what values does League show?". The
+  //    question is a clause of its own, set beside the words before it; those form a clause of their own
+  //    (an auxiliary with its subject, a verb with its object), and "to" marks the tie from that verb to
+  //    the question.
+  const closingMark = unit => units.slice(unit.index + 1).find(other => !other.word && /[.!?]/u.test(other.value))
+  for (const wh of units) {
+    const before = units[wh.index - 1]
+    if (!wh.word || !/^W/u.test(wh.tag) || !before?.word) continue
+    const to = before.lower === 'to' && (before.tag === 'TO' || before.pos === 'PART')
+    if (!to && before.tag !== 'PRP') continue
+    // the verb of the question: the first verb form after the question word on the way up from it
+    let verb = wh
+    for (let steps = 0; verb.head !== verb.index && !(verbal(verb) && verb.index > wh.index) && steps < units.length; steps++) verb = units[verb.head]
+    if (!verbal(verb) || verb.index < wh.index || !closingMark(verb)?.value.includes('?')) continue
+    const subject = under(verb).find(part => SUBJECT.has(part.dep) && part.index > wh.index)
+    const inverted = subject && (verb.pos === 'AUX' && verb.index < subject.index || auxiliaries(verb).some(part => part.index > wh.index && part.index < subject.index))
+    if (!inverted) continue
+    if (to) {
+      const governor = before.head === verb.index ? units[verb.head] : units[before.head]
+      if (!verbal(governor) || governor.index > before.index) continue
+      verb.head = governor.index
+      verb.dep = 'parataxis'
+      before.head = verb.index
+      before.dep = 'mark'
+      before.pos = 'ADP'
+      before.tag = 'IN'
+    } else {
+      const governor = units[before.head]
+      if (verbal(governor) && governor.index < before.index && governor !== verb) {
+        verb.head = governor.index
+        verb.dep = 'parataxis'
+      } else {
+        // the pronoun was hung on the verb of the question: the auxiliary before it is the verb of its own clause
+        const auxiliary = units[before.index - 1]
+        if (before.head !== verb.index || !auxiliary?.word || auxiliary.head !== verb.index || !['aux', 'auxpass'].includes(auxiliary.dep)) continue
+        const root = verb.head === verb.index
+        auxiliary.head = root ? auxiliary.index : verb.head
+        auxiliary.dep = root ? 'ROOT' : verb.dep
+        before.head = auxiliary.index
+        before.dep = 'nsubj'
+        verb.head = auxiliary.index
+        verb.dep = 'parataxis'
+      }
+    }
+    changed++
+  }
+
+  // 9. The "to" of an infinitive ties the infinitive to a word before it. One that opens the sentence
+  //    after nothing but a word said to the listener ("please to place flow along the curve") ties it to
+  //    that word: the word said to the listener stands as a clause of its own, and "to" marks the tie
+  //    from it to the infinitive.
+  for (const verb of units) {
+    if (!verbal(verb) || verb.head !== verb.index) continue
+    const to = under(verb).find(part => part.lower === 'to' && part.dep === 'aux' && part.index < verb.index)
+    const listener = to && under(verb).find(part => part.dep === 'intj' && part.index < to.index)
+    if (!listener || units.slice(0, verb.index).some(other => other.word && other !== listener && other !== to)) continue
+    listener.head = listener.index
+    listener.dep = 'ROOT'
+    verb.head = listener.index
+    verb.dep = 'xcomp'
+    changed++
+  }
+
+  // 10. A base form of a verb with no auxiliary and no "to" makes no statement: a noun before it is not
+  //     its subject. A noun the parser made the subject of such a verb, right after a subordinator, is
+  //     marked by that word as by a preposition, and the verb commands: "so as a first pass rename the
+  //     rent series" ("as a first pass", then the command "rename"). A base form that completes another
+  //     verb takes a subject ("let the man face left") and is left alone.
+  for (const verb of units) {
+    if (!verbal(verb) || verb.tag !== 'VB' || auxiliaries(verb).length || ['ccomp', 'xcomp'].includes(verb.dep)) continue
+    const subject = under(verb).find(part => part.dep === 'nsubj' && part.index < verb.index && part.pos === 'NOUN')
+    const marker = subject && under(verb).find(part => part.dep === 'mark' && part.index === first(subject) - 1)
+    if (!marker || under(verb).some(part => part.lower === 'to' && part.dep === 'aux')) continue
+    marker.dep = 'prep'
+    marker.pos = 'ADP'
+    subject.head = marker.index
+    subject.dep = 'pobj'
+    changed++
   }
   return changed
 }
