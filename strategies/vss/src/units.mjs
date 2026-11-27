@@ -258,10 +258,43 @@ export function buildUnits(tokens, stations, lexicon) {
   for (let k = 0; k + 1 < units.length; k++) {
     const left = units[k], right = units[k + 1]
     if (!lexicon.together || !lexicon.kindsOf || left.last + 1 !== right.first || !lexicon.together(tokens[left.last].word, tokens[right.first].word)) continue
-    if (left.type === 'entity' && left.head?.[0] === left.last && ['adverb', 'complement'].includes(right.type) && right.first === right.last &&
+    // a plural noun closes its thing: the word after it does not name the thing
+    const closed = left.type === 'entity' && left.head && /[^s]s$/u.test(tokens[left.last].word) && lexicon.pluralThing(tokens[left.last].word)
+    if (left.type === 'entity' && left.head?.[0] === left.last && ['adverb', 'complement'].includes(right.type) && right.first === right.last && !closed &&
         lexicon.kindsOf(tokens[right.first].word).thing >= 3) units.doubts.push({position: right.first, is: 'head'})
     else if (left.type === 'adverb' && left.first === left.last && right.type === 'entity' && !right.pronoun && !right.determiner?.length &&
              right.head?.[0] === right.first && lexicon.kindsOf(tokens[left.first].word).thing >= 3) units.doubts.push({position: left.first, is: 'head'})
+  }
+  // after a linking word, a thing that a determiner opens runs to its last noun: a lone word after it that the
+  // text showed as a thing, not as saying how things are, is the word the thing is named by
+  for (let k = 1; k + 1 < units.length; k++) {
+    const cue = units[k - 1], thing = units[k], last = units[k + 1], after = units[k + 2]
+    if (!lexicon.kindsOf || cue.type !== 'cue' || thing.type !== 'entity' || !thing.determiner?.length || thing.pronoun || thing.head?.[0] !== thing.last) continue
+    if (last.type !== 'complement' || last.first !== last.last || last.degree?.length || last.first !== thing.last + 1) continue
+    if (after && !['separator', 'terminator', 'conjunction', 'cue', 'marker'].includes(after.type)) continue
+    // (a word with its own "of" phrase says how the thing is: "a city street full of traffic")
+    if (after?.type === 'cue' && lexicon.linkOf?.(tokens[after.first].word) === 'belongs') continue
+    const seen = lexicon.kindsOf(tokens[last.first].word)
+    // (not where a verb that says what its object becomes still waits for that: "make the bars on the chart purple")
+    let wanted = false
+    for (let j = k - 1; j >= 0 && !['separator', 'terminator', 'conjunction'].includes(units[j].type); j--) {
+      if (units[j].type === 'complement') break
+      if (units[j].type === 'verb') { wanted = lexicon.takesQuality(tokens[units[j].predicate[0]].word); break }
+    }
+    if (wanted || lexicon.listed(tokens[last.first].word)) continue
+    if (tokens[last.first].shape === 'lower' && seen.thing >= 3 && seen.thing >= 3 * seen.quality && !lexicon.saysHow(tokens[last.first].word)) units.doubts.push({position: last.first, is: 'head'})
+  }
+  // inside a thing that a determiner opens, a plural noun is the last word: the nouns that describe a noun
+  // stand in the singular. A word after it that is not itself known as a thing does not belong to the thing.
+  for (const unit of units) {
+    if (!lexicon.pluralThing || unit.type !== 'entity' || !unit.determiner?.length || unit.pronoun || !unit.head) continue
+    for (let p = unit.first + 1; p < unit.last; p++) {
+      if (!['modifier', 'noun'].includes(stations[p]) || tokens[p].shape !== 'lower' || !lexicon.pluralThing(tokens[p].word) || !/[^s]s$/u.test(tokens[p].word)) continue
+      const next = tokens[p + 1].word
+      if (tokens[p + 1].shape !== 'lower' || lexicon.pluralThing(next) || lexicon.nominal(next) !== false) continue
+      units.doubts.push({position: p, is: 'head'}, {position: p + 1, not: 'head'})
+      break
+    }
   }
   // "more readable": a word that grades is followed by what it grades, a quality; a word never shown as a verb is not one there
   for (let t = 1; t < tokens.length; t++) {
@@ -318,6 +351,14 @@ export function buildUnits(tokens, stations, lexicon) {
     const next = tokens[t + 1].word
     if (tokens[t + 1].shape !== 'lower' || lexicon.kindsOf(next).verb < 3) continue
     if (lexicon.sForm(next) || lexicon.formOf(next) === 'past' && !['noun', 'name', 'modifier', 'quantity', 'determiner'].includes(stations[t + 2])) units.doubts.push({position: t, not: 'verb'}, {position: t + 1, is: 'verb'})
+  }
+  // after a comma, a colon, a dash or a word said in passing, a word written with a capital right before
+  // a determiner or a pronoun opens a command, when the text knows the word as a verb
+  for (let t = 1; t + 1 < tokens.length; t++) {
+    if (stations[t] !== 'name' || tokens[t].shape !== 'capital' || !['separator', 'expression', 'filler', 'adverb'].includes(stations[t - 1])) continue
+    if (!['determiner', 'pronoun'].includes(stations[t + 1])) continue
+    const seen = lexicon.kindsOf(tokens[t].word.toLowerCase())
+    if (seen.verb >= 3 && seen.verb > seen.thing) units.doubts.push({position: t, is: 'verb'})
   }
   // "a paragraph saying Thank you": a capital inside a sentence marks a name or quoted words; such a word is not said in passing
   for (let t = 1; t < tokens.length; t++) {
@@ -409,6 +450,9 @@ export function buildUnits(tokens, stations, lexicon) {
     // "the dashed line wider": a word that says how a thing is, closing an entity after its noun, is not what the entity names
     else if (lexicon.saysHow && head > unit.first && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1)) &&
              lexicon.kindsOf(tokens[head - 1].word).thing >= 3 && lexicon.saysHow(tokens[head].word)) units.doubts.push({position: head, not: 'head'})
+    // a graded form right after a noun does not name the thing; the noun before it does
+    else if (lexicon.gradedForm && head > unit.first && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1)) &&
+             lexicon.kindsOf(tokens[head - 1].word).thing >= 3 && lexicon.gradedForm(tokens[head].word) && !lexicon.listed(tokens[head - 1].word)) units.doubts.push({position: head, not: 'head'}, {position: head - 1, is: 'head'})
     // "the two lines differ": an entity that nothing holds, ending in a word never seen as a
     // thing after a word that is one, with no verb after it: the last word is the verb
     if (head > unit.first && lexicon.kindsOf && (unit.compound?.includes(head - 1) || unit.modifier?.includes(head - 1))) {
