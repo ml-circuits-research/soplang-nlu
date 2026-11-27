@@ -1,0 +1,206 @@
+// From stations to units. A unit is a run of tokens whose stations belong together: one
+// entity, one verb group, one cue. Nothing here looks at a particular word: the stations,
+// the lexicon of learned word habits and the legend decide.
+import {stemsOf} from './forms.mjs'
+
+const NOMINAL = new Set(['determiner', 'quantity', 'degree', 'modifier', 'noun', 'name', 'pronoun', 'literal'])
+const VERBAL = new Set(['auxiliary', 'negation', 'predicate', 'following'])
+const SINGLE = new Set(['marker', 'question', 'adverb', 'filler', 'separator', 'conjunction', 'possessive', 'negation'])
+
+/**
+ * @param tokens observations of the message
+ * @param stations station name per token
+ * @param lexicon {nominal(word), verbal(word), canBe(word, station), formOf(word)}
+ * @returns units in text order: {type, first, last, ...slots as token positions}
+ */
+export function buildUnits(tokens, stations, lexicon) {
+  const units = []
+  const n = tokens.length
+  const at = i => i < n ? stations[i] : null
+  let i = 0
+  while (i < n) {
+    const station = stations[i]
+    if (NOMINAL.has(station)) {
+      const entity = readEntity(i)
+      if (entity) {
+        i = entity.last + 1
+        // "Jan's office chair": the first entity owns the second
+        if (at(i) === 'possessive' && NOMINAL.has(at(i + 1)) && at(i + 1) !== 'pronoun') {
+          const owned = readEntity(i + 1)
+          if (owned?.type === 'entity' && entity.type === 'entity') {
+            owned.possessor = entity
+            owned.possessiveMarker = i
+            owned.first = entity.first
+            units.push(owned)
+            i = owned.last + 1
+            continue
+          }
+        }
+        units.push(entity)
+        continue
+      }
+    }
+    if (VERBAL.has(station) && station !== 'negation' || station === 'negation' && VERBAL.has(at(i + 1))) {
+      const group = readVerbGroup(i)
+      units.push(group)
+      i = group.last + 1
+      continue
+    }
+    if (station === 'cue') {
+      let j = i
+      while (at(j + 1) === 'cue') j++
+      units.push({type: 'cue', first: i, last: j})
+      i = j + 1
+      continue
+    }
+    const grades = position => at(position) === 'degree' || at(position) === 'adverb' && lexicon.canBe(tokens[position].word, 'degree') &&
+      (at(position + 1) === 'complement' || at(position + 1) === 'modifier' && !NOMINAL.has(at(position + 2)))
+    if (station === 'complement' || station === 'degree' || station === 'modifier' || grades(i)) {
+      // bare modifiers without a head: what something is made to be
+      let j = i
+      const degree = []
+      while (grades(j)) degree.push(j++)
+      const start = j
+      while (at(j) === 'complement' || at(j) === 'modifier') j++
+      if (j > start) units.push({type: 'complement', first: i, last: j - 1, degree, value: [start, j - 1]})
+      else units.push({type: 'adverb', first: i, last: j - 1})
+      i = Math.max(j, i + 1)
+      continue
+    }
+    if (station === 'expression' || station === 'terminator') {
+      let j = i
+      while (at(j + 1) === station) j++
+      units.push({type: station, first: i, last: j})
+      i = j + 1
+      continue
+    }
+    units.push({type: SINGLE.has(station) ? station : 'other', first: i, last: i})
+    i++
+  }
+  // "make the girl ginger": after a verb that says what its object becomes, a last word that
+  // is a quality and was never seen standing with the word before it is that outcome.
+  for (let k = 1; k < units.length; k++) {
+    const entity = units[k], verb = units[k - 1]
+    if (entity.type !== 'entity' || verb.type !== 'verb' || !entity.head || entity.name || entity.head[0] !== entity.head[1]) continue
+    const head = entity.head[0], before = head - 1
+    const holds = [...entity.compound, ...entity.modifier].includes(before) && entity.compound.includes(before) || stations[before] === 'noun' && entity.compound.includes(before)
+    if (!holds || !lexicon.takesQuality(tokens[verb.predicate[0]].word)) continue
+    if (lexicon.nominal(tokens[head].word) !== false || lexicon.together(tokens[before].word, tokens[head].word)) continue
+    entity.compound = entity.compound.filter(position => position !== before)
+    entity.head = [before, before]
+    entity.last = before
+    units.splice(k + 1, 0, {type: 'complement', first: head, last: head, degree: [], value: [head, head]})
+  }
+  // "labelled Close ticket": a label goes on until something ends it, unless the verb before
+  // it is one that says what its object becomes, or the same words are written again as one.
+  for (let k = 0; k + 1 < units.length; k++) {
+    const label = units[k], tail = units[k + 1], verb = units[k - 1]
+    if (label.type !== 'entity' || !label.name || label.head || tail.type !== 'complement' || tail.degree.length) continue
+    const whole = tokens.slice(label.name[0], tail.last + 1).map(token => token.word).join(' ')
+    const again = tokens.map(token => token.word).join(' ').split(whole).length > 2
+    const becomes = verb?.type === 'verb' && lexicon.takesQuality(tokens[verb.predicate[0]].word)
+    if (!again && (becomes || verb?.type !== 'verb')) continue
+    label.name = [label.name[0], tail.last]
+    label.last = tail.last
+    units.splice(k + 1, 1)
+  }
+  return units
+
+  function readEntity(start) {
+    if (stations[start] === 'pronoun') return {type: 'entity', first: start, last: start, pronoun: [start, start]}
+    if (stations[start] === 'literal') {
+      let j = start + 1
+      const modifier = []
+      while (at(j) === 'name') modifier.push(j++)
+      return {type: 'entity', first: start, last: j - 1, literal: [start, start], modifier}
+    }
+    let j = start
+    const determiner = [], quantity = [], degree = [], modifier = [], core = []
+    while (at(j) === 'determiner') determiner.push(j++)
+    for (; j < n; j++) {
+      const station = stations[j]
+      if (station === 'quantity') (core.length ? core : quantity).push(j)
+      else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree')) degree.push(j)
+      else if (station === 'modifier' && !core.length) modifier.push(j)
+      else if (station === 'noun' || station === 'name') core.push(j)
+      else break
+    }
+    // a counted thing whose word was read as a bare quality is still the head
+    if (!core.length && quantity.length && at(j) === 'complement') core.push(j++)
+    if (j === start) return null
+    const entity = {type: 'entity', first: start, last: j - 1, determiner, quantity, degree, modifier: [], compound: []}
+    const attribute = position => {
+      const word = tokens[position].word
+      const named = tokens[position].shape === 'capital' || tokens[position].shape === 'upper'
+      const nominal = named || (stations[position] === 'modifier' ? lexicon.nominal(word) === true : lexicon.nominal(word) !== false)
+      ;(nominal ? entity.compound : entity.modifier).push(position)
+    }
+    if (core.length) {
+      let head = -1
+      core.forEach((position, k) => { if (stations[position] === 'noun' || stations[position] === 'complement') head = k })
+      modifier.forEach(attribute)
+      const label = stations[core[0]] === 'name' && !determiner.length && !modifier.length && !quantity.length
+      if (label) entity.name = [core[0], core.at(-1)]       // "Budget split": a label of several words
+      else if (head >= 0) {
+        core.slice(0, head).forEach(position => entity.compound.push(position))
+        entity.head = [core[head], core[head]]
+        if (head + 1 < core.length) entity.name = [core[head + 1], core.at(-1)]
+      } else entity.name = [core[0], core.at(-1)]
+      return entity
+    }
+    if (modifier.length && (determiner.length || quantity.length)) {
+      // "the red": the last quality stands for the thing
+      modifier.slice(0, -1).forEach(attribute)
+      entity.head = [modifier.at(-1), modifier.at(-1)]
+      return entity
+    }
+    if (quantity.length && !modifier.length) {
+      // a number standing alone is given as written
+      entity.literal = [quantity[0], quantity.at(-1)]
+      entity.quantity = []
+      return entity
+    }
+    if (determiner.length && !modifier.length && !degree.length) {
+      // a determiner standing alone refers by itself
+      if (determiner.length === 1 && lexicon.canBe(tokens[start].word, 'pronoun')) {
+        return {type: 'entity', first: start, last: start, pronoun: [start, start]}
+      }
+      return {type: 'other', first: start, last: j - 1}
+    }
+    return null
+  }
+
+  function readVerbGroup(start) {
+    const auxiliary = [], negation = [], adverb = []
+    let j = start
+    for (; j < n; j++) {
+      const station = stations[j]
+      if (station === 'auxiliary') auxiliary.push(j)
+      else if (station === 'negation') negation.push(j)
+      else if (station === 'adverb' && VERBAL.has(at(j + 1))) adverb.push(j)
+      else if (station === 'predicate' || station === 'following') {
+        // "be turned", "have been moved": a helping verb before the verb it helps
+        let k = j + 1
+        while (at(k) === 'negation' || at(k) === 'adverb' && VERBAL.has(at(k + 1))) k++
+        const helps = lexicon.canBe(tokens[j].word, 'auxiliary') &&
+          (at(k) === 'predicate' || at(k) === 'following' || at(k) === 'complement' && lexicon.formOf(tokens[k].word) === 'past')
+        if (helps) { auxiliary.push(j); if (at(k) === 'complement') { stations[k] = 'following' } continue }
+        return {type: 'verb', first: start, last: j, auxiliary, negation, adverb, predicate: [j, j],
+          form: lexicon.formOf(tokens[j].word), station}
+      } else break
+    }
+    return {type: 'aux', first: start, last: j - 1, auxiliary, negation, adverb}
+  }
+}
+
+/** Which ending built this word from another known word: 'past', 'progressive', or null. */
+export function formClassifier(legend, isKnown) {
+  const byName = legend.forms.map(form => ({endings: form.endings, name: form.name}))
+  return word => {
+    for (const {endings, name} of byName) {
+      if (name !== 'past' && name !== 'progressive') continue
+      if (stemsOf(word, endings).some(isKnown)) return name
+    }
+    return null
+  }
+}

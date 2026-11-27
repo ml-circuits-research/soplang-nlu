@@ -18,7 +18,7 @@ if (extraArgs.length || sourceArg === '--help') {
   console.log('Usage: node tests/benchmark/port-run.mjs [prior-run-directory|-] [new-output-directory]')
   console.log('Defaults to a fresh 1% sample at dataset HEAD and eight workers per strategy.')
   console.log('Environment: SOP_WORKSPACE, KNOWLEDGE_DIR, DATASET_REVISION, WORKERS, PROGRESS_EVERY, SAMPLE_PERCENT, SAMPLE_SEED, Z3_MODULE, SWIPL')
-  console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer,spacy-direct,spacy-beam,neuro-z3,neuro-prolog,neuro-selector,distilbert.')
+  console.log('Select strategy names with STRATEGIES=z3,prolog,prolog-example-transfer,spacy-direct,spacy-beam,neuro-z3,neuro-prolog,neuro-selector,distilbert,vss.')
   console.log('Use APPEND=1 with an existing output directory and select only new strategies.')
   console.log('WORKER_TIMEOUT_MS sets the wall limit per startup, request or shutdown (default 300000).')
   process.exit(extraArgs.length ? 1 : 0)
@@ -247,11 +247,12 @@ if (evaluatedSchema === 'nlu') {
   strategies['neuro-prolog'] = {knowledgeDir, swipl:process.env.SWIPL, ...neural}
   strategies['neuro-selector'] = {knowledgeDir, swipl:process.env.SWIPL, ...neural}
   strategies['neuro-z3'] = {knowledgeDir, z3Module:strategies.z3.z3Module, ...neural}
+  strategies.vss = {knowledgeDir, vssModel: process.env.SOP_NLU_VSS_MODEL ? resolve(process.env.SOP_NLU_VSS_MODEL) : undefined}
 }
 const nativeReferenceRevision = evaluatedSchema === 'nlu'
   ? datasetRevision(dataset, process.env.NATIVE_REFERENCE_REVISION ?? sampleMetadata.revision) : undefined
 const nativeReferences = nativeReferenceRevision ? readNativeReferences(dataset, nativeReferenceRevision, rows.map(row=>row.text)) : []
-const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => name !== 'neuro-selector' && name !== 'distilbert' && name !== 'selector-distilbert').filter(name => (!name.startsWith('neuro-') && !name.startsWith('spacy-')) || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
+const selected = (process.env.STRATEGIES ?? Object.keys(strategies).filter(name => name !== 'neuro-selector' && name !== 'distilbert' && name !== 'selector-distilbert' && name !== 'vss').filter(name => (!name.startsWith('neuro-') && !name.startsWith('spacy-')) || process.env.SOP_NLU_SYNTAX_PYTHON || process.env.SOP_NLU_SYNTAX_MODEL).join(','))
   .split(',').map(name => name.trim() === 'prolog' ? 'prolog-worlds' : name.trim())
 if (new Set(selected).size !== selected.length || selected.some(name => !Object.hasOwn(strategies, name))) {
   throw Error('STRATEGIES must list unique strategy names.')

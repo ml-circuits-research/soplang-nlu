@@ -1,0 +1,123 @@
+// Measure the reader against reviewed nlu circuits. The references are never read by the
+// learning step: this file is the only place that opens them.
+//   node strategies/vss/evaluate.mjs [--dataset ../webmeet-dataset] [--knowledge ../sop-knowledge-worlds]
+//        [--model strategies/vss/model/model.json] [--part dev|test|all] [--errors file.md]
+import {readFileSync, readdirSync, writeFileSync} from 'node:fs'
+import {createHash} from 'node:crypto'
+import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {hasCompleteSource} from '../../lib/check-analysis.mjs'
+import {createComparer, overlap} from './compare.mjs'
+import {createVssReader} from './src/reader.mjs'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const args = Object.fromEntries(process.argv.slice(2).join(' ').split(/\s*--/u).filter(Boolean).map(pair => pair.split(/\s+/u)))
+const dataset = resolve(args.dataset ?? resolve(here, '../../../webmeet-dataset'))
+const knowledgeDir = resolve(args.knowledge ?? process.env.SOP_KNOWLEDGE_DIR ?? resolve(here, '../../../sop-knowledge-worlds'))
+const part = args.part ?? 'all'
+
+const {describe, sameGraph} = await createComparer(knowledgeDir)
+const without = new Set(String(args.without ?? '').split(',').filter(Boolean))
+const reader = createVssReader(JSON.parse(readFileSync(resolve(args.model ?? join(here, 'model/model.json')), 'utf8')),
+  {meanings: !without.has('meanings'), attachment: !without.has('attachment'), alternatives: !without.has('alternatives')})
+
+// references: one record per exact text. A fixed tenth (by hash) is the part looked at while
+// developing; the rest is the test part.
+const folder = join(dataset, 'annotations/nlu/v1')
+const records = []
+for (const file of [join(folder, 'readings.jsonl'), ...readdirSync(join(folder, 'batches')).filter(name => name.endsWith('.jsonl')).sort().map(name => join(folder, 'batches', name))]) {
+  for (const line of readFileSync(file, 'utf8').split('\n')) if (line.trim()) records.push(JSON.parse(line))
+}
+const isDev = text => parseInt(createHash('sha256').update(text).digest('hex').slice(0, 8), 16) % 10 === 0
+const rows = records.filter(row => part === 'all' || (part === 'dev') === isDev(row.text)).slice(0, Number(args.limit ?? Infinity))
+
+const totals = () => ({texts: 0, valid: 0, complete: 0, exact: 0, exactAny: 0, two: 0, tokens: 0, labelled: 0, sameLabel: 0, sameType: 0,
+  entity: [0, 0, 0], link: [0, 0, 0], bare: [0, 0, 0], ms: 0})
+const buckets = {all: totals(), 'up to 10 tokens': totals(), '11 to 25 tokens': totals(), 'over 25 tokens': totals()}
+const misses = [], confusion = new Map(), linkMiss = new Map()
+let shown
+const wordsOf = new Map()
+const sourceTokens = text => { const out = []; for (const m of text.matchAll(/[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\p{L}\p{M}\p{N}_])|[0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?(?![\p{L}\p{M}\p{N}_])|[+-]?(?:[0-9]+\.[0-9]+|\.[0-9]+)(?![\p{L}\p{M}\p{N}_])|[\p{L}\p{M}\p{N}_]+(?:['’][\p{L}\p{M}\p{N}_]+)*|[^\s]/gu)) { const c = /(?:n[’']t|[’'](?:s|d|m|re|ve|ll))$/iu.exec(m[0]); if (c?.index > 0) out.push(m[0].slice(0, c.index), m[0].slice(c.index)); else out.push(m[0]) } return out }
+for (const row of rows) {
+  const start = performance.now()
+  const {analyses, tokens} = reader.analyse(row.text)
+  const ms = performance.now() - start
+  const length = tokens?.reduce((n, token) => n + token.last - token.first + 1, 0) ?? 0
+  const targets = [buckets.all, buckets[length <= 10 ? 'up to 10 tokens' : length <= 25 ? '11 to 25 tokens' : 'over 25 tokens']]
+  const references = [...new Set(row.readings.map(reading => reading.sop))]
+  const first = analyses[0] ? describe(row.text, analyses[0].sop) : null
+  const exact = Boolean(first) && references.some(reference => sameGraph(analyses[0].sop, reference))
+  const exactAny = exact || analyses.slice(1).some(other => references.some(reference => sameGraph(other.sop, reference)))
+  // the reference reading closest to the first analysis
+  let best = null
+  for (const reference of references) {
+    const said = describe(row.text, reference)
+    let same = 0, type = 0
+    for (const [token, label] of said.labels) {
+      if (first?.labels.get(token) === label) same++
+      if (first?.labels.get(token)?.split('.')[1] === label.split('.')[1]) type++
+    }
+    const score = same + (first ? overlap(first.links, said.links) : 0)
+    if (!best || score > best.score) best = {score, said, same, type, reference}
+  }
+  for (const total of targets) {
+    total.texts++
+    total.ms += ms
+    if (first?.check.valid) total.valid++
+    if (first && hasCompleteSource(first.check)) total.complete++
+    if (exact) total.exact++
+    if (exactAny) total.exactAny++
+    if (analyses.length > 1) total.two++
+    total.tokens += length
+    total.labelled += best.said.labels.size
+    total.sameLabel += best.same
+    total.sameType += best.type
+    for (const [key, field] of [['entities', 'entity'], ['links', 'link'], ['bare', 'bare']]) {
+      total[field][0] += first ? overlap(first[key], best.said[key]) : 0
+      total[field][1] += first ? first[key].size : 0
+      total[field][2] += best.said[key].size
+    }
+  }
+  if (args.show && isDev(row.text)) {
+    const wanted = String(args.show).replace(/_/gu, ' ')
+    const source = [...row.text.matchAll(/\S+/gu)]
+    for (const [token, label] of best.said.labels) {
+      const ours = first?.labels.get(token) ?? '(none)'
+      if ((label + ' <- ' + ours).replace('nlu.', '').replace('nlu.', '') === wanted && (shown = (shown ?? 0) + 1) <= Number(args.count ?? 25)) {
+        console.log('#' + token + ' | ' + row.text + '\n     ' + reader.analyse(row.text).tokens.map((t, i, all) => t.text + '/' + reader.analyse(row.text).stations[i]).join(' '))
+      }
+    }
+    if (wanted === 'incomplete' && first && !hasCompleteSource(first.check) && (shown = (shown ?? 0) + 1) <= Number(args.count ?? 25)) console.log(row.text + '\n   ' + JSON.stringify(first.check.coverage) + '\n' + analyses[0].sop)
+  }
+  if (args.confusion && isDev(row.text)) {
+    for (const [token, label] of best.said.labels) {
+      const ours = first?.labels.get(token) ?? '(none)'
+      if (ours !== label) confusion.set(label + ' <- ' + ours, (confusion.get(label + ' <- ' + ours) ?? 0) + 1)
+      if (ours !== label && args.words) { const key = (label + ' <- ' + ours).replace(/nlu\./gu, ''); const bag = wordsOf.get(key) ?? wordsOf.set(key, new Map()).get(key); const w = sourceTokens(row.text)[token]?.toLowerCase(); bag.set(w, (bag.get(w) ?? 0) + 1) }
+    }
+    for (const link of best.said.links) if (!first?.links.has(link)) { const key = 'missed ' + link.split(' ')[1]; linkMiss.set(key, (linkMiss.get(key) ?? 0) + 1) }
+    for (const link of first?.links ?? []) if (!best.said.links.has(link)) { const key = 'extra ' + link.split(' ')[1]; linkMiss.set(key, (linkMiss.get(key) ?? 0) + 1) }
+  }
+  if (!exact && isDev(row.text)) misses.push({text: row.text, ours: analyses[0]?.sop ?? '(none)', reference: best.reference,
+    findings: first?.check.valid ? null : first?.check.findings, coverage: first?.check.coverage})
+}
+const pct = (a, b) => b ? (100 * a / b).toFixed(1) + '%' : '-'
+const f1 = ([hit, ours, theirs]) => { const p = hit / (ours || 1), r = hit / (theirs || 1); return `${pct(hit, ours)} / ${pct(hit, theirs)} / ${(p + r ? 200 * p * r / (p + r) : 0).toFixed(1)}` }
+const report = Object.fromEntries(Object.entries(buckets).map(([name, t]) => [name, {
+  texts: t.texts, 'valid circuit': pct(t.valid, t.texts), 'every word accounted for': pct(t.complete, t.texts),
+  'same graph as a reference (first reading)': pct(t.exact, t.texts), 'same graph (either reading)': pct(t.exactAny, t.texts),
+  'texts with two readings': pct(t.two, t.texts),
+  'token in the same slot as the reference': pct(t.sameLabel, t.labelled), 'token in the same kind of slot': pct(t.sameType, t.labelled),
+  'entities precision / recall / F1': f1(t.entity), 'links with role P / R / F1': f1(t.link), 'links without role P / R / F1': f1(t.bare),
+  'ms per text': (t.ms / (t.texts || 1)).toFixed(2)
+}]))
+console.log(JSON.stringify(args.brief ? {part, all: report.all} : {part, ...report}, null, 1))
+if (args.words) for (const key of String(args.words).split(';')) console.log(key.replace(/_/gu, ' ') + ': ' + [...(wordsOf.get(key.replace(/_/gu, ' ')) ?? [])].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([w, c]) => w + ':' + c).join(' '))
+if (args.confusion) {
+  console.log([...confusion].sort((a, b) => b[1] - a[1]).slice(0, 45).map(([key, count]) => count + '  ' + key).join('\n'))
+  console.log([...linkMiss].sort((a, b) => b[1] - a[1]).map(([key, count]) => count + '  ' + key).join('\n'))
+}
+if (args.errors) {
+  writeFileSync(resolve(args.errors), misses.slice(0, Number(args.count ?? 150)).map(miss =>
+    `TEXT: ${miss.text}\n--- ours\n${miss.ours}\n--- reference\n${miss.reference}\n${miss.findings ? 'FINDINGS: ' + JSON.stringify(miss.findings) + '\n' : ''}`).join('\n'))
+}
