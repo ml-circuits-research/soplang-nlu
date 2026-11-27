@@ -27,7 +27,7 @@ def packed(rows):
     return gzip.compress("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows).encode(), mtime=0)
 
 
-def create_plan(inventory, dataset, queue, reserved_only, group_rows, source_file):
+def create_plan(inventory, dataset, queue, reserved_only, group_rows, source_file, exclude_source, raw, split_difficulty):
     manifest = json.loads((inventory / "manifest.json").read_text())
     revision = git(dataset, "rev-parse", "HEAD").strip()
     native_paths = git(dataset, "ls-tree", "-r", "--name-only", revision, "--", "annotations/nlu/v1").splitlines()
@@ -38,10 +38,12 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows, source_fil
         approved.update(json.loads(line)["text"] for line in
                         git(dataset, "show", f"{revision}:{path}").split("\n") if line)
     for path in native_paths:
-        if not re.match(r"annotations/nlu/v1/conversions/(vibe|sol)/[^/]+\.jsonl\.gz$", path):
+        if not re.match(r"annotations/nlu/v1/(?:conversions|raw-conversions)/(?:vibe|sol)/[^/]+\.jsonl\.gz$", path):
             continue
         blob = subprocess.check_output(["git", "-C", dataset, "show", f"{revision}:{path}"])
-        approved.update(json.loads(line)["text"] for line in gzip.decompress(blob).decode().split("\n") if line)
+        for row in (json.loads(line) for line in gzip.decompress(blob).decode().split("\n") if line):
+            if (raw and row.get("readings")) or (not raw and "/raw-conversions/" not in path):
+                approved.add(row["text"])
     files = defaultdict(list)
     reserved = 0
     for batch in manifest["groups"]:
@@ -56,28 +58,35 @@ def create_plan(inventory, dataset, queue, reserved_only, group_rows, source_fil
         drafts = {row["id"]: row for row in lines(cached)} if cached.exists() else {}
         for row in lines(sources):
             name = row["id"].rsplit("#", 1)[0]
-            if row["text"] not in approved and (source_file is None or name == source_file):
+            if row["text"] not in approved and name not in exclude_source and (source_file is None or name == source_file):
                 candidate = drafts.get(row["id"], row)
                 if candidate["text"] != row["text"]:
                     raise ValueError("Draft source differs from frozen text")
-                files[name].append(candidate)
+                long_row = split_difficulty and (len(row["text"].split()) > 18 or row["text"].count(",") >= 2)
+                files[long_row, name].append(candidate)
     groups = []
-    for name, rows in sorted(files.items()):
+    for (long_row, name), rows in sorted(files.items()):
         for start in range(0, len(rows), group_rows):
             path = f"{Path(name).with_suffix('').as_posix().replace('/', '-')}-{start//group_rows:02d}"
             if group_rows != 500:
                 path = f"group-{group_rows}-" + path
             if reserved_only:
                 path = "reserved-" + path
+            if split_difficulty:
+                path = ("long-" if long_row else "short-") + path
             chunk = rows[start:start+group_rows]
             data = packed(chunk)
             group = {"sourceFile": name, "key": path, "rows": len(chunk),
                      "sha256": hashlib.sha256(data).hexdigest()}
+            if raw:
+                path += "-" + group["sha256"][:12]
+                group["key"] = path
             groups.append(group)
             (queue / (path + ".jsonl.gz")).write_bytes(data)
     return {"sourceRevision": manifest["sourceRevision"], "annotationRevision": revision,
             "excludedReserved": reserved, "reservedOnly": reserved_only, "groupRows": group_rows,
-            "sourceFile": source_file, "groups": groups}
+            "sourceFile": source_file, "excludeSource": exclude_source, "raw": raw,
+            "splitDifficulty": split_difficulty, "groups": groups}
 
 
 def git(repo, *args):
@@ -96,6 +105,9 @@ def main():
     p.add_argument("--group-rows", type=int, default=500, metavar="N",
                    help="Maximum rows from one CSV per new publication group")
     p.add_argument("--source-file", help="Select one exact dataset-relative CSV path for this queue")
+    p.add_argument("--exclude-source", action="append", default=[], help="Leave an exact CSV path for another queue")
+    p.add_argument("--raw", action="store_true", help="Save raw model circuits without static or semantic checks")
+    p.add_argument("--split-difficulty", action="store_true", help="Schedule shorter rows before longer clauses")
     p.add_argument("--min-percent", type=int, default=90, metavar="N",
                    help="Stop if less than this percentage passed in the last group")
     p.add_argument("--continue-on-low-coverage", action="store_true",
@@ -120,7 +132,8 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         manifest = queue / "plan.json"
         if not manifest.exists():
-            plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows, a.source_file)
+            plan = create_plan(inventory, dataset, queue, a.reserved_only, a.group_rows, a.source_file,
+                               a.exclude_source, a.raw, a.split_difficulty)
             if a.source_file and not plan["groups"]:
                 p.error("No pending inventory rows for the selected CSV")
             plan["backend"] = a.backend
@@ -134,14 +147,20 @@ def main():
             p.error("Use a separate queue for each backend")
         if plan.get("sourceFile") != a.source_file:
             p.error("Use a separate queue for each source file selection")
+        if (plan.get("excludeSource", []) != a.exclude_source or plan.get("raw", False) != a.raw
+                or plan.get("splitDifficulty", False) != a.split_difficulty):
+            p.error("Use a separate queue for each source partition and conversion mode")
         print(json.dumps({"groups": len(plan["groups"]), "rows": sum(g["rows"] for g in plan["groups"])}), flush=True)
         if a.plan_only:
             return
         env = dict(os.environ, SOP_NLU_CURATION_BACKEND=backend, SOP_NLU_CURATION_JOBS=str(a.jobs),
-                   SOP_NLU_CURATION_MODEL=model)
+                   SOP_NLU_CURATION_MODEL=model, SOP_NLU_CURATION_RAW="1" if a.raw else "0")
+        publication_lock = Path(git(dataset, "rev-parse", "--absolute-git-dir").strip()) / "nlu-conversion.lock"
         for i, group in enumerate(g for g in plan["groups"] if not (queue / (g["key"] + ".done")).exists()):
             if a.limit and i >= a.limit:
                 break
+            if (queue / "stop-after-current").exists():
+                return
             key = group["key"]
             source = queue / (key + ".jsonl.gz")
             if group.get("sha256") and hashlib.sha256(source.read_bytes()).hexdigest() != group["sha256"]:
@@ -176,11 +195,12 @@ def main():
             if [(r["id"], r["text"]) for r in results] != expected:
                 raise ValueError(f"Incomplete or misaligned conversion: {key}")
             meta = json.loads((work / "manifest.json").read_text())
-            converted = sum(r["status"] == "curated" for r in results)
-            if not converted:
+            converted = sum(bool(r["readings"]) for r in results)
+            if not converted and not a.raw:
                 raise ValueError(f"No eligible readings in {key}; inspect backend output before continuing")
-            output = Path("annotations/nlu/v1/conversions") / a.backend / (key + ".jsonl.gz")
-            payload = packed({"id": r["id"], "text": r["text"], "status": "static-pass" if r["readings"] else "rework",
+            status = "raw" if a.raw else "static-pass"
+            output = Path("annotations/nlu/v1") / ("raw-conversions" if a.raw else "conversions") / a.backend / (key + ".jsonl.gz")
+            payload = packed({"id": r["id"], "text": r["text"], "status": status if r["readings"] else "rework",
                               "readings": [c["sop"] for c in r["readings"]], "problems": r.get("problems", []),
                               "sourceRevision": plan["sourceRevision"], "model": model,
                               "schemaSha256": meta["schemaSha256"], "checkerSha256": meta["checkerSha256"]}
@@ -193,16 +213,18 @@ def main():
                 tmp = destination.with_suffix(".tmp")
                 tmp.write_bytes(payload)
                 tmp.replace(destination)
-            subprocess.run(["git", "-C", dataset, "add", "--", output], check=True)
-            changed = subprocess.run(["git", "-C", dataset, "diff", "--cached", "--quiet", "--", output]).returncode
-            if changed == 1:
-                subprocess.run(["git", "-C", dataset, "commit", "--only", "-m",
-                                f"Convert WebMeet native drafts for {key} via {model}", "--", output], check=True)
-            elif changed:
-                raise RuntimeError("Could not verify staged conversion")
+            with publication_lock.open("a") as write_lock:
+                fcntl.flock(write_lock, fcntl.LOCK_EX)
+                subprocess.run(["git", "-C", dataset, "add", "--", output], check=True)
+                changed = subprocess.run(["git", "-C", dataset, "diff", "--cached", "--quiet", "--", output]).returncode
+                if changed == 1:
+                    subprocess.run(["git", "-C", dataset, "commit", "--only", "-m",
+                                    f"Convert WebMeet {status} drafts for {key} via {model}", "--", output], check=True)
+                elif changed:
+                    raise RuntimeError("Could not verify staged conversion")
             (queue / (key + ".done")).write_text(str(converted) + "\n")
-            print(f"{key}: {converted}/{len(results)} pass current checks", flush=True)
-            if 100 * converted < a.min_percent * len(results):
+            print(f"{key}: {converted}/{len(results)} {'raw readings saved' if a.raw else 'pass current checks'}", flush=True)
+            if not a.raw and 100 * converted < a.min_percent * len(results):
                 message = f"{key}: fewer than {a.min_percent}% passed"
                 if not a.continue_on_low_coverage:
                     raise SystemExit(message + "; stopping before the next group")

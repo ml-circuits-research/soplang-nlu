@@ -22,6 +22,8 @@ const model=process.env.SOP_NLU_CURATION_MODEL??models[backend][0]
 if(!models[backend].includes(model))throw Error('Unsupported curation model: '+model)
 const wideSol=backend==='codex'&&process.env.SOP_NLU_SOL_BATCH_ROWS!==undefined
 const singlePass=backend==='vibe'||wideSol
+const rawPass=process.env.SOP_NLU_CURATION_RAW==='1'
+if(rawPass&&!singlePass)throw Error('Raw conversion requires a single-pass backend')
 const requestedSolWidth=Number(process.env.SOP_NLU_SOL_BATCH_ROWS??10)
 const logicalSize=backend==='vibe'?Number(process.env.SOP_NLU_VIBE_GROUP_ROWS??500):
   wideSol?Number(process.env.SOP_NLU_SOL_GROUP_ROWS??Math.max(500,requestedSolWidth)):500
@@ -57,21 +59,27 @@ const responseCode=singlePass?await readLocal('./vibe-response.mjs'):''
 const checker=await readLocal('../../lib/check-analysis.mjs')
 const code=await readLocal('./curate.mjs')
 const knowledge=await readFile(join(knowledgeDir,'tools/sopworld/sopworld.mjs'))
-const validate=await createAnalysisValidator({knowledgeDir})
+const validate=rawPass?null:await createAnalysisValidator({knowledgeDir})
 const properties={index:{type:'integer'},readings:{type:'array',items:{type:'object',additionalProperties:false,
   required:['draftIndex','sop'],properties:{draftIndex:{type:['integer','null']},sop:{type:['string','null']}}}},
   ambiguity:{type:['string','null']},reason:{type:['string','null']}}
+const rawProperties={index:{type:'integer'},value:{type:['integer','string','null']}}
+const resultProperties=rawPass?rawProperties:properties
 const replySchema={type:'object',additionalProperties:false,required:['results'],properties:{
-  results:{type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(properties),properties}}
+  results:{type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(resultProperties),properties:resultProperties}}
 }}
 const serialization=singlePass?await readLocal('./vibe-serialization.md'):''
-const jsonContract=singlePass?
+const jsonContract=rawPass?
+  '\nRaw bulk output overrides the output shape above. Return {"results":[{"index":0,"value":"@wire ..."}]}. '+
+  'One object per source, one plausible complete SOP reading per object. Use a bare integer for a supplied draft index, '+
+  'a string for a new SOP, or null only when no plausible reading can be made. Omit all explanations. '+
+  'Use each supplied index exactly once and return the entire request.\n':singlePass?
   '\nReturn {"results":[{"index":0,"readings":[{"draftIndex":0,"sop":null}],"ambiguity":null,"reason":null}]}. '+
   'Use each input index exactly once. Include all four fields per result. Return the whole batch, not a prefix.\n':''
 const header=instructions+serialization+jsonContract+'\nLocal schema:\n'+schema+'\nInput JSON:\n'
 const config={format:'native-nlu-curation-v1',model,reasoning:'low',inputSha256:sha(bytes),offset,rows:selected.length,
   logicalSize,microRows,microBytes,promptSha256:sha(instructions+serialization),schemaSha256:sha(schema),scriptSha256:sha(code),
-  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(backend==='vibe'?{backend,vibe}:{codex}),
+  checkerSha256:sha(checker),knowledgeLoaderSha256:sha(knowledge),...(rawPass?{rawPass:true}:{}),...(backend==='vibe'?{backend,vibe}:{codex}),
   ...(singlePass?{singlePass,punctuationSha256:sha(punctuationCode),anchorSha256:sha(anchorCode),
     connectiveSha256:sha(connectiveCode),responseSha256:sha(responseCode)}:{})}
 const get=async path=>{try{return await readFile(path,'utf8')}catch(e){if(e.code!=='ENOENT')throw e}}
@@ -165,6 +173,8 @@ async function request(dir,label,rows){
   const sealed=base+'.json'
   const prior=await get(sealed)
   if(prior)return JSON.parse(prior)
+  if((await get(join(dirname(dirname(output)),'stop-after-current'))) !== undefined)
+    throw Error('Conversion queue asked to stop after the previous request')
   const prompt=header+JSON.stringify(rows)+'\n'
   await ensure(base+'.prompt.txt',prompt)
   if(size(rows)>microBytes){
@@ -175,9 +185,10 @@ async function request(dir,label,rows){
   const raw=base+'.'+process.pid+'.response.json'
   const began=performance.now()
   const useVibe=backend==='vibe'
-  const limit=singlePass?Math.max(150,Math.ceil(rows.length*1.8)+45):165
+  const limit=rawPass&&wideSol?Math.max(300,Math.ceil(rows.length*1.8)+45):
+    singlePass?Math.max(150,Math.ceil(rows.length*1.8)+45):165
   let schemaForRequest=outputSchema
-  if(wideSol){
+  if(wideSol&&!rawPass){
     schemaForRequest=base+'.schema.json'
     await ensure(schemaForRequest,stringify({...replySchema,properties:{results:{...replySchema.properties.results,
       minItems:rows.length,maxItems:rows.length}}}))
@@ -239,6 +250,18 @@ async function runMicro(dir,number,rows){
   const name=String(number).padStart(3,'0')
   const missing=rows.filter(row=>!known.has(row.index))
   const fresh=missing.length?await request(dir,name+'-initial',missing):{results:[]}
+  if(rawPass){
+    const answers=new Map(fresh.results.map(result=>[result.index,result]))
+    return rows.map(row=>{
+      const answer=answers.get(row.index)??known.get(row.index)
+      const value=answer?.value
+      const draftIndex=Number.isInteger(value)?value:null
+      const sop=typeof value==='string'?value:row.drafts[draftIndex]?.sop
+      const original=selected[row.index-offset]
+      return {id:original.id,text:row.text,index:row.index,status:sop?.trim()?'raw':'rework',
+        readings:sop?.trim()?[{draftIndex,sop}]:[],...(sop?.trim()?{}:{problems:[answer?'No raw reading returned':fresh.issue??'Missing response index']})}
+    })
+  }
   const initial=lift(rows,{...fresh,results:[...fresh.results,...rows.flatMap(row=>known.has(row.index)?[known.get(row.index)]:[])]})
   const pending=singlePass?[]:rows.flatMap((row,i)=>initial[i].problems.length?
     [{...row,repair:feedback(row,initial[i])}]:[])
@@ -270,7 +293,7 @@ for(let base=0;base<selected.length;base+=logicalSize){
     while(next<groups.length){
       const at=next++
       replies[at]=await runMicro(dir,at,groups[at])
-      console.log(dir,at+1,'/',groups.length,replies[at].filter(r=>r.status==='curated').length,'curated')
+      console.log(dir,at+1,'/',groups.length,replies[at].filter(r=>r.readings.length).length,rawPass?'raw':'curated')
     }
   }))
   const results=replies.flat()
