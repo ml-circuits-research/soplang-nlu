@@ -20,8 +20,8 @@ sources, so their agreement means something.
 | Strategy | Source of the analysis | Benchmark (random 1%) | State |
 | --- | --- | ---: | --- |
 | spacy | spaCy dependency parse + our rules (former spacy-beam) | 89.6% | two rounds of general repairs (a55e33f, 0a7bb62) |
-| distilbert | DistilBERT trained on syntax circuits only | 73.1% | syntax-v2, trained on the current labels, benchmark held out |
-| vss | our unsupervised reader (stations learned from text, rules) | 75.5% | main focus; rules being added (agent) |
+| distilbert | DistilBERT trained on syntax circuits only | 77.3% | syntax-v3, trained on the grown labels (83,619), benchmark held out |
+| vss | our unsupervised reader (stations learned from text, rules) | 77.2% | main focus; rules being added (agent) |
 | prolog | hand-written grammar | 61.7% | parked (owner: do not improve for now) |
 | z3 | constraint model | 59.3% | parked |
 
@@ -136,6 +136,16 @@ messages, where it does worse.
   judge of the 76 new circuits: coordinations with the wrong conjuncts, scene-list items tied without a marker
   instead of joining the 'then' series, relations starting across an 'and', nominals split.
 
+- VSS round of 71f0dd2 (subject-verb agreement learned from the raw text, fronted clauses, comma-set
+  nominals, 'one' as head): 75.5% -> 77.2%.
+- DistilBERT syntax-v3, trained on the grown labels with the benchmark held out: 73.1% -> 77.3%. More labels
+  help it directly; retrain after each large batch of labels.
+- spaCy third round of repairs (730c906), with command openers learned from the raw text; being judged.
+- The origin of VSS, for the record: the current reader is new; from the earlier vector-symbolic reader
+  (repository vsa-semantic-space) it keeps the vector toolkit as a minor helper, determinism, SOP Lang output
+  and the words legend/route book/world with new meanings; the sentence state built by binding, role decoding,
+  learned gates, per-world readers and abstention were not carried over.
+
 ## In progress
 
 - VSS, next round of rules (agent): the finite verb found by agreement with its subject, built on a number
@@ -143,7 +153,8 @@ messages, where it does worse.
   relative clauses.
 - Refilling the dataset: VSS (83fce90) and spaCy (a55e33f) run again over the 217 files of the batch
   conversion; then settle with `--key variants`, a judge reads 2% of the agreed circuits, empty cells filled.
-- DistilBERT retrained on the grown labels (syntax-v3, benchmark held out).
+- Documentation rebuilt as a hierarchical Markdown wiki in docs/ (workflow).
+- VSS: next round of rules, fault groups found also outside the benchmark (agent).
 
 ## Next steps, in order
 
