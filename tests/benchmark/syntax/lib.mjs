@@ -2,7 +2,8 @@
 // circuits, the labels of the messages, the packets for a judge, the levels and the agreement
 // between strategies.
 // Nothing here reads a knowledge repository or the `nlu` schema.
-import {readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync} from 'node:fs'
+import {createHash} from 'node:crypto'
+import {readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, copyFileSync} from 'node:fs'
 import {gunzipSync} from 'node:zlib'
 import {dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -47,6 +48,37 @@ export function readArguments(argv, several = []) {
   }
   return {words, named}
 }
+
+// ---- the CSV files of the dataset
+/** The records of a CSV text as lists of cells. Quotes hold commas, doubled quotes and line ends; an empty line is no record. */
+export function readCsv(content) {
+  const rows = []
+  let row = [], field = '', quoted = false
+  for (let at = 0; at < content.length; at++) {
+    const sign = content[at]
+    if (quoted) { if (sign !== '"') field += sign; else if (content[at + 1] === '"') { field += '"'; at++ } else quoted = false }
+    else if (sign === '"') quoted = true
+    else if (sign === ',') { row.push(field); field = '' }
+    else if (sign === '\n') { row.push(field); rows.push(row); row = []; field = '' }
+    else if (sign !== '\r') field += sign
+  }
+  if (field || row.length) rows.push([...row, field])
+  return rows.filter(cells => !(cells.length === 1 && cells[0] === ''))
+}
+/**
+ * The messages of one file of the dataset: the first column of every record after the header.
+ * The record number counts the records from 1, as the dataset's own reader does.
+ * @returns [{record, text}]
+ */
+export function messagesOfCsv(content) {
+  const [header, ...records] = readCsv(content)
+  if (header?.[0] !== 'text') throw new Error('The first column of a dataset file is `text`.')
+  return records.map((cells, index) => ({record: index + 1, text: cells[0]}))
+}
+/** One cell, quoted only when it holds a comma, a quote, a line end or a space at its edge. */
+export const csvCell = value => { const text = String(value ?? ''); return /[",\n\r]|^\s|\s$/u.test(text) ? '"' + text.replaceAll('"', '""') + '"' : text }
+/** A CSV text from a header and rows of cells. A cell may hold several lines, such as a circuit with one wire per line. */
+export const writeCsv = (header, rows, newline = '\n') => [header, ...rows].map(cells => cells.map(csvCell).join(',')).join(newline) + newline
 
 // ---- the normal form of a circuit
 // Two strategies can write the same circuit with other wire names, another order of the wires or of
@@ -207,9 +239,10 @@ export function updateLabels(labels, accepted, run) {
  * of strategies wrote them.
  * @param outputs from readOutputs
  * @param earlier items of an earlier call for the same run: they keep their numbers
+ * @param skip (text, core) => true for a circuit that needs no judge for another reason, such as agreement
  * @returns {items, added}: every item is {n, text, sop, core, sources}; `added` are the new ones
  */
-export function collectItems(outputs, registry, {earlier = []} = {}) {
+export function collectItems(outputs, registry, {earlier = [], skip = () => false} = {}) {
   const items = earlier.map(item => ({...item}))
   const known = new Map(items.map(item => [item.text + '\0' + item.core, item]))
   const texts = [], circuits = new Map()
@@ -222,7 +255,7 @@ export function collectItems(outputs, registry, {earlier = []} = {}) {
   }
   const added = []
   for (const text of texts) {
-    const waiting = [...circuits.get(text)].filter(([core]) => !lookup(registry, text, core))
+    const waiting = [...circuits.get(text)].filter(([core]) => !lookup(registry, text, core) && (known.has(text + '\0' + core) || !skip(text, core)))
     // the order inside a message follows the circuits, never the strategies
     for (const [core, circuit] of waiting.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)) {
       const item = known.get(text + '\0' + core)
@@ -241,15 +274,23 @@ export function packetsOf(items, size = 200) {
 }
 
 // ---- verdicts and levels
-/** The verdicts of one run: Map text -> Map core -> {grade, note, sources}. `items` carry the numbers the verdicts use. */
-export function runVerdicts(items, verdicts) {
+/**
+ * The verdicts of one run: Map text -> Map core -> {grade, note, sources, by}. `items` carry the
+ * numbers the verdicts use. `by` is "judge", or "agreement" for a circuit that strategies of
+ * different families wrote alike and that no judge of the run has read: it counts as accepted.
+ * @param agreed circuits settled by agreement: [{text, core, sources}]
+ */
+export function runVerdicts(items, verdicts, agreed = []) {
   const byNumber = new Map(verdicts.map(verdict => [verdict.n, verdict]))
   const found = new Map()
+  const circuitsOf = text => found.get(text) ?? found.set(text, new Map()).get(text)
   for (const item of items) {
     const verdict = byNumber.get(item.n)
     if (!verdict || !GRADES.includes(verdict.grade)) continue
-    const circuits = found.get(item.text) ?? found.set(item.text, new Map()).get(item.text)
-    circuits.set(item.core, {grade: verdict.grade, note: verdict.note ?? '', sources: item.sources})
+    circuitsOf(item.text).set(item.core, {grade: verdict.grade, note: verdict.note ?? '', sources: item.sources, by: 'judge'})
+  }
+  for (const circuit of agreed) {
+    if (!circuitsOf(circuit.text).has(circuit.core)) circuitsOf(circuit.text).set(circuit.core, {grade: 'L8', note: '', sources: circuit.sources, by: 'agreement'})
   }
   return found
 }
@@ -366,9 +407,67 @@ export function renderAgreement(result) {
   return out.join('\n') + '\n'
 }
 
+// ---- circuits settled by agreement
+/**
+ * The circuits that strategies of enough different families wrote alike, for the messages of a run.
+ * A circuit the registry already holds is left out: it keeps its verdict, accepted or rejected.
+ * @param familyOf name of a strategy -> its family
+ * @param minFamilies how many different families must have written the circuit (2 when not given)
+ * @returns [{text, sop, core, sources, families}] in the order of the messages
+ */
+export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2) {
+  const texts = [], circuits = new Map()
+  for (const {strategy, rows} of outputs) for (const row of rows) {
+    if (!circuits.has(row.text)) { circuits.set(row.text, new Map()); texts.push(row.text) }
+    if (!row.core) continue
+    const found = circuits.get(row.text)
+    const circuit = found.get(row.core) ?? found.set(row.core, {text: row.text, sop: row.normal, core: row.core, sources: new Set()}).get(row.core)
+    circuit.sources.add(strategy)
+  }
+  const agreed = []
+  for (const text of texts) for (const circuit of [...circuits.get(text).values()].sort((a, b) => a.core < b.core ? -1 : a.core > b.core ? 1 : 0)) {
+    const sources = [...circuit.sources].sort(), kinds = [...new Set(sources.map(familyOf))].sort()
+    if (kinds.length >= minFamilies && !lookup(registry, text, circuit.core)) agreed.push({...circuit, sources, families: kinds})
+  }
+  return agreed
+}
+/**
+ * A random share of the agreed circuits, for a judge to read: it shows how often agreement is right.
+ * The choice depends only on the seed, the messages and the circuits.
+ * @returns a Set of text + "\0" + core
+ */
+export function chooseAudit(agreed, share, seed) {
+  const place = circuit => createHash('sha256').update(seed + '\0' + circuit.text + '\0' + circuit.core).digest('hex')
+  const ordered = agreed.map(circuit => ({circuit, at: place(circuit)})).sort((a, b) => a.at < b.at ? -1 : a.at > b.at ? 1 : 0)
+  return new Set(ordered.slice(0, Math.round(agreed.length * share)).map(({circuit}) => circuit.text + '\0' + circuit.core))
+}
+
 // ---- the judging files of a run
 export const judgingDir = runDir => join(runDir, 'judging')
 export const itemsFile = runDir => join(runDir, 'key', 'items.jsonl')
+export const agreementFile = runDir => join(runDir, 'key', 'agreement.jsonl')
+/** The circuits of the run settled by agreement, as round.mjs settle recorded them; none for a run without that step. */
+export function readAgreement(runDir) { return existsSync(agreementFile(runDir)) ? readJsonl(agreementFile(runDir)) : [] }
+/** Writes what a judge needs: the items, new packets for the added ones, the rules and the checker. Returns the new packets as [name, lines]. */
+export function writeJudging(runDir, items, added, size = 200) {
+  const folder = judgingDir(runDir)
+  mkdirSync(folder, {recursive: true})
+  writeJsonl(itemsFile(runDir), items)
+  const first = Math.max(0, ...packetNumbers(folder)) + 1
+  const packets = packetsOf(added, size).map((packet, index) => [`packet-${first + index}.jsonl`, packet])
+  for (const [name, packet] of packets) writeJsonl(join(folder, name), packet)
+  copyFileSync(join(here, 'rules.md'), join(folder, 'RULES.md'))
+  copyFileSync(join(here, 'check.mjs'), join(folder, 'check.mjs'))
+  return packets.map(([name, packet]) => [name, packet.length])
+}
+/**
+ * Everything the run knows of its circuits: the verdicts of its judge that pass the check, and the
+ * circuits settled by agreement. {items, verdicts: Map as runVerdicts gives, problems}
+ */
+export function readRunVerdicts(runDir) {
+  const items = readItems(runDir), read = readVerdictFiles(runDir)
+  return {items, verdicts: runVerdicts(items, read.verdicts, readAgreement(runDir)), problems: read.problems}
+}
 // the labels as they were before the run: a copy taken the first time the run is prepared or published
 export const labelsBeforeFile = runDir => join(runDir, 'key', 'labels-before.jsonl')
 /** Keeps the labels of this moment as the labels before the run, unless the run already has its copy. */

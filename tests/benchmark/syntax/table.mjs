@@ -3,13 +3,14 @@
 //   node tests/benchmark/syntax/table.mjs <run-folder> [--registry <folder>] [--labels <file>]
 // Prints the table and writes <run-folder>/table.md and <run-folder>/table.json.
 // A circuit equal to the label its message had before the run is at L9. A circuit judged in this run
-// (a line in judging/verdicts-<k>.jsonl) counts by that verdict; any other circuit counts by what
-// the registry says of it; a circuit neither has seen is waiting.
+// (a line in judging/verdicts-<k>.jsonl) counts by that verdict; a circuit that round.mjs settled by
+// agreement counts as accepted; any other circuit counts by what the registry says of it; a circuit
+// none of them has seen is waiting.
 // The labels before the run are the copy in <run-folder>/key/labels-before.jsonl, taken when the run
 // was first prepared or published; a run that has no copy yet is compared with the labels of now.
 import {existsSync, writeFileSync} from 'node:fs'
 import {join, resolve, basename} from 'node:path'
-import {readArguments, readOutputs, readRegistry, readItems, readVerdictFiles, runVerdicts, readLabelsBefore, tableOf, renderTable, readJson, writeJson,
+import {readArguments, readOutputs, readRegistry, readRunVerdicts, readLabelsBefore, tableOf, renderTable, readJson, writeJson,
   defaultRegistryDir, labelsFileOf} from './lib.mjs'
 
 const {words, named} = readArguments(process.argv.slice(2))
@@ -20,18 +21,19 @@ if (!outputs.length) { console.error(`No strategy file in ${runDir}: run run.mjs
 const registryDir = resolve(named.registry ?? defaultRegistryDir)
 const registry = readRegistry(registryDir)
 const labels = readLabelsBefore(runDir, labelsFileOf(registryDir, named.labels))
-const read = readVerdictFiles(runDir)
-const verdicts = runVerdicts(readItems(runDir), read.verdicts)
+const read = readRunVerdicts(runDir), verdicts = read.verdicts
 const table = tableOf(outputs, registry, verdicts, labels)
 const summaryFile = join(runDir, 'summary.json')
 const notRun = existsSync(summaryFile) ? Object.entries(readJson(summaryFile).strategies ?? {}).filter(([, entry]) => !entry.file).map(([name, entry]) => [name, entry.status]) : []
-const judgedHere = [...verdicts.values()].reduce((sum, circuits) => sum + circuits.size, 0)
+const count = by => [...verdicts.values()].reduce((sum, circuits) => sum + [...circuits.values()].filter(verdict => verdict.by === by).length, 0)
+const judgedHere = count('judge'), agreedHere = count('agreement')
 const texts = new Set(outputs.flatMap(output => output.rows.map(row => row.text)))
 const labelled = [...texts].filter(text => labels.has(text)).length
 const text = `# Levels of the run ${basename(runDir)}\n\n` +
   `Registry: ${registry.rows} judged circuits of ${registry.byText.size} messages. Judged in this run: ${judgedHere} circuits. ` +
+  (agreedHere ? `Settled in this run by agreement between strategies of different families, and counted as accepted: ${agreedHere} circuits. ` : '') +
   `Before the run, ${labelled} of the ${texts.size} messages had a label.\n\n` + renderTable(table, {notRun}) +
   (read.problems.length ? `\n${read.problems.length} verdict lines of this run have a format problem and are not counted: their circuits stand under "waiting". Run judging/check.mjs to see them.\n` : '')
 writeFileSync(join(runDir, 'table.md'), text)
-writeJson(join(runDir, 'table.json'), {run: basename(runDir), registryCircuits: registry.rows, judgedInThisRun: judgedHere, labelledBefore: labelled, strategies: table, notRun: Object.fromEntries(notRun)})
+writeJson(join(runDir, 'table.json'), {run: basename(runDir), registryCircuits: registry.rows, judgedInThisRun: judgedHere, settledByAgreementInThisRun: agreedHere, labelledBefore: labelled, strategies: table, notRun: Object.fromEntries(notRun)})
 console.log(text)

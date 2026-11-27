@@ -1,9 +1,11 @@
 // Draws a random sample of the messages of the dataset.
 //   node tests/benchmark/syntax/sample.mjs <out-file> [--share 0.01] [--seed <text>] [--exclude <sample files…>]
 //        [--dataset <folder>] [--revision HEAD]
-// It reads the `text` column of every CSV file of the dataset, as committed at the revision, and
-// keeps each distinct text once, under the id of its first record (`<file>#<record>`, the id the
-// earlier samples use). The distinct texts are put in a random order fixed by the seed; the sample
+// It reads the `text` column of every CSV file under `semantic/` of the dataset, as committed at the
+// revision, and keeps each distinct text once, under the id of its first record
+// (`<tab>/<file>#<record>`, the id the earlier samples use). The files under `syntactic/` hold the
+// same messages with other circuits and are never read as a source. The distinct texts are put in a
+// random order fixed by the seed; the sample
 // is the first share of them, counted on all distinct texts, that stand in no excluded sample file.
 // Writes <out-file>, a gzipped JSON array of {id, text} in the order drawn, and beside it a
 // .lock.json with the seed, the share, the dataset commit and the count.
@@ -16,37 +18,11 @@ import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {basename, dirname, join, relative, resolve} from 'node:path'
 import {pathToFileURL} from 'node:url'
 import {gzipSync} from 'node:zlib'
-import {readArguments, readSample, readJson, writeJson, packageRoot} from './lib.mjs'
+import {readArguments, readSample, readJson, writeJson, messagesOfCsv, packageRoot} from './lib.mjs'
+
+export {messagesOfCsv}
 
 const digest = value => createHash('sha256').update(value).digest('hex')
-
-/**
- * The messages of one CSV file of the dataset: the first column of every record after the header.
- * Quotes hold commas, doubled quotes and line ends; an empty line is no record. The record number
- * counts the records from 1, as the dataset's own reader does.
- * @returns [{record, text}]
- */
-export function messagesOfCsv(content) {
-  const rows = []
-  let row = [], field = '', quoted = false
-  for (let at = 0; at < content.length; at++) {
-    const sign = content[at]
-    if (quoted) { if (sign !== '"') field += sign; else if (content[at + 1] === '"') { field += '"'; at++ } else quoted = false }
-    else if (sign === '"') quoted = true
-    else if (sign === ',') { row.push(field); field = '' }
-    else if (sign === '\n') { row.push(field); rows.push(row); row = []; field = '' }
-    else if (sign !== '\r') field += sign
-  }
-  if (field || row.length) rows.push([...row, field])
-  if (rows[0]?.[0] !== 'text') throw new Error('The first column of a dataset file is `text`.')
-  const messages = []
-  let record = 0
-  for (const cells of rows.slice(1)) {
-    if (cells.length === 1 && cells[0] === '') continue
-    messages.push({record: ++record, text: cells[0]})
-  }
-  return messages
-}
 
 /**
  * Every distinct text once, under the id of its first record.
@@ -83,12 +59,23 @@ export function drawSample(messages, {seed, share, excluded = new Set()}) {
   return sample
 }
 
-/** The CSV files of the dataset as committed at a revision: {commit, files: [{file, content}]}. */
+/**
+ * The message files among the files of a commit, as [path in the commit, name used in ids].
+ * The messages are the CSV files under `semantic/`; an id names a file without that folder. A commit
+ * from before the dataset had the folder holds the message files at its root.
+ */
+export function messageFiles(paths) {
+  const csv = paths.filter(path => path.endsWith('.csv')).sort()
+  const semantic = csv.filter(path => path.startsWith('semantic/'))
+  if (semantic.length) return semantic.map(path => [path, path.slice('semantic/'.length)])
+  return csv.filter(path => !/^(syntactic|annotations|tools)\//u.test(path)).map(path => [path, path])
+}
+/** The message files of the dataset as committed at a revision: {commit, files: [{file, content}]}. */
 export function readDataset(dataset, revision = 'HEAD') {
   const git = (...args) => execFileSync('git', ['-C', dataset, ...args], {encoding: 'utf8', maxBuffer: 512 * 1024 * 1024})
   const commit = git('rev-parse', '--verify', revision + '^{commit}').trim()
-  const names = git('ls-tree', '-r', '--name-only', '-z', commit).split('\0').filter(name => name.endsWith('.csv')).sort()
-  return {commit, files: names.map(file => ({file, content: git('show', commit + ':' + file)}))}
+  const files = messageFiles(git('ls-tree', '-r', '--name-only', '-z', commit).split('\0'))
+  return {commit, files: files.map(([path, file]) => ({file, content: git('show', commit + ':' + path)}))}
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

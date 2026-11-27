@@ -27,7 +27,7 @@ node tests/benchmark/syntax/sample.mjs eval-results/<folder>/sample.json.gz --sh
   --exclude eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz
 ```
 
-It reads the `text` column of every CSV file of the dataset as committed, keeps each distinct text once, puts the texts in a random order fixed by the seed, and takes the first share of them that stand in no excluded sample. Beside the sample it writes a `.lock.json` with the seed, the share, the dataset commit and the count. The same seed, share, commit and exclusions give the same sample. An existing sample file is never replaced by another one.
+It reads the `text` column of every CSV file under `semantic/` of the dataset as committed, keeps each distinct text once, puts the texts in a random order fixed by the seed, and takes the first share of them that stand in no excluded sample. The files under `syntactic/` hold the same messages and are never read as a source. Beside the sample it writes a `.lock.json` with the seed, the share, the dataset commit and the count. The same seed, share, commit and exclusions give the same sample. An existing sample file is never replaced by another one.
 
 ## One benchmark, from start to table
 
@@ -84,11 +84,86 @@ node tests/benchmark/syntax/agree.mjs eval-results/2026-11-27-syntax-benchmark-a
 
 `table.mjs` can be called at any time, also before any judge has worked: the circuits not yet judged stand in the column "waiting".
 
+## A conversion round
+
+The dataset keeps its messages in `webmeet-dataset/semantic/<tab>/<file>.csv`. A conversion round gives one or more of these files their counterpart in `webmeet-dataset/syntactic/`, with the syntax circuit of every message. The round is also a test of the formalizers: its report has the same table of levels. Testing and converting are one activity.
+
+`round.mjs` has one sub-command for each step. `<round>` is a new folder under `eval-results/`.
+
+**0. See what the next rounds would take.** This writes nothing.
+
+```sh
+node tests/benchmark/syntax/round.mjs plan --rounds 3
+```
+
+**1. Start the round.**
+
+```sh
+node tests/benchmark/syntax/round.mjs start <round> [--min-messages 500] [--order size|name] [--files drawing/style-01.csv,…]
+```
+
+It takes the next source file that has no syntactic file and belongs to no round in progress: the file with the fewest messages first, or the first by name with `--order name`. A round that caught a small file takes another one, until it has at least 500 messages. `--files` names the files instead. The source files are read as they are on disk. It writes `files.json` and `sample.json`: every distinct text of a file once, in the order of the file, with the id `<tab>/<file>#<record number>`.
+
+**2. Run the formalizers** on the sample of the round, as in any benchmark.
+
+```sh
+node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
+```
+
+**3. Settle what needs no judge, and prepare the rest for the judge.**
+
+```sh
+node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05]
+```
+
+For every message the circuits of the formalizers are grouped by their core.
+
+- A circuit that the registry already holds keeps its verdict, accepted or rejected.
+- A circuit that formalizers of at least three different families wrote alike is settled by agreement: it counts as accepted, and no judge reads it (`settle --families <n>` changes the number). A family is the source of the analysis, declared in `strategies.mjs`: vss; parser (spacy-direct, spacy-beam, neural-dependencies, and also neuro-prolog, neuro-z3, neuro-selector and selector-distilbert, which read the same dependency parse or choose among circuits written from it); prolog (prolog, prolog-example-transfer); z3; distilbert. Formalizers of one family read a message from the same source, so their agreement settles nothing. Three families, not two: on the first judged sample a judge rejected 14 of 39 circuits that only VSS and Prolog wrote alike, and 3 of 427 that three or four of the earlier families wrote alike.
+- Every other circuit goes into `judging/packet-<k>.jsonl`, as in a benchmark.
+- A random share of the agreed circuits, 5% unless `--audit` says otherwise, goes to the judge as well. The judge does not see which they are. Their verdicts show how often agreement is right. When the judge rejects such a circuit, the judge's word counts.
+
+It writes `settle.json` with the counts and `key/agreement.jsonl` with the agreed circuits. Judges then work as in step 3 of a benchmark.
+
+**4. Have the missing circuits written.**
+
+```sh
+node tests/benchmark/syntax/round.mjs rewrite-prepare <round>
+```
+
+A message whose circuits were all rejected, or for which no formalizer wrote a valid circuit, has no accepted circuit. These messages go into `rewriting/packet-<k>.jsonl`, each with its rejected circuits and the judge's reasons. A judge reads `rewriting/REWRITE.md`, writes the correct circuit of each message into `rewriting/written-<k>.jsonl` as lines `{"n", "sop"}`, and runs `node check.mjs <k>` in that folder. The checker tests every written circuit against the schema and the message and says in words what to correct. A message that still has a circuit waiting for a judge is left out; call the command again after the judging.
+
+**5. Write the syntactic files.**
+
+```sh
+node tests/benchmark/syntax/round.mjs write <round> --tag <name> --judge <model>
+```
+
+It publishes into the registry file `<tag>.jsonl`:
+
+| What | `verdict` | `judge` | `source` |
+| --- | --- | --- | --- |
+| A circuit the judge read | accepted or rejected | the model | the formalizers that wrote it |
+| A circuit settled by agreement that no judge read | accepted | `agreement` | the formalizers that wrote it |
+| A circuit the judge wrote | accepted | the model | `judge` |
+
+Every circuit accepted in the round becomes the label of its message, as `judge-publish.mjs` does. Then each syntactic file of the round is written: every message of the source file once, in order, with the columns `text`, `sop`, `source` and `accepted_by` (`agreement`, `judge` or `written`). The circuit of a message is its label. A message that has no label takes the accepted circuit most formalizers wrote.
+
+The command writes nothing at all, and lists the messages, while a message of the round has no circuit. `--allow-open` writes the files with empty cells for those messages. An existing syntactic file is never written again.
+
+**6. Report.**
+
+```sh
+node tests/benchmark/syntax/round.mjs report <round>
+```
+
+It can be called at any time. It says how the messages of the round are settled (by agreement, accepted by a judge, written by a judge, still open), how many of the agreed circuits sent to the judge were accepted, and gives the table of levels per formalizer. A circuit settled by agreement counts as accepted for the formalizers that wrote it: L8, or L9 or L10 against the label the message had before the round.
+
 ## The labels
 
 A label is the accepted circuit of a message. `labels.jsonl` has one line per message: `{"text", "label", "core", "run", "source", "previous"}`. `label` is the circuit in normal form, `run` the tag that set it, `source` the strategies that wrote it, and `previous` the core of the label it replaced, or null.
 
-`judge-publish.mjs` sets the labels. A message has one label. When a judge accepted several circuits of one message in one run, the label is the one most strategies wrote, and among equals the first by its number in the packets. The other accepted circuits stay accepted in the registry.
+`judge-publish.mjs` sets the labels, and `round.mjs write` does for a conversion round. A message has one label. When several circuits of one message were accepted in one run, the label is the one most strategies wrote, and among equals the first by its number in the packets. The other accepted circuits stay accepted in the registry.
 
 ## The table
 
@@ -136,6 +211,18 @@ The packets, the registry and the labels hold circuits in this form.
 | `key/labels-before.jsonl` | `judge-prepare.mjs` | The labels as they were before the run. |
 | `table.md`, `table.json` | `table.mjs` | The levels. |
 | `agreement.md`, `agreement.json` | `agree.mjs` | The agreement between strategies. |
+
+A conversion round adds:
+
+| File | Written by | Content |
+| --- | --- | --- |
+| `files.json`, `sample.json` | `round.mjs start` | The source files of the round and their messages. |
+| `settle.json`, `key/agreement.jsonl` | `round.mjs settle` | The counts, and the circuits settled by agreement. |
+| `rewriting/packet-<k>.jsonl`, `REWRITE.md`, `RULES.md`, `check.mjs` | `round.mjs rewrite-prepare` | What a judge needs to write the missing circuits. |
+| `rewriting/written-<k>.jsonl` | a judge | The written circuits. |
+| `key/rewrite-items.jsonl` | `round.mjs rewrite-prepare` | The messages sent for writing. |
+| `written.json` | `round.mjs write` | What was published and which syntactic files were written. |
+| `report.md`, `report.json` | `round.mjs report` | How the messages were settled, and the levels. |
 
 `judge-prepare.mjs` can be called again after more strategies were run into the same folder: the numbers already given stay, and new circuits go into new packets.
 

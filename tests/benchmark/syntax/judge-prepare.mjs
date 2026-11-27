@@ -11,12 +11,9 @@
 //   <run-folder>/key/items.jsonl            not for the judge: which strategies wrote circuit n
 //   <run-folder>/key/labels-before.jsonl    the labels of the dataset as they were before this run
 // Calling it again keeps the numbers already given and adds new packets for circuits that are new.
-import {copyFileSync, mkdirSync} from 'node:fs'
 import {join, resolve, relative} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {readArguments, readOutputs, readRegistry, collectItems, packetsOf, lookup, readItems, writeJsonl, itemsFile, judgingDir,
+import {readArguments, readOutputs, readRegistry, collectItems, lookup, readItems, writeJudging, judgingDir,
   keepLabelsBefore, readLabelsBefore, defaultRegistryDir, labelsFileOf} from './lib.mjs'
-import {packetNumbers} from './check.mjs'
 
 const {words, named} = readArguments(process.argv.slice(2))
 if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/judge-prepare.mjs <run-folder> [--size 200]'); process.exit(2) }
@@ -30,13 +27,7 @@ keepLabelsBefore(runDir, labelsFile)
 const labels = readLabelsBefore(runDir, labelsFile)
 const earlier = readItems(runDir)
 const {items, added} = collectItems(outputs, registry, {earlier})
-mkdirSync(folder, {recursive: true})
-writeJsonl(itemsFile(runDir), items)
-const firstPacket = Math.max(0, ...packetNumbers(folder)) + 1
-const packets = packetsOf(added, size)
-packets.forEach((packet, index) => writeJsonl(join(folder, `packet-${firstPacket + index}.jsonl`), packet))
-copyFileSync(fileURLToPath(new URL('./rules.md', import.meta.url)), join(folder, 'RULES.md'))
-copyFileSync(fileURLToPath(new URL('./check.mjs', import.meta.url)), join(folder, 'check.mjs'))
+const packets = writeJudging(runDir, items, added, size)
 
 console.log(`Registry: ${registry.rows} judged circuits of ${registry.byText.size} messages, in ${registry.files.length} files` + (registry.ignored ? `; ${registry.ignored} lines ignored (no valid circuit or no verdict)` : '') + `. Labels before this run: ${labels.size} messages.`)
 console.log('| Strategy | Messages | No valid circuit | Equal to the label | Already accepted | Already rejected | Needs a judge |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |')
@@ -46,5 +37,5 @@ for (const {strategy, rows} of outputs) {
   console.log(`| ${strategy} | ${rows.length} | ${count.none} | ${count.label} | ${count.accepted} | ${count.rejected} | ${count.judge} |`)
 }
 console.log(`${items.length} distinct circuits need a judge in this run: ${earlier.length} were prepared before, ${added.length} are new.`)
-console.log(packets.length ? `New packets: ${packets.map((packet, index) => `packet-${firstPacket + index}.jsonl (${packet.length})`).join(', ')} in ${relative(process.cwd(), folder)}` : 'No new packet.')
+console.log(packets.length ? `New packets: ${packets.map(([name, lines]) => `${name} (${lines})`).join(', ')} in ${relative(process.cwd(), folder)}` : 'No new packet.')
 if (items.length) console.log(`A judge reads RULES.md and one packet, writes verdicts-<k>.jsonl beside it, and checks it with: node ${relative(process.cwd(), join(folder, 'check.mjs'))} <k>`)

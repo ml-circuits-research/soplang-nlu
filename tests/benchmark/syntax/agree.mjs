@@ -9,6 +9,8 @@
 import {writeFileSync} from 'node:fs'
 import {join, resolve, basename} from 'node:path'
 import {readArguments, readOutputs, readRegistry, readItems, readVerdictFiles, runVerdicts, lookup, agreementOf, renderAgreement, writeJson, defaultRegistryDir} from './lib.mjs'
+// Only what a judge said counts here as a verdict: a circuit that round.mjs settled by agreement has
+// none, since this report asks how far agreement can be trusted.
 
 const {words, named} = readArguments(process.argv.slice(2))
 if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/agree.mjs <run-folder>'); process.exit(2) }
@@ -19,7 +21,9 @@ const registry = readRegistry(resolve(named.registry ?? defaultRegistryDir))
 const verdicts = runVerdicts(readItems(runDir), readVerdictFiles(runDir).verdicts)
 const verdictOf = (text, core) => {
   const now = verdicts.get(text)?.get(core)
-  return now ? (now.grade === 'L8' ? 'accepted' : 'rejected') : lookup(registry, text, core)?.verdict
+  if (now) return now.grade === 'L8' ? 'accepted' : 'rejected'
+  const known = lookup(registry, text, core)
+  return known && known.judge !== 'agreement' ? known.verdict : undefined
 }
 const result = agreementOf(outputs, verdictOf)
 const text = `# Agreement between strategies in the run ${basename(runDir)}\n\n` + renderAgreement(result)
