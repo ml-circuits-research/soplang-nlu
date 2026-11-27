@@ -1,7 +1,10 @@
+// The DistilBERT strategy: a fine-tuned DistilBERT model in a persistent Python worker predicts
+// the structure of one message, and `syntax.mjs` writes that prediction as one circuit of the
+// `syntax` schema. Nothing is read from a knowledge repository.
 import {spawn} from 'node:child_process'
 import {createInterface} from 'node:readline'
 import {fileURLToPath} from 'node:url'
-import {renderGraph, tokenizeSource} from './graph.mjs'
+import {modelTokens, writeSyntax} from './syntax.mjs'
 
 const defaultWorker = fileURLToPath(new URL('./worker.py',import.meta.url))
 
@@ -16,13 +19,19 @@ async function deadline(action, timeoutMs, description) {
   }
 }
 
-export async function openGraphWorker({
+/**
+ * Open the worker and return {analyse, close}.
+ * @param tokenize the tokens of a message, as the model was trained to receive them
+ * @param render (text, tokens, reply) => the circuit as text; it may throw
+ * @param detail ask the worker for the ranked choices beside each prediction
+ */
+async function openWorker({
   python = process.env.SOP_NLU_DISTILBERT_PYTHON ?? 'python3',
   modelPath = process.env.SOP_NLU_DISTILBERT_MODEL,
   device = process.env.SOP_NLU_DISTILBERT_DEVICE ?? 'auto',
   workerPath = defaultWorker,
   timeoutMs = 120000
-} = {}, {modelFlag = '--model'} = {}) {
+} = {}, {modelFlag = '--model', tokenize, render, detail = false} = {}) {
   if (!modelPath) throw Error('Set SOP_NLU_DISTILBERT_MODEL or pass modelPath.')
   if (!['auto','cpu','cuda'].includes(device)) throw Error('Expected DistilBERT device auto, cpu or cuda.')
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647) {
@@ -69,19 +78,20 @@ export async function openGraphWorker({
   let pending = Promise.resolve()
   let closing
   let requestId = 0
-  function failure(error) {
-    return {analyses:[],analysisDiagnostics:{...diagnostics,status:'error',error:error.message}}
+  // `error` is what the common reader of a syntax strategy reports; the diagnostics keep the older shape.
+  function failure(error, status = 'error') {
+    return {analyses:[],error:error.message,analysisDiagnostics:{...diagnostics,status,error:error.message}}
   }
 
   async function run(text,draftNodes) {
     if (fatal) return failure(fatal)
     if (typeof text !== 'string' || !text.trim()) return failure(Error('Expected a nonempty source string.'))
-    const tokens = tokenizeSource(text)
-    if (!tokens.length) return {analyses:[],analysisDiagnostics:{...diagnostics,status:'no-graph'}}
+    const tokens = tokenize(text)
+    if (!tokens.length) return failure(Error('The message has no words.'),'no-graph')
     const id = ++requestId
     let response
     try {
-      const line = JSON.stringify({id,text,tokens,...(draftNodes === undefined ? {} : {draftNodes})})+'\n'
+      const line = JSON.stringify({id,text,tokens,...(detail ? {detail:true} : {}),...(draftNodes === undefined ? {} : {draftNodes})})+'\n'
       await deadline(new Promise((resolve,reject)=>{
         child.stdin.write(line,error=>error ? reject(error) : resolve())
       }),timeoutMs,'DistilBERT request write')
@@ -95,9 +105,10 @@ export async function openGraphWorker({
       return failure(error)
     }
     if (typeof response.error === 'string') return failure(Error(response.error))
-    if (!response.nodes.length) return {analyses:[],analysisDiagnostics:{...diagnostics,status:'no-graph'}}
+    if (response.status === 'input-too-long') return failure(Error('The message is longer than the model can read.'),'no-graph')
+    if (!response.nodes.length) return failure(Error('The model found no node in the message.'),'no-graph')
     try {
-      const sop = renderGraph(text,tokens,response.nodes)
+      const sop = render(text,tokens,response)
       return {analyses:[{sop}],analysisDiagnostics:{...diagnostics,status:'ok'}}
     } catch (error) {
       return failure(error)
@@ -121,4 +132,25 @@ export async function openGraphWorker({
   }}
 }
 
-export const distilBert = {name:'distilbert',open:options=>openGraphWorker(options)}
+/**
+ * The strategy. `open` takes {python, modelPath, device, workerPath, timeoutMs, attachmentMargin};
+ * the first three can also be given as SOP_NLU_DISTILBERT_PYTHON, SOP_NLU_DISTILBERT_MODEL and
+ * SOP_NLU_DISTILBERT_DEVICE. `analyse(text)` returns {analyses: [{sop}]} with one circuit of the
+ * syntax schema, or {analyses: [], error}.
+ */
+export const distilBert = {
+  name:'distilbert',
+  schema:'syntax',
+  open:({attachmentMargin,...options} = {}) => openWorker(options,{detail:true,tokenize:modelTokens,
+    render:(text,tokens,reply) => writeSyntax(text,tokens,reply,attachmentMargin === undefined ? {} : {attachmentMargin})})
+}
+
+/**
+ * Not used by the strategy any more: the same worker with its nodes written in the old `nlu`
+ * schema. Kept for the experiments that open other workers through it; `graph.mjs` is loaded
+ * only when this is called.
+ */
+export async function openGraphWorker(options = {}, extra = {}) {
+  const {renderGraph, tokenizeSource} = await import('./graph.mjs')
+  return openWorker(options,{...extra,tokenize:tokenizeSource,render:(text,tokens,reply) => renderGraph(text,tokens,reply.nodes)})
+}

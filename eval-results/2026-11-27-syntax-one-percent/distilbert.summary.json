@@ -1,0 +1,26 @@
+{
+  "strategy": "distilbert",
+  "schema": "syntax",
+  "given": {
+    "SOP_NLU_DISTILBERT_MODEL": "/home/salboaie/work/sopworlds/soplang-nlu/.local-models/distilbert/curated-ownership-v2/checkpoint",
+    "SOP_NLU_DISTILBERT_DEVICE": "cpu"
+  },
+  "messages": 1831,
+  "valid": 1827,
+  "invalid": 4,
+  "startupMs": 1654,
+  "meanMs": 55.6,
+  "medianMs": 54.5,
+  "p95Ms": 70.7,
+  "causes": [
+    {
+      "cause": "no circuit: Repeated words cross between wires",
+      "count": 4,
+      "example": {
+        "id": "drawing/scenes-07.csv#3903",
+        "text": "give me a seaside boardwalk in the sea wind in the afternoon: a medium brown owl right on the bench, a small girl sitting on the bench, a small boy standing right next to the girl, and right on the pier, two small white gulls",
+        "error": "Repeated words cross between wires: no order of the wires aligns them (c1, c3)"
+      }
+    }
+  ]
+}

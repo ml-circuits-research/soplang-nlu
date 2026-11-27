@@ -43,12 +43,17 @@ def main():
             if not request["tokens"]:
                 emit({"id": request_id, "nodes": []})
                 continue
+            # "detail": the structure of the same nodes (their spans, their references and the form
+            # of a clause, no other label), with the probabilities of the references, the scores of
+            # the clause forms and the ranked owners of every token (see NativeDistilBert.decode_one).
+            detail = request.get("detail") is True
             with torch.inference_mode():
                 batch = tokenize_batch(tokenizer, [request], device)
-                nodes, = model.decode(batch, settings.get("nodeThreshold", .55),
-                                      settings.get("attributeThreshold", .55),
-                                      ownership_threshold=settings.get("ownershipThreshold", .65))
-            emit({"id": request_id, "nodes": nodes})
+                decoded, = model.decode(batch, settings.get("nodeThreshold", .55),
+                                        settings.get("attributeThreshold", .55),
+                                        ownership_threshold=settings.get("ownershipThreshold", .65),
+                                        detail=detail)
+            emit({"id": request_id, **decoded} if detail else {"id": request_id, "nodes": decoded})
         except ValueError as error:
             if str(error).startswith("Source needs more than "):
                 emit({"id": request_id, "nodes": [], "status": "input-too-long"})

@@ -14,6 +14,13 @@ REQUIRED = {
     "relation": {"kind", "from", "to"},
     "coordination": {"kind", "member"},
 }
+# What a node needs when the label sets of the old annotations are not queried (see decode_one):
+# the same structure, without the kind of a tie or of a group.
+STRUCTURE = {
+    "clause": {"form"},
+    "relation": {"from", "to"},
+    "coordination": {"member"},
+}
 
 
 def attribute_kind(attribute):
@@ -290,17 +297,26 @@ class NativeDistilBert(nn.Module):
             labels[token] = -100
         return F.cross_entropy(self.owner_logits(words, nodes, pairs), torch.tensor(labels, device=words.device))
 
-    def decode(self, batch, node_threshold=.55, attribute_threshold=.55, max_nodes=64, ownership_threshold=.65):
+    def decode(self, batch, node_threshold=.55, attribute_threshold=.55, max_nodes=64, ownership_threshold=.65,
+               detail=False):
         words, logits, valid = self.encode(batch)
-        return [self.decode_one(w[m], l[m], node_threshold, attribute_threshold, max_nodes, ownership_threshold)
+        return [self.decode_one(w[m], l[m], node_threshold, attribute_threshold, max_nodes, ownership_threshold, detail)
                 for w, l, m in zip(words, logits, valid)]
 
-    def decode_one(self, words, logits, node_threshold, attribute_threshold, max_nodes, ownership_threshold=.65):
+    def decode_one(self, words, logits, node_threshold, attribute_threshold, max_nodes, ownership_threshold=.65,
+                   detail=False):
+        """The predicted nodes. With detail, the structure alone, together with what the heads say
+        beside their first choice: {"nodes", "owners"}. A reference then carries "ranked", its
+        possible targets with their probabilities, the chosen one first; a clause form carries its
+        "scores"; "owners" lists, for every token, the node slots the ownership head ranks first.
+        With detail the only atom that is predicted is the form of a clause: the other label sets of
+        the old annotations (kinds of things, of ties and of groups, colours, acts, polarity) are
+        not queried and not returned. The nodes, their spans and their references do not change."""
         device = words.device
         scores = logits.sigmoid()
         detected = [(a, s) for a, s in (scores >= node_threshold).nonzero().tolist()]
         if not detected:
-            return []
+            return {"nodes": [], "owners": []} if detail else []
         if len(detected) > max_nodes:
             values = scores.detach().cpu()
             detected = sorted(detected, key=lambda pair: -float(values[pair]))[:max_nodes]
@@ -326,24 +342,71 @@ class NativeDistilBert(nn.Module):
                 if kind == "span":
                     span_requests.append((confidence, i, key, ordinal, query))
                 elif kind == "atom":
+                    if detail and key != "form":
+                        continue
                     allowed = self.vocab.spec["allowed_atoms"][slot]
                     if allowed:
-                        value = allowed[self.atom(query)[allowed].argmax().item()]
-                        node["attrs"].append({"key": key, "atom": self.vocab.atoms[value]})
+                        atom_scores = self.atom(query)[allowed]
+                        value = allowed[atom_scores.argmax().item()]
+                        attribute = {"key": key, "atom": self.vocab.atoms[value]}
+                        if detail and key == "form":
+                            attribute["scores"] = {self.vocab.atoms[atom]: float(p) for atom, p
+                                                   in zip(allowed, atom_scores.softmax(-1).tolist())}
+                        node["attrs"].append(attribute)
                         used_atom.add(key)
                 else:
                     allowed = self.vocab.spec["target_types"][slot]
                     targets = [j for j, node_kind in enumerate(node_types)
                                if j != i and node_kind in allowed and j not in used_refs[key]]
                     if targets:
-                        target = targets[(features[targets] @ self.reference(query)).argmax().item()]
-                        node["attrs"].append({"key": key, "target": target})
+                        target_scores = features[targets] @ self.reference(query)
+                        best = target_scores.argmax().item()
+                        target = targets[best]
+                        attribute = {"key": key, "target": target}
+                        if detail:
+                            # the scale of training turns the scores into the probabilities the head learned
+                            probabilities = (target_scores * self.scale).softmax(-1).tolist()
+                            ranked = sorted(zip(probabilities, targets), key=lambda pair: -pair[0])
+                            attribute["ranked"] = [{"target": j, "p": p} for p, j in ranked[:6]]
+                        node["attrs"].append(attribute)
                         used_refs[key].add(target)
         if span_requests:
             self.assign_spans(words, nodes, span_requests)
         if self.ownership:
             self.recover_spans(words, features, nodes, ownership_threshold)
-        return prune(nodes)
+        if not detail:
+            return prune(nodes)
+        owners = self.token_owners(words, features, nodes) if self.ownership else []
+        kept, remap = prune(nodes, with_map=True, required=STRUCTURE)
+        for node in kept:
+            for attribute in node["attrs"]:
+                if "ranked" in attribute:
+                    attribute["ranked"] = [{"target": remap[entry["target"]], "p": entry["p"]}
+                                           for entry in attribute["ranked"] if entry["target"] in remap]
+        owners = [[{**entry, "node": remap[entry["node"]]} for entry in ranked if entry["node"] in remap]
+                  for ranked in owners]
+        return {"nodes": kept, "owners": owners}
+
+    def token_owners(self, words, features, nodes, top=4):
+        """For every token, the node slots the ownership head ranks first, with their probabilities.
+        The label that says a token belongs to no slot is left out."""
+        pairs = [(i, slot) for i, node in enumerate(nodes)
+                 for slot in self.vocab.span_slots[node["type"]]]
+        if not pairs:
+            return [[] for _ in range(len(words))]
+        probabilities = self.owner_logits(words, features, pairs).softmax(-1)
+        values, labels = probabilities.topk(min(top + 1, probabilities.shape[1]), dim=-1)
+        owners = []
+        for row_values, row_labels in zip(values.tolist(), labels.tolist()):
+            ranked = []
+            for p, label in zip(row_values, row_labels):
+                if not label:
+                    continue
+                i, slot = pairs[(label - 1) // 2]
+                ranked.append({"node": i, "key": self.vocab.attributes[slot][1],
+                               "inside": bool((label - 1) % 2), "p": p})
+            owners.append(ranked[:top])
+        return owners
 
     def recover_spans(self, words, features, nodes, threshold):
         pairs = [(i, slot) for i, node in enumerate(nodes)
@@ -414,7 +477,7 @@ class NativeDistilBert(nn.Module):
             nodes[owner]["attrs"].append({"key": key, "start": start, "end": end})
 
 
-def prune(nodes):
+def prune(nodes, with_map=False, required=REQUIRED):
     live = set(range(len(nodes)))
     while True:
         active = set()
@@ -424,19 +487,20 @@ def prune(nodes):
             attrs = [a for a in node["attrs"] if "target" not in a or a["target"] in live]
             keys = {a["key"] for a in attrs}
             evidence = [a for a in attrs if a["key"] not in ("unresolved", "filler") and "atom" not in a]
-            if REQUIRED.get(kind, set()) <= keys and evidence:
+            if required.get(kind, set()) <= keys and evidence:
                 active.add(i)
         if active == live:
             break
         live = active
     remap = {before: after for after, before in enumerate(sorted(live))}
-    return [
+    kept = [
         {**nodes[i], "attrs": [
             {**a, "target": remap[a["target"]]} if "target" in a else a
             for a in nodes[i]["attrs"] if "target" not in a or a["target"] in live
         ]}
         for i in sorted(live)
     ]
+    return (kept, remap) if with_map else kept
 
 
 def save_checkpoint(model, tokenizer, output, metadata):

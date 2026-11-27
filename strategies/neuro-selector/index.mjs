@@ -1,10 +1,13 @@
+// The neuro-selector: four other strategies each write a circuit of the `syntax` schema for the
+// message, a fitted ranker scores the distinct circuits, and the best one is returned. Where the
+// circuits of the pool do not settle the start of a phrase, the returned circuit says so
+// (`attachment=ambiguous`). No knowledge repository is read.
 import {createHash} from 'node:crypto'
 import {readFile} from 'node:fs/promises'
-import {join,resolve} from 'node:path'
-import {pathToFileURL} from 'node:url'
-import {selectorChoices} from './features.mjs'
-import {openProposalPool} from './pool.mjs'
+import {selectorChoices} from './syntax-features.mjs'
+import {openSyntaxPool} from './syntax-pool.mjs'
 import {selectReadings} from './score.mjs'
+import {settleAttachments} from './attachments.mjs'
 
 const defaultModel = new URL('./model.json',import.meta.url)
 
@@ -30,12 +33,16 @@ function validEstimator(estimator, width) {
   })
 }
 
+/**
+ * `open` takes the options of the pool (see syntax-pool.mjs) and `selectorModelPath`
+ * (or SOP_NLU_SELECTOR_MODEL; by default the model.json beside this file).
+ * `analyse(text)` returns {analyses: [{sop, selectorScore, families}]} with one circuit, or
+ * {analyses: [], error}.
+ */
 async function open({
-  knowledgeDir = process.env.SOP_KNOWLEDGE_DIR,
   selectorModelPath = process.env.SOP_NLU_SELECTOR_MODEL ?? defaultModel,
   ...options
 } = {}) {
-  if (!knowledgeDir) throw Error('Set SOP_KNOWLEDGE_DIR or pass knowledgeDir.')
   const bytes = await readFile(selectorModelPath).catch(error => {
     if (error.code === 'ENOENT') {
       throw Error('Proposal ranker model is missing. Set SOP_NLU_SELECTOR_MODEL or install model.json.', {cause:error})
@@ -51,29 +58,32 @@ async function open({
         .every(value => Number.isFinite(value) && value >= 0 && value <= 1)) {
     throw Error('Invalid proposal ranker model.')
   }
-  const {parse} = await import(pathToFileURL(join(resolve(knowledgeDir),'tools/sopworld/sopworld.mjs')))
-  const pool = await openProposalPool({knowledgeDir,...options})
+  const pool = await openSyntaxPool(options)
   const modelSha256 = createHash('sha256').update(bytes).digest('hex')
   async function analyse(text) {
     const diagnostics = {projector:'neuro-selector',modelSha256}
     try {
-      const observations = await pool.propose(text)
-      const input = selectorChoices(text,observations,parse)
+      const {observations,failures} = await pool.propose(text)
+      const input = selectorChoices(text,observations,model.featureNames)
       if (!input.candidates.length) {
-        const first = observations[0]
-        return {analyses:first ? [{sop:first.sop}] : [],analysisDiagnostics:{...diagnostics,
-          status:first ? 'partial' : 'no-eligible',observations:observations.length,eligibleCircuits:0,
-          ...(first ? {fallbackFamily:first.family,fallbackRank:first.rank} : {})}}
+        const error = 'No strategy of the pool returned a valid circuit' +
+          (failures.length ? ': ' + failures.map(failure => failure.family + ': ' + failure.error).join('; ') : '.')
+        return {analyses:[],error,analysisDiagnostics:{...diagnostics,status:'no-circuit',failures}}
       }
-      const analyses = selectReadings(input,model).map(({index,probability}) =>
-        ({sop:input.candidates[index].sop,selectorScore:probability}))
-      return {analyses,analysisDiagnostics:{...diagnostics,status:'ok',
-        observations:observations.length,eligibleCircuits:input.candidates.length}}
+      // the ranker orders the distinct circuits; a strategy returns one circuit, so the first is taken
+      const [best] = selectReadings(input,model)
+      const chosen = input.candidates[best.index]
+      const sop = settleAttachments(text,chosen.sop,observations.map(observation => observation.sop))
+      return {analyses:[{sop,selectorScore:best.probability,families:chosen.families}],
+        analysisDiagnostics:{...diagnostics,status:'ok',observations:observations.length,
+          distinctCircuits:input.candidates.length,attachmentsLeftOpen:sop !== chosen.sop,
+          ...(failures.length ? {failures} : {})}}
     } catch (error) {
-      return {analyses:[],analysisDiagnostics:{...diagnostics,status:'error',error:error.message}}
+      const message = error instanceof Error ? error.message : String(error)
+      return {analyses:[],error:message,analysisDiagnostics:{...diagnostics,status:'error',error:message}}
     }
   }
   return {analyse,propose:analyse,close:()=>pool.close()}
 }
 
-export const neuroSelector = {name:'neuro-selector',open}
+export const neuroSelector = {name:'neuro-selector',schema:'syntax',open}
