@@ -61,14 +61,29 @@ messages, where it does worse.
 - Families of strategies that read the same parse agree with each other on 77–100% of messages and repeat the
   same faults: agreement needs different sources.
 
+## Done since the first version of this journal
+
+- spaCy: general repairs in the layer that writes its circuits (commit a55e33f): capitalised verb forms
+  inside a sentence are names, the first word of a verbless clause before a determiner is its verb, embedded
+  questions state, "let's", "everything else", "from now on", numbers joined by a preposition, adjectives
+  made heads after nouns. Rewritten from cached parses: 118 of 320 rejected benchmark circuits change, 93 of
+  1,511 accepted change; to be judged. Still open: a first word followed by a lowercase noun ("book design
+  review") stays a noun, since the parser gives no verb reading and its beam varies only the arcs.
+- Judges' rules: "let's add", "everything else" and embedded question clauses settled (a81dd93).
+- Note for the generality audit: the spaCy writer names "left" in "left of" (a direction word, borderline
+  like left/right in the VSS legend); all its other literal words are prepositions, pronouns, determiners
+  and adverbs.
+
 ## In progress
 
 - VSS: the remaining rules of the drawing analysis (a word grading a relation goes to the clause where the
   relation starts; "where"/"as" clauses complete the nearest verb; two participles in a row; lists after
   place phrases) and the linker rules of the diagram analysis (finite forms never open a command, commas
   between numbers, participle-only forms).
-- spaCy: general repairs in our writing layer (a command needs its verb, clause form, "left of", "let's",
-  clock times with "UTC", lists).
+- Documentation of the session in docs/ (HTML): the VSS architecture, the decisions and insights, the
+  evaluation and conversion method; each reviewed for accuracy and clarity.
+- A read-only study of VSS's remaining benchmark faults by area, and three designs for the lever beyond
+  rules, ranked by a judge.
 - DistilBERT: retraining on the current labels (5,100 judge + 56,934 agreement as silver), benchmark held out.
 
 ## Next steps, in order
