@@ -1,17 +1,18 @@
 // The table of levels of a run: one row per strategy, the columns L0 to L10, the messages still
 // waiting for a judge, and GOAL.
-//   node tests/benchmark/syntax/table.mjs <run-folder> [--registry <folder>] [--labels <file>]
+//   node tests/benchmark/syntax/table.mjs <run-folder> [--registry <folder>] [--syntactic <folder>]
 // Prints the table and writes <run-folder>/table.md and <run-folder>/table.json.
 // A circuit equal to the label its message had before the run is at L9. A circuit judged in this run
 // (a line in judging/verdicts-<k>.jsonl) counts by that verdict; a circuit that round.mjs settled by
 // agreement counts as accepted; any other circuit counts by what the registry says of it; a circuit
 // none of them has seen is waiting.
-// The labels before the run are the copy in <run-folder>/key/labels-before.jsonl, taken when the run
-// was first prepared or published; a run that has no copy yet is compared with the labels of now.
+// The labels before the run are those in <run-folder>/key/labels-before.jsonl, taken when the run
+// was first prepared or published; a run that has no such file yet is compared with the labels of
+// now, which are the circuits in the syntactic files of the dataset.
 import {existsSync, writeFileSync} from 'node:fs'
 import {join, resolve, basename} from 'node:path'
-import {readArguments, readOutputs, readRegistry, readRunVerdicts, readLabelsBefore, tableOf, renderTable, readJson, writeJson,
-  defaultRegistryDir, labelsFileOf} from './lib.mjs'
+import {readArguments, readOutputs, readRegistry, readRunVerdicts, readLabels, readLabelsBefore, tableOf, renderTable, readJson, writeJson,
+  defaultRegistryDir, syntacticDirOf} from './lib.mjs'
 
 const {words, named} = readArguments(process.argv.slice(2))
 if (!words[0]) { console.error('Usage: node tests/benchmark/syntax/table.mjs <run-folder>'); process.exit(2) }
@@ -20,9 +21,13 @@ const outputs = readOutputs(runDir)
 if (!outputs.length) { console.error(`No strategy file in ${runDir}: run run.mjs first.`); process.exit(1) }
 const registryDir = resolve(named.registry ?? defaultRegistryDir)
 const registry = readRegistry(registryDir)
-const labels = readLabelsBefore(runDir, labelsFileOf(registryDir, named.labels))
+// the labels of now are read once, and only when they are needed: for a run that has no labels of its own
+// yet, or for a circuit that nothing else knows
+let present = null
+const labelsNow = () => present ??= readLabels(syntacticDirOf(registryDir, named.syntactic))
+const labels = readLabelsBefore(runDir, labelsNow)
 const read = readRunVerdicts(runDir), verdicts = read.verdicts
-const table = tableOf(outputs, registry, verdicts, labels)
+const table = tableOf(outputs, registry, verdicts, labels, labelsNow)
 const summaryFile = join(runDir, 'summary.json')
 const notRun = existsSync(summaryFile) ? Object.entries(readJson(summaryFile).strategies ?? {}).filter(([, entry]) => !entry.file).map(([name, entry]) => [name, entry.status]) : []
 const count = by => [...verdicts.values()].reduce((sum, circuits) => sum + [...circuits.values()].filter(verdict => verdict.by === by).length, 0)

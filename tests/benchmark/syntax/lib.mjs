@@ -1,6 +1,6 @@
 // The shared parts of the syntax benchmark: the normal form of a circuit, the registry of judged
-// circuits, the labels of the messages, the packets for a judge, the levels and the agreement
-// between strategies.
+// circuits, the labels of the messages (read from the dataset's syntactic files and written
+// there), the packets for a judge, the levels and the agreement between strategies.
 // Nothing here reads a knowledge repository or the `nlu` schema.
 import {createHash} from 'node:crypto'
 import {readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, copyFileSync} from 'node:fs'
@@ -14,9 +14,17 @@ const here = dirname(fileURLToPath(import.meta.url))
 export const packageRoot = resolve(here, '../../..')
 export const sampleFile = join(packageRoot, 'eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz')
 export const defaultRegistryDir = resolve(packageRoot, '../webmeet-dataset/annotations/syntax/v1/judged')
-export const defaultLabelsFile = resolve(packageRoot, '../webmeet-dataset/annotations/syntax/v1/labels.jsonl')
-/** The labels file stands beside the folder of judged circuits, so a registry named for a trial brings its own labels. */
-export const labelsFileOf = (registryDir = defaultRegistryDir, named) => resolve(typeof named === 'string' ? named : join(registryDir, '..', 'labels.jsonl'))
+export const defaultSyntacticDir = resolve(packageRoot, '../webmeet-dataset/syntactic')
+/**
+ * The folder of syntactic files that goes with a registry: the one of the dataset the registry
+ * stands in (<dataset>/annotations/syntax/v1/judged and <dataset>/syntactic). A registry named for a
+ * trial, anywhere else, brings its own folder `syntactic` beside it, so a trial never reads or writes
+ * the labels of the dataset.
+ */
+export function syntacticDirOf(registryDir = defaultRegistryDir, named) {
+  if (typeof named === 'string') return resolve(named)
+  return /[\\/]annotations[\\/]syntax[\\/]v1[\\/]judged[\\/]?$/u.test(registryDir) ? resolve(registryDir, '../../../../syntactic') : resolve(registryDir, '../syntactic')
+}
 export const LEVELS = Array.from({length: 11}, (_, level) => 'L' + level)
 export const GRADES = ['L8', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
 export const GOAL_LEVELS = ['L8', 'L9', 'L10']
@@ -74,6 +82,23 @@ export function messagesOfCsv(content) {
   const [header, ...records] = readCsv(content)
   if (header?.[0] !== 'text') throw new Error('The first column of a dataset file is `text`.')
   return records.map((cells, index) => ({record: index + 1, text: cells[0]}))
+}
+/** The rows of a CSV text as they are written, each with its line end; a line end inside quotes does not end a row. */
+export function rawRows(content) {
+  const rows = []
+  let start = 0, quoted = false
+  for (let at = 0; at < content.length; at++) {
+    if (content[at] === '"') quoted = !quoted
+    else if (content[at] === '\n' && !quoted) { rows.push(content.slice(start, at + 1)); start = at + 1 }
+  }
+  if (start < content.length) rows.push(content.slice(start))
+  return rows
+}
+/** Where the first cell of a row ends, in the row as it is written. */
+function firstCellEnd(row) {
+  if (row[0] !== '"') { const end = row.search(/[,\r\n]/u); return end < 0 ? row.length : end }
+  for (let at = 1; at < row.length; at++) if (row[at] === '"') { if (row[at + 1] === '"') at++; else return at + 1 }
+  return row.length
 }
 /** One cell, quoted only when it holds a comma, a quote, a line end or a space at its edge. */
 export const csvCell = value => { const text = String(value ?? ''); return /[",\n\r]|^\s|\s$/u.test(text) ? '"' + text.replaceAll('"', '""') + '"' : text }
@@ -188,24 +213,51 @@ export function readRegistry(dir = defaultRegistryDir) {
 export const lookup = (registry, text, core) => core ? registry.byText.get(text)?.get(core) : undefined
 
 // ---- the labels of the messages
-// One line per message: {text, label, core, run, source, previous}. The label is the accepted circuit
-// of the message, in normal form. `previous` is the core of the label it replaced, or null.
-/** The labels as Map text -> line. The core is computed again from the label; a line whose label is no valid circuit is left out. */
-export function readLabels(file = defaultLabelsFile) {
-  const labels = new Map()
-  if (!existsSync(file)) return labels
-  for (const line of readJsonl(file)) {
-    const normal = normalForm(line.text, line.label)
-    if (normal?.core) labels.set(line.text, {...line, core: normal.core})
+// The label of a message is the circuit in the `sop` cell of its row in the dataset's syntactic
+// files (columns text, sop, source, accepted_by). No other file holds labels: a tool that sets a
+// label writes that cell.
+export const SYNTACTIC_HEADER = ['text', 'sop', 'source', 'accepted_by']
+/**
+ * A label line {text, label, source, accepted_by} with its `core`. The core is computed from the
+ * circuit the first time it is asked for, so reading the labels of a whole dataset costs no core.
+ */
+export function labelLine(line) {
+  let core
+  return Object.defineProperty({...line}, 'core', {get: () => core === undefined ? (core = normalForm(line.text, line.label)?.core ?? null) : core})
+}
+/**
+ * The labels: a Map from the text of a message to its label line. `dir` is the folder of syntactic
+ * files they were read from; `files` names, for every message of those files, labelled or not, the
+ * file its row stands in (and `also` the further files of a message that stands in several).
+ */
+export class Labels extends Map {
+  constructor(dir = null) { super(); this.dir = dir; this.files = new Map(); this.also = new Map() }
+}
+const csvFilesOf = dir => !existsSync(dir) ? [] : readdirSync(dir, {withFileTypes: true}).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+  .flatMap(entry => entry.isDirectory() ? csvFilesOf(join(dir, entry.name)).map(file => entry.name + '/' + file) : entry.name.endsWith('.csv') ? [entry.name] : [])
+/**
+ * The labels of a dataset, from its syntactic files: a message whose `sop` cell is not empty has
+ * that circuit as its label.
+ * @param dir the folder of syntactic files
+ * @param only the files to read, as paths inside the folder ("drawing/style-01.csv"); all when not given
+ */
+export function readLabels(dir = defaultSyntacticDir, only = null) {
+  const labels = new Labels(dir)
+  for (const file of only ?? csvFilesOf(dir)) {
+    if (!existsSync(join(dir, file))) continue
+    const [header, ...rows] = readCsv(readFileSync(join(dir, file), 'utf8'))
+    if (header?.[0] !== 'text' || header[1] !== 'sop') throw new Error(`${join(dir, file)} is no syntactic file: its columns are ${SYNTACTIC_HEADER.join(', ')}.`)
+    for (const [text, sop = '', source = '', accepted_by = ''] of rows) {
+      if (!labels.files.has(text)) labels.files.set(text, file)
+      else if (labels.files.get(text) !== file) labels.also.set(text, [...new Set([...labels.also.get(text) ?? [], file])])
+      if (sop && !labels.has(text)) labels.set(text, labelLine({text, label: sop, source, accepted_by}))
+    }
   }
   return labels
 }
-export function writeLabels(file, labels) {
-  writeJsonl(file, [...labels.values()].map(({text, label, core, run, source, previous}) => ({text, label, core, run, source, previous})))
-}
 /**
- * One label per message from the circuits a judge accepted in one run: the circuit most strategies
- * wrote, then the first by its number.
+ * One label per message from the circuits accepted in one run: the circuit most strategies wrote,
+ * then the first by its number.
  * @param accepted items {n, text, sop, core, sources}
  * @returns Map text -> item
  */
@@ -218,19 +270,55 @@ export function chooseLabels(accepted) {
   return chosen
 }
 /**
- * Every accepted circuit of a run becomes the label of its message, whatever label the message had.
- * @param labels Map text -> line; changed in place
- * @returns {set, first, replaced}: messages that got this run's label; how many had none; how many had another
+ * What a run changes in the labels: every circuit accepted in the run becomes the label of its
+ * message, whatever label the message had, also when that was a circuit settled by agreement.
+ * @param labels the labels as they are (a Map text -> label line)
+ * @param accepted items {n, text, sop, core, sources, accepted_by}; accepted_by is "judge" when not given
+ * @returns {changes: Map text -> {text, label, source, accepted_by}, first, replaced}: `first` messages
+ *   had no label, `replaced` had another circuit or the same one accepted in another way
  */
-export function updateLabels(labels, accepted, run) {
+export function labelChanges(labels, accepted) {
+  const changes = new Map()
   let first = 0, replaced = 0
   for (const [text, item] of chooseLabels(accepted)) {
-    const before = labels.get(text)
-    if (before?.core === item.core) continue
-    labels.set(text, {text, label: item.sop, core: item.core, run, source: item.sources.join('+'), previous: before?.core ?? null})
+    const before = labels.get(text), acceptedBy = item.accepted_by ?? 'judge'
+    if (before?.core === item.core && before.accepted_by === acceptedBy) continue
+    changes.set(text, {text, label: item.sop, source: item.sources.join('+'), accepted_by: acceptedBy})
     if (before) replaced++; else first++
   }
-  return {set: first + replaced, first, replaced}
+  return {changes, first, replaced}
+}
+/**
+ * Writes labels into the syntactic files: the cells sop, source and accepted_by of the row of each
+ * message. Only the files that change are written; the order of the rows, the line ends, the
+ * message cell as it is written and every row the changes do not name stay as they are.
+ * @param labels the labels read from the folder (readLabels): they know the file of every message
+ * @param changes Map text -> {label, source, accepted_by}
+ * @returns {rows, files: [the files written], missing: [messages that have no row in the folder]}
+ */
+export function writeLabels(labels, changes) {
+  const byFile = new Map(), missing = []
+  for (const text of changes.keys()) {
+    const files = [labels.files.get(text), ...labels.also.get(text) ?? []].filter(Boolean)
+    if (!files.length) missing.push(text)
+    for (const file of files) (byFile.get(file) ?? byFile.set(file, new Set()).get(file)).add(text)
+  }
+  const files = []
+  let count = 0
+  for (const [file, texts] of byFile) {
+    const rows = rawRows(readFileSync(join(labels.dir, file), 'utf8'))
+    let changed = false
+    for (let k = 1; k < rows.length; k++) {
+      const text = readCsv(rows[k])[0]?.[0]
+      if (text === undefined || !texts.has(text)) continue
+      const {label, source, accepted_by: acceptedBy} = changes.get(text)
+      const next = rows[k].slice(0, firstCellEnd(rows[k])) + ',' + [label, source, acceptedBy].map(csvCell).join(',') + (/\r?\n$/u.exec(rows[k])?.[0] ?? '')
+      if (next === rows[k]) continue
+      rows[k] = next; changed = true; count++
+    }
+    if (changed) { writeFileSync(join(labels.dir, file), rows.join('')); files.push(file) }
+  }
+  return {rows: count, files, missing}
 }
 
 // ---- what needs a judge
@@ -240,9 +328,11 @@ export function updateLabels(labels, accepted, run) {
  * @param outputs from readOutputs
  * @param earlier items of an earlier call for the same run: they keep their numbers
  * @param skip (text, core) => true for a circuit that needs no judge for another reason, such as agreement
+ * @param labels the labels: a circuit equal to the label of its message is accepted already, by a
+ *   judge or by agreement, and is not collected
  * @returns {items, added}: every item is {n, text, sop, core, sources}; `added` are the new ones
  */
-export function collectItems(outputs, registry, {earlier = [], skip = () => false} = {}) {
+export function collectItems(outputs, registry, {earlier = [], skip = () => false, labels = new Map()} = {}) {
   const items = earlier.map(item => ({...item}))
   const known = new Map(items.map(item => [item.text + '\0' + item.core, item]))
   const texts = [], circuits = new Map()
@@ -255,7 +345,7 @@ export function collectItems(outputs, registry, {earlier = [], skip = () => fals
   }
   const added = []
   for (const text of texts) {
-    const waiting = [...circuits.get(text)].filter(([core]) => !lookup(registry, text, core) && (known.has(text + '\0' + core) || !skip(text, core)))
+    const waiting = [...circuits.get(text)].filter(([core]) => !lookup(registry, text, core) && (known.has(text + '\0' + core) || labels.get(text)?.core !== core && !skip(text, core)))
     // the order inside a message follows the circuits, never the strategies
     for (const [core, circuit] of waiting.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)) {
       const item = known.get(text + '\0' + core)
@@ -299,15 +389,19 @@ export function runVerdicts(items, verdicts, agreed = []) {
  *   L0        no valid circuit
  *   L1–L6     the circuit is rejected: the grade a judge gave it, in this run or in the registry
  *   L8        the circuit is accepted and is not the label the message had: a judge accepted it in
- *             this run and the message had no label, or the registry already held it as accepted
+ *             this run and the message had no label, or the registry already held it as accepted,
+ *             or it became the label of the message after the run started (settled by agreement
+ *             in a conversion round, for example)
  *   L9        the circuit is equal to the label the message had before the run: no judge was needed
  *   L10       a judge accepted the circuit in this run and the message had another label before:
  *             the label is replaced
  *   waiting   no judge has read the circuit yet
  * L7 is unused: a strategy returns one circuit.
  * @param labelsBefore Map text -> {core}: the labels as they were before the run
+ * @param labelsNow the labels of now, or a function that reads them; asked only for a circuit that
+ *   nothing else knows
  */
-export function levelOf(row, registry, verdicts = new Map(), labelsBefore = new Map()) {
+export function levelOf(row, registry, verdicts = new Map(), labelsBefore = new Map(), labelsNow = new Map()) {
   if (!row.core) return 'L0'
   const label = labelsBefore.get(row.text)
   if (label?.core === row.core) return 'L9'
@@ -315,15 +409,15 @@ export function levelOf(row, registry, verdicts = new Map(), labelsBefore = new 
   if (now) return now.grade !== 'L8' ? now.grade : label ? 'L10' : 'L8'
   const before = lookup(registry, row.text, row.core)
   if (before) return before.verdict === 'accepted' ? 'L8' : before.grade
-  return 'waiting'
+  return (typeof labelsNow === 'function' ? labelsNow() : labelsNow).get(row.text)?.core === row.core ? 'L8' : 'waiting'
 }
 /** One row per strategy: the count of every level, the waiting ones, GOAL, and the accepted circuits that leave an attachment open. */
-export function tableOf(outputs, registry, verdicts = new Map(), labelsBefore = new Map()) {
+export function tableOf(outputs, registry, verdicts = new Map(), labelsBefore = new Map(), labelsNow = new Map()) {
   return outputs.map(({strategy, rows}) => {
     const levels = Object.fromEntries(LEVELS.map(level => [level, 0]))
     let waiting = 0, ambiguous = 0
     for (const row of rows) {
-      const level = levelOf(row, registry, verdicts, labelsBefore)
+      const level = levelOf(row, registry, verdicts, labelsBefore, labelsNow)
       if (level === 'waiting') { waiting++; continue }
       levels[level]++
       if (GOAL_LEVELS.includes(level) && / attachment=ambiguous(?= |$)/mu.test(row.sop)) ambiguous++
@@ -427,15 +521,18 @@ export function relaxedCore(core) {
 }
 /**
  * The circuits that strategies of enough different families wrote alike, for the messages of a run.
- * A circuit the registry already holds is left out: it keeps its verdict, accepted or rejected.
+ * A circuit the registry already holds is left out: it keeps its verdict, accepted or rejected. So is
+ * a circuit that is the label of its message already: it is settled.
  * @param familyOf name of a strategy -> its family
  * @param minFamilies how many different families must have written the circuit (2 when not given)
  * @param relaxed circuits that differ only in the start of marked relations count as written alike
  *   (relaxedCore); the circuit that stands for them is the one a strategy of `prefer` wrote, in the
  *   order of that list, else the one most strategies wrote
+ * @param labels the labels of the messages (a Map text -> label line)
  * @returns [{text, sop, core, sources, families}] in the order of the messages
  */
-export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2, {relaxed = false, prefer = []} = {}) {
+export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2, {relaxed = false, prefer = [], labels = new Map()} = {}) {
+  const settled = (text, core) => Boolean(lookup(registry, text, core)) || labels.get(text)?.core === core
   const texts = [], circuits = new Map()
   for (const {strategy, rows} of outputs) for (const row of rows) {
     if (!circuits.has(row.text)) { circuits.set(row.text, new Map()); texts.push(row.text) }
@@ -451,7 +548,7 @@ export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2, {re
     if (!relaxed) {
       for (const circuit of written) {
         const sources = [...circuit.sources].sort(), kinds = [...new Set(sources.map(familyOf))].sort()
-        if (kinds.length >= minFamilies && !lookup(registry, text, circuit.core)) agreed.push({...circuit, sources, families: kinds})
+        if (kinds.length >= minFamilies && !settled(text, circuit.core)) agreed.push({...circuit, sources, families: kinds})
       }
       continue
     }
@@ -462,7 +559,7 @@ export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2, {re
       if (kinds.length < minFamilies) continue
       const rank = circuit => { const at = prefer.findIndex(name => circuit.sources.has(name)); return at < 0 ? prefer.length : at }
       const chosen = [...members].sort((a, b) => rank(a) - rank(b) || b.sources.size - a.sources.size || byCore(a, b))[0]
-      if (!lookup(registry, text, chosen.core)) agreed.push({...chosen, sources, families: kinds})
+      if (!settled(text, chosen.core)) agreed.push({...chosen, sources, families: kinds})
     }
   }
   return agreed
@@ -504,18 +601,33 @@ export function readRunVerdicts(runDir) {
   const items = readItems(runDir), read = readVerdictFiles(runDir)
   return {items, verdicts: runVerdicts(items, read.verdicts, readAgreement(runDir)), problems: read.problems}
 }
-// the labels as they were before the run: a copy taken the first time the run is prepared or published
+// The labels as they were before the run, for the messages of the run: taken the first time the run
+// is prepared, settled or published, and never changed after that. A line is {text, label, source,
+// accepted_by}; a message with no line had no label. A file written by the earlier tools, with every
+// label of the dataset and the keys {text, label, core, run, source, previous}, is read as well.
 export const labelsBeforeFile = runDir => join(runDir, 'key', 'labels-before.jsonl')
-/** Keeps the labels of this moment as the labels before the run, unless the run already has its copy. */
-export function keepLabelsBefore(runDir, labelsFile = defaultLabelsFile) {
+/**
+ * Keeps the labels that the messages of the run have at this moment, unless the run already has its file.
+ * @param labels the labels of now
+ * @param texts the messages of the run, or a function that gives them (called only when the file is to be written)
+ */
+export function keepLabelsBefore(runDir, labels, texts) {
   if (existsSync(labelsBeforeFile(runDir))) return false
-  mkdirSync(dirname(labelsBeforeFile(runDir)), {recursive: true})
-  writeFileSync(labelsBeforeFile(runDir), existsSync(labelsFile) ? readFileSync(labelsFile) : '')
+  const messages = [...new Set(typeof texts === 'function' ? texts() : texts)]
+  writeJsonl(labelsBeforeFile(runDir), messages.filter(text => labels.has(text)).map(text => { const {label, source, accepted_by} = labels.get(text); return {text, label, source, accepted_by} }))
   return true
 }
-/** The labels before the run: the run's copy, or the labels of this moment when the run has none yet. */
-export function readLabelsBefore(runDir, labelsFile = defaultLabelsFile) {
-  return readLabels(existsSync(labelsBeforeFile(runDir)) ? labelsBeforeFile(runDir) : labelsFile)
+/**
+ * The labels before the run: those of the run's file, or the labels of now when the run has none yet.
+ * @param labels the labels of now, or a function that reads them (called only when the run has no file)
+ */
+export function readLabelsBefore(runDir, labels = new Labels()) {
+  if (!existsSync(labelsBeforeFile(runDir))) return typeof labels === 'function' ? labels() : labels
+  const before = new Labels()
+  for (const line of readJsonl(labelsBeforeFile(runDir))) {
+    if (typeof line.label === 'string' && line.label) before.set(line.text, labelLine({text: line.text, label: line.label, source: line.source ?? '', accepted_by: line.accepted_by ?? ''}))
+  }
+  return before
 }
 export function readItems(runDir) { return existsSync(itemsFile(runDir)) ? readJsonl(itemsFile(runDir)) : [] }
 /**

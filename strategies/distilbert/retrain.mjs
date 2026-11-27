@@ -1,14 +1,18 @@
 // Train the DistilBERT strategy on circuits of the `syntax` schema.
 //
-//   node strategies/distilbert/retrain.mjs [--gold <labels.jsonl>] [--silver <file>[=<weight>]]…
+//   node strategies/distilbert/retrain.mjs [--syntactic <folder>] [--no-agreement] [--silver <file>[=<weight>]]…
 //        [--out <folder>] [--overwrite] [--exclude <file>] [--seed <n>] [--epochs <n>]
 //        [--device cuda|cpu] [--python <interpreter>] [--base <model>]
 //   node strategies/distilbert/retrain.mjs --tune [--out <folder>]
 //
-// --gold     one line per message {text, label}: the accepted circuits. By default the labels of
-//            webmeet-dataset (../webmeet-dataset/annotations/syntax/v1/labels.jsonl), as the file
-//            is when the tool runs. About one message in ten (chosen by a hash of the seed and
-//            the text) is kept out of training: the development messages.
+// The data are the labels of the dataset: the circuits in its syntactic files
+// (../webmeet-dataset/syntactic, or the folder --syntactic names), as they are when the tool runs.
+//   gold     the rows whose accepted_by is "judge" or "written": a judge accepted or wrote the
+//            circuit. About one message in ten (chosen by a hash of the seed and the text) is
+//            kept out of training: the development messages.
+//   silver   the rows whose accepted_by is "agreement": formalizers wrote the circuit alike and no
+//            judge read it. They are trained on with the weight 0.3, and none is a development
+//            message. --no-agreement leaves them out.
 // --silver   further files, one line per message {text, sop}, each with a weight (0.3 when
 //            none is given). A silver message that is also a gold message is left out.
 // --exclude  a JSON array or JSON Lines file of {text}: these messages are left out altogether.
@@ -28,6 +32,7 @@ import {createInterface} from 'node:readline'
 import {join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {coreOf} from '../../lib/syntax.mjs'
+import {readLabels} from '../../tests/benchmark/syntax/lib.mjs'
 import {encodeCircuit, certainPrediction, modelSchema} from './targets.mjs'
 import {writeSyntaxCircuit} from './circuit.mjs'
 import {openSyntaxModel} from './index.mjs'
@@ -37,11 +42,13 @@ const args = process.argv.slice(2), named = {silver: []}
 for (let at = 0; at < args.length; at++) {
   const name = args[at].replace(/^--/u, '')
   if (!args[at].startsWith('--')) throw Error('Unexpected argument ' + args[at])
-  if (name === 'overwrite' || name === 'tune') named[name] = true
+  if (name === 'overwrite' || name === 'tune' || name === 'no-agreement') named[name] = true
   else if (name === 'silver') named.silver.push(args[++at])
   else named[name] = args[++at]
 }
-const goldFile = resolve(named.gold ?? here('../../../webmeet-dataset/annotations/syntax/v1/labels.jsonl'))
+if (named.gold) throw Error('The gold data are read from the syntactic files of the dataset; name another folder with --syntactic.')
+const syntacticDir = resolve(named.syntactic ?? here('../../../webmeet-dataset/syntactic'))
+const silverWeight = .3
 const out = resolve(named.out ?? here('../../.local-models/distilbert/syntax-v1'))
 const seed = Number(named.seed ?? 20261127), epochs = Number(named.epochs ?? 20)
 const device = named.device ?? 'cuda'
@@ -81,8 +88,13 @@ if (named.tune) {
 }
 
 async function trainOnTheData() {
-  const gold = lines(goldFile), seen = new Set(), train = [], dev = []
-  const sizes = {gold: {file: goldFile, sha256: sha(goldFile), lines: gold.length, train: 0, development: 0, excluded: 0}, silver: []}
+  // the labels of the dataset: a judge's circuits are gold, the circuits settled by agreement are silver
+  const labels = [...readLabels(syntacticDir).values()], seen = new Set(), train = [], dev = []
+  const gold = labels.filter(row => row.accepted_by === 'judge' || row.accepted_by === 'written')
+  const agreed = named['no-agreement'] ? [] : labels.filter(row => row.accepted_by === 'agreement')
+  const digest = rows => createHash('sha256').update(rows.map(row => row.text + '\0' + row.label).join('\n')).digest('hex')
+  const sizes = {gold: {folder: syntacticDir, acceptedBy: 'judge or written', sha256: digest(gold), lines: gold.length, train: 0, development: 0, excluded: 0},
+    agreement: named['no-agreement'] ? null : {folder: syntacticDir, acceptedBy: 'agreement', sha256: digest(agreed), weight: silverWeight, lines: agreed.length, train: 0, excluded: 0}, silver: []}
   for (const row of gold) {
     if (seen.has(row.text)) { skip('repeated message'); continue }
     if (excluded.has(row.text)) { sizes.gold.excluded++; continue }
@@ -91,9 +103,17 @@ async function trainOnTheData() {
     seen.add(row.text)
     if (inDev(row.text)) { dev.push(targets); sizes.gold.development++ } else { train.push(targets); sizes.gold.train++ }
   }
+  for (const row of agreed) {
+    if (excluded.has(row.text)) { sizes.agreement.excluded++; continue }
+    if (seen.has(row.text)) { skip('repeated message'); continue }
+    const targets = targetsOf(row.text, row.label, silverWeight)
+    if (!targets) continue
+    seen.add(row.text)
+    train.push(targets); sizes.agreement.train++
+  }
   for (const entry of named.silver) {
     const [, file, weight] = /^(.*?)(?:=([0-9.]+))?$/u.exec(entry)
-    const size = {file: resolve(file), sha256: sha(resolve(file)), weight: Number(weight ?? .3), lines: 0, train: 0, alsoGold: 0, excluded: 0}
+    const size = {file: resolve(file), sha256: sha(resolve(file)), weight: Number(weight ?? silverWeight), lines: 0, train: 0, alsoGold: 0, excluded: 0}
     for (const row of lines(resolve(file))) {
       size.lines++
       if (excluded.has(row.text)) { size.excluded++; continue }

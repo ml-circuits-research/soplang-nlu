@@ -4,7 +4,8 @@
 # with no settled circuit keep an empty cell (round.mjs write --allow-open); a later call for the
 # same folder, with another tag, fills them once they are judged or written.
 #   tests/benchmark/syntax/batch-write.sh <tag prefix> [judge model]
-# The folders are written one after the other: they share the labels file.
+# A circuit settled by agreement is written into the syntactic file only; the registry gets a file
+# for a folder only when a judge decided something in it. The folders are written one after the other.
 set -u
 cd "$(dirname "$0")/../../.."
 prefix="${1:?a tag prefix, for example 2026-11-27-agreement}"

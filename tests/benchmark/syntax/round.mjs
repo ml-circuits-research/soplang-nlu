@@ -12,27 +12,30 @@
 // plan   shows which files the next rounds would take, and writes nothing.
 // start  takes the next source files that have no syntactic file, until the round has enough messages.
 // settle a circuit that strategies of at least three different families (--families) wrote alike is settled by agreement; a
-//        circuit the registry holds keeps its verdict; the others go to judge packets, with a random
-//        share of the agreed ones so that it can be measured how often agreement is right.
+//        circuit the registry holds keeps its verdict, and a circuit that is the label of its message
+//        is accepted already; the others go to judge packets, with a random share of the agreed ones
+//        so that it can be measured how often agreement is right.
 // rewrite-prepare  the messages with no accepted circuit go to packets for a judge who writes the circuit.
-// write  publishes verdicts, agreed and written circuits into the registry and the labels, then
-//        writes the syntactic files. Nothing is written while a message of the round has no circuit.
+// write  publishes into the registry what a judge decided (the circuits the judge read, and those the
+//        judge wrote), then writes the syntactic files. A circuit settled by agreement is written
+//        into the syntactic file only: its `accepted_by` cell says "agreement".
 // report the levels per strategy and how the messages of the round were settled.
-// Every command takes --dataset <folder> (default ../webmeet-dataset): the registry and the labels
-// are the ones of that dataset. The source files are read as they are on disk, not from git.
+// The label of a message is the circuit in its row of the syntactic files; there is no other store.
+// Every command takes --dataset <folder> (default ../webmeet-dataset): the registry and the
+// syntactic files are those of that dataset. The source files are read as they are on disk, not from git.
 import {createHash} from 'node:crypto'
 import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, copyFileSync} from 'node:fs'
 import {basename, dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
 import {coreOf} from '../../../lib/syntax.mjs'
 import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, messagesOfCsv, writeCsv, readCsv, readOutputs, readRegistry, addToRegistry, lookup,
-  readLabels, writeLabels, updateLabels, collectItems, readItems, writeJudging, agreedCircuits, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
-  keepLabelsBefore, readLabelsBefore, tableOf, renderTable, labelsFileOf, judgingDir, packageRoot} from './lib.mjs'
+  readLabels, labelChanges, labelLine, SYNTACTIC_HEADER, collectItems, readItems, writeJudging, agreedCircuits, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
+  keepLabelsBefore, readLabelsBefore, tableOf, renderTable, judgingDir, packageRoot} from './lib.mjs'
 import {readWritten, rewritingPackets} from './rewrite-check.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const digest = value => createHash('sha256').update(value).digest('hex')
-export const SYNTACTIC_HEADER = ['text', 'sop', 'source', 'accepted_by']
+export {SYNTACTIC_HEADER}
 
 // ---- choosing the files of a round
 /** The messages of a source file, each distinct text once, in the order of the file: [{record, text}]. */
@@ -89,29 +92,34 @@ export function planRounds(sources, rounds, options = {}) {
  * @param registry the registry of judged circuits
  * @param verdicts the verdicts of the round: judge and agreement (readRunVerdicts)
  * @param written circuits a judge wrote in this round: [{text, sop, core}]
+ * @param labels the labels of the messages: the circuits in the syntactic files (a Map text -> label
+ *   line). The label of a message is an accepted circuit: its accepted_by says how it was accepted.
  * @returns Map text -> [{sop, core, strategies, status, by, grade, note}]
  *   status: "accepted", "rejected" or "waiting"; by: "agreement", "judge" or "written"
  */
-export function roundState({texts, outputs, registry, verdicts = new Map(), written = []}) {
+export function roundState({texts, outputs, registry, verdicts = new Map(), written = [], labels = new Map()}) {
   const state = new Map(texts.map(text => [text, new Map()]))
   const circuitOf = (text, core, sop) => {
     const circuits = state.get(text)
     if (!circuits) return null
     return circuits.get(core) ?? circuits.set(core, {sop, core, strategies: new Set(), status: 'waiting', by: null, grade: null, note: ''}).get(core)
   }
-  // every circuit that is known: those the registry holds, those the strategies wrote, those a judge wrote
-  for (const [text, known] of registry.byText) if (state.has(text)) for (const row of known.values()) {
-    const circuit = circuitOf(text, row.core, row.sop)
-    for (const name of String(row.source ?? '').split('+')) if (name && name !== 'judge') circuit.strategies.add(name)
-  }
+  // every circuit that is known: the labels, those the registry holds, those the strategies wrote, those a judge wrote
+  const named = (circuit, source) => { for (const name of String(source ?? '').split('+')) if (name && name !== 'judge') circuit.strategies.add(name) }
+  const labelled = texts.map(text => labels.get(text)).filter(label => label?.core)
+  for (const label of labelled) named(circuitOf(label.text, label.core, label.label), label.source)
+  for (const [text, known] of registry.byText) if (state.has(text)) for (const row of known.values()) named(circuitOf(text, row.core, row.sop), row.source)
   for (const {strategy, rows} of outputs) for (const row of rows) if (row.core) circuitOf(row.text, row.core, row.normal)?.strategies.add(strategy)
   for (const line of written) circuitOf(line.text, line.core, line.sop)
-  // what is decided of each, the strongest word last: written by a judge, agreement, a judge of this
-  // round who read it, and what the registry holds
+  // what is decided of each, the strongest word last: written by a judge in this round, agreement in
+  // this round, the label of the message, a judge of this round who read it, and what the registry holds
   for (const line of written) Object.assign(state.get(line.text)?.get(line.core) ?? {}, {status: 'accepted', by: 'written', grade: 'L8'})
-  for (const by of ['agreement', 'judge']) for (const [text, known] of verdicts) if (state.has(text)) for (const [core, verdict] of known) {
+  const decide = by => { for (const [text, known] of verdicts) if (state.has(text)) for (const [core, verdict] of known) {
     if (verdict.by === by && state.get(text).has(core)) Object.assign(state.get(text).get(core), {status: verdict.grade === 'L8' ? 'accepted' : 'rejected', by, grade: verdict.grade, note: verdict.note ?? ''})
-  }
+  } }
+  decide('agreement')
+  for (const label of labelled) Object.assign(state.get(label.text).get(label.core), {status: 'accepted', by: ['agreement', 'written'].includes(label.accepted_by) ? label.accepted_by : 'judge', grade: 'L8'})
+  decide('judge')
   for (const [text, known] of registry.byText) if (state.has(text)) for (const row of known.values()) {
     Object.assign(state.get(text).get(row.core), {status: row.verdict, by: row.judge === 'agreement' ? 'agreement' : row.source === 'judge' ? 'written' : 'judge', grade: row.grade, note: row.note ?? ''})
   }
@@ -147,7 +155,7 @@ export function syntacticRows(messages, state, labels) {
 function places(named, recorded = {}) {
   const dataset = resolve(typeof named.dataset === 'string' ? named.dataset : recorded.dataset ?? join(packageRoot, '../webmeet-dataset'))
   const registryDir = resolve(typeof named.registry === 'string' ? named.registry : join(dataset, 'annotations/syntax/v1/judged'))
-  return {dataset, semantic: join(dataset, 'semantic'), syntactic: join(dataset, 'syntactic'), registryDir, labelsFile: labelsFileOf(registryDir, named.labels)}
+  return {dataset, semantic: join(dataset, 'semantic'), syntactic: join(dataset, 'syntactic'), registryDir}
 }
 /** The source files of the dataset as they are on disk: [{file: "<tab>/<name>.csv", content}]. */
 function readSources(semantic) {
@@ -178,7 +186,9 @@ function readRound(roundDir, named) {
   const sample = readSample(join(roundDir, 'sample.json')), texts = [...new Set(sample.map(row => row.text))]
   const outputs = readOutputs(roundDir), registry = readRegistry(where.registryDir)
   const run = readRunVerdicts(roundDir), written = readWritten(rewritingDir(roundDir))
-  return {files, where, sample, texts, outputs, registry, run, written, state: () => roundState({texts, outputs, registry, verdicts: run.verdicts, written: written.circuits})}
+  // the labels of the round's messages are in the syntactic files of the round's own source files
+  const labels = readLabels(where.syntactic, files.files.map(file => file.file))
+  return {files, where, sample, texts, outputs, registry, run, written, labels, state: () => roundState({texts, outputs, registry, verdicts: run.verdicts, written: written.circuits, labels})}
 }
 
 // ---- the commands
@@ -224,7 +234,10 @@ async function settle(roundDir, named) {
   const given = typeof named.strategies === 'string' ? await import(pathToFileURL(resolve(named.strategies)).href) : {}
   const familyOf = declared.familyFinder(given.families ?? declared.families)
   const registry = readRegistry(where.registryDir)
-  keepLabelsBefore(roundDir, where.labelsFile)
+  const texts = [...new Set(outputs.flatMap(output => output.rows.map(row => row.text)))]
+  // a circuit that is the label of its message is accepted already, by a judge or by agreement
+  const labels = readLabels(where.syntactic, files.files.map(file => file.file))
+  keepLabelsBefore(roundDir, labels, texts)
   const audit = Number(named.audit ?? 0.05), seed = typeof named.seed === 'string' ? named.seed : files.round
   const key = circuit => circuit.text + '\0' + circuit.core
   const earlier = readItems(roundDir)
@@ -235,7 +248,7 @@ async function settle(roundDir, named) {
   // --relaxed: circuits that differ only in where a phrase with a marker attaches count as written alike; the circuit
   // of the first strategy of --prefer stands for them
   const prefer = typeof named.prefer === 'string' ? named.prefer.split(',').map(name => name.trim()) : []
-  const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {relaxed: Boolean(named.relaxed), prefer}), foundKeys = new Set(found.map(key))
+  const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {relaxed: Boolean(named.relaxed), prefer, labels}), foundKeys = new Set(found.map(key))
   const agreed = [...readAgreement(roundDir).filter(circuit => !foundKeys.has(key(circuit))).map(({audit: _, ...circuit}) => circuit), ...found]
   const audited = chooseAudit(agreed, audit, seed), agreedKeys = new Set(agreed.map(key))
   // --judge needed: a judge reads only what the conversion needs. For a message with no accepted circuit yet, that is
@@ -255,8 +268,9 @@ async function settle(roundDir, named) {
       circuit.sources.add(strategy)
     }
     for (const [text, ofText] of circuits) {
-      const verdictOf = core => lookup(registry, text, core)?.verdict ?? (judgedHere.get(text)?.has(core) ? (judgedHere.get(text).get(core).grade === 'L8' ? 'accepted' : 'rejected') : null)
-      const settledNow = [...ofText.keys()].some(core => verdictOf(core) === 'accepted' || agreedKeys.has(text + '\0' + core))
+      const verdictOf = core => lookup(registry, text, core)?.verdict ?? (judgedHere.get(text)?.has(core) ? (judgedHere.get(text).get(core).grade === 'L8' ? 'accepted' : 'rejected') : labels.get(text)?.core === core ? 'accepted' : null)
+      // a message that has a label has its circuit: the conversion needs no judge for it
+      const settledNow = labels.has(text) || [...ofText.keys()].some(core => verdictOf(core) === 'accepted' || agreedKeys.has(text + '\0' + core))
       const open = [...ofText.values()].filter(circuit => !verdictOf(circuit.core) && !agreedKeys.has(text + '\0' + circuit.core))
       for (const circuit of open) if ([...circuit.sources].some(name => focus.has(name))) wanted.add(text + '\0' + circuit.core)
       if (settledNow || !open.length || auditOnly) continue
@@ -266,7 +280,7 @@ async function settle(roundDir, named) {
       wanted.add(text + '\0' + best.core)
     }
   }
-  const {items, added} = collectItems(outputs, registry, {earlier, skip: (text, core) => agreedKeys.has(text + '\0' + core) && !audited.has(text + '\0' + core) ||
+  const {items, added} = collectItems(outputs, registry, {earlier, labels, skip: (text, core) => agreedKeys.has(text + '\0' + core) && !audited.has(text + '\0' + core) ||
     needed && !wanted.has(text + '\0' + core) && !audited.has(text + '\0' + core)})
   // an agreed circuit that a judge reads, whatever sent it there, is part of the audit
   const read = new Set(items.map(key))
@@ -274,10 +288,9 @@ async function settle(roundDir, named) {
   const packets = writeJudging(roundDir, items, added, Number(named.size ?? 200))
   writeJsonl(agreementFile(roundDir), agreed.map(circuit => ({...circuit, audit: read.has(key(circuit))})))
 
-  const texts = [...new Set(outputs.flatMap(output => output.rows.map(row => row.text)))]
   const judgedBefore = text => [...registry.byText.get(text)?.values() ?? []]
   const agreedTexts = new Set(agreed.map(circuit => circuit.text))
-  const acceptedBefore = text => judgedBefore(text).some(row => row.verdict === 'accepted')
+  const acceptedBefore = text => labels.has(text) || judgedBefore(text).some(row => row.verdict === 'accepted')
   const valid = new Set(outputs.flatMap(output => output.rows.filter(row => row.core).map(row => row.text)))
   const settled = {round: files.round, audit, seed, strategies: outputs.map(output => ({strategy: output.strategy, family: familyOf(output.strategy)})),
     messages: texts.length,
@@ -288,15 +301,16 @@ async function settle(roundDir, named) {
       settledByAgreement: agreed.length, agreedAndSentToAJudge: agreed.filter(circuit => read.has(key(circuit))).length,
       sentToAJudge: items.length, newPackets: packets.length},
     messagesWith: {
+      aLabel: texts.filter(text => labels.has(text)).length,
       aCircuitSettledByAgreement: agreedTexts.size,
-      anAcceptedCircuitInTheRegistry: texts.filter(acceptedBefore).length,
+      anAcceptedCircuitAlready: texts.filter(acceptedBefore).length,
       noSettledCircuitYet: texts.filter(text => !agreedTexts.has(text) && !acceptedBefore(text)).length,
       noValidCircuitFromAnyStrategy: texts.filter(text => !valid.has(text)).length}}
   writeJson(join(roundDir, 'settle.json'), settled)
 
   console.log(`${texts.length} messages, ${outputs.length} strategies of ${new Set(settled.strategies.map(one => one.family)).size} families: ${settled.strategies.map(one => `${one.strategy} (${one.family})`).join(', ')}.`)
   console.log(`Settled by agreement of at least ${minFamilies} families: ${agreed.length} circuits, for ${agreedTexts.size} messages (${share(agreedTexts.size, texts.length)}). ${settled.circuits.agreedAndSentToAJudge} of them go to a judge all the same, to measure how often agreement is right.`)
-  console.log(`Already in the registry: ${settled.circuits.alreadyAcceptedInTheRegistry} accepted and ${settled.circuits.alreadyRejectedInTheRegistry} rejected circuits of these messages; ${settled.messagesWith.anAcceptedCircuitInTheRegistry} messages have an accepted circuit there.`)
+  console.log(`Already settled: ${settled.messagesWith.aLabel} messages have a label in the syntactic files. The registry holds ${settled.circuits.alreadyAcceptedInTheRegistry} accepted and ${settled.circuits.alreadyRejectedInTheRegistry} rejected circuits of these messages. ${settled.messagesWith.anAcceptedCircuitAlready} messages have an accepted circuit already.`)
   console.log(`For a judge: ${items.length} circuits (${earlier.length} prepared before, ${added.length} new). ${settled.messagesWith.noSettledCircuitYet} messages have no settled circuit yet; for ${settled.messagesWith.noValidCircuitFromAnyStrategy} messages no strategy wrote a valid circuit.`)
   console.log(packets.length ? `New packets: ${packets.map(([name, lines]) => `${name} (${lines})`).join(', ')} in ${relative(process.cwd(), judgingDir(roundDir))}` : 'No new packet.')
   if (items.length) console.log(`A judge reads RULES.md and one packet, writes verdicts-<k>.jsonl beside it, and checks it with: node ${relative(process.cwd(), join(judgingDir(roundDir), 'check.mjs'))} <k>`)
@@ -332,18 +346,20 @@ function rewritePrepare(roundDir, named) {
 
 function write(roundDir, named) {
   if (typeof named.tag !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(named.tag)) { console.error('Usage: node tests/benchmark/syntax/round.mjs write <round> --tag <name> [--judge <model>] [--allow-open]\nA tag is made of letters, digits, ".", "_" and "-".'); process.exit(2) }
-  const round = readRound(roundDir, named), {where, registry} = round
+  const round = readRound(roundDir, named), {where, registry, labels} = round
   const registryFile = join(where.registryDir, named.tag + '.jsonl')
   if (existsSync(registryFile)) { console.error(`The registry already holds ${registryFile}: choose another --tag.`); process.exit(1) }
   const problems = [...round.run.problems, ...round.written.problems]
   for (const problem of problems) console.error(problem)
   if (problems.length) { console.error(`${problems.length} format problems in the files the judges wrote: nothing written. Correct the lines and call again.`); process.exit(1) }
 
-  // what this round adds to the registry: the judge's verdicts, the circuits settled by agreement, the written circuits
+  // What this round adds to the registry is what a judge decided: the circuits the judge read, and those
+  // the judge wrote. A circuit settled by agreement is not published there: the syntactic file holds it,
+  // and its accepted_by cell says "agreement".
   const judge = typeof named.judge === 'string' ? named.judge : 'unknown', rows = [], accepted = []
-  const add = (item, {verdict, grade, note, judge: by, source}) => {
-    rows.push({text: item.text, sop: item.sop, core: coreOf(item.text, item.sop), verdict, grade, note, judge: by, run: named.tag, source})
-    if (verdict === 'accepted') accepted.push(item)
+  const add = (item, {verdict, grade, note, source}) => {
+    rows.push({text: item.text, sop: item.sop, core: coreOf(item.text, item.sop), verdict, grade, note, judge, run: named.tag, source})
+    if (verdict === 'accepted') accepted.push({...item, accepted_by: source === 'judge' ? 'written' : 'judge'})
   }
   const fresh = item => !lookup(registry, item.text, item.core)
   const judged = new Set()
@@ -351,26 +367,28 @@ function write(roundDir, named) {
     const verdict = round.run.verdicts.get(item.text)?.get(item.core)
     if (verdict?.by !== 'judge') continue
     judged.add(item.text + '\0' + item.core)
-    if (fresh(item)) add(item, {verdict: verdict.grade === 'L8' ? 'accepted' : 'rejected', grade: verdict.grade, note: verdict.note, judge, source: item.sources.join('+')})
+    if (fresh(item)) add(item, {verdict: verdict.grade === 'L8' ? 'accepted' : 'rejected', grade: verdict.grade, note: verdict.note, source: item.sources.join('+')})
   }
-  const agreed = readAgreement(roundDir).filter(circuit => !judged.has(circuit.text + '\0' + circuit.core) && fresh(circuit))
-  agreed.forEach((circuit, index) => add({...circuit, n: 1e9 + index}, {verdict: 'accepted', grade: 'L8', judge: 'agreement', source: circuit.sources.join('+'),
-    note: `written alike by ${circuit.sources.length} formalizers of ${circuit.families.length} families (${circuit.families.join(', ')}); no judge has read it`}))
+  // the agreed circuits this round newly settles: not read by a judge, not in the registry, not the label already
+  const agreed = readAgreement(roundDir).filter(circuit => !judged.has(circuit.text + '\0' + circuit.core) && fresh(circuit) && labels.get(circuit.text)?.core !== circuit.core)
+  agreed.forEach((circuit, index) => accepted.push({...circuit, n: 1e9 + index, accepted_by: 'agreement'}))
   const written = round.written.circuits.filter(circuit => !judged.has(circuit.text + '\0' + circuit.core) && fresh(circuit))
-  written.forEach((circuit, index) => add({...circuit, n: 2e9 + index, sources: ['judge']}, {verdict: 'accepted', grade: 'L8', judge, source: 'judge',
+  written.forEach((circuit, index) => add({...circuit, n: 2e9 + index, sources: ['judge']}, {verdict: 'accepted', grade: 'L8', source: 'judge',
     note: 'written by the judge: no circuit of a formalizer was accepted for this message'}))
 
-  // the registry and the labels as they will be, and from them the circuit of every message
+  // the registry as it will be, the labels as this round leaves them (every circuit accepted in the round
+  // becomes the label of its message), and from them the circuit of every message
   for (const row of rows) addToRegistry(registry, row)
-  const labels = readLabels(where.labelsFile)
-  const change = updateLabels(labels, accepted, named.tag)
-  const state = roundState({texts: round.texts, outputs: round.outputs, registry, verdicts: round.run.verdicts, written: round.written.circuits})
+  const change = labelChanges(labels, accepted)
+  const after = new Map(labels)
+  for (const [text, line] of change.changes) after.set(text, labelLine(line))
+  const state = roundState({texts: round.texts, outputs: round.outputs, registry, verdicts: round.run.verdicts, written: round.written.circuits, labels})
   const targets = round.files.files.map(({file, sha256}) => {
     const content = readFileSync(join(where.semantic, file), 'utf8'), messages = messagesOfFile(content)
-    // a message added to the source file after the round started is known by what the registry holds of it
-    const known = roundState({texts: messages.map(message => message.text).filter(text => !state.has(text)), outputs: [], registry})
+    // a message added to the source file after the round started is known by its label and by what the registry holds of it
+    const known = roundState({texts: messages.map(message => message.text).filter(text => !state.has(text)), outputs: [], registry, labels})
     return {file, target: join(where.syntactic, file), exists: existsSync(join(where.syntactic, file)), changed: digest(content) !== sha256, newline: content.includes('\r\n') ? '\r\n' : '\n',
-      ...syntacticRows(messages, new Map([...state, ...known]), labels)}
+      ...syntacticRows(messages, new Map([...state, ...known]), after)}
   })
   const open = targets.filter(target => !target.exists && target.open.length)
   if (open.length && !named['allow-open']) {
@@ -385,12 +403,12 @@ function write(roundDir, named) {
 
   const unread = round.run.items.filter(item => round.run.verdicts.get(item.text)?.get(item.core)?.by !== 'judge' && fresh(item)).length
   if (unread) console.log(`${unread} circuits of the round still wait for a judge and are not published.`)
-  keepLabelsBefore(roundDir, where.labelsFile)
+  keepLabelsBefore(roundDir, labels, round.texts)
   if (rows.length) writeJsonl(registryFile, rows)
-  if (change.set) writeLabels(where.labelsFile, labels)
-  const kinds = {judgeAccepted: rows.filter(row => row.verdict === 'accepted' && row.judge !== 'agreement' && row.source !== 'judge').length, judgeRejected: rows.filter(row => row.verdict === 'rejected').length, agreement: agreed.length, written: written.length}
-  console.log(rows.length ? `Registry: ${rows.length} circuits published to ${registryFile}: ${kinds.judgeAccepted} accepted and ${kinds.judgeRejected} rejected by the judge (${judge}), ${kinds.agreement} settled by agreement, ${kinds.written} written by the judge.` : 'Registry: nothing new to publish.')
-  console.log(`Labels: ${change.set} messages got a label from this round (${change.first} had none, ${change.replaced} had another one). ${where.labelsFile} holds ${labels.size} labels.`)
+  const kinds = {judgeAccepted: rows.filter(row => row.verdict === 'accepted' && row.source !== 'judge').length, judgeRejected: rows.filter(row => row.verdict === 'rejected').length, agreement: agreed.length, written: written.length}
+  console.log(rows.length ? `Registry: ${rows.length} circuits published to ${registryFile}: ${kinds.judgeAccepted} accepted and ${kinds.judgeRejected} rejected by the judge (${judge}), ${kinds.written} written by the judge.` : 'Registry: no judge decided anything new, so nothing is published.')
+  console.log(`Settled by agreement in this round, with no judge: ${kinds.agreement} circuits. They stand in the syntactic files only.`)
+  console.log(`Labels: ${change.changes.size} messages get a circuit accepted in this round (${change.first} had no label, ${change.replaced} had another one).`)
   console.log('| Syntactic file | Messages | By agreement | By a judge | Written by a judge | Open | |\n| --- | ---: | ---: | ---: | ---: | ---: | --- |')
   const report = []
   for (const target of targets) {
@@ -405,14 +423,15 @@ function write(roundDir, named) {
     console.log(`| ${relative(where.dataset, target.target)} | ${target.rows.length} | ${target.counts.agreement} | ${target.counts.judge} | ${target.counts.written} | ${target.counts.open} | ${status}${target.changed ? '; the source file changed since the round started' : ''} |`)
     report.push({file: target.file, target: target.target, status, messages: target.rows.length, ...target.counts, sourceChangedSinceStart: target.changed})
   }
-  writeJson(join(roundDir, 'written.json'), {round: round.files.round, tag: named.tag, judge, registryFile: rows.length ? registryFile : null, published: {circuits: rows.length, ...kinds}, labels: change, files: report})
+  writeJson(join(roundDir, 'written.json'), {round: round.files.round, tag: named.tag, judge, registryFile: rows.length ? registryFile : null, published: {circuits: rows.length, judgeAccepted: kinds.judgeAccepted, judgeRejected: kinds.judgeRejected, written: kinds.written},
+    settledByAgreement: kinds.agreement, labels: {set: change.changes.size, first: change.first, replaced: change.replaced}, files: report})
 }
 
 function report(roundDir, named) {
   const round = readRound(roundDir, named), state = round.state()
   if (!round.outputs.length) { console.error(`No strategy file in ${roundDir}: run run.mjs first.`); process.exit(1) }
-  const labelsBefore = readLabelsBefore(roundDir, round.where.labelsFile), labels = readLabels(round.where.labelsFile)
-  const table = tableOf(round.outputs, round.registry, round.run.verdicts, labelsBefore)
+  const labels = round.labels, labelsBefore = readLabelsBefore(roundDir, labels)
+  const table = tableOf(round.outputs, round.registry, round.run.verdicts, labelsBefore, labels)
   const summary = {messages: round.texts.length, agreement: 0, judge: 0, written: 0, open: 0, openWaitingForAJudge: 0, openToBeWritten: 0}
   for (const text of round.texts) {
     const circuits = state.get(text), chosen = chooseCircuit(circuits, labels.get(text))
