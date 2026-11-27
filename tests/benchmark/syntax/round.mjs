@@ -3,7 +3,7 @@
 //   node tests/benchmark/syntax/round.mjs plan [--rounds 3] [--min-messages 500] [--order size|name]
 //   node tests/benchmark/syntax/round.mjs start <round> [--min-messages 500] [--order size|name] [--files <tab/name.csv,…>]
 //   node tests/benchmark/syntax/run.mjs <round> --sample <round>/sample.json
-//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--judge all|needed] [--focus vss]
+//   node tests/benchmark/syntax/round.mjs settle <round> [--audit 0.05] [--size 200] [--families 3] [--relaxed] [--prefer vss] [--judge all|needed] [--focus vss]
 //   (judges write <round>/judging/verdicts-<k>.jsonl)
 //   node tests/benchmark/syntax/round.mjs rewrite-prepare <round> [--size 100] [--now]
 //   (judges write <round>/rewriting/written-<k>.jsonl)
@@ -25,7 +25,7 @@ import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, copyFil
 import {basename, dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
 import {coreOf} from '../../../lib/syntax.mjs'
-import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, messagesOfCsv, writeCsv, readOutputs, readRegistry, addToRegistry, lookup,
+import {readArguments, readSample, readJson, writeJson, readJsonl, writeJsonl, messagesOfCsv, writeCsv, readCsv, readOutputs, readRegistry, addToRegistry, lookup,
   readLabels, writeLabels, updateLabels, collectItems, readItems, writeJudging, agreedCircuits, chooseAudit, agreementFile, readAgreement, readRunVerdicts,
   keepLabelsBefore, readLabelsBefore, tableOf, renderTable, labelsFileOf, judgingDir, packageRoot} from './lib.mjs'
 import {readWritten, rewritingPackets} from './rewrite-check.mjs'
@@ -232,7 +232,10 @@ async function settle(roundDir, named) {
   // three families by default: on the first judged sample, circuits that only two families wrote alike were
   // rejected by the judge far more often than those of three
   const minFamilies = Number(named.families ?? 3)
-  const found = agreedCircuits(outputs, registry, familyOf, minFamilies), foundKeys = new Set(found.map(key))
+  // --relaxed: circuits that differ only in where a phrase with a marker attaches count as written alike; the circuit
+  // of the first strategy of --prefer stands for them
+  const prefer = typeof named.prefer === 'string' ? named.prefer.split(',').map(name => name.trim()) : []
+  const found = agreedCircuits(outputs, registry, familyOf, minFamilies, {relaxed: Boolean(named.relaxed), prefer}), foundKeys = new Set(found.map(key))
   const agreed = [...readAgreement(roundDir).filter(circuit => !foundKeys.has(key(circuit))).map(({audit: _, ...circuit}) => circuit), ...found]
   const audited = chooseAudit(agreed, audit, seed), agreedKeys = new Set(agreed.map(key))
   // --judge needed: a judge reads only what the conversion needs. For a message with no accepted circuit yet, that is
@@ -256,7 +259,8 @@ async function settle(roundDir, named) {
       for (const circuit of open) if ([...circuit.sources].some(name => focus.has(name))) wanted.add(text + '\0' + circuit.core)
       if (settledNow || !open.length) continue
       const support = circuit => [new Set([...circuit.sources].map(familyOf)).size, circuit.sources.size]
-      const best = open.sort((a, b) => support(b)[0] - support(a)[0] || support(b)[1] - support(a)[1] || (a.core < b.core ? -1 : 1))[0]
+      const preferred = circuit => { const at = prefer.findIndex(name => circuit.sources.has(name)); return at < 0 ? prefer.length : at }
+      const best = open.sort((a, b) => support(b)[0] - support(a)[0] || support(b)[1] - support(a)[1] || preferred(a) - preferred(b) || (a.core < b.core ? -1 : 1))[0]
       wanted.add(text + '\0' + best.core)
     }
   }
@@ -388,8 +392,14 @@ function write(roundDir, named) {
   console.log('| Syntactic file | Messages | By agreement | By a judge | Written by a judge | Open | |\n| --- | ---: | ---: | ---: | ---: | ---: | --- |')
   const report = []
   for (const target of targets) {
-    const status = target.exists ? 'exists already: not written' : 'written'
+    // A file written with open cells (--allow-open) may be completed later: the same messages in the same order, every
+    // circuit that was there kept as it is, and at least one empty cell filled. Anything else leaves the file alone.
+    const before = target.exists ? readCsv(readFileSync(target.target, 'utf8')).slice(1) : null
+    const completes = before !== null && before.length === target.rows.length && before.every((row, k) => row[0] === target.rows[k][0] && (!row[1] || row[1] === target.rows[k][1])) &&
+      before.some((row, k) => !row[1] && target.rows[k][1])
+    const status = !target.exists ? 'written' : completes ? 'completed: empty cells filled' : 'exists already: not written'
     if (!target.exists) { mkdirSync(dirname(target.target), {recursive: true}); writeFileSync(target.target, writeCsv(SYNTACTIC_HEADER, target.rows, target.newline), {flag: 'wx'}) }
+    else if (completes) writeFileSync(target.target, writeCsv(SYNTACTIC_HEADER, target.rows, target.newline))
     console.log(`| ${relative(where.dataset, target.target)} | ${target.rows.length} | ${target.counts.agreement} | ${target.counts.judge} | ${target.counts.written} | ${target.counts.open} | ${status}${target.changed ? '; the source file changed since the round started' : ''} |`)
     report.push({file: target.file, target: target.target, status, messages: target.rows.length, ...target.counts, sourceChangedSinceStart: target.changed})
   }

@@ -21,7 +21,9 @@ import {checkWritten, describeFinding} from './benchmark/syntax/rewrite-check.mj
 import {checkVerdicts, quotesTheMessage} from './benchmark/syntax/check.mjs'
 import {errorKind, takeOver} from './benchmark/syntax/run.mjs'
 import {convert} from './benchmark/syntax/convert-nlu.mjs'
-import {strategyModules, families, familyFinder} from './benchmark/syntax/strategies.mjs'
+import {strategyModules as activeModules, retiredModules, families, familyFinder} from './benchmark/syntax/strategies.mjs'
+// the strategies that take part, and those left out of the rounds, which still run by name
+const strategyModules = {...retiredModules, ...activeModules}
 import {strategyModules as earlierModules} from './benchmark/strategies.mjs'
 
 const tools = fileURLToPath(new URL('./benchmark/syntax/', import.meta.url))
@@ -293,7 +295,9 @@ test('a reused strategy file is checked again', () => {
 test('the list of strategies: those of the earlier benchmark, each in one family', () => {
   // the earlier benchmark called the Prolog strategy "prolog-worlds"; neural-dependencies is new
   const earlier = Object.fromEntries(Object.entries(earlierModules).map(([name, entry]) => [name === 'prolog-worlds' ? 'prolog' : name, entry]))
-  assert.deepEqual(Object.keys(strategyModules).filter(name => name !== 'neural-dependencies').sort(), Object.keys(earlier).sort())
+  // `spacy` is the one name of the strategies that read the dependency parse
+  assert.deepEqual(Object.keys(strategyModules).filter(name => name !== 'neural-dependencies' && name !== 'spacy').sort(), Object.keys(earlier).sort())
+  assert.deepEqual(Object.keys(activeModules), ['vss', 'spacy', 'distilbert', 'prolog', 'z3'], 'four strategies at most, with two candidates for the fourth place')
   for (const [name, [module, exported]] of Object.entries(strategyModules)) {
     if (earlier[name]) assert.equal(exported, earlier[name][1])
     assert.equal(existsSync(new URL(module, new URL('./benchmark/syntax/strategies.mjs', import.meta.url))), true, module)

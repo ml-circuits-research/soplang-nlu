@@ -48,8 +48,8 @@ async function child() {
   const leave = async message => { await send(message); process.exit(0) }
   let strategy
   try {
-    const {strategyModules} = await import(pathToFileURL(strategiesFile).href)
-    const [entry, exported] = strategyModules[named.child]
+    const {strategyModules, retiredModules = {}} = await import(pathToFileURL(strategiesFile).href)
+    const [entry, exported] = {...retiredModules, ...strategyModules}[named.child]
     strategy = (await import(new URL(entry, pathToFileURL(strategiesFile)).href))[exported]
   } catch (error) { await leave({type: 'failed', error: 'the module could not be loaded: ' + messageOf(error)}) }
   if (strategy?.schema !== 'syntax') await leave({type: 'not ported'})
@@ -81,11 +81,13 @@ async function parent() {
   const runDir = resolve(words[0])
   mkdirSync(join(runDir, 'logs'), {recursive: true})
   const sample = readSample(sampleSource).slice(0, limit)
-  const {strategyModules} = await import(pathToFileURL(strategiesFile).href)
+  // the strategies that take part, and those left out, which still run when named with --only
+  const {strategyModules: active, retiredModules = {}} = await import(pathToFileURL(strategiesFile).href)
+  const strategyModules = {...retiredModules, ...active}
   const only = typeof named.only === 'string' ? named.only.split(',').map(name => name.trim()).filter(Boolean) : null
   const unknown = (only ?? []).filter(name => !strategyModules[name])
   if (unknown.length) { console.error(`Unknown strategy: ${unknown.join(', ')}. Known: ${Object.keys(strategyModules).join(', ')}`); process.exit(2) }
-  const names = only ?? Object.keys(strategyModules)
+  const names = only ?? Object.keys(active)
   const reuseDir = typeof named.reuse === 'string' ? resolve(named.reuse) : null
   const timeoutMs = 1000 * Number(named.timeout ?? 120), startTimeoutMs = Math.max(timeoutMs, 900000), maxRestarts = 20
   const summaryFile = join(runDir, 'summary.json')

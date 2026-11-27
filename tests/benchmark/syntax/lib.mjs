@@ -409,13 +409,33 @@ export function renderAgreement(result) {
 
 // ---- circuits settled by agreement
 /**
+ * The core of a circuit with the start of every relation that has a marker left out, and its
+ * ambiguity mark: what two circuits share when they differ only in where a phrase attaches. The
+ * judges' rules let such a start be the clause or any nominal of it that grammar allows. On the
+ * first two judged rounds, 325 of 327 circuits that VSS wrote and a parser strategy matched up to
+ * these starts were accepted.
+ */
+export function relaxedCore(core) {
+  if (!core) return null
+  const marked = new Set([...core.matchAll(/^\d+-\d+ marker @(\(\d+>\d+\))$/gmu)].map(match => match[1]))
+  let lines = core.split('\n')
+  for (const id of marked) {
+    const loose = id.replace(/^\(\d+>/u, '(*>')
+    lines = lines.filter(line => !line.startsWith('relation ' + id + ' from ') && line !== 'relation ' + id + ' attachment ambiguous').map(line => line.replaceAll(id, loose))
+  }
+  return lines.sort().join('\n')
+}
+/**
  * The circuits that strategies of enough different families wrote alike, for the messages of a run.
  * A circuit the registry already holds is left out: it keeps its verdict, accepted or rejected.
  * @param familyOf name of a strategy -> its family
  * @param minFamilies how many different families must have written the circuit (2 when not given)
+ * @param relaxed circuits that differ only in the start of marked relations count as written alike
+ *   (relaxedCore); the circuit that stands for them is the one a strategy of `prefer` wrote, in the
+ *   order of that list, else the one most strategies wrote
  * @returns [{text, sop, core, sources, families}] in the order of the messages
  */
-export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2) {
+export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2, {relaxed = false, prefer = []} = {}) {
   const texts = [], circuits = new Map()
   for (const {strategy, rows} of outputs) for (const row of rows) {
     if (!circuits.has(row.text)) { circuits.set(row.text, new Map()); texts.push(row.text) }
@@ -425,9 +445,25 @@ export function agreedCircuits(outputs, registry, familyOf, minFamilies = 2) {
     circuit.sources.add(strategy)
   }
   const agreed = []
-  for (const text of texts) for (const circuit of [...circuits.get(text).values()].sort((a, b) => a.core < b.core ? -1 : a.core > b.core ? 1 : 0)) {
-    const sources = [...circuit.sources].sort(), kinds = [...new Set(sources.map(familyOf))].sort()
-    if (kinds.length >= minFamilies && !lookup(registry, text, circuit.core)) agreed.push({...circuit, sources, families: kinds})
+  const byCore = (a, b) => a.core < b.core ? -1 : a.core > b.core ? 1 : 0
+  for (const text of texts) {
+    const written = [...circuits.get(text).values()].sort(byCore)
+    if (!relaxed) {
+      for (const circuit of written) {
+        const sources = [...circuit.sources].sort(), kinds = [...new Set(sources.map(familyOf))].sort()
+        if (kinds.length >= minFamilies && !lookup(registry, text, circuit.core)) agreed.push({...circuit, sources, families: kinds})
+      }
+      continue
+    }
+    const groups = new Map()
+    for (const circuit of written) { const key = relaxedCore(circuit.core); groups.set(key, [...(groups.get(key) ?? []), circuit]) }
+    for (const members of groups.values()) {
+      const sources = [...new Set(members.flatMap(circuit => [...circuit.sources]))].sort(), kinds = [...new Set(sources.map(familyOf))].sort()
+      if (kinds.length < minFamilies) continue
+      const rank = circuit => { const at = prefer.findIndex(name => circuit.sources.has(name)); return at < 0 ? prefer.length : at }
+      const chosen = [...members].sort((a, b) => rank(a) - rank(b) || b.sources.size - a.sources.size || byCore(a, b))[0]
+      if (!lookup(registry, text, chosen.core)) agreed.push({...chosen, sources, families: kinds})
+    }
   }
   return agreed
 }
