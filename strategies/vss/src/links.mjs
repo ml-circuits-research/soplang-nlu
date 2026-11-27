@@ -160,8 +160,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     const anchor = main.find(finite) ?? main.find(acts) ?? main[0]
     for (const group of parts) {
       if (group === main) continue
+      // (a part set before a clause, "…; this week, make …", is tied to that clause)
+      const fronted = group[0].fronts === undefined ? null : all.find(other => other.type === 'nlu.clause' && other.slots.some(slot => slot[0] === 'predicate' && slot[2] === group[0].fronts))
       const relation = wire('r', 'nlu.relation')
-      relation.slots.push(['kind', 'open'], ['from', '$' + anchor.id], ['to', '$' + group[0].id])
+      relation.slots.push(['kind', 'open'], ['from', '$' + (fronted ?? anchor).id], ['to', '$' + group[0].id])
     }
   }
 
@@ -230,8 +232,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
 
     // "it is level with the house": after a form of "be", a word never shown to be a verb says how the
     // subject is; "be" is the verb
+    // ("we're redecorating the break room": a word with the ending of the progressive form that acts on a thing right after it
+    // is that form of a verb, also when the text does not know its stem; "be" helps it)
+    const progressive = lexicon.endingsOf?.('progressive') ?? []
+    const acting = unit => {
+      const said = tokens[unit.predicate[0]].word, next = list[list.indexOf(unit) + 1]
+      return progressive.some(ending => said.length >= ending.length + 3 && said.endsWith(ending)) && next?.type === 'entity' && next.first === unit.last + 1 &&
+        (next.determiner?.length > 0 || Boolean(next.pronoun) && next.first === next.last && context.linkOf(tokens[next.first].word) !== 'subject' &&
+         !lexicon.canBe(tokens[next.first].word, 'determiner') && !lexicon.canBe(tokens[next.first].word, 'relative'))
+    }
     if (context.open !== false) for (const unit of list) {
-      if (unit.type !== 'verb' || !unit.auxiliary.length || unit.form) continue
+      if (unit.type !== 'verb' || !unit.auxiliary.length || unit.form || acting(unit)) continue
       const helper = tokens[unit.auxiliary.at(-1)].word, said = tokens[unit.predicate[0]].word
       const seen = lexicon.kindsOf(said)
       if (context.linkOf(helper) === 'predicative' && (seen.verb === 0 || seen.quality >= 3 * seen.verb) && tokens[unit.predicate[0]].shape === 'lower') doubts.push({position: unit.predicate[0], not: 'verb'})
@@ -348,7 +359,13 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         // (nor a word in -s after things that open their own clause, whose place phrase holds the thing before it: ", next a
         // girl in the green cassket fills the gap")
         const opening = /[^s]s$/u.test(clause.predicate) && opensClause(list, i - 1)
-        if (context.kinds !== false && bare && held && kinds.thing >= 3 && !agrees && !opening) doubts.push({position: verb.predicate[0], not: 'verb'})
+        // (nor a bare form right after several things, with which it agrees, when the word that holds them can also open a clause:
+        // "pull them apart until the gaps match"; "until" opens the clause "the gaps match", whose verb is "match")
+        const several = previous?.type === 'entity' && previous.last + 1 === verb.predicate[0] && !previous.pronoun && !/s$/u.test(clause.predicate) &&
+          holder?.type === 'cue' && holder.first === holder.last && lexicon.canBe(tokens[holder.first].word, 'marker') &&
+          (lexicon.number?.(tokens[previous.last].word) === 'plural' || /[^s]s$/u.test(tokens[previous.last].word) && lexicon.pluralThing(tokens[previous.last].word))
+        if (context.open !== false && bare && held && several) doubts.push({position: holder.first, is: 'marker'})
+        else if (context.kinds !== false && bare && held && kinds.thing >= 3 && !agrees && !opening) doubts.push({position: verb.predicate[0], not: 'verb'})
         // a word never seen as a verb where the frame leaves no doubt, and seen as a thing there,
         // is not stated to be the action ("pie radius smaller")
         else if (context.open !== false && bare && !verb.form && kinds.verb === 0 && kinds.thing >= 3 && !clause.subject?.pronoun && !agrees) doubts.push({position: verb.predicate[0], not: 'verb'})
@@ -395,6 +412,9 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
 
     // ---- clause wires
     const made = []
+    // a dash, and the clause that stands on its own before a given position (the one an aside between dashes interrupts)
+    const dashed = unit => unit?.type === 'separator' && /^[—–-]$/u.test(tokens[unit.first].text)
+    const beforeDash = at => made.findLast(other => (other.fragment && !other.gapOf || other.role === 'main') && other.wire && other.start !== undefined && other.start < at)
     const leading = list.slice(0, clauses.length ? clauses[0].start : list.length)
     const strays = []
     const polite = clauses.length ? leading.filter(unit => unit.type === 'filler') : []
@@ -406,6 +426,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
     if (fronted) strays.push(...leading.filter(unit => unit.type === 'separator'))
     else if (leading.some(unit => !['separator', 'absorbed', 'filler'].includes(unit.type)) || leading.length && !clauses.length) {
       const fragment = fragmentClause()
+      fragment.start = 0
       made.push(fragment, ...fill(fragment, leading))
       polite.length = 0
     } else strays.push(...leading.filter(unit => unit.type === 'separator'))
@@ -422,6 +443,21 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const host = made.findLast(other => other.fragment && !other.gapOf || other.role === 'main')
         if (cut >= 0 && host && region.slice(cut).some(unit => unit.type === 'entity')) { returned = region.slice(cut); region = region.slice(0, cut) }
         clause.returnTo = host
+      }
+      // "turn the man to face left — with everything else left where it is — over on our little canvas", "the dog a size bigger
+      // — so the scene reads the way it should — right there in the picture": two dashes set a part of the sentence aside.
+      // A phrase after the closing dash that says where or how (it opens with a linking word or a word that says where) goes on
+      // with the clause before the opening dash, not with the clause set aside. (A thing on its own there is a part of its own:
+      // "… — before anything else moves — no other change")
+      if (context.open !== false && !returned.length) {
+        const opening = list.slice(0, clause.start).findLastIndex(dashed), closing = region.findIndex(dashed)
+        const host = opening >= 0 ? beforeDash(opening) : null
+        if (host && closing >= 0 && ['adverb', 'cue'].includes(region[closing + 1]?.type)) {
+          returned = region.slice(closing + 1)
+          strays.push(region[closing])
+          region = region.slice(0, closing)
+          clause.returnTo = host
+        }
       }
       // "a group called g2": a past form with one bare entity after it is the cue of a relation
       const content = region.filter(unit => unit.type !== 'separator')
@@ -618,8 +654,12 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         const at = list.indexOf(clause.joinedBy)
         const near = made.slice(made.indexOf(before) + 1, k).findLast(other => other.verb && other.wire && list.indexOf(other.verb) < at)
         const between = near ? list.slice(list.indexOf(near.verb) + 1, at) : []
+        // (right after the closing dash of a pair, the clause hangs on the clause before the opening dash: "add a bench —
+        // exactly where the picture needs it — so the scene reads the way it should")
+        const opening = context.open !== false && dashed(list[at - 1]) ? list.slice(0, at - 1).findLastIndex(dashed) : -1
+        const resumed = opening >= 0 && before.start !== undefined && before.start > opening ? beforeDash(opening) : null
         const host = near && between.every(unit => unit.type !== 'separator') &&
-          (near.role !== 'modifier' || near.modifiesHost || between.every(unit => unit.type === 'adverb')) ? near : before
+          (near.role !== 'modifier' || near.modifiesHost || between.every(unit => unit.type === 'adverb')) ? near : resumed ?? before
         const relation = relate(host.wire, clause.joinedBy, clause.wire)
         relation.slots[0][1] = context.kindOf('relation', word(clause.joinedBy)) ?? relation.slots[0][1]
         return
@@ -783,7 +823,17 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           continue
         }
         if (unit.type === 'question' && !clause.question) { clause.question = unit; j--; continue }
-        if (unit.type === 'marker') { clause.marker = unit; j--; break }
+        if (unit.type === 'marker') {
+          clause.marker = unit
+          j--
+          // "— exactly where the picture needs it —": a dash sets off a new part of the sentence. A word that grades, right after
+          // the dash and right before the word that opens a clause, grades that clause; it says nothing of the verb before the
+          // dash (after a comma it may still say how: "count them, slowly if needed")
+          const lead = list[j]
+          if (context.open !== false && lead?.type === 'adverb' && lead.first === lead.last && lead.last + 1 === unit.first && lexicon.grades(word(lead)) &&
+              list[j - 1]?.type === 'separator' && /^[—–-]$/u.test(tokens[list[j - 1].first].text)) { clause.pre.push(lead); j-- }
+          break
+        }
         if (unit.type === 'conjunction') {
           clause.conjunction = unit
           j--
@@ -858,6 +908,23 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
         }
         const joinable = pendingJoin.length && lastEntity && !pendingCue &&
           pendingJoin.every(joiner => context.kindOf('coordination', tokens[joiner.last].word, true))
+        // "I paste it into the newsletter; this week, make the caps smaller": a semicolon closes a part of the sentence. A thing
+        // right after it that a comma closes, right before the verb that opens a new clause (words said to the listener may stand
+        // between), is set before that clause, as a thing that opens a sentence is ("this week, make …"); it is no further item
+        // of what the part before the semicolon acts on
+        let ahead = units.indexOf(unit) + 1
+        const commaAfter = units[ahead]?.type === 'separator' && /^,$/u.test(tokens[units[ahead].first].text)
+        while (['separator', 'filler', 'expression'].includes(units[ahead]?.type)) ahead++
+        if (context.open !== false && joinable && pendingJoin.length === 1 && pendingJoin[0].type === 'separator' && /^;$/u.test(tokens[pendingJoin[0].first].text) &&
+            commaAfter && units[ahead]?.type === 'verb' && !units[ahead].form && !region.includes(units[ahead])) {
+          settle()
+          const mention = fragmentClause()
+          mention.wire.fronts = units[ahead].predicate[0]
+          opened.push(mention, ...fill(mention, region.slice(i)))
+          state.lastEntity = lastEntity
+          state.tail = tail
+          return opened
+        }
         if (pendingCue) {
           settle()
           const relation = relate(null, pendingCue, made, adverbForCue)
@@ -901,6 +968,16 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           const likeness = Math.max(...(level.length ? level : frontier).map(thing => context.alike(tokens, thing, unit)))
           // (also right after what the verb acts on: "reschedule Review, 2026-11-18 at 10:00")
           const aside = commaOnly && verb && objects.length > 0 && !unit.determiner?.length && !unit.pronoun && likeness < UNLIKE
+          // (whether a conjunction closes the series further on: "A, B and C"; the items may carry place phrases and participles,
+          // and the series ends at a new clause or at the end of the sentence)
+          let closed = false
+          for (let j = units.indexOf(unit) + 1; j > 0 && j < units.length && !closed; j++) {
+            const other = units[j]
+            if (other.type === 'conjunction') closed = ['entity', 'complement'].includes(units[j + 1]?.type)
+            else if (['terminator', 'marker', 'aux'].includes(other.type) || other.type === 'verb' && !other.form) break
+          }
+          let back = i - 1 - pendingJoin.length
+          while (region[back]?.type === 'adverb') back--
           // "for Ana, Mihai and me": a series that a joining word closes begins with the thing right before its first comma,
           // also when that thing ends a phrase with a linking word
           let seriesU = false
@@ -916,6 +993,27 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
               context.opener(tokens, frontier.at(-1)) === context.opener(tokens, unit)
           }
           const asideW = false
+          // "a train station in the fog at dawn with three pigeons, a boy, a girl, and a suitcase", "draw a garden party in the sun:
+          // three small red flags along the hedge, a small girl …, and a small brown hedgehog": a series that a conjunction closes
+          // ("A, B and C") lists things of one level, and its first item stands before its first comma. A thing introduced as new
+          // (by a determiner that does not point at a known thing, or by a count) goes on from the thing there; when that thing
+          // only says where another one is ("along the hedge"), from the thing its phrase hangs on. Going back along the phrases
+          // that hang on one another, the series begins at the first thing introduced as new that opens a list itself: the end
+          // of a phrase that names what comes with a thing ("with three pigeons"), or a thing spelled out after a colon; not at
+          // what the clause holds ("a train station"), nor at the end of a phrase that says where ("four houses in a row, a
+          // bakery, …"). Where the way back meets a list already begun, that list goes on as before.
+          const opensNew = thing => !thing.pronoun && !thing.literal && (thing.quantity?.length > 0 || thing.determiner?.length > 0 && !context.tagged(tokens[thing.determiner[0]].word, 'definite'))
+          let seriesS = null
+          if (context.open !== false && commaOnly && !seriesU && closed && opensNew(unit) && lastEntity && region[back] === lastEntity) {
+            const seen = new Set()
+            for (let x = lastEntity; x && !seen.has(x) && frontier.includes(x); x = x.placedBy) {
+              seen.add(x)
+              if (x.group) { seriesS = null; break }
+              if (x.holder?.[0] !== 'to') break
+              // (a phrase that the clause holds hangs on no thing of the series: "a cat with a sleepy face next to it, three stars")
+              if (opensNew(x) && (x.spelledOut || x.via && context.tagged(x.via.cue, 'comitative') && x.via.from !== '$' + target.id)) seriesS = x
+            }
+          }
           // "a boy with a kite, a dog on the grass, and a girl": after things listed by commas alone, the thing that a comma
           // and a conjunction introduce is the last of that same list
           const serial = context.open !== false && !commaOnly && state.listed && pendingJoin.some(joiner => joiner.type === 'separator') &&
@@ -933,18 +1031,10 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           // into the newsletter; this week, make …"). Things introduced alike still form a list ("draw a circle, a square, a
           // triangle"), and so do lists of several items ("Planning: 2026-11-18 10:00 UTC, 30 minutes, ID planning, notes …").
           // (the items of a list may carry place phrases and participles: "a stall, a vendor, an apron on the vendor, and a boy";
-          // the list ends at a new clause or at the end of the sentence)
-          let closed = false
-          for (let j = units.indexOf(unit) + 1; j > 0 && j < units.length && !closed; j++) {
-            const other = units[j]
-            if (other.type === 'conjunction') closed = ['entity', 'complement'].includes(units[j + 1]?.type)
-            else if (['terminator', 'marker', 'aux'].includes(other.type) || other.type === 'verb' && !other.form) break
-          }
+          // the list ends at a new clause or at the end of the sentence: "closed" above)
           let ahead = units.indexOf(unit) + 1
           while (units[ahead]?.type === 'adverb' || units[ahead]?.type === 'cue' && units[ahead + 1]?.type === 'entity') ahead += units[ahead].type === 'cue' ? 2 : 1
           const further = units[ahead]?.type === 'separator' && units[ahead + 1]?.type === 'entity' && !['verb', 'aux'].includes(units[ahead + 2]?.type)
-          let back = i - 1 - pendingJoin.length
-          while (region[back]?.type === 'adverb') back--
           // (nor after a thing that is itself an item of a list, "the third and fourth, the odd pairs only", or a measure or a
           // value, "raise five blocks two rows above, the same as the top row")
           const setOff = context.open !== false && commaOnly && !closed && !further && !numbers && !serial && !seriesU && !aside && lastEntity && region[back] === lastEntity &&
@@ -952,6 +1042,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
           if (numbers) coordinate(lastEntity, unit, pendingJoin)
           else if (serial) coordinate(state.listed, unit, pendingJoin)
           else if (seriesU) coordinate(frontier.at(-1), unit, pendingJoin)
+          else if (seriesS) coordinate(seriesS, unit, pendingJoin)
           else if (setOff) {
             const relation = wire('r', 'nlu.relation')
             relation.slots.push(['kind', 'open'], ['from', '$' + entityWire(lastEntity).id], ['to', '$' + entityWire(unit).id])
@@ -990,6 +1081,7 @@ export function linkUnits(text, tokens, units, context, flips = new Set()) {
             const relation = wire('r', 'nlu.relation')
             relation.slots.push(['kind', 'elaboration'], ['from', '$' + entityWire(objects.at(-1)).id], ['to', '$' + made.id])
             unit.holder = relation.slots[2]
+            unit.spelledOut = true
             objects.push(unit)
             tail = null
             lastEntity = unit

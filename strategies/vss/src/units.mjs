@@ -19,6 +19,19 @@ export function buildUnits(tokens, stations, lexicon) {
   const closedCounts = []
   const n = tokens.length
   const at = i => i < n ? stations[i] : null
+  // a word built with the ending of the progressive form ("moving", "squinting")
+  const progressive = lexicon.endingsOf?.('progressive') ?? []
+  const ingForm = word => progressive.some(ending => word.length >= ending.length + 2 && word.endsWith(ending))
+  // "a small brown dog lying down", "expressed as a percentage": a verb with the ending of the progressive or of the past form
+  // has that form also when the text does not show its stem ("lie" gives "lying"). The part before the ending must hold a vowel
+  // ("bring", "red" are no such forms), and before -ed it must not end in "e" ("need", "speed")
+  const past = lexicon.endingsOf?.('past') ?? []
+  const builtForm = word => {
+    const stem = ending => word.slice(0, -ending.length)
+    if (progressive.some(ending => word.length >= ending.length + 2 && word.endsWith(ending) && /[aeiouy]/u.test(stem(ending)))) return 'progressive'
+    if (past.some(ending => word.length >= ending.length + 3 && word.endsWith(ending) && /[aeiouy]/u.test(stem(ending)) && !stem(ending).endsWith('e'))) return 'past'
+    return null
+  }
   let i = 0
   while (i < n) {
     const station = stations[i]
@@ -613,12 +626,57 @@ export function buildUnits(tokens, stations, lexicon) {
     if (!lexicon.formOf || stations[t] !== 'predicate' && stations[t] !== 'following' || lexicon.formOf(tokens[t].word) !== 'past' || stations[t + 1] !== 'noun') continue
     if (['predicate', 'following'].includes(stations[t - 1]) && !lexicon.canBe(tokens[t - 1].word, 'auxiliary') && !lexicon.formOf(tokens[t - 1].word)) units.doubts.push({position: t, not: 'verb'})
   }
+  // "with colour white", "with label Review and colour teal": the linking word that names what comes with a thing names its
+  // parts and attributes, each by a key and its value. Right after it, a word that names things and a word that says how
+  // things are are such a pair, as "with outline gold" is; the first is the head of the thing, the second its value. So also
+  // after "and" that follows such a pair ("with label Review and …"). (After other linking words the two words may be one
+  // colour: "to light green")
+  const comitative = unit => unit?.type === 'cue' && unit.first === unit.last && lexicon.tagged(tokens[unit.first].word, 'comitative')
+  for (let k = 1; lexicon.kindsOf && k < units.length; k++) {
+    const run = units[k], lead = units[k - 1]
+    if (run.type !== 'complement' || run.degree?.length || run.last !== run.first + 1 || lead.last + 1 !== run.first) continue
+    const pair = lead.type === 'conjunction' && units[k - 2]?.type === 'entity' && comitative(units[k - 3]) && (units[k - 2].name || units[k - 2].literal || tokens[units[k - 2].last].shape === 'number')
+    if (!comitative(lead) && !pair) continue
+    const value = tokens[run.last].word
+    if (!thingWord(run.first) || !(lexicon.saysHow(value) || lexicon.nominal(value) === false) || tokens[run.last].shape !== 'lower') continue
+    units.doubts.push({position: run.first, is: 'head'})
+  }
+  // "it is an inner thought", "add a sudden thought": a determiner opens a thing, and the thing ends with the noun it names.
+  // When the route ended the thing one word early and took the word after it for a quality, and that word is one the text
+  // shows naming things while the word before it was never shown as a thing, the word after is the noun and the word
+  // before describes it (not "make the box red": "box" names things)
+  for (let k = 0; lexicon.number && k + 1 < units.length; k++) {
+    const thing = units[k], tail = units[k + 1], after = units[k + 2]
+    if (thing.type !== 'entity' || !thing.determiner?.length || thing.pronoun || thing.literal || thing.name || thing.head?.[0] !== thing.last || thing.last === thing.determiner.at(-1)) continue
+    if (tail.type !== 'complement' || tail.first !== tail.last || tail.degree?.length || tail.first !== thing.last + 1) continue
+    if (after && !['separator', 'terminator', 'conjunction'].includes(after.type)) continue
+    const before = tokens[thing.last].word, word = tokens[tail.first].word
+    if (tokens[thing.last].shape !== 'lower' || tokens[tail.first].shape !== 'lower' || lexicon.listed(before) || lexicon.listed(word)) continue
+    const neverThing = lexicon.kindsOf(before).thing === 0 && lexicon.nominal(before) !== true && !lexicon.pluralThing(before) && !lexicon.number(before) && !/s$/u.test(before)
+    // (a word the text also shows saying how things are stays a quality: "add a cicrle small")
+    const names = (lexicon.nominal(word) === true || lexicon.kindsOf(word).thing >= 3) && lexicon.kindsOf(word).quality === 0 && !lexicon.saysHow(word) && !lexicon.gradedForm(word)
+    // (the word after joins the thing as its head here: a form of a verb may be confined to the stations of verbs and qualities)
+    if (!neverThing || !names) continue
+    thing.modifier = [...(thing.modifier ?? []), thing.last]
+    thing.head = [tail.first, tail.first]
+    thing.last = tail.first
+    units.splice(k + 1, 1)
+  }
+  // "I keep squinting at the chart", "keep going back": a verb that the raw text shows taking an -ing form of another verb
+  // takes it here too. A word built with that ending, right after such a verb, is a verb itself, what the first one does
+  // ("stop moving it"), whatever the route took it for; it is no thing the verb acts on
+  for (let t = 1; lexicon.takesIng && t < tokens.length; t++) {
+    if (!['predicate', 'following'].includes(stations[t - 1]) || !lexicon.takesIng(tokens[t - 1].word) || tokens[t].shape !== 'lower' || lexicon.listed(tokens[t].word)) continue
+    if (ingForm(tokens[t].word) && !['predicate', 'following'].includes(stations[t])) units.doubts.push({position: t, is: 'verb'})
+  }
   // "turn italic off": a bare verb form does not follow another verb directly, unless that verb makes something do
   // something ("let it go", "help move it"); the second word says what or how
   for (let t = 1; t < tokens.length; t++) {
     if (!lexicon.makesDo || !['predicate', 'following'].includes(stations[t]) || !['predicate', 'following'].includes(stations[t - 1])) continue
     const first = tokens[t - 1].word, second = tokens[t].word
     if (lexicon.formOf(second) || lexicon.sForm(second) || lexicon.canBe(first, 'auxiliary') || lexicon.kindsOf(first).verb < 3) continue
+    // (an -ing form after a verb that takes one: "keep going")
+    if (lexicon.takesIng?.(first) && ingForm(second)) continue
     // after a verb that says what its object becomes, a word the text showed saying how things are is that, not a second verb
     const seen = lexicon.kindsOf(second)
     if (lexicon.takesQuality(first) && seen.quality >= 3 && seen.quality >= seen.verb) units.doubts.push({position: t, not: 'verb'})
@@ -843,6 +901,11 @@ export function buildUnits(tokens, stations, lexicon) {
     // "the ones", "one of those": a determiner before a word that stands for a thing
     if (determiner.length && at(j) === 'pronoun') return {type: 'entity', first: start, last: j, determiner, pronoun: [j, j]}
     let quoted = -1
+    const plainNoun = position => {
+      const word = tokens[position].word, seen = lexicon.kindsOf(word)
+      return tokens[position].shape === 'lower' && !lexicon.listed(word) && !lexicon.saysHow(word) && seen.quality === 0 && lexicon.leans(word) !== 'verb' &&
+        !lexicon.formOf(word) && !lexicon.gradedForm(word) && !lexicon.canBe(word, 'adverb')
+    }
     for (; j < n; j++) {
       const station = stations[j]
       // "the colour bar ten steps": a number after the noun that counts the next noun begins another thing
@@ -870,7 +933,11 @@ export function buildUnits(tokens, stations, lexicon) {
       if (lexicon.leans && quantity.length && unit && j - 1 === quantity.at(-1) + 1 && several(quantity.at(-1)) && (/[^s]s$/u.test(tokens[j - 1].word) || tokens[quantity.at(-1)].shape === 'number') &&
           tokens[j - 1].shape === 'lower' && !lexicon.listed(tokens[j - 1].word) && ['noun', 'modifier'].includes(station) && sayHowMuch(j)) { closedCounts.push(j); break }
       if (station === 'quantity') (core.length ? core : quantity).push(j)
-      else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree')) degree.push(j)
+      // ("too much trouble", "more detail": a word that grades, right before a noun, says how much of the thing there is; a noun
+      // is never graded the way a quality is, so the word belongs to the thing. The noun must be one the text never showed
+      // saying how things are, nor as a form of a verb or a word that says where: "more readable", "too cramped", "a touch
+      // downward" grade a quality the route took for a noun)
+      else if (station === 'degree' && !core.length && (at(j + 1) === 'modifier' || at(j + 1) === 'degree' || lexicon.leans && at(j + 1) === 'noun' && plainNoun(j + 1))) degree.push(j)
       // a number word that the route took for a description still counts the thing ("the first three bars")
       else if (station === 'modifier' && !core.length && !quantity.length && lexicon.leans && (lexicon.canBe(tokens[j].word, 'quantity') || tokens[j].shape === 'number')) quantity.push(j)
       // "the markers small circles": inside one thing a describing word does not follow a plural noun; it begins the next thing
@@ -881,8 +948,10 @@ export function buildUnits(tokens, stations, lexicon) {
       // capital goes on through a lower-case word before a lower-case noun; the nouns of a name stack up to the last one.
       // A word the text showed saying how things are still ends it ("give Ana red flowers"), and so does a verb that hands
       // something to someone right before the name, whose first bare thing is the one who receives ("give Ana birthday flowers").
-      else if (station === 'modifier' && core.length && lexicon.kindsOf && lexicon.listed && !determiner.length && !quantity.length && !modifier.length &&
-               core.every(position => stations[position] === 'name' && tokens[position].shape === 'capital') &&
+      // A determiner before the name opens the whole thing: the name describes the noun that ends it ("the Monthly sales chart",
+      // "the Summer social section", "the UML class diagram").
+      else if (station === 'modifier' && core.length && lexicon.kindsOf && lexicon.listed && !quantity.length && !modifier.length &&
+               core.every(position => stations[position] === 'name' && (tokens[position].shape === 'capital' || determiner.length && tokens[position].shape === 'upper')) &&
                !(start > 0 && ['predicate', 'following'].includes(stations[start - 1]) && lexicon.gives?.(tokens[start - 1].word)) &&
                tokens[j].shape === 'lower' && at(j + 1) === 'noun' && tokens[j + 1].shape === 'lower' && !lexicon.listed(tokens[j].word) && lexicon.nominal(tokens[j].word) !== false &&
                !(lexicon.kindsOf(tokens[j].word).quality >= 3 && lexicon.kindsOf(tokens[j].word).quality >= lexicon.kindsOf(tokens[j].word).thing)) core.push(j)
@@ -983,8 +1052,11 @@ export function buildUnits(tokens, stations, lexicon) {
         const helps = lexicon.canBe(tokens[j].word, 'auxiliary') &&
           (at(k) === 'predicate' || at(k) === 'following' || at(k) === 'complement' && lexicon.formOf(tokens[k].word) === 'past')
         if (helps) { auxiliary.push(j); if (at(k) === 'complement') { stations[k] = 'following' } continue }
+        // (an -ing form right after a verb that takes one is that form, also when the text does not know its stem: "keep
+        // squinting")
+        const taken = j > 0 && ['predicate', 'following'].includes(stations[j - 1]) && lexicon.takesIng?.(tokens[j - 1].word) && ingForm(tokens[j].word)
         return {type: 'verb', first: start, last: j, auxiliary, negation, adverb, predicate: [j, j],
-          form: lexicon.formOf(tokens[j].word), station}
+          form: lexicon.formOf(tokens[j].word) ?? (taken ? 'progressive' : null) ?? (auxiliary.length ? null : builtForm(tokens[j].word)), station}
       } else break
     }
     return {type: 'aux', first: start, last: j - 1, auxiliary, negation, adverb}

@@ -228,6 +228,37 @@ export function learnNumber(legend, messages, kinds, nominal = {}) {
   return {number: kept(counts), sForms: kept(forms)}
 }
 
+/**
+ * Verbs that take an -ing form of another verb as what they do ("keep moving the box", "stop showing it", "start drawing a
+ * tree"), counted on the raw text: a verb that opens its group (at the start, after a mark, after a pronoun that can only be a
+ * subject, a helping verb, a negation, "to", a conjunction or a word said in passing), followed by a word in -ing that is
+ * followed by what a verb acts on (a word the language lists only as a determiner or as a pronoun that is not a subject).
+ * The -ing form acts on something, so it is a verb, and the verb before it takes such forms. Returns {takesIng: {verb: count}}.
+ */
+export function learnIng(legend, messages, kinds) {
+  const station = name => legend.stations.find(entry => entry.name === name)?.index
+  const can = (word, at) => legend.places.get(word)?.stations.has(station(at)) ?? false
+  const tagged = (word, tag) => legend.tags.get(word)?.has(tag) ?? false
+  const object = token => {
+    const place = legend.places.get(token?.word)
+    return Boolean(place?.confined) && [...place.stations].every(at => at === station('determiner') || at === station('pronoun')) && !tagged(token.word, 'subject')
+  }
+  const leads = token => !token || token.shape === 'mark' || tagged(token.word, 'subject') ||
+    ['auxiliary', 'negation', 'infinitive', 'conjunction', 'filler'].some(at => can(token.word, at)) && !can(token.word, 'determiner') && !can(token.word, 'cue')
+  const endings = legend.forms.find(entry => entry.name === 'progressive')?.endings ?? []
+  const counts = {}
+  for (const tokens of messages) for (let t = 0; t + 2 < tokens.length; t++) {
+    const verb = tokens[t], form = tokens[t + 1]
+    if (verb.shape !== 'lower' && verb.shape !== 'initial' || legend.places.get(verb.word)?.confined) continue
+    const [asVerb, asThing] = kinds[verb.word] ?? [0, 0, 0]
+    if (asVerb < 3 || asVerb <= asThing) continue
+    if (form.shape !== 'lower' || !endings.some(ending => form.word.length >= ending.length + 2 && form.word.endsWith(ending)) || legend.places.has(form.word)) continue
+    if (!object(tokens[t + 2]) || !leads(tokens[t - 1])) continue
+    counts[verb.word] = (counts[verb.word] ?? 0) + 1
+  }
+  return {takesIng: Object.fromEntries(Object.entries(counts).filter(([, count]) => count >= 5))}
+}
+
 /** What an entity is counted under: its head word, or its class when it is a name or verbatim content. */
 export function headKey(tokens, unit) {
   return unit.head ? tokens[unit.head[1]].word : unit.name ? '~name' : unit.literal ? '~literal' : null

@@ -9,7 +9,7 @@ import {readMessages} from './src/corpus.mjs'
 import {observe, isFormShape, shapeIndex} from './src/observe.mjs'
 import {buildVocabulary, symbolOf, learnRoutes} from './src/routes.mjs'
 import {openModel} from './src/reader.mjs'
-import {learnHabits, learnNumber} from './src/habits.mjs'
+import {learnHabits, learnNumber, learnIng} from './src/habits.mjs'
 import {learnMeanings, openMeanings} from './src/meaning.mjs'
 import {findVariants} from './src/variants.mjs'
 import {createOccurrences, learnPrototypes} from './src/occurrence.mjs'
@@ -124,6 +124,8 @@ model.habits = habits
 model.habits.kinds = Object.fromEntries(symbols.map((symbol, id) => [symbol, [frames[id * 3], frames[id * 3 + 1], frames[id * 3 + 2]].map(count => Math.round(count))]).filter(([, counts]) => counts[0] + counts[1] + counts[2] >= 3))
 // grammatical number, counted on the raw text: which words name one thing or several, and which words in -s are verbs
 Object.assign(model.habits, learnNumber(legend, messages, model.habits.kinds, model.habits.nominal))
+// the verbs that take an -ing form of another verb ("keep moving it"), counted on the raw text
+Object.assign(model.habits, learnIng(legend, messages, model.habits.kinds))
 console.log(`habits: ${Object.keys(model.habits.nominal).length} words told apart as thing or quality, ` +
   `${Object.keys(model.habits.attach.verb).length} verbs and ${Object.keys(model.habits.attach.noun).length} nouns with cue habits; ` +
   `memory of ${model.memory?.keys.length ?? 0} governing words`)

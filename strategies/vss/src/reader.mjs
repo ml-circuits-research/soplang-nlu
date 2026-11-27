@@ -109,6 +109,10 @@ export function openModel(model, options = {}) {
       const [one, several] = habits.number?.[word] ?? [0, 0]
       return one >= 2 && one >= 3 * several ? 'singular' : several >= 2 && several >= 3 * one ? 'plural' : undefined
     },
+    // the endings of a form rule of the legend ("progressive": -ing)
+    endingsOf: name => legend.forms.find(form => form.name === name)?.endings ?? [],
+    // a verb that the raw text shows taking an -ing form of another verb as what it does ("keep moving it")
+    takesIng: word => (habits.takesIng?.[word] ?? 0) > 0,
     // a word in -s that the raw text shows as the verb said of one thing ("it faces", "the board dials") rather than as the
     // name of several things ("the highlights", "two labels", "the labels are")
     // (seen only after words that name one thing, it must have been seen there often, and never naming things, as with
@@ -267,6 +271,7 @@ export function createVssReader(model, options = {}) {
   const headStations = new Set(legend.stations.filter(station => station.key === 'predicate' || station.unit === 'entity' && ['head', 'name'].includes(station.key)).map(station => station.index))
   const notNameStations = new Set(legend.stations.filter(station => station.name !== 'name').map(station => station.index))
   const notModifierStations = new Set(legend.stations.filter(station => station.name !== 'modifier').map(station => station.index))
+  const notMarkerStations = new Set(legend.stations.filter(station => station.name !== 'marker').map(station => station.index))
   const thingStations = new Set(legend.stations.filter(station => station.unit === 'entity' || station.like !== null && legend.stations[station.like].unit === 'entity').map(station => station.index))
   // What the routes learned of a word across the whole text: a thing nearly everywhere, a verb
   // nearly everywhere, or neither.
@@ -329,7 +334,7 @@ export function createVssReader(model, options = {}) {
     }
     let {stations, confidence} = readRoutes(book, legend, index, tokens, tried, lift, budget)
     // what a doubt keeps a word off, and whether that is news: a word can be doubted more than once, for different reasons
-    const barred = ({not, is}) => is === 'name' ? notNameStations : is === 'modifier' ? notModifierStations : is === 'verb' ? otherStations : is === 'head' ? notHeadStations : is === 'degree' ? notDegreeStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
+    const barred = ({not, is}) => is === 'name' ? notNameStations : is === 'modifier' ? notModifierStations : is === 'marker' ? notMarkerStations : is === 'verb' ? otherStations : is === 'head' ? notHeadStations : is === 'degree' ? notDegreeStations : not === 'expression' ? exclaimStations : not === 'verb' ? verbStations : not === 'head' ? headStations : not === 'quality' ? qualityStations : thingStations
     const fresh = doubt => {
       const have = tried.get(doubt.position), more = barred(doubt)
       if (!have) return true
@@ -362,7 +367,10 @@ export function createVssReader(model, options = {}) {
       if (verbStations.has(station) && listed && seen.verb < 3 && ![...listed.stations].some(place => verbStations.has(place)) &&
           [...listed.stations].some(place => ['cue', 'adverb'].includes(legend.stations[place].name))) return [{position: t, not: 'verb'}]
       // the routes alone say little of a rare word: it must also have been seen as a verb where the structure left no doubt
-      if (thingStations.has(station) && leans === 'verb' && seen.verb >= 1 && seen.thing === 0 && seen.quality === 0) return [{position: t, not: 'thing'}]
+      // (no verb stands right after a word that can only be a determiner and before the noun it opens: "the break room")
+      const opened = t > 0 && t + 1 < tokens.length && names[stations[t + 1]] === 'noun' && legend.places.get(tokens[t - 1].word)?.confined &&
+        [...legend.places.get(tokens[t - 1].word).stations].every(place => legend.stations[place].name === 'determiner')
+      if (thingStations.has(station) && leans === 'verb' && seen.verb >= 1 && seen.thing === 0 && seen.quality === 0 && !opened) return [{position: t, not: 'thing'}]
       return []
     })
     first.doubts.push(...leaning())
