@@ -13,6 +13,7 @@
 //   audit  the silver audit (eval-results/2026-11-27-silver-audit): 1,800 judged spaCy circuits, by suspicion level
 //   fresh  the fresh benchmark (eval-results/2026-11-28-syntax-benchmark-fresh): its 2,225 messages; a circuit judged
 //          there, or equal to the label known before the run (L9)
+//   freshb the second fresh benchmark (eval-results/2026-11-28-syntax-benchmark-fresh-b, seed 2026-11-28-b), read the same way
 //   bench  the two earlier benchmark samples (fixed and random, 2026-11-26/27): their messages
 //   wide   every 60th message of the dataset, in the order of the recorded parses
 //   vibe   the pilot of file-level judging on the hard half (eval-results/2026-11-28-vibe-advanced-pilot/opus): spaCy
@@ -30,10 +31,11 @@ const at = path => join(root, path)
 const {normalForm, readJsonl, readSample, readRegistry, readLabels, readCsv} = await import(pathToFileURL(at('tests/benchmark/syntax/lib.mjs')).href)
 const {unpackParse} = await import(pathToFileURL(at('strategies/rvss/data/run-spacy.mjs')).href)
 
-const AUDIT = 'eval-results/2026-11-27-silver-audit/', FRESH = 'eval-results/2026-11-28-syntax-benchmark-fresh/'
+const AUDIT = 'eval-results/2026-11-27-silver-audit/'
+const FRESH = {fresh: 'eval-results/2026-11-28-syntax-benchmark-fresh/', freshb: 'eval-results/2026-11-28-syntax-benchmark-fresh-b/'}
 const BENCH = ['eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz', 'eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz']
 const VIBE = 'eval-results/2026-11-28-vibe-advanced-pilot/opus/'
-const SETS = ['audit', 'fresh', 'bench', 'wide', 'vibe']
+const SETS = ['audit', 'fresh', 'freshb', 'bench', 'wide', 'vibe']
 const WIDE_STRIDE = 60
 const [command, dirArg, ...rest] = process.argv.slice(2)
 const VALUED = ['--code', '--which']
@@ -45,9 +47,9 @@ const show = sop => (sop ?? '(none)').replaceAll('syntax.', '').replaceAll('\n',
 const ok = grade => ['L8', 'L9', 'L10'].includes(grade)
 
 /** The judged items of a run folder, with their verdicts: [{n, text, core, grade, note}] */
-function judgedItems(folder, packets) {
+function judgedItems(folder) {
   const verdicts = new Map()
-  for (let p = 1; p <= packets; p++) for (const v of readJsonl(at(folder + `judging/verdicts-${p}.jsonl`))) verdicts.set(v.n, v)
+  for (const file of readdirSync(at(folder + 'judging')).filter(name => /^verdicts-\d+\.jsonl$/u.test(name))) for (const v of readJsonl(at(folder + 'judging/' + file))) verdicts.set(v.n, v)
   return readJsonl(at(folder + 'key/items.jsonl')).map(item => ({...item, grade: verdicts.get(item.n)?.grade, note: verdicts.get(item.n)?.note ?? ''}))
 }
 
@@ -57,16 +59,18 @@ if (command === 'cache') {
   const sets = Object.fromEntries(SETS.map(set => [set, []]))
   const known = new Map()   // text -> {core -> {grade, note, from}}
   const know = (text, c, grade, note, from) => { if (!c) return; const k = known.get(text) ?? known.set(text, {}).get(text); if (!k[c] || from === 'set') k[c] = {grade, note, from} }
-  for (const item of judgedItems(AUDIT, 12)) {
+  for (const item of judgedItems(AUDIT)) {
     sets.audit.push({key: 'audit:' + item.n, n: item.n, text: item.text, bucket: item.bucket, core: item.core})
     know(item.text, item.core, item.grade, item.note, 'set')
   }
-  const freshItems = judgedItems(FRESH, 15).filter(item => item.sources.includes('spacy'))
-  const freshN = new Map(freshItems.map(item => [item.text, item.n]))
-  for (const item of freshItems) know(item.text, item.core, item.grade, item.note, 'set')
-  for (const line of readJsonl(at(FRESH + 'key/labels-before.jsonl'))) know(line.text, line.core ?? core(line.text, line.label), 'L9', 'label before the run', 'set')
-  let extra = 100000
-  for (const row of readJsonl(at(FRESH + 'spacy.jsonl'))) sets.fresh.push({key: 'fresh:' + row.id, n: freshN.get(row.text) ?? extra++, text: row.text, id: row.id, core: core(row.text, row.sop)})
+  for (const [set, folder] of Object.entries(FRESH)) {
+    const freshItems = judgedItems(folder).filter(item => item.sources.includes('spacy'))
+    const freshN = new Map(freshItems.map(item => [item.text, item.n]))
+    for (const item of freshItems) know(item.text, item.core, item.grade, item.note, 'set')
+    for (const line of readJsonl(at(folder + 'key/labels-before.jsonl'))) know(line.text, line.core ?? core(line.text, line.label), 'L9', 'label before the run', 'set')
+    let extra = 100000
+    for (const row of readJsonl(at(folder + 'spacy.jsonl'))) sets[set].push({key: set + ':' + row.id, n: freshN.get(row.text) ?? extra++, text: row.text, id: row.id, core: core(row.text, row.sop)})
+  }
   let v = 0
   for (const name of readdirSync(at(VIBE)).filter(file => file.endsWith('.csv')).sort()) {
     const [header, ...rows] = readCsv(readFileSync(at(VIBE + name), 'utf8'))

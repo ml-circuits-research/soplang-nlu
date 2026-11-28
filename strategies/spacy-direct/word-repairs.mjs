@@ -86,6 +86,10 @@ const names = word => {
   const [, , , , , determined, verbal] = USES[word] ?? [0, 0, 0, 0, 0, 0, 0]
   return determined >= LEAST_USES && determined >= NOUN_RATIO * verbal
 }
+// A word can be a verb when the raw text writes it after "to", a subject pronoun or a modal at least LEAST_USES times and
+// does not show it to be a noun: "book" (324 after them, 67 after a determiner), "filter" (13 to 19), "finish"; not "group"
+// (31 to 726) or "line" (76 to 3,718).
+const canBeVerb = word => (USES[word]?.[6] ?? 0) >= LEAST_USES && !names(word)
 // Commands rarely follow "to" or a pronoun, so a command verb may pass that test ("colour": 1,694 to 30). A
 // word opens no command when, besides, a determiner or an object pronoun follows it in fewer than one in
 // twenty of the sentences it opens (NOUN_OPENER_SHARE): "node" (0 of 20), "rectangle" (0 of 10), "legend"
@@ -318,7 +322,19 @@ export function repairWords(units) {
     const counts = next.pos === 'NUM' && /^\p{Ll}+$/u.test(next.value) && after?.word && after.pos === 'NOUN' && !capitalised(after)
     const closes = ['DT', 'PDT', 'PRP$'].includes(next.tag) || next.pos === 'PRON' && !SUBJECT.has(next.dep) || counts ||
       capitalised(next) && next.pos !== 'VERB' && !/^\p{Lu}/u.test(first.value) && !/[:;]/u.test(markBefore(first)?.value ?? '')
-    if (!baseVerb && !(nounLike && closes) && !learned || opensNouns(first.lower)) continue
+    // A command needs its verb: the first word of a sentence with no other verb, that the raw text writes as a verb (after
+    // "to", a subject pronoun or a modal) at least LEAST_USES times and is not shown to be a noun (names), is that verb
+    // before the words of its object ("book design review", "on Thursday, book budget review for 30 minutes", "filter
+    // vintage", "Finish box, further down"; settled case of "book design review")
+    // (at the start of the message or after phrases set off by a comma, before a small-lettered noun or adjective that the
+    // raw text does not write as one nominal with it after a determiner)
+    // (a message with no other verb; not a label before its value, after a colon or before a number: "the missing piece: bin
+    // count six", "bin width one")
+    const verbLike = nounLike && first.pos !== 'ADJ' && canBeVerb(first.lower) && (opensSentence(first) || markBefore(first)?.value === ',') &&
+      next?.word && !capitalised(next) && ['NOUN', 'ADJ'].includes(next.pos) && !NOMINAL_PAIRS.has(first.lower + ' ' + next.lower) &&
+      units[next.index + 1]?.pos !== 'NUM' && !units.slice(0, first.index).some(other => other.value === ':') &&
+      !units.some(other => other !== first && other.word && verbal(other) && other.dep !== 'amod')
+    if (!baseVerb && !(nounLike && closes) && !learned && !verbLike || opensNouns(first.lower)) continue
     // the word the clause hangs from in the parse: the verb takes its place, and it becomes the object
     const inside = new Set(stretch)
     let top = first
@@ -1890,8 +1906,11 @@ export function repairWords(units) {
   //     name is tied to it (rule 3), and each word of the run is an adjective said of it, which the writer holds as a
   //     modifier of the clause that takes the nominal (rule 55). After a preposition the run is left alone ("set the
   //     colour of the box red": the colour is red, not the box); a plural describes nothing ("the title Q2 sales").
+  //     Numbers in figures after the run are a value of their own, set by the verb ("set one node Hub huge 400", "can you
+  //     change a node Core gray 260?"): a nominal the verb takes, as the labels write it. A word the raw text never
+  //     writes after a determiner (a misspelt noun the tagger read as an adjective: "add a staar tiny") may be the noun.
   for (const noun of units) {
-    if (!noun.word || noun.quoted || !['NOUN', 'X'].includes(noun.pos) || capitalised(noun) || describes(noun.lower) || sayable(noun.lower)) continue
+    if (!noun.word || noun.quoted || !(['NOUN', 'X'].includes(noun.pos) || noun.pos === 'ADJ' && !USES[noun.lower]) || capitalised(noun) || describes(noun.lower) || sayable(noun.lower)) continue
     const determiner = units[noun.index - 1]
     if (!determiner?.word || !['DT', 'CD'].includes(determiner.tag) || !NOMINAL_INSIDE.has(determiner.dep)) continue
     let at = noun.index + 1
@@ -1899,12 +1918,14 @@ export function repairWords(units) {
     while (units[at]?.word && !units[at].quoted && (capitalised(units[at]) && !verbal(units[at]) || units[at].pos === 'NUM' && /^\d/u.test(units[at].value))) name.push(units[at++])
     while (units[at]?.word && !units[at].quoted && !capitalised(units[at]) && ['ADJ', 'NOUN', 'PROPN', 'X'].includes(units[at].pos) &&
       !/(?<!s)s$/u.test(units[at].lower) && (describes(units[at].lower) || sayable(units[at].lower))) run.push(units[at++])
+    const numbers = []
+    while (run.length && units[at]?.word && units[at].pos === 'NUM' && /^\d+$/u.test(units[at].value)) { numbers.push(units[at++]); if (units[at]?.value === ',' && units[at + 1]?.pos === 'NUM') at++ }
     if (!run.length || units[at]?.word) continue
-    const span = [determiner, noun, ...name, ...run]
+    const span = [determiner, noun, ...name, ...run, ...numbers]
     const tops = span.filter(unit => unit.head === unit.index || !span.includes(units[unit.head]))
     const outer = tops.find(unit => unit.head !== unit.index && units[unit.head].index < determiner.index) ?? tops.find(unit => unit.head !== unit.index)
     if (!outer || GOVERNED.has(outer.dep) || SUBJECT.has(outer.dep) || !verbal(units[outer.head])) continue
-    if (tops.length === 1 && tops[0] === noun && run.every(word => word.head === noun.index && word.dep === 'amod') && name.every(word => within(word, noun))) continue
+    if (tops.length === 1 && tops[0] === noun && !numbers.length && run.every(word => word.head === noun.index && word.dep === 'amod') && name.every(word => within(word, noun))) continue
     // the words outside that hang on a word of the run or of the name hang on the noun
     for (const unit of units) if (unit.word && !span.includes(unit) && span.includes(units[unit.head]) && unit.head !== noun.index) unit.head = noun.index
     noun.head = outer.head
@@ -1915,6 +1936,12 @@ export function repairWords(units) {
       for (const word of name) { word.head = word === last ? noun.index : last.index; word.dep = word === last ? 'appos' : 'compound' }
     }
     for (const word of run) { word.head = noun.index; word.dep = 'amod'; word.pos = 'ADJ'; word.tag = 'JJ' }
+    if (noun.pos === 'ADJ') { noun.pos = 'NOUN'; noun.tag = 'NN' }
+    if (numbers.length) {
+      const last = numbers[numbers.length - 1]
+      for (const number of numbers) { number.head = number === last ? noun.head : last.index; number.dep = number === last ? 'dobj' : 'nummod' }
+      for (const unit of units) if (unit.word && !span.includes(unit) && numbers.includes(units[unit.head])) unit.head = noun.index
+    }
     changed++
   }
 
@@ -1988,6 +2015,59 @@ export function repairWords(units) {
     if (units.slice(about.index + 1, noun.index).some(word => !word.word || !within(word, noun))) continue
     about.head = noun.index
     about.dep = 'mark'
+    changed++
+  }
+
+  // 61. Two bare nouns joined by "to" at the end of a clause ("top to bottom", "end to end", "corner to corner") say how the
+  //     verb goes across the thing, from one side to the other: the first of them heads a measure of its own (as "two
+  //     inches from the edge"), and no noun before it is a word of that measure. A noun the parser made a word of it
+  //     ("reverse Park top to bottom", "mirror the trunk on the tree top to bottom") heads the nominal the verb acts on,
+  //     and a name so freed after a common noun object of the same verb names that noun ("flip the group Park top to bottom").
+  for (const first of units) {
+    const to = units[first.index + 1], last = units[first.index + 2], after = units[first.index + 3]
+    if (!first.word || first.quoted || first.pos !== 'NOUN' || capitalised(first) || /(?<!s)s$/u.test(first.lower) || !to?.word || to.lower !== 'to' || to.head !== first.index || to.dep !== 'prep') continue
+    if (!last?.word || last.pos !== 'NOUN' || capitalised(last) || last.head !== to.index || last.dep !== 'pobj' || under(last).length || after?.word) continue
+    const before = under(first).filter(part => part.index < first.index)
+    const noun = before.filter(part => ['compound', 'nmod'].includes(part.dep) && ['NOUN', 'PROPN'].includes(part.pos)).sort((a, b) => b.index - a.index)[0]
+    if (!noun || lastOf(noun) !== first.index - 1 || before.some(part => part.dep === 'det' && part.index > noun.index)) continue
+    // the verb of the clause
+    let verb = first.head === first.index ? null : units[first.head]
+    for (let steps = 0; verb && !verbal(verb) && verb.head !== verb.index && steps < units.length; steps++) verb = units[verb.head]
+    if (!verb || !verbal(verb) || verb.index > noun.index) continue
+    for (const part of before) if (part !== noun) part.head = noun.index
+    noun.head = first.head
+    noun.dep = first.dep === 'npadvmod' ? 'dobj' : first.dep
+    first.head = verb.index
+    first.dep = 'npadvmod'
+    const object = units[firstOf(noun) - 1]
+    if (capitalised(noun) && object?.word && object.pos === 'NOUN' && !capitalised(object) && object.head === verb.index && object.dep === 'dobj') { noun.head = object.index; noun.dep = 'appos' }
+    changed++
+  }
+
+  // 62. A number in figures counts no other number: in a run of three or more numbers in figures set side by side with
+  //     commas or spaces alone between them ("bar chart, 120 80 40", "set the values of Series 1 to 30, 32, 35"), each is
+  //     a value of its own, an item of a list. One the parser hung on the last number of the run is no word of it: the
+  //     first number takes the place of the last, and each later number is a conjunct of the first. (Two numbers are a
+  //     pair, a position or a size, "a star 260, 240", one value as the labels write it; a number before a noun counts
+  //     that noun, "38 pixels"; a linking word between two numbers makes one measure, "240 by 160".)
+  const figures = unit => unit?.word && unit.pos === 'NUM' && /^\d+(?:\.\d+)?%?$/u.test(unit.value)
+  for (const last of units) {
+    if (!figures(last) || last.head === last.index && !under(last).length) continue
+    const run = [last]
+    for (let at = last.index - 1; at >= 0; at--) {
+      const unit = units[at]
+      if (!unit.word && unit.value === ',') continue
+      if (figures(unit) && unit.head === last.index && ['nummod', 'compound', 'quantmod'].includes(unit.dep) && !under(unit).length) { run.unshift(unit); continue }
+      break
+    }
+    if (run.length < 3 || units[run[0].index - 1]?.word && figures(units[run[0].index - 1])) continue
+    // the run ends its nominal: nothing after the last number hangs on it but a phrase with a marker or a later item
+    if (under(last).some(part => !run.includes(part) && part.index < last.index)) continue
+    const [first, ...later] = run
+    first.head = last.head === last.index ? first.index : last.head
+    first.dep = last.dep
+    for (const part of under(last)) if (!run.includes(part)) part.head = first.index
+    for (const item of later) { item.head = first.index; item.dep = 'conj' }
     changed++
   }
 

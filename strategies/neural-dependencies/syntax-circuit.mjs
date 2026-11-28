@@ -131,6 +131,9 @@ export const TWO_WORD_PREPOSITIONS = new Set(['according to', 'ahead of', 'along
 const INTERROGATIVE = new Set(['WDT', 'WP', 'WP$', 'WRB'])
 // the linking adverbs that put the next item of a sequence after the one before ("…, then one kite")
 const SEQUENCE = new Set(['then', 'next'])
+// the conjuncts of listing and replacing, adverbs that link a part to the one before (Quirk et al. 1985, §8.137-8.145)
+// ("also" is left out: the labels hold it in the nominal it opens, "and also Order value by quantity: …")
+const CONJUNCTS = new Set([...SEQUENCE, 'finally', 'again', 'instead'])
 // the ordinal numerals, words of order
 const ORDINAL = new Set(['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'])
 const TERMINAL = new Set(['.', '!', '?'])
@@ -274,7 +277,11 @@ export function wiresOf(units) {
   const independent = unit => verbal(unit) && (unit.head === unit.index || ['conj', 'parataxis', 'dep'].includes(unit.dep)) && heads(unit)
   /** Does a question mark close this clause? It closes the last independent clause before it. */
   function questionMarked(unit) {
-    if (!independent(unit)) return false
+    if (!independent(unit) || EMBEDDED.has(standing(unit))) return false
+    // a command that takes a clause opened by a question word asks nothing by the mark that closes that clause: "tell me
+    // how many boxes are between Load and Archive?" (settled case 96)
+    if (unit.tag === 'VB' && !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux' || part.dep === 'auxpass') &&
+        under(unit).some(part => part.index > unit.index && ['ccomp', 'xcomp'].includes(part.dep) && opensWithQuestion(part))) return false
     // a mark between a capitalised word and a small letter that goes on with the sentence ends no
     // sentence: it belongs to a name ("connect Valid? to it")
     const inName = mark => /^\p{Lu}/u.test(units[mark.index - 1]?.value ?? '') && units[mark.index + 1]?.word && /^\p{Ll}/u.test(units[mark.index + 1].value) &&
@@ -285,11 +292,27 @@ export function wiresOf(units) {
     // ("I'd like the title start with a capital letter plus how about x axis on top?"): the mark is its own
     return !units.slice(unit.index + 1, mark.index).some(other => other.word && (independent(other) && !bare(other) || asksByItself(other)))
   }
+  /** The first clause of the coordination a clause stands in. */
+  const headOfGroup = unit => { let at = unit; for (let steps = 0; at.dep === 'conj' && steps++ < units.length;) at = units[at.head]; return at }
+  /** Does a question word open this clause: is the first of its words, but for joining words, a question word or a word of its nominal? */
+  function opensWithQuestion(unit) {
+    const first = units.slice(firstOf(unit), unit.index + 1).find(other => other.word && other.dep !== 'cc')
+    return Boolean(first) && INTERROGATIVE.has(first.tag)
+  }
   /** A verbless conjunct with a question word of its own before its main word: "…, plus how about x axis on top?" */
   const asksByItself = unit => unit.dep === 'conj' && !verbal(unit) && under(unit).some(part => part.index < unit.index && INTERROGATIVE.has(part.tag))
   /** The index of the first and of the last word that hang on this unit, directly or not. */
   const firstOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstOf(part, depth + 1)))
   const lastOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => lastOf(part, depth + 1)))
+  /** Does a unit hang on another, directly or not? */
+  const withinUnit = (unit, top) => {
+    for (let at = unit, steps = 0; steps <= units.length; steps++) {
+      if (at === top) return true
+      if (at.head === at.index) return false
+      at = units[at.head]
+    }
+    return false
+  }
   /** Is there a question word among the words of this clause that stand before its verb? */
   function questionWordBefore(unit) {
     const search = part => INTERROGATIVE.has(part.tag) || !heads(part) && under(part).some(search)
@@ -335,7 +358,17 @@ export function wiresOf(units) {
     // a clause opened by a question word that is the subject of another clause, or what a form of
     // "be" equates its subject with, is a relative clause without a noun ("what I want is…"): no question
     const fused = unit.dep === 'csubj' || unit.dep === 'ccomp' && units[unit.head].pos === 'AUX' && questionWordBefore(unit)
-    if (!['relcl', 'advcl', 'acl'].includes(standing(unit)) && !opener(unit) && !fused) {
+    // A clause opened by a question word inside another clause states ("tell me how many boxes are between Load and
+    // Archive?", "tell me which box moved …, and which box moved …?"): it is declarative (settled case 96), also with no
+    // subject before its verb but the nominal the question word opens. (With a tensed verb form before its subject, "tell
+    // me what's the point of a venn diagram", it is written as the labels write it, a question.)
+    const inverted = subject && lead.index < subject.index && leading !== 'VB'
+    if (EMBEDDED.has(standing(unit)) && !['relcl', 'advcl', 'acl'].includes(standing(unit)) && !fused && !inverted && opensWithQuestion(unit) &&
+        verbal(units[headOfGroup(unit).head]) && !BOUNDARY.has(units[firstOf(headOfGroup(unit)) - 1]?.value)) return 'declarative'
+    // One that opens a part after a colon asks, though the parser hung it on the noun before the colon as a clause that
+    // describes it ("quick question: what is a block diagram good for")
+    const asking = ['relcl', 'acl'].includes(unit.dep) && units[firstOf(unit) - 1]?.value === ':' && opensWithQuestion(unit)
+    if ((!['relcl', 'advcl', 'acl'].includes(standing(unit)) || asking) && !opener(unit) && !fused) {
       // inversion: a tensed or modal verb form before the subject. A base form before it is no question ("let us go").
       if (subject && lead.index < subject.index && leading !== 'VB') {
         // what opens the clause: joining and discourse words, and a clause set beside it ("drop in a tree, would you")
@@ -657,6 +690,9 @@ export function wiresOf(units) {
     if (dep === 'mark' || infinitiveTo(part)) return
     if (wire.marker && part.index < wire.marker.index && dep === 'advmod') return describe(home, part)
     // a nominal the parser made the subject of this one: both stand in the clause
+    // (in a clause whose only verb form is an auxiliary before them, "could you a random scene with three sheep", it is
+    // the subject of that clause, as in "could you draw a random scene")
+    if (SUBJECT.has(dep) && home.type === 'clause' && home.unit === head && home.verb && home.verb !== head && home.verb.index < part.index && before) return subjectOf(home, part)
     if (SUBJECT.has(dep)) return complement(home, nominal(part, home, 'complement'))
     // an adverb that opens the nominal and is set off from it by punctuation modifies the clause
     // ("instead, a yellow column"); "then" after a punctuation mark joins the nominal to what stands before ("…, then a small cat")
@@ -669,10 +705,24 @@ export function wiresOf(units) {
       const opening = head.head === head.index && !units.slice(0, part.index).some(other => other.word) && next?.word && next.head === head.index && next.dep === 'det'
       if (mark(1) || opening) return describe(home, part, true)
     }
+    // A conjunct of listing or replacing ("then", "next", "finally", "again", "instead"; "first" before a determiner) that
+    // opens the words of a nominal says in what order or in whose place the part comes, not what the thing is: a modifier
+    // of the clause ("and then two light yellow blocks on top", "and finally a letter", "First the trim, then the number")
+    if (before && dep === 'advmod' && !under(part).length && (CONJUNCTS.has(part.lower) || part.lower === 'first' && units[part.index + 1]?.tag === 'DT') &&
+        units.slice(part.index + 1, head.index).every(other => other.word && other.dep !== 'advmod' && withinUnit(other, head))) return describe(home, part, true)
     // "else" after the pronoun or question word it belongs to is a word of that nominal ("everything else")
+    // A word that opens a message and that a comma sets off from the words of the nominal after it is a remark on the
+    // whole part, not a word of the thing: "nice, a busier one", "nice, one more in the same style" (one before another
+    // describing word is an item of a list of them: "big, red boxes")
+    if (before && ['amod', 'advmod'].includes(dep) && !under(part).length && part.index === 0 && units[1] && !units[1].word && units[1].value === ',' &&
+        units[2]?.word && units[2].pos !== 'ADJ' && firstOf(head) === part.index) return describe(home, part, true)
     if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case' || part.lower === 'else')) return inside(wire, part)
     // before the head, hung on it by no relation of a nominal ("no shed, no car — a barn"): a nominal of its own in the clause
     if (before) return nominalHere(part) ? complement(home, nominal(part, home, 'complement')) : inside(wire, part)
+    // A nominal of time or manner with a determiner of its own that the parser hung on a noun as an adverbial ("make a
+    // picture from our conversation this time", "a random scene with three sheep this time") says when or how of the
+    // clause, not what the thing is: a nominal of the clause
+    if (dep === 'npadvmod' && !before && under(part).some(inner => inner.dep === 'det' && inner.index < part.index) && home.type === 'clause') return complement(home, nominal(part, home, 'complement'))
     // after the head: a number or a name is a nominal of its own ("x 120"), tied with no marker
     if (nominalHere(part)) return void relation(wire, nominal(part, home, 'beside'), [], home)
     if (opensMarker(part)) return void prepositional(part, wire, home)
