@@ -230,8 +230,24 @@ export function repairClauses(units) {
     if (!unit.word || unit.dep !== 'nsubj' || unit.head === unit.index) continue
     const verb = units[unit.head]
     const base = verb.tag === 'VB' || ['VBD', 'VBN'].includes(verb.tag) && verb.lower === verb.lemma
-    if (!verbal(verb) || verb.index < unit.index || !base || auxiliaries(verb).length || introduced(verb)) continue
-    if (!between(units[last(unit)], verb).some(mark => !mark.word && mark.value === ',')) continue
+    // (also a present form equal to the base form, when nothing but the comma and adverbs stand between: "a little blue bird
+    // perched up in the top right, then tint the highlights …", "lifelines only, show activation bars")
+    const gap = between(units[last(unit)], verb)
+    // (not a subject with a renaming set off by commas, whose second comma closes the renaming: "the first and final boxes,
+    // the ones at the edges, swap")
+    const present = verb.tag === 'VBP' && verb.lower === verb.lemma && gap.some(mark => !mark.word && mark.value === ',') &&
+      !units.slice(first(unit), last(unit)).some(mark => !mark.word && mark.value === ',') &&
+      gap.every(other => !other.word && other.value === ',' || other.word && other.pos === 'ADV' && other.head === verb.index && !under(other).length)
+    // (nor is a nominal set off by a comma the subject of a verb that has a subject of its own after the comma: "a small grey
+    // cat sitting in the bottom left corner, then rework the room … — the furniture itself keeps its shape and size")
+    const nearer = under(verb).find(part => SUBJECT.has(part.dep) && part !== unit && part.index > unit.index && part.index < verb.index)
+    if (verbal(verb) && nearer && units.slice(last(unit) + 1, first(nearer)).some(mark => !mark.word && mark.value === ',')) {
+      unit.dep = 'dep'
+      changed++
+      continue
+    }
+    if (!verbal(verb) || verb.index < unit.index || !base && !present || auxiliaries(verb).length || introduced(verb)) continue
+    if (!gap.some(mark => !mark.word && mark.value === ',')) continue
     unit.dep = 'dep'
     changed++
   }
@@ -650,6 +666,108 @@ export function repairClauses(units) {
     verb.dep = 'conj'
     so.dep = 'cc'
     changed++
+  }
+
+  // 24. A clause that says what another is for, set before it, is set off from it by a comma (rule 17), and a command
+  //     takes no clause above it. An infinitive that opens its sentence (the message, or a part after a semicolon, colon,
+  //     dash or full stop) and ends at a comma right before a command ("…; to settle it, set the pie radius small again,
+  //     and then try …", "…; to stop the moaning, make the markers diamonds") is the clause the command is done for: the
+  //     command takes the place of the infinitive (or of the later verb the parser hung the infinitive on), the
+  //     infinitive hangs on it marked by its "to", and the verbs the parser joined to the infinitive after the comma are
+  //     joined to the command.
+  for (const infinitive of units) {
+    if (!verbal(infinitive) || infinitive.tag !== 'VB' || subjectOf(infinitive) || auxiliaries(infinitive).length) continue
+    const to = under(infinitive).find(part => part.lower === 'to' && part.dep === 'aux' && part.index === firstWord(infinitive) && part.index === infinitive.index - 1)
+    if (!to) continue
+    const before = units.slice(0, to.index).reverse().find(unit => unit.word || STRONG.test(unit.value) || unit.value === ',')
+    if (before && (before.word || !STRONG.test(before.value))) continue
+    // the comma that ends it: the first mark after the infinitive, with only the words of its own phrase before it
+    const comma = units.find(unit => unit.index > infinitive.index && !unit.word)
+    if (!comma || comma.value !== ',' || units.slice(infinitive.index + 1, comma.index).some(unit => !within(unit, infinitive))) continue
+    const command = units[comma.index + 1]
+    if (!command || !isCommand(command) || command.tag !== 'VB' || under(command).some(part => part.index < command.index)) continue
+    if (command.head === infinitive.index && ['conj', 'dep', 'parataxis', 'ccomp', 'xcomp', 'advcl'].includes(command.dep)) {
+      // the place of the infinitive, or of the later verb it was hung on
+      const place = infinitive.head > command.index && verbal(units[infinitive.head]) ? units[infinitive.head] : infinitive
+      // (across a mark that ends a sentence it is set beside the clause before, at the top of that clause)
+      let governor = units[place.head]
+      const across = place.head !== place.index && strong(governor, command)
+      for (let steps = 0; across && governor.head !== governor.index && steps < units.length; steps++) governor = units[governor.head]
+      command.head = place.head === place.index ? command.index : governor.index
+      command.dep = place.head === place.index ? 'ROOT' : across ? 'parataxis' : place.dep
+      if (place !== infinitive) {
+        place.head = command.index
+        place.dep = 'conj'
+      }
+      for (const part of under(infinitive)) if (part.index > comma.index && part !== command) part.head = command.index
+      comma.head = command.index
+      infinitive.head = command.index
+      infinitive.dep = 'advcl'
+      changed++
+    }
+  }
+
+  // 25. A verb has one subject. A verb with two subjects before it, where an auxiliary the parser hung on the verb stands
+  //     before the later subject ("Could you which events are on Work 4?", "I'd rather it stopped at bars under 20"),
+  //     holds two clauses: the earlier subject goes with that auxiliary, which is the verb of a clause of its own, and the
+  //     clause of the later subject is what that clause takes (its complement). Only auxiliaries and adverbs stand
+  //     between the two subjects.
+  for (const verb of units) {
+    // (a participle with its auxiliary is one verb form: "what colour is the note named Payment?")
+    if (!verbal(verb) || ['VBN', 'VBG'].includes(verb.tag)) continue
+    const subjects = under(verb).filter(part => SUBJECT.has(part.dep) && part.index < verb.index)
+    if (subjects.length !== 2) continue
+    const [earlier, later] = subjects
+    // (also a modal the parser hung by no named relation: "I'd rather it showed the cases …")
+    const helping = under(verb).filter(part => (part.dep === 'aux' || part.dep === 'auxpass' || part.dep === 'dep' && part.tag === 'MD') && part.lower !== 'to' && part.index < first(later))
+    const auxiliary = helping.at(-1)
+    if (!auxiliary || units.slice(last(earlier) + 1, first(later)).some(unit => unit.word && !helping.includes(unit) && !(unit.head === verb.index && unit.dep === 'advmod'))) continue
+    if (units.slice(first(later), verb.index).some(unit => unit.word && unit.head === verb.index && (unit.dep === 'aux' || unit.dep === 'auxpass') && unit.lower !== 'to' && unit.index < last(later))) continue
+    auxiliary.head = verb.head === verb.index ? auxiliary.index : verb.head
+    auxiliary.dep = verb.head === verb.index ? 'ROOT' : verb.dep
+    for (const part of under(verb)) if (part.index < first(later) && part !== auxiliary) part.head = auxiliary.index
+    verb.head = auxiliary.index
+    verb.dep = 'ccomp'
+    changed++
+  }
+
+  // 26. An auxiliary helps the verb of its own clause, and a semicolon, colon or dash ends a clause (rule 11). An
+  //     auxiliary that the parser hung on a verb after such a mark ("do the tick numbers smaller on the orders chart; also
+  //     can you make the bar outlines black?", "make a bar chart of …: the count of products … — go on") is the verb of a
+  //     clause of its own before the mark: it takes the place of the later verb, with the words before the mark that the
+  //     parser hung on that verb, and the later verb is set beside it.
+  for (const helper of units) {
+    if (!helper.word || helper.quoted || !['aux', 'auxpass'].includes(helper.dep) || helper.lower === 'to') continue
+    const verb = units[helper.head]
+    if (!verbal(verb) || verb.index < helper.index) continue
+    // (a question mark may belong to a name: "what values does Refund approved? show?")
+    const mark = units.slice(helper.index + 1, verb.index).find(unit => !unit.word && /^[;:—–]+$/u.test(unit.value))
+    if (!mark) continue
+    helper.head = verb.head === verb.index ? helper.index : verb.head
+    helper.dep = verb.head === verb.index ? 'ROOT' : verb.dep
+    // a base form commands ("do the arrows medium"); a modal keeps its form ("would you")
+    if (helper.tag !== 'MD') { helper.pos = 'VERB'; helper.tag = 'VB' }
+    for (const part of under(verb)) if (part.index < mark.index && part !== helper) part.head = helper.index
+    mark.head = helper.index
+    verb.head = helper.index
+    verb.dep = 'parataxis'
+    changed++
+  }
+
+  // 27. A comma ends the words of a part. A nominal that heads a part of its own before a comma, which the parser hung on a
+  //     verb after the comma by no named relation ("a small cat way off on the left, then could you place a bird …",
+  //     "instead, a small dog down at the bottom, next slide the Pepsi block …"), keeps the words that say where it is
+  //     between it and the comma: an adverb or a phrase of place there that the parser hung on the later verb hangs on
+  //     the nominal.
+  for (const nominal of units) {
+    if (!nominal.word || nominal.quoted || !['NOUN', 'PROPN'].includes(nominal.pos) || nominal.dep !== 'dep') continue
+    const verb = units[nominal.head]
+    if (!verbal(verb) || verb.index < nominal.index) continue
+    const comma = units.find(unit => unit.index > nominal.index && !unit.word)
+    if (!comma || comma.value !== ',' || comma.index > verb.index || units.slice(nominal.index + 1, comma.index).some(unit => unit.word && unit.head !== verb.index && !within(unit, nominal) && !units.slice(nominal.index + 1, comma.index).includes(units[unit.head]))) continue
+    const moved = units.slice(nominal.index + 1, comma.index).filter(unit => unit.word && unit.head === verb.index && ['advmod', 'prep', 'npadvmod'].includes(unit.dep))
+    for (const unit of moved) unit.head = nominal.index
+    if (moved.length) changed++
   }
   return changed
 }

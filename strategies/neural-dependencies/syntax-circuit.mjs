@@ -276,13 +276,17 @@ export function wiresOf(units) {
   /**
    * A verb form joined to another with no subject or auxiliary of its own shares those of the first.
    * One with a word said to the listener in front of it ("…, so please reset it") addresses the
-   * listener by itself: a command, not a second verb of the first clause.
+   * listener by itself: a command, not a second verb of the first clause. So does a base form that "so" joins after a
+   * comma ("everything must read from the back row, so push the group Intro to a scale of 20", "the team can't make it,
+   * so move Review to …"): "so" joins clauses, and the second names its own subject or commands.
    */
   function bare(unit) {
     const first = units[unit.head]
     const finite = tag => tag === 'VBP' || tag === 'VBZ' || tag === 'VBD'
+    const joiner = units[firstOf(unit) - 1]?.word ? units[firstOf(unit) - 1] : null
+    const so = joiner?.lower === 'so' && joiner.dep === 'cc' && units[joiner.index - 1] && !units[joiner.index - 1].word && unit.tag === 'VB'
     // the same verb form as the first: both stand under its auxiliary, its "to" or its subject
-    return unit.dep === 'conj' && verbal(unit) && verbal(first) && (unit.tag === first.tag || finite(unit.tag) && finite(first.tag)) &&
+    return unit.dep === 'conj' && verbal(unit) && verbal(first) && (unit.tag === first.tag || finite(unit.tag) && finite(first.tag)) && !so &&
       !under(unit).some(part => SUBJECT.has(part.dep) || part.dep === 'aux' || part.dep === 'auxpass' || part.dep === 'mark' || part.dep === 'intj' && part.index < unit.index)
   }
   const independent = unit => verbal(unit) && (unit.head === unit.index || ['conj', 'parataxis', 'dep'].includes(unit.dep)) && heads(unit)
@@ -310,8 +314,11 @@ export function wiresOf(units) {
     const first = units.slice(firstOf(unit), unit.index + 1).find(other => other.word && other.dep !== 'cc')
     return Boolean(first) && INTERROGATIVE.has(first.tag)
   }
-  /** A verbless conjunct with a question word of its own before its main word: "…, plus how about x axis on top?" */
-  const asksByItself = unit => unit.dep === 'conj' && !verbal(unit) && under(unit).some(part => part.index < unit.index && INTERROGATIVE.has(part.tag))
+  /** A verbless conjunct with a question word of its own before its main word: "…, plus how about x axis on top?", also
+   *  one under the linking word before the main word ("… plus how about bars right to left?"), or a verbless group the
+   *  parser set beside the clause ("…, so as a first pass how about line thinner?") */
+  const asksByItself = unit => ['conj', 'dep'].includes(unit.dep) && !verbal(unit) && under(unit).some(part => part.index < unit.index &&
+    (INTERROGATIVE.has(part.tag) || ['ADP', 'SCONJ'].includes(part.pos) && under(part).some(inner => inner.index < part.index && INTERROGATIVE.has(inner.tag))))
   /** The index of the first and of the last word that hang on this unit, directly or not. */
   const firstOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstOf(part, depth + 1)))
   const lastOf = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => lastOf(part, depth + 1)))

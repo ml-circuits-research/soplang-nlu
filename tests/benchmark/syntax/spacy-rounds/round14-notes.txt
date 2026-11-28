@@ -1,0 +1,95 @@
+Round 14 of the spaCy writer (from 1ce5e3b, round 13), aimed at the silver audit (the hard, unlabelled half: levels 1-4),
+the largest pool of standing faults, and at kinds that recur across the sets. Steps a1..l1 in the scratch folder
+spacy-round14; each line: the sets whose known circuits changed (rej = a rejected circuit changed, acc = an accepted one).
+Every message is found by its text.
+
+Left aside, as asked: the L6 verdicts on short sentences after a full stop ("That would help.", "I appreciate it."), on
+measure pairings ("four blocks wide and five blocks tall", "160 wide, 100 high", "5 inches wide and 3 inches tall") and on
+commands after a full stop tied to nothing. No rule for a particular misspelling was added.
+
+Standing rejections at round 13 (audit.mjs still, by set): audit 424, fresh 239, freshb 132, freshc 140, bench 66, vibe 23.
+Grouping (group.mjs; counts f/fb/fc/v/a): nominal: other 128 (26/17/15/1/59); other 118 (26/10/19/2/48); question or
+statement form 92 (25/9/9/1/43); command verb lost 74 (15/7/15/1/33); value said of the thing merged into its nominal 73
+(29/13/0/3/24); measure, direction and pairing 73 (8/4/22/7/25, of which ~25 are the pending measure pairings); part with no
+verb / tied to nothing 69 (12/6/22/3/24, of which ~20 are the pending L6 short sentences); coordination 54; noun read as a
+verb 50; word in the wrong clause 43; relation starts at the wrong word 32; phrase after a dash 31; then/next/instead 31;
+compound noun split 26; name after a common noun 24; participle 21; linking word 21; words to the listener 15; command inside
+another clause 12; settings 12; list items 9; grading word 7; numbers merged 5.
+Read one by one, the kinds that recur (several sets or many audit items): "…; to settle it, COMMAND …" with the commands
+written under the infinitive (audit 10, fresh 1, wide 5); a measure before "left"/"right" written as a verb, a describing
+word or a word to the listener ("three spaces left", "one place right": audit 9); a statement made a question by the
+question mark of a later "how about …?" (audit 6, bench 2); a nominal set off by a comma made the subject of a verb after it
+("lifelines only, show …", "a small grey cat sitting …, then … — the furniture itself keeps …": audit 6, bench 1); two
+subjects before one verb ("Could you which events are …", "I'd rather it stopped …": freshc 4, audit 1); "have X VERB"
+read as an inverted question and the verb after the object of "make"/"have" read as a noun (audit 4, freshc 1); "undo",
+"even out" lost (freshc 2, audit 3, bench 1); the words that say where an opening nominal is pulled into the clause after
+the comma (audit 2, freshc 2); an auxiliary hung on a verb across a semicolon, colon or dash (audit 2, freshc 1, bench 1);
+a command after ", so" sharing the subject and modal of the clause before (fresh 1, freshb 1, freshc 1). Fresh a's other
+faults stay scattered (one or two of a kind).
+
+a1 clause rule 24: an infinitive that opens its sentence (the message, or a part after ; : — .) and ends at a comma right
+   before a command is the clause the command is done for: the command takes its place (or the place of the later verb the
+   parser hung it on; across a mark that ends a sentence it is set beside the clause before, at its top), the infinitive
+   hangs on it (relation "to"), and the verbs joined to the infinitive after the comma join the command: audit 10 rej (~9
+   ok; 162 keeps the clause before the semicolon in the coordination), fresh 1 rej (1808 ok), wide 5 (fine).
+b1 word rule 83: a numeral and a noun with no determiner right before a word of direction ("left", "right", "up", "down",
+   "back") that ends its part measure that word, which is an adverb of the verb (of the object's verb, or of the head of a
+   part with no verb or one that shares the verb before it); not before a preposition ("in a row right along the path",
+   "two columns left of the tower"), not a measure a preposition governs ("by one space up"), not when the measure hangs on a
+   verb after it: audit 7 rej (~6 ok; 1024 keeps 'after that' on 'block') 2 unknown, wide 2. Narrowed while checking: bench
+   2398 (L9, "and two columns left of") and freshb 208 (L8) changed in the first version, back as they were.
+c1 syntax-circuit: a group that asks by itself also when its question word stands under the linking word before its main
+   word ("… plus how about bars right to left?") or the parser set it beside the clause ("…, so as a first pass how about
+   line thinner?"): the clause before it is no question: audit 5 rej (ok), bench 2 rej (ok), wide 1. Narrowed: only under a
+   preposition or subordinator ("how many trees are there, and how many birds?", L9, stays a question).
+d1 clause rule 25: a verb with two subjects before it, with an auxiliary of it before the later one and only auxiliaries
+   and adverbs between them, holds two clauses: the auxiliary is the verb of the earlier subject, and the clause of the later
+   subject is its complement ("Could you which events are on Work 4 …?", "I'd rather it stopped at bars under 20."; also a
+   modal hung by no named relation); not a participle with its auxiliary ("what colour is da note named Payment?"): freshc 4
+   rej (ok), audit 1 rej (ok), bench 1 rej (3336, the generated "Let us what values does …", still poor), wide 3.
+e1 word rules 84, 85: "have" opening a part (alone or after a linking adverb, at the head of the message or after a mark),
+   hung as the auxiliary of a later base form or participle with a subject that is no personal pronoun, with no question
+   mark closing the sentence, is the verb of a command that has a thing done ("have the grid lines clipped at the plot edge",
+   "…, then have all of the wild flowers come out soft sky blue"); a word the raw text shows can be a verb (canBeVerb), right
+   after the object of "make", "have" or "let", with only an adverb of its own after it, read as a noun, is the verb that
+   completes it with that object as subject ("make the kid beside the bench near the tree face right"; what the parser joined
+   to the object after it goes with the verb of causing): audit 4 rej (ok), freshc 1 rej (ok), wide 1.
+f1 word rule 2: a first word the tagger read as a preposition with an object, that the raw text writes as a verb in at least
+   one of twenty of its uses (writtenAsVerb: "undo" 80 of 654, "redo" 29 of 408; not "on" 102 of 45,176, "before" 53 of
+   2,194), opens a command; the verb of a relative clause with a subject of its own is no second verb of the sentence ("undo
+   half of the steps you just took"): freshc 1 rej (ok), audit 1 rej (ok), wide 1 (1054 "aer the boxes …", misspelt, unknown).
+g1 word rule 33: also after a phrase of place that opens the message ("from there even out the gaps …"), before a name
+   ("even out Monitor to Test") or an object pronoun and the particle ("even it up so it is flush with Gate"), and past the
+   verb of a clause a subordinator opens: audit 2 rej (ok), bench 1 rej (ok); 2880/2696 "ly out the whole picture like a
+   poster" changed in the first version (still L8), back as they were.
+h1 clause rule 6: also a present form equal to the base form when only the comma and adverbs stand between ("a little blue
+   bird perched up in the top right, then tint …", "lifelines only, show activation bars"), not past a renaming set off by
+   commas ("the first and final boxes, the ones at the edges, swap", vibe, accepted, back as they were); and a nominal set off
+   by a comma is no subject of a verb with a subject of its own after the comma: audit 5 rej (ok), bench 1, wide 2.
+j1 clause rule 26: an auxiliary hung on a verb after a semicolon, colon or dash is the verb of a clause of its own before the
+   mark, with the words before the mark that hung on that verb; the later verb is set beside it ("do the arrows medium on the
+   traffic flow chart — while you're at it, can you make …", "um, make a bar chart of …: … — go on"); not a question mark
+   (it may belong to a name: "what values does Refund approved? show?", L9): audit 2 rej (350 keeps 'smaller' as a verb; 1333
+   better), freshc 1 rej (440: the rest of the generated text stays poor), bench 1, wide 1.
+k1 clause rule 27: a nominal heading a part before a comma, hung on a verb after the comma by no named relation, keeps the
+   adverbs and phrases of place between it and the comma ("a small cat way off on the left, then could you place …",
+   "instead, a small dog down at the bottom, next slide …"): audit 2 rej (1101 now L10 by the registry), freshc 2 rej, vibe 1
+   rej (173, now L10), bench 3, wide 1 (fine: "no, an oak instead, …").
+l1 syntax-circuit: a base form that "so" joins after a comma shares no subject or auxiliary of the clause before ("everything
+   must read from the back row, so push the group Intro …", "the team can't make it, so move Review …"): fresh 1, freshb 1,
+   freshc 1 rej (ok), wide 1 (fine).
+
+Dropped: rule 6 for a conjunction between a subject and a base form ("that one again but this time include the step
+numbers"): the nominal became the object of "include", no better than before. No label conflict was found this round.
+
+Totals r13 -> l1 (known circuits changed): audit 41 (38 rej, ~28 ok; 1 now L10; 3 unknown), freshc 10 (10 rej, ~8 ok), fresh
+2 (2 rej, ok), freshb 1 (rej, ok), bench 11 (3 rej, 1 ok; 0 accepted; 8 unknown, read), vibe 1 (rej -> L10), wide 16 of 3,059
+(read).
+Estimated acceptance: audit 71.9 -> ~73.5%, freshc ~92.0 -> ~92.6% (without the pending L6 verdicts ~93.6 -> ~94.2%), fresh a
+~88.7 -> ~88.8%, fresh b ~93.1 -> ~93.2%, vibe 89.1 -> ~89.5%, old benchmark ~97.1 -> ~97.1%.
+What is left in the audit: values said of a thing merged into its nominal ("the girl's dress neon": the counts of the raw
+text are too low to show "neon" said alone), "N wide and M high" (pending), the generated "half the stand-up …; to settle
+it" messages where other words fail ("could you set the x axis label to on the top?"), the opening nominal of "a small X …,
+then …" templates tied to later statements after a dash, list items tied by relations ("Triage 2,000, Testing 1,500"),
+"Let us what values does …" (generated, no grammar).
+Tests: 61 pass (a new test with 18 recorded parses, one or more per repair).

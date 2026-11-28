@@ -12,7 +12,8 @@
 // verbs ("up", "out", "off" …), the articles "a" and "the", the numerals of tens, hundreds and
 // thousands, "how", "what" and "about" of "how about", the word of thanks "thanks", the pronoun "none", the ordinal
 // numerals and "last", the negative determiner "no") and "left", the
-// past form of the common verb "leave"; none names a noun, an adjective or a word particular to these messages.
+// past form of the common verb "leave", and with it "right", the other word of direction, and the common verbs of causing
+// "make", "have" and "let"; none names a noun, an adjective or a word particular to these messages.
 // Some rules also read counts learned from the raw text of the messages: how often a word that opens
 // a sentence is followed by a determiner or a pronoun (command-openers.mjs, written by
 // learn-openers.mjs), and how a word stands after a determiner, after "to", a subject pronoun or a
@@ -61,6 +62,8 @@ const ORDER = new Set(['first', 'second', 'third', 'fourth', 'fifth', 'sixth', '
 // the particles of English phrasal verbs ("set up", "lay out"), prepositions and adverbs of place by form
 // what a preposition governs
 const GOVERNED = new Set(['pobj', 'pcomp'])
+// the words of direction: "left" and "right", and the particles of place that say which way
+const DIRECTION = new Set(['left', 'right', 'up', 'down', 'back'])
 const PARTICLES = new Set(['up', 'down', 'out', 'off', 'over', 'back', 'away', 'in', 'on', 'around', 'aside', 'apart', 'together', 'along'])
 // A word opens commands when, of the sentences it opens in the raw text (at least LEAST_OPENINGS of
 // them), a determiner or an object pronoun follows it in at least half (OPENER_SHARE): "plot" (251 of
@@ -98,6 +101,10 @@ const names = word => {
 // does not show it to be a noun: "book" (324 after them, 67 after a determiner), "filter" (13 to 19), "finish"; not "group"
 // (31 to 726) or "line" (76 to 3,718).
 const canBeVerb = word => (USES[word]?.[6] ?? 0) >= LEAST_USES && !names(word)
+// A word the raw text writes as a verb (after "to", a subject pronoun or a modal) in at least one of twenty of all its uses:
+// "undo" (80 of 654), "redo" (29 of 408); not "on" (102 of 45,176), "before" (53 of 2,194).
+const VERB_SHARE = 0.05
+const writtenAsVerb = word => (USES[word]?.[6] ?? 0) >= LEAST_USES && USES[word][6] >= VERB_SHARE * USES[word][3]
 // Commands rarely follow "to" or a pronoun, so a command verb may pass that test ("colour": 1,694 to 30). A
 // word opens no command when, besides, a determiner or an object pronoun follows it in fewer than one in
 // twenty of the sentences it opens (NOUN_OPENER_SHARE): "node" (0 of 20), "rectangle" (0 of 10), "legend"
@@ -324,7 +331,9 @@ export function repairWords(units) {
     const opensObject = next => next?.word && (['DT', 'PDT', 'PRP$'].includes(next.tag) || next.pos === 'PRON' && !SUBJECT.has(next.dep) ||
       next.pos === 'NUM' && units[next.index + 1]?.word && units[next.index + 1].pos !== 'NUM' ||
       next.pos === 'NUM' && /^\d/u.test(next.value) && units[next.index + 1]?.value === ',' && units[next.index + 2]?.word && units[next.index + 2].pos === 'NUM')
+    // (nor the verb of a clause with a subject of its own that describes a noun: "undo half of the steps you just took")
     const dependent = other => (infinitive(other) || under(other).some(part => part.dep === 'mark' && part.index < other.index)) && !within(first, other) ||
+      other.dep === 'relcl' && NOMINAL.has(units[other.head].pos) && units[other.head] !== first && under(other).some(part => SUBJECT.has(part.dep) && part.index < other.index) ||
       ['acl', 'advcl'].includes(other.dep) && NOMINAL.has(units[other.head].pos) && units[other.head] !== first && ['VBG', 'VBN'].includes(other.tag) &&
       opensObject(units[first.index + 1])
     if (stretch.some(other => other !== first && verbal(other) && other.dep !== 'amod' && !dependent(other))) continue
@@ -347,7 +356,9 @@ export function repairWords(units) {
     // (a word said to the listener may stand between: "er mirror uh the tail of the dog sideways")
     const said = next?.word && next.dep === 'intj' && next.pos === 'INTJ' ? units.slice(next.index + 1).find(other => other.word) : null
     const object = opensObject(said ?? next)
-    const unplaced = first.pos === 'ADJ' ? !describes(first.lower) : ['INTJ', 'ADP'].includes(first.pos) ? !under(first).some(part => GOVERNED.has(part.dep)) : nounLike
+    // (a word the tagger read as a preposition with an object, that the raw text writes as a verb in at least one of
+    // twenty of its uses, is read the same way: "undo the night"; not "on", "before")
+    const unplaced = first.pos === 'ADJ' ? !describes(first.lower) : ['INTJ', 'ADP'].includes(first.pos) ? !under(first).some(part => GOVERNED.has(part.dep)) || writtenAsVerb(first.lower) : nounLike
     const misspelt = !capitalised(first) && nearOpener(first.lower) && (object || next?.word && (capitalised(next) && next.pos !== 'VERB' ||
       next.pos === 'NOUN' && !USES[first.lower]))
     // Inside a list of settings after a colon, a word before a name is a label with its value ("a heading of level 3:
@@ -1579,24 +1590,37 @@ export function repairWords(units) {
   //     the first word is that verb, the particle its particle, and the nominal after them its object. (A participle
   //     that describes a noun, "centred", is no verb of the sentence.)
   for (const word of units) {
-    if (!word.word || word.quoted || verbal(word) || !['NOUN', 'PROPN', 'X', 'ADJ', 'ADV', 'INTJ'].includes(word.pos) || !opensSentence(word) || markBefore(word)) continue
-    if (units.slice(0, word.index).some(other => other.word)) continue
-    const particle = units[word.index + 1], opening = units[word.index + 2]
-    if (!particle?.word || !PARTICLES.has(particle.lower) || !opening?.word || !['DT', 'PDT', 'PRP$'].includes(opening.tag) || opening.dep !== 'det' && opening.dep !== 'poss') continue
+    if (!word.word || word.quoted || (verbal(word) ? word.dep !== 'advmod' : !['NOUN', 'PROPN', 'X', 'ADJ', 'ADV', 'INTJ'].includes(word.pos))) continue
+    // (at the head of the message, also after a phrase of place that opens it, "from there even out the gaps between it and
+    // Bench")
+    const place = units[0]?.word && units[0].pos === 'ADP' && word.index >= 2 && word.head !== 0 && units.slice(1, word.index).every(other => other.word && other.head === 0 && GOVERNED.has(other.dep))
+    if (!place && (!opensSentence(word) || markBefore(word) || units.slice(0, word.index).some(other => other.word))) continue
+    // (the object may also be a name, "even out Monitor to Test", or an object pronoun before the particle, "even it up")
+    let particle = units[word.index + 1], opening = units[word.index + 2]
+    const pronoun = particle?.word && ['it', 'them'].includes(particle.lower) && opening?.word && PARTICLES.has(opening.lower) && opening.pos !== 'ADP' && !under(opening).length
+    if (pronoun) [particle, opening] = [opening, particle]
+    if (!particle?.word || !PARTICLES.has(particle.lower) || !opening?.word) continue
+    if (!pronoun && !(['DT', 'PDT', 'PRP$'].includes(opening.tag) && (opening.dep === 'det' || opening.dep === 'poss')) && !(capitalised(opening) && ['NOUN', 'PROPN'].includes(opening.pos))) continue
     // (a preposition with its object is no particle: "just on a diagonal between the house and the lake")
     if (particle.dep === 'prep' || under(particle).some(part => GOVERNED.has(part.dep))) continue
     const end = units.findIndex(other => other.index > word.index && ends(other, CLAUSE_END))
     const stretch = units.slice(word.index, end < 0 ? units.length : end).filter(other => other.word)
     const describing = other => ['VBN', 'VBG'].includes(other.tag) && ['acl', 'amod'].includes(other.dep) && !under(other).some(part => SUBJECT.has(part.dep) || ['aux', 'auxpass'].includes(part.dep))
-    if (stretch.some(other => verbal(other) && !describing(other))) continue
-    const object = units[opening.head]
-    if (!object?.word || !['NOUN', 'PROPN'].includes(object.pos) || within(object, word) || object.index <= opening.index) continue
+    // (nor is the verb of a clause that a subordinator opens: "even it up so it is flush with Gate")
+    if (stretch.some(other => verbal(other) && other !== word && !describing(other) && !under(other).some(part => part.dep === 'mark' && part.index < other.index))) continue
+    const named = !pronoun && capitalised(opening) && ['NOUN', 'PROPN'].includes(opening.pos)
+    const object = pronoun || named ? opening : units[opening.head]
+    if (!object?.word || !['NOUN', 'PROPN', 'PRON'].includes(object.pos) || within(object, word) || object.index < opening.index || object === opening && !pronoun && !named) continue
     const root = object.head === object.index
     word.pos = 'VERB'
     word.tag = 'VB'
     word.lemma = word.lower
     word.head = root ? word.index : object.head
     word.dep = root ? 'ROOT' : object.dep
+    // (what hung on the object or on the particle besides the words of its nominal hangs on the verb)
+    // (what the parser hung on the object or the particle before the verb, "from there", or after an object pronoun or a name, "so it
+    // is flush with Gate", belongs to the clause)
+    for (const part of [...under(object), ...under(particle)]) if (part !== particle && part !== word && (part.index < word.index || (pronoun || named) && !NOMINAL_INSIDE.has(part.dep))) part.head = word.index
     object.head = word.index
     object.dep = 'dobj'
     particle.pos = 'ADP'
@@ -2653,6 +2677,91 @@ export function repairWords(units) {
     noun.head = marker.head
     noun.dep = 'appos'
     marker.head = noun.index
+    changed++
+  }
+
+  // 83. A measure says how far a thing goes in a direction ("move it one space down", rule 39): a numeral and a noun with
+  //     no determiner, right before a word of direction ("left", "right", "up", "down", "back") that ends its part, measure
+  //     that word, and the word says where the verb of the clause takes the thing. One that the parser hung on the measure
+  //     or on the nominal before it as a describing word, a participle or a word said to the listener ("slide block 1 …,
+  //     three spaces left, then …", "the girl in the pink coat one place right") is an adverb of the verb (of the head of
+  //     the part when it has no verb), and the measure hangs on it.
+  for (const direction of units) {
+    if (!direction.word || direction.quoted || !DIRECTION.has(direction.lower) || direction.head === direction.index || under(direction).some(part => part.index < direction.index)) continue
+    const measure = units[direction.index - 1], next = units[direction.index + 1]
+    if (!measure?.word || !['NOUN'].includes(measure.pos) || !under(measure).some(part => part.dep === 'nummod' && part.pos === 'NUM' && part.index === firstOf(measure)) ||
+        under(measure).some(part => part.dep === 'det' || part.index > measure.index && part !== direction)) continue
+    // (not before a preposition, which the word grades or which completes it: "in a row right along the path", "two
+    // columns left of the tower"; nor a measure a preposition governs: "by one space up")
+    if (next?.word && ['NOUN', 'PROPN', 'DET', 'ADJ', 'NUM', 'PRON', 'ADP'].includes(next.pos) && next.dep !== 'cc' || GOVERNED.has(measure.dep)) continue
+    if (direction.dep === 'advmod' && verbal(units[direction.head]) || direction.head !== measure.index && direction.head !== measure.head) continue
+    // the verb of the clause: the word the measure hangs on, or the verb of the object it hangs on; else the head of the
+    // part (a part with no verb, or one that shares the verb before it: "…, then block 3 two spaces right")
+    const held = units[measure.head]
+    const verb = held.dep === 'dobj' && verbal(units[held.head]) && units[held.head].index < held.index ? units[held.head] : held
+    if (verb === direction || verb === measure || verb.index > measure.index || within(verb, direction) || units.slice(verb.index + 1, measure.index).some(unit => !unit.word && SENTENCE_END.has(unit.value))) continue
+    direction.head = verb.index
+    direction.dep = 'advmod'
+    direction.pos = 'ADV'
+    direction.tag = 'RB'
+    direction.lemma = direction.lower
+    measure.head = direction.index
+    measure.dep = 'npadvmod'
+    changed++
+  }
+
+  // 84. A question that puts "have" before its subject asks with a question mark; a command opens with its verb. "have"
+  //     that opens a part of the message (alone or after a linking adverb, at the head of the message or after a mark),
+  //     that the parser hung as the auxiliary of a later base form or participle with a subject of its own, which is no
+  //     personal pronoun, and with no question mark closing the sentence ("…, then have all of the wild flowers come out
+  //     soft sky blue", "have the grid lines clipped at the plot edge"), is the verb of a command that has a thing done:
+  //     it takes the place of the later verb, which completes it with its subject (as "let the man face left").
+  for (const have of units) {
+    if (!have.word || have.quoted || have.lower !== 'have' || have.dep !== 'aux') continue
+    const verb = units[have.head]
+    if (!verbal(verb) || verb.index < have.index || !['VB', 'VBN'].includes(verb.tag)) continue
+    const subject = under(verb).find(part => SUBJECT.has(part.dep) && part.index > have.index && part.index < verb.index)
+    if (!subject || subject.pos === 'PRON' && !['DT', 'NN'].includes(subject.tag) || under(verb).some(part => part !== have && part.index > have.index && part.index < verb.index && (part.dep === 'aux' || part.dep === 'auxpass'))) continue
+    // what stands before it in its part: nothing, or a linking adverb, after a mark or at the head of the message
+    let at = have.index - 1
+    while (units[at]?.word && units[at].pos === 'ADV' && units[at].head === verb.index) at--
+    if (units[at] && (units[at].word || !CLAUSE_END.has(units[at].value) && !dash(units[at]))) continue
+    const close = units.slice(verb.index + 1).find(unit => !unit.word && ends(unit, SENTENCE_END) && unit.value !== ',')
+    if (close?.value.includes('?')) continue
+    have.head = verb.head === verb.index ? have.index : verb.head
+    have.dep = verb.head === verb.index ? 'ROOT' : verb.dep
+    have.pos = 'VERB'
+    have.tag = 'VB'
+    for (const part of under(verb)) if (part.index < have.index) part.head = have.index
+    verb.head = have.index
+    verb.dep = 'ccomp'
+    changed++
+  }
+
+  // 85. A word with a subject of its own that completes a verb of causing is a verb ("let the man face left"). A word the
+  //     raw text shows can be a verb (canBeVerb), right after the nominal that is the object of "make", "have" or "let"
+  //     and with nothing after it but an adverb of its own, that the tagger read as a noun hung on that nominal or made
+  //     the clause the verb takes with the nominal as its subject ("have the small dog by the lake face right", "make the
+  //     kid beside the bench near the tree face right"), is the verb that completes it, with that nominal as its subject.
+  for (const word of units) {
+    if (!word.word || word.quoted || word.pos !== 'NOUN' || !canBeVerb(word.lower) || under(word).some(part => part.index < word.index && !SUBJECT.has(part.dep) || part.index > word.index && part.dep !== 'advmod' && part.dep !== 'punct' && part.dep !== 'advcl')) continue
+    const after = units[word.index + 1]
+    if (!after?.word || after.pos !== 'ADV' || after.head !== word.index) continue
+    let thing = null, causing = null
+    if (word.dep === 'ccomp' && verbal(units[word.head])) { causing = units[word.head]; thing = under(word).find(part => SUBJECT.has(part.dep) && part.index < word.index) }
+    else if (['npadvmod', 'appos', 'compound', 'dep'].includes(word.dep) && units[word.head].dep === 'dobj') { thing = units[word.head]; causing = units[thing.head] }
+    if (!thing || !causing || !['make', 'have', 'let'].includes(causing.lower) || causing.index > thing.index || lastOf(thing) !== word.index - 1 && thing.head !== causing.index) continue
+    if (units.slice(firstOf(thing), word.index).some(unit => !unit.word)) continue
+    word.pos = 'VERB'
+    word.tag = 'VB'
+    word.lemma = word.lower
+    word.head = causing.index
+    word.dep = 'ccomp'
+    // (what the parser joined to the nominal after the verb goes with the verb of causing: "…, and a small cat way off
+    // on the left")
+    for (const part of under(thing)) if (part.index > word.index) part.head = causing.index
+    thing.head = word.index
+    thing.dep = 'nsubj'
     changed++
   }
 
