@@ -1,0 +1,51 @@
+Round 11 of the spaCy writer (from 45d48a3). Steps a1..i1 in the scratch folder spacy-round11; each line: the sets whose
+known circuits changed (rej = a rejected circuit changed, acc = an accepted one), and how the changes look by rules.md.
+
+Grouping (group.mjs, new: subdivides the nominal group) of the rejections standing at round 10 (fresh a, fresh b, vibe, audit):
+  nominal other 112, value said of the thing merged into its nominal (a setting) 87, compound noun split 30, name after a
+  common noun 28, two or more numbers merged 9, list items merged 9, quoted data (JSON) 7, word grading a linking word 6;
+  outside the nominal: unclassified 93, question/statement form 88, command verb lost 68, part with no verb 57, name read as
+  a verb 53, coordination 52, measures 50, wrong clause 41, then/next 39, thanks/please 30, dash 29, relation end 29.
+  Within the settings group: words after a name in the settings messages ("change a gruop Summary lime tiny") ~22 rows, a
+  colour noun after the thing ("turn the tail on the dog neon") ~10 (fresh a only; not separable from a compound head such
+  as "the chapter heading" by the counts word-repairs reads; pair counts would separate them), "level 2" / "30% opacity"
+  after the thing ~12. "nominal other" is scattered: merges across a comma ~8, "the last two one place" 3, "150 wide and 120
+  high" 2, singles.
+
+a1 rule 56: after a name, a word the raw text writes after a determiner fewer than 5 times also says how the thing should
+   be when another word of the run passes or numbers follow; a describing word may stand before the name; capitalised
+   words or "none" after the run are a second nominal of the verb: fresh 9 rej (all look ok) 3 acc (961: label conflict,
+   judged pattern of 1216), freshb same, audit 3 rej (ok), wide 5 (ok)
+b1 rule 62: two numbers with a comma between them are a coordination (re-applied; round 10 dropped it): fresh 3 rej (2 ok;
+   857 keeps its lost verb) 15 acc (9 label conflicts, 6 now L8 or judged pattern), bench 4 acc (label conflicts), audit 6
+   rej (JSON data, still wrong elsewhere) 5 acc (ok), wide 4 (ok). Not a pair with a word after it that it measures
+   ("at y 90, 100 high").
+c1 question-word clause inside another declarative also when inverted (re-applied; settled case 96); not a capitalised
+   question word after a comma ("excuse me, How much is …"): fresh 4 rej (ok) 2 acc (label conflicts 100081, 100101)
+d1 "also" among the conjuncts that open a nominal (re-applied): audit 3 rej (ok) 4 acc (ok), bench 1 acc (label conflict
+   2687), wide 5 (ok)
+e1 "more" right after a numeral is a word of its nominal (re-applied): freshb 2 rej (ok) 1 acc (label conflict 101261),
+   audit 2 rej (part), wide 2
+f1 rule 63: the second of two singular nouns after a determiner heads the nominal when the parser hung it apart and the raw
+   text shows it a noun ("rename the chapter heading", "make the font colour black"); not a range or a measure of a
+   comparative: audit 6 rej (ok) 1 acc (ok), fresh 1 rej (ok), wide 1
+g1 rule 3: a capitalised name hung on the verb as a measure after a known thing names it ("tilt the group Village to the
+   right"): fresh 1 rej (ok)
+h1 rule 2: a list of numbers in figures opens an object ("turn 30, 25 and 20 …"); a word said to the listener may stand
+   between the opener and its object ("ok so, reverse um Park …"); a word the raw text writes as a verb opens a command
+   before a preposition with its object, not "of" ("drop in a cirle"); nominal conjuncts of a noun made the verb join its
+   object: fresh 4 rej (ok), freshb 3, audit 1 rej (1510, still wrong), wide 0
+i1 rule 64 + learn-discourse.mjs (new, discourse-words.mjs): words the raw text writes at an edge of what is said, set off
+   by marks, never after a determiner/"to"/pronoun/modal (alright cheers hey hmm nope ok okay oops plese pls thanks thx
+   uhm) are discourse words where they end or open a sentence or stand between marks: fresh 13 rej (~10 ok) 5 acc (ok),
+   freshb 3 rej 2 acc, audit 3 rej (ok) 2 acc (ok), wide 2. "colour n2 purpel pls" L3 -> L1 (the verb still lost).
+
+Dropped: none. Label conflicts (label-conflicts.jsonl, 18 entries): 13 number pairs (incl. round 10's case), 2 inverted
+embedded questions (100081, 100101), "and also" (bench 2687), "one more" (freshb 101261), "set one group Status gold
+Follow-up" (one merged nominal vs the judged pattern of 1216).
+
+Totals from round 10 (r10 -> i1): fresh 62 changed (35 rej, ~28 look ok; 25 acc: 12 label conflicts, the rest ok), freshb
+48 (25 rej, ~20 ok; 23 acc), audit 39 (24 rej, ~14 ok; 12 acc ok), bench 16 (5 acc = label conflicts; 10 unknown), wide 19
+of 3,059 (read: fine), vibe 0. Estimated acceptance, counting the label conflicts as the judges' pattern: fresh a 86.9 ->
+~88.2%, fresh b 91.3 -> ~92.3%, vibe (hard half) 76.6% unchanged, audit 69.4 -> ~70.3% (all levels).
+Tests: 58 pass (a new test with 16 recorded parses; two round 10 assertions follow the re-applied repairs).

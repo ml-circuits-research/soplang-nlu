@@ -132,8 +132,9 @@ const INTERROGATIVE = new Set(['WDT', 'WP', 'WP$', 'WRB'])
 // the linking adverbs that put the next item of a sequence after the one before ("…, then one kite")
 const SEQUENCE = new Set(['then', 'next'])
 // the conjuncts of listing and replacing, adverbs that link a part to the one before (Quirk et al. 1985, §8.137-8.145)
-// ("also" is left out: the labels hold it in the nominal it opens, "and also Order value by quantity: …")
-const CONJUNCTS = new Set([...SEQUENCE, 'finally', 'again', 'instead'])
+// ("also" among them: an adverb says nothing of a thing, "and also Order value by quantity: …"; a label that holds it
+// in the nominal it opens is in label-conflicts.jsonl)
+const CONJUNCTS = new Set([...SEQUENCE, 'finally', 'again', 'instead', 'also'])
 // the ordinal numerals, words of order
 const ORDINAL = new Set(['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'])
 const TERMINAL = new Set(['.', '!', '?'])
@@ -360,11 +361,13 @@ export function wiresOf(units) {
     const fused = unit.dep === 'csubj' || unit.dep === 'ccomp' && units[unit.head].pos === 'AUX' && questionWordBefore(unit)
     // A clause opened by a question word inside another clause states ("tell me how many boxes are between Load and
     // Archive?", "tell me which box moved …, and which box moved …?"): it is declarative (settled case 96), also with no
-    // subject before its verb but the nominal the question word opens. (With a tensed verb form before its subject, "tell
-    // me what's the point of a venn diagram", it is written as the labels write it, a question.)
-    const inverted = subject && lead.index < subject.index && leading !== 'VB'
-    if (EMBEDDED.has(standing(unit)) && !['relcl', 'advcl', 'acl'].includes(standing(unit)) && !fused && !inverted && opensWithQuestion(unit) &&
-        verbal(units[headOfGroup(unit).head]) && !BOUNDARY.has(units[firstOf(headOfGroup(unit)) - 1]?.value)) return 'declarative'
+    // subject before its verb but the nominal the question word opens, and also with a tensed verb form before its subject
+    // ("tell me what's the point of a venn diagram": the settled case names no exception; labels that write it as a
+    // question are in label-conflicts.jsonl). A question word with a capital after a comma opens a question set down as
+    // a sentence of its own ("excuse me, How much is the sales altogether, and how does that stack up …?").
+    if (EMBEDDED.has(standing(unit)) && !['relcl', 'advcl', 'acl'].includes(standing(unit)) && !fused && opensWithQuestion(unit) &&
+        verbal(units[headOfGroup(unit).head]) && !BOUNDARY.has(units[firstOf(headOfGroup(unit)) - 1]?.value) &&
+        !/^\p{Lu}/u.test(units.slice(firstOf(headOfGroup(unit))).find(other => other.word && other.dep !== 'cc')?.value ?? '')) return 'declarative'
     // One that opens a part after a colon asks, though the parser hung it on the noun before the colon as a clause that
     // describes it ("quick question: what is a block diagram good for")
     const asking = ['relcl', 'acl'].includes(unit.dep) && units[firstOf(unit) - 1]?.value === ':' && opensWithQuestion(unit)
@@ -716,7 +719,10 @@ export function wiresOf(units) {
     // describing word is an item of a list of them: "big, red boxes")
     if (before && ['amod', 'advmod'].includes(dep) && !under(part).length && part.index === 0 && units[1] && !units[1].word && units[1].value === ',' &&
         units[2]?.word && units[2].pos !== 'ADJ' && firstOf(head) === part.index) return describe(home, part, true)
-    if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case' || part.lower === 'else')) return inside(wire, part)
+    // "more" right after a numeral it counts on from is a word of that nominal ("one more in the same style", as "something
+    // else"; the judges reject it as a modifier of the clause; a label that writes it so is in label-conflicts.jsonl)
+    const countsOn = part.lower === 'more' && part.index === head.index + 1 && head.pos === 'NUM' && !under(part).length
+    if (WITHIN.has(dep) && (before || dep === 'det' || dep === 'predet' || dep === 'case' || part.lower === 'else' || countsOn)) return inside(wire, part)
     // before the head, hung on it by no relation of a nominal ("no shed, no car — a barn"): a nominal of its own in the clause
     if (before) return nominalHere(part) ? complement(home, nominal(part, home, 'complement')) : inside(wire, part)
     // A nominal of time or manner with a determiner of its own that the parser hung on a noun as an adverbial ("make a

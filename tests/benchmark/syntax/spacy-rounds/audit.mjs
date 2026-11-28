@@ -8,6 +8,11 @@
 //   node audit.mjs show <dir> <set> <n | part of a text> [--beam]
 //   node audit.mjs units <dir> <set> <n>                         the units of a message after the word and clause repairs
 //   node audit.mjs record <dir> <file of texts>                  lines for the table of recorded parses of the tests
+//   node audit.mjs conflict <dir> <set> <circuits.jsonl> <n> --reason <why> [--case <settled case>]
+//                                                                a label the circuit of message n changes, written to
+//                                                                label-conflicts.jsonl for the judges (a label is a judged
+//                                                                circuit, not the truth: one that contradicts a settled case
+//                                                                or the judges' consistent verdicts is judged again)
 //
 // The sets:
 //   audit  the silver audit (eval-results/2026-11-27-silver-audit): 1,800 judged spaCy circuits, by suspicion level
@@ -38,7 +43,7 @@ const VIBE = 'eval-results/2026-11-28-vibe-advanced-pilot/opus/'
 const SETS = ['audit', 'fresh', 'freshb', 'bench', 'wide', 'vibe']
 const WIDE_STRIDE = 60
 const [command, dirArg, ...rest] = process.argv.slice(2)
-const VALUED = ['--code', '--which']
+const VALUED = ['--code', '--which', '--reason', '--case']
 const flags = rest.filter(arg => arg.startsWith('--')), args = rest.filter((arg, i) => !arg.startsWith('--') && !VALUED.includes(rest[i - 1]))
 const option = name => { const i = rest.indexOf('--' + name); return i >= 0 ? rest[i + 1] : undefined }
 const dir = resolve(dirArg ?? '.')
@@ -216,4 +221,29 @@ if (command === 'changed') {
   console.log(JSON.stringify(count))
   process.exit(0)
 }
-console.error('commands: cache, write, still, changed, show, record'); process.exit(2)
+if (command === 'conflict') {
+  // (several messages: n1,n2,…)
+  const labels = readLabels(), before = Object.values(FRESH).flatMap(folder => readJsonl(at(folder + 'key/labels-before.jsonl')))
+  const out = join(root, 'tests/benchmark/syntax/spacy-rounds/label-conflicts.jsonl')
+  for (const n of args[2].split(',')) {
+  const m = messages.find(message => message.n === +n)
+  const row = readCircuits(args[1]).get(m.key)
+  // the label: the one known before the run of a fresh set, else the label of the dataset now
+  let label = before.find(line => line.text === m.text)?.label ?? null
+  label ??= labels.get(m.text)?.label ?? null
+  // the file and row of the message: from its id, else the syntactic file that holds it
+  let [file, rowNumber] = (m.id ?? '').includes('#') ? m.id.split('#') : [labels.files.get(m.text) ?? null, null]
+  if (file && !rowNumber) {
+    const [, ...rows] = readCsv(readFileSync(join(labels.dir, file), 'utf8'))
+    rowNumber = rows.findIndex(r => r[0] === m.text) + 1 || null
+  }
+  const entry = {file, row: rowNumber === null ? null : +rowNumber, text: m.text, label, proposed: row.sop, reason: option('reason'), settledCase: option('case') ?? null}
+  let lines = []
+  try { lines = readFileSync(out, 'utf8').split('\n').filter(Boolean) } catch {}
+  lines = lines.filter(line => JSON.parse(line).text !== m.text)
+  writeFileSync(out, [...lines, JSON.stringify(entry)].join('\n') + '\n')
+  console.log(JSON.stringify({file: entry.file, row: entry.row, text: entry.text}))
+  }
+  process.exit(0)
+}
+console.error('commands: cache, write, still, changed, show, record, units, conflict'); process.exit(2)
