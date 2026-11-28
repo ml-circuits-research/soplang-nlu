@@ -16,15 +16,16 @@
   "rvss": {
    "status": "reused",
    "file": "rvss.jsonl",
-   "reusedFrom": ".local-data/rvss/runs/vsa2k2hmm-a17-fresh-e/outputs.jsonl",
+   "reusedFrom": ".local-data/rvss/runs/vsa2k2hmm-a17-fresh-e/outputs.jsonl (lines 1-1,320: first decode; 1,321-2,542: missing-outputs.jsonl)",
    "model": ".local-data/rvss/model/vsa2k2hmm-a17 (beam 4, CPU; from g15, 2 epochs on all annotated data d17s, spaCy first, judged targets x3, no weak-spot weights)",
    "targets": "all annotated data at dataset 7e98ec6 (nothing held out); spaCy writer 3f13f69 where no judged target exists",
-   "messages": 1320,
-   "valid": 1316,
+   "messages": 2542,
+   "valid": 2534,
    "errors": {
-    "invalid circuit: invalid": 4
+    "invalid circuit: invalid": 8
    },
-   "medianMs": 44.282
+   "medianMs": 46.975,
+   "note": "first 1,320 lines from the first decode; the other 1,222 decoded afterwards with the same model and reader (the first decode stopped writing at a read-back with numpy integers in its nodes, fixed in decode.py and worker.py)"
   }
  }
 }

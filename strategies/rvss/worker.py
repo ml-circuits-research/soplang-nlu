@@ -29,7 +29,7 @@ def main():
                    'ms_pilot': r['ms_pilot'], 'ms_readback': r['ms_readback']}
         except Exception as e:
             out = {'id': req['id'], 'error': 'no circuit: ' + str(e)[:200]}
-        print(json.dumps(out), flush=True)
+        print(json.dumps(out, default=lambda o: o.item() if hasattr(o, 'item') else str(o)), flush=True)
 
 
 if __name__ == '__main__':

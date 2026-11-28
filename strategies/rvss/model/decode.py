@@ -407,6 +407,11 @@ class Pilot:
         return 'differs', nodes
 
 
+def _plain(o):
+    """numpy scalars (a move argument can be one) as plain numbers in the output"""
+    return o.item() if hasattr(o, 'item') else str(o)
+
+
 def run_chunk(args):
     model_dir, lines, beam, fit, sync = args
     P = Pilot(model_dir); out = []
@@ -444,7 +449,7 @@ def main():
     t0 = time.time()
     with Pool(workers) as pool: res = [r for part in pool.imap(run_chunk, chunks) for r in part]
     with open(dst, 'w') as f:
-        for r in res: f.write(json.dumps(r) + '\n')
+        for r in res: f.write(json.dumps(r, default=_plain) + '\n')
     from collections import Counter
     print(len(res), 'messages', f'{time.time()-t0:.0f}s', Counter(r.get('readback') for r in res), Counter((r['error'] or 'ok')[:40] for r in res),
           'median ms', np.median([r['ms'] for r in res]))
