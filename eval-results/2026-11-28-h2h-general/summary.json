@@ -1,0 +1,31 @@
+{
+  "run": "2026-11-28-h2h-general",
+  "sample": "eval-results/2026-11-28-h2h-general/sample.json.gz",
+  "messages": 1000,
+  "strategies": {
+    "spacy": {
+      "status": "ran",
+      "startupMs": 1924,
+      "restarts": 0,
+      "file": "spacy.jsonl",
+      "messages": 1000,
+      "valid": 1000,
+      "errors": {},
+      "medianMs": 45.446
+    },
+    "rvss": {
+      "status": "reused",
+      "file": "rvss.jsonl",
+      "reusedFrom": ".local-data/rvss/runs/vsa2k2hmm-g15-b4/devG-outputs.jsonl",
+      "model": ".local-data/rvss/model/vsa2k2hmm-g15 (current still points to dag12; decoded with --beam 4, CPU)",
+      "targets": "spaCy writer 3f13f69; dev-G held out of training",
+      "messages": 1000,
+      "valid": 992,
+      "errors": {
+        "invalid circuit: invalid": 5,
+        "no circuit: no legal move": 3
+      },
+      "medianMs": 39.002
+    }
+  }
+}
