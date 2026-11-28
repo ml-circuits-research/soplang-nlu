@@ -687,3 +687,18 @@ measured on held-out files and the fresh sample.
 | `eval/fresh-sample.mjs` | inputs, spaCy targets and the unjudged list for a fresh file-level sample |
 | `.local-data/rvss/model/<run>/`, `<run>.log` | models and training logs |
 | `.local-data/rvss/runs/<run>/` | decoded outputs and the harness's reports |
+
+### a18 and a18p (2026-11-28, measured by the coordinator)
+
+From a17, one more epoch on d18s (all data with the fresh-e labels); a18p adds `--rb 256 --path 256` (the path
+drawing aimed at long messages). Judged acceptance on seen data (unjudged circuits not counted), beam 4:
+
+| Run | dev-G (1,000 judged) | old benchmark | old benchmark 25–39 / 40+ words |
+| --- | ---: | ---: | --- |
+| a17 | 82.5% (98 unjudged) | 85.3% (167 unjudged) | 70.3% / 77.6% |
+| a18 | 82.5% (100) | 85.4% (183) | 66.9% / 79.3% |
+| a18p | 81.9% (107) | 85.3% (184) | 67.8% / 77.6% |
+
+No measurable difference: another epoch and the path drawing do not move rVSS; `current` stays a17. The next gains have to
+come from data aimed at the weak kinds (names and nominal boundaries, question form, non-verbs as verbs) and from
+architecture changes beyond the pilot's view.
