@@ -1,0 +1,37 @@
+n,text,sop,label_state
+45,the same for the feurth box,"@n1 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""feurth"" head=""box""
+@c1 syntax.clause form=fragment complement=$n1",
+79,and the third with the fourth,"@c1 syntax.clause form=fragment discourse=""and"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""third""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fourth""",
+173,"take the figure from steps 1 and 2 to the middle, then swap the first two","@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""steps""
+@n3 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""2""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""middle""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@r3 syntax.relation from=$n2 to=$k1",
+937,paint the Load words navy for me,"@c1 syntax.clause form=imperative verb=""paint"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Load"" head=""words""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",
+964,swap boxes 2 and 4 and delete the box now between them,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal head=""boxes""
+@n2 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""4""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""delete"" modifier=""now"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""box""
+@r1 syntax.relation marker=""between"" from=$c2 to=$n5
+@n5 syntax.nominal head=""them""
+@r2 syntax.relation from=$n1 to=$k1",

@@ -1,0 +1,134 @@
+n,text,sop,label_state
+42,"set the values of Series 1 to 30, 32, 35","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""values""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""1""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n4 syntax.nominal head=""30""
+@n5 syntax.nominal head=""32""
+@n6 syntax.nominal head=""35""
+@r3 syntax.relation from=$n2 to=$n3
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5 conjunct=$n6",
+44,"update Series 2's values to 12, 14, 16","@c1 syntax.clause form=imperative verb=""update"" complement=$n3
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n1
+@n3 syntax.nominal head=""values""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n4 syntax.nominal head=""12""
+@n5 syntax.nominal head=""14""
+@n6 syntax.nominal head=""16""
+@r3 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5 conjunct=$n6",
+46,"change the data of the first series to 8, 9, 10","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""data""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""8""
+@n4 syntax.nominal head=""9""
+@n5 syntax.nominal head=""10""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5",
+47,"the first series should read 15, 18, 21","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""read"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""15""
+@n3 syntax.nominal head=""18""
+@n4 syntax.nominal head=""21""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3 conjunct=$n4",
+50,"I want the first series to show 45, 47, 49","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$k1
+@n3 syntax.nominal head=""45""
+@n4 syntax.nominal head=""47""
+@n5 syntax.nominal head=""49""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5",
+52,"fill Series 2 with 14, 16, 18","@c1 syntax.clause form=imperative verb=""fill"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation marker=""with"" from=$c1 to=$k1
+@n3 syntax.nominal head=""14""
+@n4 syntax.nominal head=""16""
+@n5 syntax.nominal head=""18""
+@r2 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5",
+61,"set the vaules of Series 1 to 30, 32, 35","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""vaules""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""1""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n4 syntax.nominal head=""30""
+@n5 syntax.nominal head=""32""
+@n6 syntax.nominal head=""35""
+@r3 syntax.relation from=$n2 to=$n3
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5 conjunct=$n6",
+88,I'd like the revenue line navy on the revenue trend,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" modifier=""navy"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""trend""",
+89,let's do the revenue line navy on the revenue trend,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""do"" modifier=""navy"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""trend""
+@r2 syntax.relation from=$c1 to=$c2",
+93,do the revenue line navy on the revenue trend,"@c1 syntax.clause form=imperative verb=""do"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""trend""",
+98,"set the revenue line navy, that's the next tweak, also show both grid lines","@c1 syntax.clause form=imperative verb=""set"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@n2 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""next"" head=""tweak""
+@c3 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n4
+@n4 syntax.nominal dependent=""both"" dependent=""grid"" head=""lines""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3",
+99,keep the revenue line navy; plus make the font a bit bigger,"@c1 syntax.clause form=imperative verb=""keep"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""font""
+@n3 syntax.nominal dependent=""a"" head=""bit""",
+280,"in Revenue, correct December to 44 before we export","@r1 syntax.relation marker=""in"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revenue""
+@c1 syntax.clause form=imperative verb=""correct"" complement=$n2
+@n2 syntax.nominal head=""December""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""44""
+@r3 syntax.relation marker=""before"" from=$c1 to=$c2
+@n4 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative verb=""export"" subject=$n4",
+312,"track Budget as a new series with 30, 31, 33","@c1 syntax.clause form=imperative verb=""track"" complement=$n1
+@n1 syntax.nominal head=""Budget""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""new"" head=""series""
+@r2 syntax.relation marker=""with"" from=$n2 to=$k1
+@n3 syntax.nominal head=""30""
+@n4 syntax.nominal head=""31""
+@n5 syntax.nominal head=""33""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5",
+315,"can you add a series named Forecast with 60, 61, 63?","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""series""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n3
+@n3 syntax.nominal head=""Forecast""
+@r1 syntax.relation marker=""with"" from=$c2 to=$k1
+@n4 syntax.nominal head=""60""
+@n5 syntax.nominal head=""61""
+@n6 syntax.nominal head=""63""
+@r2 syntax.relation from=$n2 to=$c2
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5 conjunct=$n6",
+327,"give the chart a Costs serise at 30, 32, 35","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""chart""
+@n2 syntax.nominal dependent=""a"" dependent=""Costs"" head=""serise""
+@r1 syntax.relation marker=""at"" from=$n2 to=$k1
+@n3 syntax.nominal head=""30""
+@n4 syntax.nominal head=""32""
+@n5 syntax.nominal head=""35""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5",

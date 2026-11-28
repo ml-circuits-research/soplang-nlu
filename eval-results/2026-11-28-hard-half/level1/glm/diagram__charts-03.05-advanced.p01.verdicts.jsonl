@@ -1,0 +1,124 @@
+{"n": 3, "grade": "L8", "note": "Acceptable."}
+{"n": 4, "grade": "L8", "note": "Acceptable."}
+{"n": 5, "grade": "L8", "note": "Acceptable."}
+{"n": 6, "grade": "L8", "note": "Acceptable."}
+{"n": 7, "grade": "L8", "note": "Acceptable."}
+{"n": 11, "grade": "L8", "note": "Acceptable."}
+{"n": 19, "grade": "L8", "note": "Acceptable."}
+{"n": 21, "grade": "L8", "note": "Acceptable."}
+{"n": 22, "grade": "L8", "note": "Acceptable."}
+{"n": 23, "grade": "L8", "note": "Acceptable."}
+{"n": 24, "grade": "L8", "note": "Acceptable."}
+{"n": 26, "grade": "L8", "note": "Acceptable."}
+{"n": 30, "grade": "L8", "note": "Acceptable: the list after the colon may tie to 'the ER diagram' as the parts it covers."}
+{"n": 35, "grade": "L8", "note": "Acceptable."}
+{"n": 37, "grade": "L8", "note": "Acceptable."}
+{"n": 38, "grade": "L8", "note": "Acceptable."}
+{"n": 40, "grade": "L8", "note": "Acceptable."}
+{"n": 43, "grade": "L8", "note": "Acceptable."}
+{"n": 47, "grade": "L8", "note": "Acceptable."}
+{"n": 57, "grade": "L8", "note": "Acceptable."}
+{"n": 68, "grade": "L8", "note": "Acceptable."}
+{"n": 73, "grade": "L8", "note": "Acceptable: 'so' may read as a modifier of the clause."}
+{"n": 75, "grade": "L8", "note": "Acceptable."}
+{"n": 82, "grade": "L8", "note": "Acceptable."}
+{"n": 83, "grade": "L8", "note": "Acceptable."}
+{"n": 87, "grade": "L8", "note": "Acceptable."}
+{"n": 90, "grade": "L8", "note": "Acceptable."}
+{"n": 95, "grade": "L8", "note": "Acceptable."}
+{"n": 96, "grade": "L8", "note": "Acceptable."}
+{"n": 104, "grade": "L8", "note": "Acceptable."}
+{"n": 106, "grade": "L8", "note": "Acceptable."}
+{"n": 109, "grade": "L8", "note": "Acceptable."}
+{"n": 111, "grade": "L8", "note": "Acceptable."}
+{"n": 112, "grade": "L8", "note": "Acceptable."}
+{"n": 113, "grade": "L8", "note": "Acceptable."}
+{"n": 119, "grade": "L8", "note": "Acceptable."}
+{"n": 121, "grade": "L8", "note": "Acceptable."}
+{"n": 124, "grade": "L3", "note": "'a student reserving a class with a teacher, the teacher checking the booking, and the student cancelling' — the coordination joins 'flow chart' with 'the teacher' and 'the student', but 'and' joins the three parts of the scenario.", "sop": "@n1 syntax.nominal dependent=\"flow\" head=\"chart\"\n@r1 syntax.relation marker=\"for\" from=$n1 to=$n2\n@n2 syntax.nominal dependent=\"this\" head=\"scenario\"\n@n3 syntax.nominal dependent=\"a\" head=\"student\"\n@c1 syntax.clause form=nonfinite verb=\"reserving\" subject=$n3 complement=$n4\n@n4 syntax.nominal dependent=\"a\" head=\"class\"\n@r2 syntax.relation marker=\"with\" from=$n4 to=$n5\n@n5 syntax.nominal dependent=\"a\" head=\"teacher\"\n@n6 syntax.nominal dependent=\"the\" head=\"teacher\"\n@c2 syntax.clause form=nonfinite verb=\"checking\" subject=$n6 complement=$n7\n@n7 syntax.nominal dependent=\"the\" head=\"booking\"\n@n8 syntax.nominal dependent=\"the\" head=\"student\"\n@c3 syntax.clause form=nonfinite verb=\"cancelling\" subject=$n8\n@r3 syntax.relation marker=\"if\" from=$c3 to=$c4\n@n9 syntax.nominal head=\"something\"\n@c4 syntax.clause form=declarative verb=\"comes\" modifier=\"up\" subject=$n9\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c2 conjunct=$c3\n@r4 syntax.relation from=$n2 to=$k1\n@n10 syntax.nominal dependent=\"every\" head=\"stage\"\n@n11 syntax.nominal dependent=\"its\" dependent=\"own\" head=\"box\"\n@c5 syntax.clause form=imperative verb=\"give\" complement=$n10 complement=$n11\n@k2 syntax.coordination conjunction=\"and\" conjunct=$c6 conjunct=$c5\n@c6 syntax.clause form=fragment complement=$n1"}
+{"n": 126, "grade": "L8", "note": "Acceptable."}
+{"n": 127, "grade": "L8", "note": "Acceptable."}
+{"n": 129, "grade": "L8", "note": "Acceptable."}
+{"n": 130, "grade": "L8", "note": "Acceptable."}
+{"n": 134, "grade": "L8", "note": "Acceptable."}
+{"n": 136, "grade": "L8", "note": "Acceptable."}
+{"n": 137, "grade": "L8", "note": "Acceptable."}
+{"n": 141, "grade": "L8", "note": "Acceptable."}
+{"n": 142, "grade": "L8", "note": "Acceptable."}
+{"n": 143, "grade": "L8", "note": "Acceptable: 'back' may stand as a modifier of the clause the 'to' relation belongs to."}
+{"n": 151, "grade": "L8", "note": "Acceptable."}
+{"n": 157, "grade": "L8", "note": "Acceptable."}
+{"n": 160, "grade": "L3", "note": "'arrow out of Scan and round to Scan again, that's the one I need' — 'and' is made to join 'that's the one I need' as a third conjunct, but the words end the coordination at 'round to Scan again' and tie the last clause only as a comment.", "sop": "@n1 syntax.nominal head=\"arrow\"\n@r1 syntax.relation marker=\"out of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Scan\"\n@c4 syntax.clause form=fragment complement=$n1\n@c1 syntax.clause form=imperative verb=\"round\" modifier=\"again\"\n@r2 syntax.relation marker=\"to\" from=$c1 to=$n3\n@n3 syntax.nominal head=\"Scan\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c4 conjunct=$c1\n@n4 syntax.nominal head=\"that\"\n@c2 syntax.clause form=declarative verb=\"'s\" subject=$n4 complement=$n5\n@n5 syntax.nominal dependent=\"the\" head=\"one\"\n@n6 syntax.nominal head=\"I\"\n@c3 syntax.clause form=declarative verb=\"need\" subject=$n6\n@r3 syntax.relation from=$n5 to=$c3\n@r4 syntax.relation from=$c1 to=$c2"}
+{"n": 163, "grade": "L8", "note": "Acceptable."}
+{"n": 168, "grade": "L3", "note": "'good, and a loop on Login as well this time, curved like the others' — 'and' is made the conjunction of a coordination whose first conjunct already contains it, but the words join 'good' with 'a loop on Login as well this time'.", "sop": "@c1 syntax.clause form=fragment modifier=\"good\" discourse=\"and\" modifier=\"as\" modifier=\"well\" complement=$n1 complement=$n3\n@n1 syntax.nominal dependent=\"a\" head=\"loop\"\n@r1 syntax.relation marker=\"on\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Login\"\n@n3 syntax.nominal dependent=\"this\" head=\"time\"\n@c2 syntax.clause form=nonfinite verb=\"curved\"\n@r2 syntax.relation marker=\"like\" from=$c2 to=$n4\n@n4 syntax.nominal dependent=\"the\" head=\"others\"\n@r3 syntax.relation from=$c1 to=$c2"}
+{"n": 169, "grade": "L8", "note": "Acceptable."}
+{"n": 178, "grade": "L8", "note": "Acceptable."}
+{"n": 197, "grade": "L8", "note": "Acceptable."}
+{"n": 198, "grade": "L8", "note": "Acceptable: 'get rid' may read with 'get' as its auxiliary and 'rid' as its verb."}
+{"n": 199, "grade": "L8", "note": "Acceptable."}
+{"n": 201, "grade": "L1", "note": "'from Start to Approve' — 'Start' is written as the verb of an imperative clause, but it names the node the line starts from.", "sop": "@n1 syntax.nominal head=\"we\"\n@c1 syntax.clause form=declarative auxiliary=\"do\" negation=\"n't\" verb=\"want\" modifier=\"at\" modifier=\"all\" subject=$n1 complement=$n2\n@n2 syntax.nominal dependent=\"a\" head=\"line\"\n@r1 syntax.relation marker=\"from\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Start\"\n@r2 syntax.relation marker=\"to\" from=$n2 to=$n4\n@n4 syntax.nominal head=\"Approve\""}
+{"n": 205, "grade": "L8", "note": "Acceptable."}
+{"n": 208, "grade": "L8", "note": "Acceptable."}
+{"n": 212, "grade": "L8", "note": "Acceptable."}
+{"n": 215, "grade": "L8", "note": "Acceptable."}
+{"n": 216, "grade": "L8", "note": "Acceptable."}
+{"n": 217, "grade": "L8", "note": "Acceptable."}
+{"n": 224, "grade": "L8", "note": "Acceptable."}
+{"n": 225, "grade": "L8", "note": "Acceptable."}
+{"n": 229, "grade": "L8", "note": "Acceptable: 'evenely' may read as a modifier of 'leaving'."}
+{"n": 230, "grade": "L8", "note": "Acceptable: 'exactly' may stand inside the nominal of 'the north anchor'."}
+{"n": 236, "grade": "L8", "note": "Acceptable."}
+{"n": 237, "grade": "L8", "note": "Acceptable."}
+{"n": 245, "grade": "L8", "note": "Acceptable."}
+{"n": 248, "grade": "L8", "note": "Acceptable."}
+{"n": 256, "grade": "L8", "note": "Acceptable."}
+{"n": 257, "grade": "L8", "note": "Acceptable."}
+{"n": 260, "grade": "L8", "note": "Acceptable: 'get rid' may read with 'get' as its auxiliary and 'rid' as its verb."}
+{"n": 263, "grade": "L8", "note": "Acceptable."}
+{"n": 265, "grade": "L2", "note": "'remove it like before' — 'like' is held as a discourse word, so the tie between the removal and 'before' is lost.", "sop": "@c1 syntax.clause form=imperative verb=\"remove\" modifier=\"like before\" complement=$n1\n@n1 syntax.nominal head=\"it\""}
+{"n": 267, "grade": "L8", "note": "Acceptable."}
+{"n": 269, "grade": "L8", "note": "Acceptable."}
+{"n": 271, "grade": "L8", "note": "Acceptable: the misspelt 'agian' is held where it stands."}
+{"n": 275, "grade": "L8", "note": "Acceptable: the statement before the colon may stand in the same coordination as the commands."}
+{"n": 278, "grade": "L8", "note": "Acceptable."}
+{"n": 285, "grade": "L8", "note": "Acceptable."}
+{"n": 286, "grade": "L8", "note": "Acceptable."}
+{"n": 288, "grade": "L8", "note": "Acceptable."}
+{"n": 290, "grade": "L8", "note": "Acceptable."}
+{"n": 305, "grade": "L8", "note": "Acceptable."}
+{"n": 328, "grade": "L8", "note": "Acceptable."}
+{"n": 332, "grade": "L8", "note": "Acceptable."}
+{"n": 333, "grade": "L8", "note": "Acceptable."}
+{"n": 342, "grade": "L8", "note": "Acceptable."}
+{"n": 351, "grade": "L8", "note": "Acceptable: 'two steps' may stand as a measure nominal with 'ago' a modifier of the clause."}
+{"n": 353, "grade": "L3", "note": "'it should be exactly like before the last swap' — 'like' is held as the head of a nominal complement, but it links 'should be' to 'before the last swap'.", "sop": "@n1 syntax.nominal head=\"that\"\n@c1 syntax.clause form=declarative verb=\"'s\" negation=\"not\" modifier=\"right\" subject=$n1\n@n2 syntax.nominal head=\"it\"\n@c2 syntax.clause form=declarative auxiliary=\"should\" verb=\"be\" modifier=\"exactly\" subject=$n2\n@r1 syntax.relation marker=\"like before\" from=$c2 to=$n3\n@n3 syntax.nominal dependent=\"the\" dependent=\"last\" head=\"swap\"\n@k1 syntax.coordination conjunct=$c1 conjunct=$c2"}
+{"n": 357, "grade": "L8", "note": "Acceptable."}
+{"n": 358, "grade": "L8", "note": "Acceptable: 'and' may read as a discourse word with both steps complements of 'roll back'."}
+{"n": 361, "grade": "L4", "note": "'and then, if the boxes still look wrong, undo one more' — 'then' is written as a fragment sharing the verb of 'undo the last three steps', but it orders the two undo commands.", "sop": "@n1 syntax.nominal head=\"i\"\n@c1 syntax.clause form=declarative verb=\"went\" modifier=\"too\" modifier=\"far\" subject=$n1\n@r1 syntax.relation marker=\"with\" from=$c1 to=$n2\n@n2 syntax.nominal dependent=\"the\" head=\"edits\"\n@c2 syntax.clause form=imperative verb=\"undo\" complement=$n3\n@n3 syntax.nominal dependent=\"the\" dependent=\"last\" dependent=\"three\" head=\"steps\"\n@n4 syntax.nominal dependent=\"the\" head=\"boxes\"\n@c4 syntax.clause form=declarative modifier=\"still\" verb=\"look\" modifier=\"wrong\" subject=$n4\n@c5 syntax.clause form=imperative discourse=\"then\" verb=\"undo\" complement=$n5\n@n5 syntax.nominal head=\"one\" dependent=\"more\"\n@r2 syntax.relation marker=\"if\" from=$c5 to=$c4\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c2 conjunct=$c5\n@r3 syntax.relation from=$c1 to=$c2"}
+{"n": 373, "grade": "L8", "note": "Acceptable."}
+{"n": 378, "grade": "L8", "note": "Acceptable."}
+{"n": 384, "grade": "L8", "note": "Acceptable."}
+{"n": 391, "grade": "L8", "note": "Acceptable."}
+{"n": 392, "grade": "L6", "note": "'try again. this time includes more details' — the two parts are left untied, but the second says how the first is to be done.", "sop": "@c1 syntax.clause form=imperative verb=\"try\" modifier=\"again\"\n@n1 syntax.nominal dependent=\"this\" head=\"time\"\n@c2 syntax.clause form=declarative verb=\"includes\" subject=$n1 complement=$n2\n@n2 syntax.nominal dependent=\"more\" head=\"details\"\n@k1 syntax.coordination conjunct=$c1 conjunct=$c2"}
+{"n": 395, "grade": "L8", "note": "Acceptable: 'this time' may stand as a nominal of the clause."}
+{"n": 397, "grade": "L8", "note": "Acceptable: 'this time' may stand as a nominal of the clause."}
+{"n": 403, "grade": "L8", "note": "Acceptable."}
+{"n": 405, "grade": "L8", "note": "Acceptable."}
+{"n": 409, "grade": "L8", "note": "Acceptable."}
+{"n": 411, "grade": "L8", "note": "Acceptable."}
+{"n": 414, "grade": "L8", "note": "Acceptable."}
+{"n": 416, "grade": "L6", "note": "'nothing on my screen' — the fragment is tied to nothing, but it gives the reason for 'put the ER diagram back up'.", "sop": "@n1 syntax.nominal head=\"nothing\"\n@r1 syntax.relation marker=\"on\" from=$n1 to=$n2\n@n2 syntax.nominal dependent=\"my\" head=\"screen\"\n@c1 syntax.clause form=imperative verb=\"put\" modifier=\"back\" modifier=\"up\" complement=$n3\n@n3 syntax.nominal dependent=\"the\" dependent=\"ER\" head=\"diagram\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c2\n@c2 syntax.clause form=imperative verb=\"make\" modifier=\"bigger\" complement=$n4 complement=$n5\n@n4 syntax.nominal head=\"it\"\n@n5 syntax.nominal dependent=\"a\" head=\"bit\"\n@r2 syntax.relation marker=\"so\" from=$c2 to=$c3\n@n6 syntax.nominal head=\"i\"\n@c3 syntax.clause form=declarative auxiliary=\"can\" modifier=\"actually\" verb=\"see\" subject=$n6 complement=$n7\n@n7 syntax.nominal head=\"it\"\n@c4 syntax.clause form=fragment complement=$n1\n@k2 syntax.coordination conjunct=$c4 conjunct=$c1"}
+{"n": 417, "grade": "L1", "note": "'bring it back up on the screen and give it a proper size' — the commands are written as declarative clauses, but nothing lets them share the subject of 'i still don't see'.", "sop": "@n1 syntax.nominal head=\"i\"\n@c1 syntax.clause form=declarative modifier=\"still\" auxiliary=\"do\" negation=\"n't\" verb=\"see\" subject=$n1 complement=$n2\n@n2 syntax.nominal dependent=\"the\" dependent=\"mind\" head=\"map\"\n@n3 syntax.nominal head=\"you\"\n@c2 syntax.clause form=declarative verb=\"mentioned\" subject=$n3\n@c3 syntax.clause form=imperative verb=\"bring\" modifier=\"back\" modifier=\"up\" complement=$n4\n@n4 syntax.nominal head=\"it\"\n@r1 syntax.relation marker=\"on\" from=$c3 to=$n5\n@n5 syntax.nominal dependent=\"the\" head=\"screen\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c3 conjunct=$c4\n@c4 syntax.clause form=imperative verb=\"give\" complement=$n6 complement=$n7\n@n6 syntax.nominal head=\"it\"\n@n7 syntax.nominal dependent=\"a\" dependent=\"proper\" head=\"size\"\n@r2 syntax.relation from=$n2 to=$c2"}
+{"n": 427, "grade": "L8", "note": "Acceptable."}
+{"n": 450, "grade": "L8", "note": "Acceptable."}
+{"n": 466, "grade": "L8", "note": "Acceptable."}
+{"n": 468, "grade": "L8", "note": "Acceptable."}
+{"n": 477, "grade": "L8", "note": "Acceptable."}
+{"n": 478, "grade": "L1", "note": "'add the last one you deleted back' — 'back' is held as a modifier of 'deleted', but it completes 'add'.", "sop": "@c1 syntax.clause form=imperative discourse=\"now\" verb=\"add\" modifier=\"back\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" dependent=\"last\" head=\"one\"\n@n2 syntax.nominal head=\"you\"\n@c2 syntax.clause form=declarative verb=\"deleted\" subject=$n2\n@r1 syntax.relation from=$n1 to=$c2"}
+{"n": 491, "grade": "L8", "note": "Acceptable."}
+{"n": 507, "grade": "L8", "note": "Acceptable."}
+{"n": 510, "grade": "L8", "note": "Acceptable."}
+{"n": 514, "grade": "L3", "note": "'and the same on the last figure' — 'the same' is held as two modifier words of a fragment, but it is a nominal that 'redo' acts on.", "sop": "@c1 syntax.clause form=imperative verb=\"redo\" complement=$k1\n@n1 syntax.nominal head=\"that\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$n1 conjunct=$n2\n@n2 syntax.nominal dependent=\"the\" head=\"same\"\n@r1 syntax.relation marker=\"on\" from=$n2 to=$n3\n@n3 syntax.nominal dependent=\"the\" dependent=\"last\" head=\"figure\""}
+{"n": 520, "grade": "L8", "note": "Acceptable."}
+{"n": 526, "grade": "L8", "note": "Acceptable."}
+{"n": 527, "grade": "L8", "note": "Acceptable."}

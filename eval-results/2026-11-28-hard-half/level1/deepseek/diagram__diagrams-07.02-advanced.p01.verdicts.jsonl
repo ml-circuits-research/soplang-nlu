@@ -1,0 +1,114 @@
+{"n": 6, "grade": "L8", "note": "'end end' stands as one nominal and 'node Review' as another, both conjuncts of 'and' under 'with'."}
+{"n": 29, "grade": "L8", "note": "'from Start' and 'to Review' chain from the arrow, and 'with node Review and at the top' stands as two related conjuncts."}
+{"n": 55, "grade": "L8", "note": "'with end source' may start at the clause or at 'all the arrows', and 'end source' stays one nominal."}
+{"n": 56, "grade": "L8", "note": "'from Start to Review' chains and 'with end target' keeps its words together."}
+{"n": 58, "grade": "L8", "note": "'left' stays a dependent of 'end', as the word after a nominal that ends a relation with a marker."}
+{"n": 60, "grade": "L8", "note": "'from Start to Review' chains and 'end top' stands as one nominal under 'with'."}
+{"n": 75, "grade": "L3", "note": "'with end from': 'from' is held as a modifier of the clause, so the words that name the end are no longer tied to 'end'.", "sop": "@c1 syntax.clause form=imperative verb=\"detach\" complement=$n1\n@n1 syntax.nominal head=\"arrow\"\n@r1 syntax.relation marker=\"from\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Start\"\n@r2 syntax.relation marker=\"to\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Review\"\n@r3 syntax.relation marker=\"with\" from=$c1 to=$n4\n@n4 syntax.nominal dependent=\"from\" head=\"end\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$r3 conjunct=$r4\n@r4 syntax.relation marker=\"at\" from=$c1 to=$n5\n@n5 syntax.nominal dependent=\"the\" head=\"top\""}
+{"n": 76, "grade": "L3", "note": "'with end from': 'from' is held as the marker of a relation running from 'end' to 'x 120' across the 'and', so the words that name the end are lost.", "sop": "@c1 syntax.clause form=imperative verb=\"detach\" complement=$n1\n@n1 syntax.nominal head=\"arrow\"\n@r1 syntax.relation marker=\"from\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Start\"\n@r2 syntax.relation marker=\"to\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Review\"\n@r3 syntax.relation marker=\"with\" from=$c1 to=$k1\n@n4 syntax.nominal dependent=\"from\" head=\"end\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$n4 conjunct=$n5\n@n5 syntax.nominal head=\"x\"\n@n6 syntax.nominal head=\"120\"\n@r4 syntax.relation from=$n5 to=$n6"}
+{"n": 77, "grade": "L3", "note": "'with end from': 'from' is held as the marker of a relation running from 'end' to 'y 80' across the 'and', so the words that name the end are lost.", "sop": "@c1 syntax.clause form=imperative verb=\"detach\" complement=$n1\n@n1 syntax.nominal head=\"arrow\"\n@r1 syntax.relation marker=\"from\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Start\"\n@r2 syntax.relation marker=\"to\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Review\"\n@r3 syntax.relation marker=\"with\" from=$c1 to=$k1\n@n4 syntax.nominal dependent=\"from\" head=\"end\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$n4 conjunct=$n5\n@n5 syntax.nominal head=\"y\"\n@n6 syntax.nominal head=\"80\"\n@r4 syntax.relation from=$n5 to=$n6"}
+{"n": 79, "grade": "L8", "note": "'at the top' and 'y 80' both hang on the clause and 'y 80' is written as a nominal tied to its measure."}
+{"n": 82, "grade": "L3", "note": "'with end from': 'from' is held as a modifier of the clause, so the words that name the end are no longer tied to 'end'.", "sop": "@c1 syntax.clause form=imperative verb=\"detach\" complement=$n1\n@n1 syntax.nominal head=\"arrow\"\n@r1 syntax.relation marker=\"from\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Start\"\n@r2 syntax.relation marker=\"to\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Review\"\n@r3 syntax.relation marker=\"with\" from=$c1 to=$k2\n@n4 syntax.nominal dependent=\"from\" head=\"end\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$r3 conjunct=$r4\n@r4 syntax.relation marker=\"at\" from=$c1 to=$n5\n@n5 syntax.nominal dependent=\"the\" head=\"top\"\n@k2 syntax.coordination conjunction=\"and\" conjunct=$n4 conjunct=$n6\n@n6 syntax.nominal head=\"y\"\n@n7 syntax.nominal head=\"80\"\n@r5 syntax.relation from=$n6 to=$n7"}
+{"n": 84, "grade": "L8", "note": "'at the top' is a relation of the clause and 'x 120' and 'y 80' are conjuncts, each tied to its measure."}
+{"n": 85, "grade": "L8", "note": "'the y' heads a fragment that shares the verb of 'set', and each measure is tied to its property."}
+{"n": 86, "grade": "L8", "note": "'from Start to Review' chains from the arrow, and 'the x to 120' is the second half of the coordination."}
+{"n": 87, "grade": "L8", "note": "'e1' is the thing 'the y' belongs to and both measures are tied to their properties."}
+{"n": 88, "grade": "L8", "note": "'its y' heads the first half and the fragment 'the x' shares the verb of 'set'."}
+{"n": 89, "grade": "L8", "note": "'the y of all the arrows' and 'the x' each hold their measure by a relation, so nothing is left untied."}
+{"n": 90, "grade": "L8", "note": "Both halves are written, the fragment sharing the verb of 'set', with each measure tied to its property."}
+{"n": 114, "grade": "L8", "note": "'title Quarterly plan' stands as a nominal tied to 'title', which the rules allow for a name after a noun."}
+{"n": 156, "grade": "L1", "note": "'to bar': 'bar' is written as the verb of a second imperative clause, while the words give it as the value of 'the type of Sales by region'.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" head=\"type\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Sales\"\n@r2 syntax.relation marker=\"by\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"region\"\n@r3 syntax.relation marker=\"to\" from=$c1 to=$n4\n@n4 syntax.nominal head=\"bar\""}
+{"n": 162, "grade": "L8", "note": "'to' is a relation whose end is the value 'on', so the property and its value stay paired."}
+{"n": 166, "grade": "L8", "note": "The property, 'Sales by region' and the value 'on' are all tied by relations of the clause."}
+{"n": 169, "grade": "L8", "note": "'show legend' stays one nominal and 'to on' pairs the property with its value."}
+{"n": 188, "grade": "L8", "note": "'to cool' is written as an infinitive tied by 'to', which grammar allows for a word that may be a noun or a verb."}
+{"n": 189, "grade": "L8", "note": "Both halves of the coordination are written, the second sharing the verb of 'set', with 'to bar' tied to 'the type'."}
+{"n": 192, "grade": "L8", "note": "The second half is a fragment sharing the verb of 'set' and 'to default' is tied to 'the palette'."}
+{"n": 195, "grade": "L8", "note": "'by region' may start at the clause or at any nominal of it, and both halves of the coordination are written."}
+{"n": 196, "grade": "L8", "note": "Both properties and their values are tied, the second half sharing the verb of 'set'."}
+{"n": 219, "grade": "L8", "note": "Both lists are coordinated whole, each under its own 'to', and the fragment shares the verb of 'set'."}
+{"n": 220, "grade": "L8", "note": "Both value lists are written whole, and the fragment 'the values' shares the verb of 'set'."}
+{"n": 221, "grade": "L8", "note": "Both lists and both 'to' relations are written, the second half sharing the verb of 'set'."}
+{"n": 222, "grade": "L8", "note": "The two lists are written whole and each is tied to its property."}
+{"n": 223, "grade": "L8", "note": "Both lists are written whole, the fragment 'the labels' sharing the verb of 'set'."}
+{"n": 230, "grade": "L8", "note": "'by region' may start at the clause, and both list halves are written with their properties."}
+{"n": 231, "grade": "L8", "note": "Both lists are written whole and the fragment shares the verb of 'set'."}
+{"n": 232, "grade": "L8", "note": "Both lists are written whole and each is tied to its property by 'to'."}
+{"n": 233, "grade": "L8", "note": "Both 'to' relations and both lists are written, the second half a fragment sharing the verb of 'set'."}
+{"n": 235, "grade": "L8", "note": "Both lists are written whole, the second half sharing the verb of 'set' with 'to' tying it to 'the labels'."}
+{"n": 249, "grade": "L8", "note": "Both halves are written, the fragment 'the chart' sharing the verb of 'set', and its value is 'Sales by region'."}
+{"n": 250, "grade": "L8", "note": "The colour value and the chart value are both tied, the second half sharing the verb of 'set'."}
+{"n": 251, "grade": "L8", "note": "Both values are tied by 'to', and the fragment 'the chart' shares the verb of 'set'."}
+{"n": 252, "grade": "L8", "note": "Both the chart value and the index value are written, the second half sharing the verb of 'set'."}
+{"n": 253, "grade": "L8", "note": "Both values are tied by 'to', and 'the label' heads a fragment sharing the verb of 'set'."}
+{"n": 254, "grade": "L8", "note": "The chart value and the coordinated values '3, 5 and 8' are each tied to their property."}
+{"n": 255, "grade": "L8", "note": "Both 'to' relations are written and 'the colour' shares the verb of 'set' as a fragment."}
+{"n": 270, "grade": "L8", "note": "Both values are tied, and 'the value' heads a fragment sharing the verb of 'set'."}
+{"n": 275, "grade": "L8", "note": "Both properties and their values are written, the second half sharing the verb of 'set'."}
+{"n": 297, "grade": "L8", "note": "'x 120', 'width 240' and 'y 80' are three conjuncts, each property tied to its measure."}
+{"n": 302, "grade": "L8", "note": "The three property-measure pairs are conjuncts of 'and' and each measure is tied to its property."}
+{"n": 313, "grade": "L8", "note": "Both clauses are written and 'then' coordinates them; 'x 120' and 'y 80' keep their measures."}
+{"n": 331, "grade": "L8", "note": "'then' and 'and' join the three clauses in order, and the last fragment shares the verb of 'set'."}
+{"n": 333, "grade": "L8", "note": "'order ascending' is written as a nonfinite clause with 'order' as subject, which the rules allow for a participle."}
+{"n": 337, "grade": "L8", "note": "'chart Sales by region' is tied to 'chart' by a relation without a marker, which the rules allow."}
+{"n": 338, "grade": "L8", "note": "Both clauses are written, 'from Start to Review' chains, and both 'with' phrases stay tied."}
+{"n": 343, "grade": "L3", "note": "'with end from': 'from' is held as a modifier of the 'detach' clause, so the words that name the end are no longer tied to 'end'.", "sop": "@c1 syntax.clause form=imperative verb=\"start\" complement=$n1\n@n1 syntax.nominal dependent=\"a\" head=\"diagram\"\n@r1 syntax.relation marker=\"with\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"title\"\n@n3 syntax.nominal dependent=\"Quarterly\" head=\"plan\"\n@r5 syntax.relation from=$n2 to=$n3\n@k1 syntax.coordination conjunction=\"then\" conjunct=$c1 conjunct=$c2\n@c2 syntax.clause form=imperative verb=\"detach\" complement=$n4\n@n4 syntax.nominal head=\"arrow\"\n@r2 syntax.relation marker=\"from\" from=$n4 to=$n5\n@n5 syntax.nominal head=\"Start\"\n@r3 syntax.relation marker=\"to\" from=$n5 to=$n6\n@n6 syntax.nominal head=\"Review\"\n@r4 syntax.relation marker=\"with\" from=$c2 to=$n7\n@n7 syntax.nominal dependent=\"from\" head=\"end\""}
+{"n": 348, "grade": "L8", "note": "'chart Sales by region' is one nominal after 'with' with either word as head, which the rules allow."}
+{"n": 350, "grade": "L8", "note": "Both clauses are written and 'then' joins them; the two property-measure pairs are tied."}
+{"n": 351, "grade": "L8", "note": "'x 120' and 'y 80' are conjuncts under 'with', each property tied to its measure."}
+{"n": 358, "grade": "L8", "note": "'to forward' ties the value to 'the arrow of the selection'."}
+{"n": 367, "grade": "L8", "note": "'colour magenta' is one nominal and either word may be the head after a marker."}
+{"n": 368, "grade": "L8", "note": "Either word of 'layout column' may be the head, and the words stay in one nominal."}
+{"n": 369, "grade": "L8", "note": "'text colour brown' stands whole in one nominal, which keeps the property and the value together."}
+{"n": 373, "grade": "L8", "note": "After 'with', 'y' heads a fragment sharing the verb of 'add', and 'y 80' keeps its measurement."}
+{"n": 382, "grade": "L8", "note": "'to shadow' is written as an infinitive whose verb is the value word, which grammar allows."}
+{"n": 393, "grade": "L8", "note": "Every 'to' and 'from' relation may start at the clause, and both halves of the coordination are written."}
+{"n": 394, "grade": "L8", "note": "'the to y' is held as a nominal tied to 'y' by a relation, and both the two 'to Review' relations are written."}
+{"n": 404, "grade": "L8", "note": "'the category' heads a fragment sharing the verb of 'set', and both values are tied by 'to'."}
+{"n": 423, "grade": "L8", "note": "Both property-measure pairs are written, the second half as a fragment sharing the verb of 'set'."}
+{"n": 428, "grade": "L1", "note": "'to asc': 'asc' is written as the verb of an imperative clause, while the words give it as the value of 'the sort of Sales by region'.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" head=\"sort\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Sales\"\n@r2 syntax.relation marker=\"by\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"region\"\n@r3 syntax.relation marker=\"to\" from=$c1 to=$n4\n@n4 syntax.nominal head=\"asc\""}
+{"n": 430, "grade": "L8", "note": "The title value and the colour value are both tied, the fragment sharing the verb of 'set'."}
+{"n": 432, "grade": "L8", "note": "Both values are tied by 'to' and 'the chart' heads a fragment sharing the verb of 'set'."}
+{"n": 438, "grade": "L8", "note": "Either word of 'colour teal' may be the head, and the words stay in one nominal under 'with'."}
+{"n": 442, "grade": "L8", "note": "'to process' is an infinitive whose verb is the value word, tied to the clause, which grammar allows."}
+{"n": 443, "grade": "L8", "note": "'from Start to Review' chains from the link and 'colour lime' stays one nominal under 'with'."}
+{"n": 447, "grade": "L8", "note": "'to circle' is written as an infinitive tied by 'to', which grammar allows for a value word."}
+{"n": 454, "grade": "L8", "note": "'chart Sales by region' is one nominal after 'with', either word free to be the head."}
+{"n": 456, "grade": "L8", "note": "'x 120' and 'y 80' are conjuncts under 'with' with each measure tied to its property."}
+{"n": 457, "grade": "L8", "note": "'colour lime' stands as one nominal, with either word as head, which the rules allow."}
+{"n": 464, "grade": "L8", "note": "'to subprocess' is written as an infinitive tied to the clause, which grammar allows for a value word."}
+{"n": 467, "grade": "L8", "note": "'style dashed' is written as a nonfinite clause with 'style' as subject, which the rules allow."}
+{"n": 470, "grade": "L8", "note": "'to circle' is an infinitive linked to the clause, so the property and its value are tied."}
+{"n": 478, "grade": "L3", "note": "'with label Review': 'Review' is held as a second thing that 'split' acts on, while the words give it as the value of 'label'.", "sop": "@c1 syntax.clause form=imperative verb=\"split\" complement=$n1\n@n1 syntax.nominal head=\"it\"\n@r1 syntax.relation marker=\"with\" from=$c1 to=$n2\n@n2 syntax.nominal head=\"label\" dependent=\"Review\""}
+{"n": 479, "grade": "L8", "note": "Both properties and their values are written, the second half sharing the verb of 'set'."}
+{"n": 491, "grade": "L8", "note": "'to shadow' is an infinitive tied to the clause, which grammar allows for the value word."}
+{"n": 492, "grade": "L8", "note": "'bar width' and 'title weight' stand whole as nominals and both values are tied by 'to'."}
+{"n": 506, "grade": "L8", "note": "Both lists are written whole with their properties, the second half sharing the verb of 'set'."}
+{"n": 525, "grade": "L8", "note": "'to dashed' ties the value to 'the style of e1', written as an infinitive clause."}
+{"n": 527, "grade": "L8", "note": "'its' is the thing set and 'to x' / 'to 40' are its two relations, so every word is placed and tied."}
+{"n": 530, "grade": "L8", "note": "'value labels of Sales by region' is one nominal and 'to on' pairs it with its value."}
+{"n": 532, "grade": "L8", "note": "'y max' heads the nominal with 'the' and 'y' as dependents, and '15' is tied by 'to'."}
+{"n": 536, "grade": "L8", "note": "'Bar Gap one' is tied together by a relation without a marker, so the name is not left loose."}
+{"n": 537, "grade": "L8", "note": "Both properties and their values are written, the second half sharing the verb of 'set'."}
+{"n": 544, "grade": "L8", "note": "Both values are tied to their properties, the second half a fragment sharing the verb of 'set'."}
+{"n": 557, "grade": "L8", "note": "Both values are tied by 'to', and the fragment 'the size' shares the verb of 'set'."}
+{"n": 558, "grade": "L8", "note": "Both values are written and tied, the second half sharing the verb of 'set'."}
+{"n": 565, "grade": "L8", "note": "'route orthogonal' stays one nominal and the value 'From Port one' is held as tied words after 'port'."}
+{"n": 575, "grade": "L8", "note": "'to stacked' is an infinitive tied to the clause, which grammar allows for the value word."}
+{"n": 576, "grade": "L8", "note": "'Bar Gap one' is tied by a relation without a marker and both values hang on their properties."}
+{"n": 583, "grade": "L8", "note": "Both property-measure pairs are written, the second half sharing the verb of 'set'."}
+{"n": 585, "grade": "L8", "note": "'desc' is held after 'to' as the end of a relation, which is where the words put it."}
+{"n": 588, "grade": "L8", "note": "'then' and 'and' join the three clauses in order and the last fragment shares the verb of 'set'."}
+{"n": 592, "grade": "L8", "note": "Both values are tied to their properties, the second half a fragment sharing the verb of 'set'."}
+{"n": 602, "grade": "L8", "note": "'to forward' ties the value to 'its arrow'."}
+{"n": 603, "grade": "L3", "note": "'the from x of e1': 'the' is held as a nominal on its own while 'from x' and 'of e1' hang on the clause, so the attribute the words name is split.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" dependent=\"from\" head=\"x\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"e1\"\n@r2 syntax.relation marker=\"to\" from=$c1 to=$n3\n@n3 syntax.nominal head=\"15\""}
+{"n": 606, "grade": "L8", "note": "'from Start to Review' chains and 'to 120' may start at the clause, so both values are tied."}
+{"n": 607, "grade": "L3", "note": "'to North': the relation starts at 'region', so 'North' is no longer tied to 'the category of Sales by region' as its value.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" head=\"category\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"Sales\"\n@r2 syntax.relation marker=\"by\" from=$n1 to=$n3\n@n3 syntax.nominal head=\"region\"\n@r3 syntax.relation marker=\"to\" from=$c1 to=$n4\n@n4 syntax.nominal head=\"North\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c2\n@n5 syntax.nominal dependent=\"the\" head=\"label\"\n@r4 syntax.relation marker=\"to\" from=$c2 to=$n6\n@n6 syntax.nominal head=\"Review\"\n@c2 syntax.clause form=fragment complement=$n5 ellipsis=$c1"}
+{"n": 616, "grade": "L1", "note": "'from Start': 'Start' is written as the verb of an imperative clause, while the words give it as the name of the node the arrow comes from.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" head=\"label\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"arrow\"\n@r2 syntax.relation marker=\"from\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Start\"\n@r3 syntax.relation marker=\"to\" from=$n2 to=$n4\n@n4 syntax.nominal head=\"Review\"\n@r4 syntax.relation marker=\"to\" from=$c1 to=$n5\n@n5 syntax.nominal head=\"Review\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c2\n@n6 syntax.nominal dependent=\"the\" head=\"style\"\n@r5 syntax.relation marker=\"to\" from=$c2 to=$n7\n@n7 syntax.nominal head=\"solid\"\n@c2 syntax.clause form=fragment complement=$n6 ellipsis=$c1"}
+{"n": 619, "grade": "L8", "note": "'to document' ties the value to the clause as an infinitive, which grammar allows for a value word."}
+{"n": 624, "grade": "L8", "note": "'Title Colour one' is held as tied words after its property, so nothing is left loose."}
+{"n": 626, "grade": "L8", "note": "Both values are tied by 'to' and the fragment 'the colour' shares the verb of 'set'."}
+{"n": 635, "grade": "L8", "note": "'edge left' stands as one nominal after 'with' and both property-measure pairs are tied."}
+{"n": 636, "grade": "L8", "note": "Both property-measure pairs are written and tied, the fragment sharing the verb of 'set'."}
+{"n": 641, "grade": "L3", "note": "'the to x': 'the' is held as a nominal of its own, so the attribute the words name is split between 'the' and 'to x'.", "sop": "@c1 syntax.clause form=imperative verb=\"set\" complement=$n1\n@n1 syntax.nominal dependent=\"the\" head=\"arrow\"\n@r1 syntax.relation marker=\"of\" from=$n1 to=$n2\n@n2 syntax.nominal head=\"arrow\"\n@r2 syntax.relation marker=\"from\" from=$n2 to=$n3\n@n3 syntax.nominal head=\"Start\"\n@r3 syntax.relation marker=\"to\" from=$n2 to=$n4\n@n4 syntax.nominal head=\"Review\"\n@r4 syntax.relation marker=\"to\" from=$c1 to=$n5\n@n5 syntax.nominal head=\"forward\"\n@k1 syntax.coordination conjunction=\"and\" conjunct=$c1 conjunct=$c2\n@n6 syntax.nominal dependent=\"the\" dependent=\"to\" head=\"x\"\n@r5 syntax.relation marker=\"to\" from=$c2 to=$n7\n@n7 syntax.nominal head=\"40\"\n@c2 syntax.clause form=fragment complement=$n6 ellipsis=$c1"}
+{"n": 643, "grade": "L8", "note": "Both property-measure pairs are written, the fragment sharing the verb of 'set'."}

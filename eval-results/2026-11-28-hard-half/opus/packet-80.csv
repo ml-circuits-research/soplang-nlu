@@ -1,0 +1,1891 @@
+n,text,sop,alt,label_state
+1,"heights first, then widths: that part Intro, row 2, takes 260 and then 400","@n1 syntax.nominal head=""heights""
+@c1 syntax.clause form=fragment modifier=""first"" complement=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c2
+@n2 syntax.nominal head=""widths""
+@n3 syntax.nominal dependent=""that"" head=""part""
+@n4 syntax.nominal head=""Intro""
+@n5 syntax.nominal head=""row""
+@n6 syntax.nominal head=""2""
+@c2 syntax.clause form=declarative verb=""takes"" modifier=""then"" subject=$n3 complement=$k2
+@n7 syntax.nominal head=""260""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n7 conjunct=$n8
+@n8 syntax.nominal head=""400""
+@c3 syntax.clause form=fragment complement=$n2
+@r1 syntax.relation from=$n3 to=$n4
+@r2 syntax.relation from=$n3 to=$n5
+@r3 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal head=""heights"" dependent=""first""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c3
+@n2 syntax.nominal head=""widths""
+@n3 syntax.nominal dependent=""that"" head=""part"" dependent=""Intro""
+@n4 syntax.nominal head=""row"" dependent=""2""
+@c1 syntax.clause form=declarative verb=""takes"" discourse=""and"" complement=$n5
+@n5 syntax.nominal head=""260""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@n6 syntax.nominal head=""400""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2
+@c3 syntax.clause form=fragment complement=$n2
+@r2 syntax.relation from=$n2 to=$k3
+@k3 syntax.coordination conjunct=$n3 conjunct=$n4
+@c4 syntax.clause form=fragment complement=$n6",
+2,"update the part Intro 2 with color Second, 400 wide and 30 tall","@c1 syntax.clause form=imperative verb=""update"" modifier=""wide"" discourse=""and"" modifier=""tall"" complement=$n1 complement=$n6 complement=$n7
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""2""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n4
+@n4 syntax.nominal head=""color""
+@n5 syntax.nominal head=""Second""
+@n6 syntax.nominal head=""400""
+@n7 syntax.nominal head=""30""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n2 to=$n3
+@r4 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative verb=""update"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""color"" dependent=""Second""
+@n3 syntax.nominal dependent=""400"" head=""wide""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""30"" head=""tall""",
+3,"rework part Intro 2: Second, 400, 30","@c1 syntax.clause form=imperative verb=""rework"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@n3 syntax.nominal dependent=""Second"" head=""400""
+@n4 syntax.nominal head=""30""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""rework"" complement=$n1
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@n2 syntax.nominal head=""Second""
+@n3 syntax.nominal head=""400""
+@n4 syntax.nominal head=""30""
+@r1 syntax.relation from=$c1 to=$k1
+@r2 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+4,"next: part Intro 2, recolored Second","@c1 syntax.clause form=fragment modifier=""next"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@c2 syntax.clause form=nonfinite verb=""recolored"" complement=$n3
+@n3 syntax.nominal head=""Second""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=fragment modifier=""next"" modifier=""recolored"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@n2 syntax.nominal head=""Second""",
+5,will the part Intro 2 get color Second at 400 wide?,"@c1 syntax.clause form=interrogative auxiliary=""will"" verb=""get"" subject=$n1 complement=$n4 complement=$n5
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""2""
+@n4 syntax.nominal head=""color""
+@n5 syntax.nominal head=""Second""
+@r1 syntax.relation marker=""at"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""400"" head=""wide""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""will"" verb=""get"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2""
+@c2 syntax.clause form=interrogative verb=""color"" complement=$n2
+@n2 syntax.nominal head=""Second""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""400"" head=""wide""
+@r2 syntax.relation from=$c1 to=$c2",
+6,"swap part Intro 2 over to Second, width 400","@c1 syntax.clause form=imperative verb=""swap"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Second""
+@n4 syntax.nominal head=""width""
+@n5 syntax.nominal head=""400""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$n2
+@c2 syntax.clause form=fragment complement=$n4
+@r3 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative verb=""swap"" modifier=""over"" complement=$k1
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Second""
+@n3 syntax.nominal head=""width"" dependent=""400""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+7,"my grid says the intro strip runs long, so pull part Intro 2 in — Second color, 400 width","@n1 syntax.nominal dependent=""my"" head=""grid""
+@c1 syntax.clause form=declarative verb=""says"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""intro"" head=""strip""
+@c2 syntax.clause form=declarative verb=""runs"" modifier=""long"" subject=$n2
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""pull"" modifier=""in"" complement=$n3
+@n3 syntax.nominal dependent=""part"" head=""Intro""
+@n4 syntax.nominal head=""2""
+@n5 syntax.nominal dependent=""Second"" head=""color""
+@n6 syntax.nominal dependent=""400"" head=""width""
+@r1 syntax.relation from=$c1 to=$c2
+@c4 syntax.clause form=fragment complement=$n5 ellipsis=$c3
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""my"" head=""grid""
+@c1 syntax.clause form=declarative verb=""says"" modifier=""long"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""intro"" dependent=""strip"" head=""runs""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""pull"" modifier=""in"" complement=$n3
+@n3 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@n4 syntax.nominal head=""Second color""
+@n5 syntax.nominal dependent=""400"" head=""width""
+@r1 syntax.relation from=$c2 to=$n5
+@r2 syntax.relation from=$n3 to=$n4",
+8,restyle part Intro 2,"@c1 syntax.clause form=imperative verb=""restyle"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""restyle"" complement=$n1
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""",
+9,color Second on part Intro 2,"@c1 syntax.clause form=imperative verb=""color"" modifier=""Second""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""color"" complement=$n1
+@n1 syntax.nominal head=""Second""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""",
+10,"rather broad, the part Intro 2 this time","@n1 syntax.nominal dependent=""rather"" dependent=""broad"" dependent=""the"" dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@n3 syntax.nominal dependent=""this"" head=""time""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment modifier=""rather"" modifier=""broad"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2""
+@n2 syntax.nominal dependent=""this"" head=""time""",
+11,let the part Intro 2 stand 400 tall in Second,"@c1 syntax.clause form=imperative verb=""let""
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""2""
+@c2 syntax.clause form=nonfinite verb=""stand"" modifier=""tall"" subject=$n1 complement=$n4
+@n4 syntax.nominal head=""400""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Second""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""let"" modifier=""tall"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""part"" dependent=""Intro"" dependent=""2"" head=""stand"" dependent=""400""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Second""",
+12,"set part Intro 2 vertical at 400, colored Second","@c1 syntax.clause form=imperative verb=""set"" modifier=""vertical"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal head=""400""
+@c2 syntax.clause form=nonfinite verb=""colored"" complement=$n4
+@n4 syntax.nominal head=""Second""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""set"" modifier=""vertical"" modifier=""colored"" complement=$n1 complement=$n3
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""400""
+@n3 syntax.nominal head=""Second""",
+13,"now that we've regrouped things, run through the part Intro 2 as well — give it the Second finish and a height of 400","@c1 syntax.clause form=imperative modifier=""now"" verb=""run"" modifier=""as"" modifier=""well""
+@r1 syntax.relation marker=""that"" from=$c1 to=$c2
+@n1 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative auxiliary=""'ve"" verb=""regrouped"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""things""
+@r2 syntax.relation marker=""through"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""part""
+@n4 syntax.nominal head=""Intro""
+@n5 syntax.nominal head=""2""
+@c3 syntax.clause form=imperative verb=""give"" complement=$n6 complement=$k1
+@n6 syntax.nominal head=""it""
+@n7 syntax.nominal dependent=""the"" dependent=""Second"" head=""finish""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n7 conjunct=$n8
+@n8 syntax.nominal dependent=""a"" head=""height""
+@r3 syntax.relation marker=""of"" from=$n8 to=$n9
+@n9 syntax.nominal head=""400""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c3
+@r4 syntax.relation from=$n3 to=$n4
+@r5 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=fragment modifier=""now""
+@r1 syntax.relation marker=""that"" from=$c1 to=$c2
+@n1 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative auxiliary=""'ve"" verb=""regrouped"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""things""
+@c3 syntax.clause form=imperative verb=""run"" modifier=""as"" modifier=""well""
+@r2 syntax.relation marker=""through"" from=$c3 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2""
+@c4 syntax.clause form=imperative verb=""give"" complement=$n4 complement=$k1
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""the"" dependent=""Second"" head=""finish""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal dependent=""a"" head=""height""
+@r3 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal head=""400""
+@r4 syntax.relation from=$c2 to=$c4
+@r5 syntax.relation from=$c2 to=$c3",
+14,"both neighbours already went dark, so follow suit: part Intro 2 turns Second and rises to 400","@n1 syntax.nominal dependent=""both"" head=""neighbours""
+@c1 syntax.clause form=declarative modifier=""already"" verb=""went"" modifier=""dark"" subject=$n1
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3 conjunct=$c4
+@c2 syntax.clause form=imperative verb=""follow"" complement=$n2
+@n2 syntax.nominal head=""suit""
+@n3 syntax.nominal dependent=""part"" head=""Intro""
+@n4 syntax.nominal head=""2""
+@c3 syntax.clause form=declarative verb=""turns"" subject=$n3 complement=$n5
+@n5 syntax.nominal head=""Second""
+@c4 syntax.clause form=declarative verb=""rises""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""400""
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""both"" head=""neighbours""
+@c1 syntax.clause form=declarative modifier=""already"" verb=""went"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""dark""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""follow"" complement=$n3
+@n3 syntax.nominal head=""suit""
+@n4 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@c3 syntax.clause form=declarative verb=""turns"" subject=$n4 complement=$k2
+@n5 syntax.nominal head=""Second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""rises""
+@r1 syntax.relation marker=""to"" from=$n6 to=$n7
+@n7 syntax.nominal head=""400""
+@r2 syntax.relation from=$c1 to=$c3",
+15,adjust part Intro 2,"@c1 syntax.clause form=imperative verb=""adjust"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""adjust"" complement=$n1
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""",
+16,height 400 for part Intro 2,"@n1 syntax.nominal head=""height""
+@n2 syntax.nominal head=""400""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""part"" head=""Intro""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""height"" dependent=""400""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@c1 syntax.clause form=fragment complement=$n1",
+17,render part Intro 2 rather high,"@c1 syntax.clause form=imperative verb=""render"" modifier=""rather"" modifier=""high"" complement=$n1
+@n1 syntax.nominal dependent=""part"" head=""Intro""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""render"" modifier=""rather"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""part"" dependent=""Intro"" dependent=""2""
+@n2 syntax.nominal head=""high""",
+18,"top region needs more air, so drag the part Intro to row 2 and let it measure 260 upward and 400 across","@n1 syntax.nominal dependent=""top"" head=""region""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""more"" head=""air""
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""drag"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""part""
+@n4 syntax.nominal head=""Intro""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""row""
+@n6 syntax.nominal head=""2""
+@c3 syntax.clause form=imperative verb=""let""
+@n7 syntax.nominal head=""it""
+@c4 syntax.clause form=nonfinite verb=""measure"" modifier=""upward"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""260""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c5
+@n9 syntax.nominal head=""400""
+@c5 syntax.clause form=fragment modifier=""across"" complement=$n9 ellipsis=$c4
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n5 to=$n6
+@r4 syntax.relation from=$c3 to=$k2","@n1 syntax.nominal dependent=""top"" head=""region""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""more"" head=""air""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""drag"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""row"" dependent=""2""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""let"" complement=$n5
+@n5 syntax.nominal head=""it""
+@c4 syntax.clause form=nonfinite verb=""measure"" subject=$n5 complement=$k3
+@n6 syntax.nominal dependent=""260"" head=""upward""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n6 conjunct=$n7
+@n7 syntax.nominal head=""400"" dependent=""across""
+@r2 syntax.relation from=$c3 to=$c4",
+19,"Deep Dive 3 Summary — change a part, please","@n1 syntax.nominal dependent=""Deep"" head=""Dive""
+@n2 syntax.nominal head=""3""
+@n3 syntax.nominal head=""Summary""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""part""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=fragment modifier=""Deep"" complement=$n1
+@n1 syntax.nominal head=""Dive 3 Summary""
+@c2 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation from=$c2 to=$c1",
+20,"a part for me, Deep Dive 3 Summary","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Deep"" dependent=""Dive"" dependent=""3"" head=""Summary""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Deep Dive 3 Summary""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+21,"a part for me, Status 1 Follow-up 400","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Status""
+@n4 syntax.nominal head=""1""
+@n5 syntax.nominal head=""Follow-up""
+@n6 syntax.nominal head=""400""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n3 to=$n5
+@r5 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Status 1 Follow-up 400""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+22,"a part for me, Summary 2 Roadmap 30","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Summary""
+@n4 syntax.nominal head=""2""
+@n5 syntax.nominal head=""Roadmap""
+@n6 syntax.nominal head=""30""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n3 to=$n5
+@r5 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""a"" head=""part""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Summary 2 Roadmap 30""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+23,change a pat Summary 2 Roadmap 30,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1 complement=$n2 complement=$n4
+@n1 syntax.nominal dependent=""a"" head=""pat""
+@n2 syntax.nominal head=""Summary""
+@n3 syntax.nominal head=""2""
+@n4 syntax.nominal head=""Roadmap""
+@n5 syntax.nominal head=""30""
+@r1 syntax.relation from=$n2 to=$n3
+@r2 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""pat"" dependent=""Summary"" dependent=""2"" dependent=""Roadmap"" dependent=""30""",
+24,change a parrt Summary 2 Roadmap 30,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" dependent=""parrt"" head=""Roadmap""
+@n2 syntax.nominal head=""Summary""
+@n3 syntax.nominal head=""2""
+@n4 syntax.nominal head=""30""
+@r1 syntax.relation from=$n1 to=$n4
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""parrt"" dependent=""Summary"" dependent=""2"" dependent=""Roadmap"" dependent=""30""",
+25,set one part Sketch 2,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""one"" dependent=""part"" head=""Sketch""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""part"" dependent=""Sketch"" dependent=""2""",
+26,set one part Deep Dive 3 Summary,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""one"" head=""part""
+@n2 syntax.nominal dependent=""Deep"" dependent=""Dive"" dependent=""3"" head=""Summary""","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""part"" dependent=""Deep"" dependent=""Dive"" dependent=""3"" dependent=""Summary""",
+27,change a part Status 1 Follow-up 400,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part""
+@n2 syntax.nominal head=""Status""
+@n3 syntax.nominal head=""1""
+@n4 syntax.nominal head=""Follow-up""
+@n5 syntax.nominal head=""400""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n2 to=$n4
+@r4 syntax.relation from=$n2 to=$n5","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part"" dependent=""Status"" dependent=""1"" dependent=""Follow"" dependent=""up"" dependent=""400""",
+28,place a part Status 1 Follow-up about four hundred,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""a"" head=""part""
+@n2 syntax.nominal dependent=""Status"" dependent=""1"" head=""Follow-up""
+@n3 syntax.nominal dependent=""about"" dependent=""four"" head=""hundred""","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part"" dependent=""Status"" dependent=""1"" dependent=""Follow"" dependent=""up""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""four"" head=""hundred""",
+29,place a part Summary 2 Roadmap about thirty,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part""
+@n2 syntax.nominal dependent=""Summary"" dependent=""2"" head=""Roadmap""
+@n3 syntax.nominal dependent=""about"" head=""thirty""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part"" dependent=""Summary"" dependent=""2"" dependent=""Roadmap""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal head=""thirty""",
+30,place a part Follow-up 3 about thirty,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""a"" dependent=""part"" head=""Follow-up""
+@n2 syntax.nominal head=""3""
+@n3 syntax.nominal dependent=""about"" head=""thirty""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""part"" dependent=""Follow"" dependent=""up"" dependent=""3""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal head=""thirty""",
+31,"for the part Intro, row 2, go Secondary on the paint and set the box to 400 by 30","@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""row""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=imperative verb=""go"" complement=$n5
+@n5 syntax.nominal head=""Secondary""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""paint""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""box""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n8
+@n8 syntax.nominal head=""400""
+@r4 syntax.relation marker=""by"" from=$n8 to=$n9
+@n9 syntax.nominal head=""30""
+@r5 syntax.relation from=$n1 to=$n2
+@r6 syntax.relation from=$n1 to=$n3
+@r7 syntax.relation from=$n3 to=$n4","@r1 syntax.relation marker=""for"" from=$c3 to=$k2
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro""
+@n2 syntax.nominal head=""row"" dependent=""2""
+@c1 syntax.clause form=imperative verb=""go"" complement=$n3
+@n3 syntax.nominal head=""Secondary""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""paint""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""box""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""400""
+@r4 syntax.relation marker=""by"" from=$n6 to=$n7
+@n7 syntax.nominal head=""30""
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2
+@c3 syntax.clause form=fragment",
+32,so the part Intro 2 should turn Sceond and rise to a height of 400 before we are through,"@c1 syntax.clause form=declarative modifier=""so"" auxiliary=""should"" verb=""turn"" subject=$n1 complement=$n4
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""2""
+@n4 syntax.nominal head=""Sceond""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative verb=""rise""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""height""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal head=""400""
+@r3 syntax.relation marker=""before"" from=$c2 to=$c3
+@n7 syntax.nominal head=""we""
+@c3 syntax.clause form=declarative verb=""are"" modifier=""through"" subject=$n7
+@r4 syntax.relation from=$n1 to=$n2
+@r5 syntax.relation from=$n2 to=$n3","@r1 syntax.relation marker=""so"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""turn"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""Sceond""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""rise""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""height""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal head=""400""
+@r4 syntax.relation marker=""before"" from=$c1 to=$c2
+@n6 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative verb=""are"" modifier=""through"" subject=$n6",
+33,can you change a part Status 1 Follow-up 400?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""part""
+@n3 syntax.nominal head=""Status""
+@n4 syntax.nominal head=""1""
+@n5 syntax.nominal head=""Follow-up""
+@n6 syntax.nominal head=""400""
+@r1 syntax.relation from=$n2 to=$n3
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n3 to=$n5
+@r4 syntax.relation from=$n5 to=$n6","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""part"" dependent=""Status"" dependent=""1"" dependent=""Follow"" dependent=""up"" dependent=""400""",
+34,"Second it is for part Intro, row 2 — 400 wide, 30 tall","@c1 syntax.clause form=declarative modifier=""Second"" verb=""is"" modifier=""tall"" subject=$n1 complement=$n3 complement=$n6
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""part"" head=""Intro""
+@n3 syntax.nominal head=""row""
+@n4 syntax.nominal head=""2""
+@n5 syntax.nominal head=""400"" dependent=""wide""
+@n6 syntax.nominal head=""30""
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n3 to=$n5","@c1 syntax.clause form=imperative verb=""Second""
+@n1 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""for"" from=$c2 to=$k1
+@n2 syntax.nominal head=""part"" dependent=""Intro""
+@n3 syntax.nominal head=""row"" dependent=""2""
+@n4 syntax.nominal dependent=""400"" head=""wide""
+@n5 syntax.nominal dependent=""30"" head=""tall""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c1 to=$c3
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3
+@c3 syntax.clause form=fragment complement=$k2
+@k2 syntax.coordination conjunct=$n4 conjunct=$n5",
+35,how about making the part Intro 2 Second with a 400 height?,"@c1 syntax.clause form=nonfinite discourse=""how"" discourse=""about"" verb=""making"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro"" dependent=""Second""
+@n3 syntax.nominal head=""2""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""400"" head=""height""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=nonfinite modifier=""how"" modifier=""about"" verb=""making"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro"" dependent=""2"" dependent=""Second""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""400"" head=""height""",
+36,take the part Intro to index 2 with height 260 and width 400,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""index""
+@n4 syntax.nominal head=""2""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$k1
+@n5 syntax.nominal head=""height""
+@n6 syntax.nominal head=""260""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n7
+@n7 syntax.nominal head=""width""
+@n8 syntax.nominal head=""400""
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n3 to=$n4
+@r5 syntax.relation from=$n5 to=$n6
+@r6 syntax.relation from=$n7 to=$n8","@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""index"" dependent=""2""
+@r2 syntax.relation marker=""with"" from=$n1 to=$k1
+@n3 syntax.nominal head=""height"" dependent=""260""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""width"" dependent=""400""",
+37,"pairing with the sidebar redo: reflow the part Intro through row 2, standing 260 deep, running 400 across the board","@c1 syntax.clause form=nonfinite verb=""pairing""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""sidebar"" head=""redo""
+@c2 syntax.clause form=imperative verb=""reflow"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""part""
+@n3 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""through"" from=$c2 to=$n4
+@n4 syntax.nominal head=""row""
+@n5 syntax.nominal head=""2""
+@c3 syntax.clause form=nonfinite verb=""standing"" modifier=""deep"" complement=$n6
+@n6 syntax.nominal head=""260""
+@c4 syntax.clause form=nonfinite verb=""running"" complement=$n7
+@n7 syntax.nominal head=""400""
+@r3 syntax.relation attachment=ambiguous marker=""across"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""board""
+@r4 syntax.relation from=$c2 to=$c1
+@r5 syntax.relation from=$c2 to=$c3
+@r6 syntax.relation from=$n2 to=$n3
+@r7 syntax.relation from=$n4 to=$n5
+@r8 syntax.relation from=$c3 to=$c4","@n1 syntax.nominal head=""pairing""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sidebar"" head=""redo""
+@c1 syntax.clause form=imperative verb=""reflow"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro""
+@r2 syntax.relation marker=""through"" from=$c1 to=$n4
+@n4 syntax.nominal head=""row"" dependent=""2""
+@c2 syntax.clause form=nonfinite verb=""standing"" complement=$n5
+@n5 syntax.nominal dependent=""260"" head=""deep""
+@c3 syntax.clause form=nonfinite verb=""running"" complement=$n6
+@n6 syntax.nominal head=""400""
+@r3 syntax.relation marker=""across"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""board""
+@c4 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$c1 to=$c4
+@r5 syntax.relation from=$n3 to=$c2
+@r6 syntax.relation from=$n3 to=$c3",
+38,"Summary 2 Roadmap 30 — change a part, please","@n1 syntax.nominal head=""Summary""
+@n2 syntax.nominal head=""2""
+@n3 syntax.nominal head=""Roadmap""
+@n4 syntax.nominal head=""30""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n5
+@n5 syntax.nominal dependent=""a"" head=""part""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3 conjunct=$c1
+@r1 syntax.relation from=$n1 to=$n2
+@c3 syntax.clause form=fragment complement=$n3
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""Summary"" dependent=""2"" dependent=""Roadmap"" dependent=""30""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""part""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+39,"repaint the part Intro, row 2, in Second at 400 by 30, then move that part Intro, row 2, to 400, 30","@c1 syntax.clause form=imperative verb=""repaint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""row""
+@n4 syntax.nominal head=""2""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n5
+@n5 syntax.nominal head=""Second""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n6
+@n6 syntax.nominal head=""400""
+@r3 syntax.relation marker=""by"" from=$n6 to=$n7
+@n7 syntax.nominal head=""30""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n8
+@n8 syntax.nominal dependent=""that"" head=""part""
+@n9 syntax.nominal head=""Intro""
+@n10 syntax.nominal head=""row""
+@n11 syntax.nominal head=""2""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n12
+@n12 syntax.nominal head=""400""
+@n13 syntax.nominal head=""30""
+@r5 syntax.relation from=$n1 to=$n2
+@r6 syntax.relation from=$n1 to=$n3
+@r7 syntax.relation from=$n3 to=$n4
+@r8 syntax.relation from=$n8 to=$n9
+@r9 syntax.relation from=$n9 to=$n10
+@r10 syntax.relation from=$n10 to=$n11
+@r11 syntax.relation from=$n12 to=$n13","@c1 syntax.clause form=imperative verb=""repaint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""part"" dependent=""Intro""
+@n2 syntax.nominal head=""row"" dependent=""2""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Second""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""400""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""30""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n6
+@n6 syntax.nominal dependent=""that"" head=""part"" dependent=""Intro""
+@n7 syntax.nominal head=""row"" dependent=""2""
+@r4 syntax.relation marker=""to"" from=$c2 to=$k2
+@n8 syntax.nominal head=""400""
+@n9 syntax.nominal head=""30""
+@r5 syntax.relation from=$n1 to=$n2
+@r6 syntax.relation from=$n6 to=$n7
+@k2 syntax.coordination conjunct=$n8 conjunct=$n9",
+40,"Status 1 Follow-up 400 — change a part, please","@n1 syntax.nominal head=""Status""
+@n2 syntax.nominal head=""1""
+@n3 syntax.nominal head=""Follow-up""
+@n4 syntax.nominal head=""400""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n5
+@n5 syntax.nominal dependent=""a"" head=""part""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""Status"" dependent=""1"" dependent=""Follow"" dependent=""up"" dependent=""400""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""part""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+41,"the object Inro trims down gently to 120 high by 260 wide, matching its neighbours","@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Inro""
+@c1 syntax.clause form=declarative verb=""trims"" modifier=""down"" modifier=""gently"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""120"" dependent=""high"" dependent=""wide""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""260""
+@c2 syntax.clause form=nonfinite verb=""matching"" complement=$n5
+@n5 syntax.nominal dependent=""its"" head=""neighbours""
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Inro""
+@c1 syntax.clause form=declarative verb=""trims"" modifier=""down"" modifier=""gently"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""120"" head=""high""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""260"" head=""wide""
+@c2 syntax.clause form=nonfinite verb=""matching"" complement=$n4
+@n4 syntax.nominal dependent=""its"" head=""neighbours""
+@r3 syntax.relation from=$n1 to=$c2",
+42,"the shape Intro gets rebalanced — 120 up, 260 across","@n1 syntax.nominal dependent=""the"" head=""shape""
+@n2 syntax.nominal head=""Intro""
+@c1 syntax.clause form=declarative auxiliary=""gets"" verb=""rebalanced"" subject=$n1
+@n3 syntax.nominal head=""120""
+@c2 syntax.clause form=fragment modifier=""up"" complement=$n3
+@n4 syntax.nominal head=""260"" dependent=""across""
+@r1 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""the"" head=""shape"" dependent=""Intro""
+@c1 syntax.clause form=declarative verb=""gets"" modifier=""rebalanced"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""120"" dependent=""up""
+@n3 syntax.nominal head=""260"" dependent=""across""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+43,"Main for the paint, Second for the handle — one object Intro, please","@n1 syntax.nominal head=""Main""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""paint""
+@n3 syntax.nominal head=""Second""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""handle""
+@n5 syntax.nominal dependent=""one"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$k1 complement=$n3
+@k1 syntax.coordination conjunct=$n1 conjunct=$n5","@c1 syntax.clause form=fragment modifier=""Main"" discourse=""please"" complement=$n4
+@r1 syntax.relation marker=""for"" from=$c1 to=$k1
+@n1 syntax.nominal dependent=""the"" head=""paint""
+@n2 syntax.nominal head=""Second""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""handle""
+@n4 syntax.nominal dependent=""one"" head=""object"" dependent=""Intro""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+44,"quick detour while it is fresh: the object Intro should come out Main colored, 260 around the middle","@n1 syntax.nominal dependent=""quick"" head=""detour""
+@r1 syntax.relation marker=""while"" from=$c4 to=$c1
+@n2 syntax.nominal head=""it""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""fresh"" subject=$n2
+@n3 syntax.nominal dependent=""the"" head=""object""
+@n4 syntax.nominal head=""Intro""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""come"" modifier=""out"" subject=$n3
+@c3 syntax.clause form=nonfinite modifier=""Main"" verb=""colored""
+@n5 syntax.nominal head=""260""
+@r2 syntax.relation marker=""around"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""middle""
+@c4 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c4 conjunct=$c2 conjunct=$c5
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$c2 to=$c3
+@c5 syntax.clause form=fragment complement=$n5","@c1 syntax.clause form=imperative verb=""quick"" complement=$n1
+@n1 syntax.nominal head=""detour""
+@r1 syntax.relation marker=""while"" from=$c1 to=$c2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""fresh"" subject=$n2
+@n3 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""come"" modifier=""out"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""Main""
+@c4 syntax.clause form=nonfinite verb=""colored""
+@n5 syntax.nominal head=""260""
+@r2 syntax.relation marker=""around"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""middle""
+@r3 syntax.relation from=$c1 to=$c3
+@r4 syntax.relation from=$c3 to=$n5
+@r5 syntax.relation from=$n4 to=$c4",
+45,"a figure, the one named Intro, keeps Intro for color once its 260 resize lands","@n1 syntax.nominal dependent=""a"" head=""figure""
+@n2 syntax.nominal dependent=""the"" head=""one""
+@c1 syntax.clause form=nonfinite verb=""named"" complement=$n3
+@n3 syntax.nominal head=""Intro""
+@c2 syntax.clause form=declarative verb=""keeps"" subject=$n1 complement=$n4
+@n4 syntax.nominal head=""Intro""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""color""
+@r2 syntax.relation marker=""once"" from=$c2 to=$c3
+@n6 syntax.nominal dependent=""its"" dependent=""260"" head=""resize""
+@c3 syntax.clause form=declarative verb=""lands"" subject=$n6
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n2 to=$c1","@n1 syntax.nominal dependent=""a"" head=""figure""
+@n2 syntax.nominal dependent=""the"" head=""one""
+@c1 syntax.clause form=nonfinite verb=""named"" complement=$n3
+@n3 syntax.nominal head=""Intro""
+@n4 syntax.nominal head=""keeps"" dependent=""Intro""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n5
+@n5 syntax.nominal head=""color""
+@c2 syntax.clause form=declarative modifier=""once"" verb=""lands"" subject=$n6
+@n6 syntax.nominal dependent=""its"" dependent=""260"" head=""resize""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c3
+@c4 syntax.clause form=fragment complement=$n2
+@r3 syntax.relation from=$n2 to=$c1
+@r4 syntax.relation from=$c1 to=$c2
+@r5 syntax.relation from=$c1 to=$n4",
+46,"shift the object Intro: 260, 240, framed 400 by 30","@c1 syntax.clause form=imperative verb=""shift"" complement=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal dependent=""260"" head=""240""
+@c2 syntax.clause form=nonfinite verb=""framed"" complement=$n4
+@n4 syntax.nominal head=""400""
+@r1 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""30""
+@r2 syntax.relation from=$n3 to=$c2","@c1 syntax.clause form=imperative verb=""shift"" modifier=""framed"" complement=$n1 complement=$n4
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@n2 syntax.nominal head=""260""
+@n3 syntax.nominal head=""240""
+@n4 syntax.nominal head=""400""
+@r1 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""30""
+@r2 syntax.relation from=$n1 to=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+47,"look: object Intro ends up 260, 240, 400 wide, 30 tall","@c1 syntax.clause form=imperative verb=""look""
+@n1 syntax.nominal dependent=""object"" head=""Intro""
+@c2 syntax.clause form=declarative verb=""ends"" modifier=""up"" modifier=""tall"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""260"" dependent=""240"" dependent=""400"" dependent=""wide"" head=""30""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""look""
+@n1 syntax.nominal dependent=""object"" dependent=""Intro"" head=""ends""
+@r1 syntax.relation marker=""up"" from=$n1 to=$k2
+@n2 syntax.nominal head=""260""
+@n3 syntax.nominal head=""240""
+@n4 syntax.nominal dependent=""400"" head=""wide""
+@n5 syntax.nominal dependent=""30"" head=""tall""
+@r2 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n4 conjunct=$n5
+@k2 syntax.coordination conjunct=$n2 conjunct=$n3",
+48,"make the object Intro bigger: height 120, width 260","@c1 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal head=""height""
+@n4 syntax.nominal head=""120""
+@n5 syntax.nominal head=""width""
+@n6 syntax.nominal head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$n1 to=$n2
+@c2 syntax.clause form=fragment complement=$n3
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n3 to=$n5
+@r4 syntax.relation from=$n5 to=$n6","@c1 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@n2 syntax.nominal head=""height"" dependent=""120""
+@n3 syntax.nominal head=""width"" dependent=""260""
+@r1 syntax.relation from=$n1 to=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+49,"care to tighten the object Intro to height 120, width 260?","@c1 syntax.clause form=interrogative verb=""care""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""tighten"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""height""
+@n4 syntax.nominal head=""120""
+@n5 syntax.nominal head=""width""
+@n6 syntax.nominal head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r3 syntax.relation from=$n3 to=$n4
+@c3 syntax.clause form=fragment complement=$n5
+@r4 syntax.relation from=$n5 to=$n6","@c1 syntax.clause form=imperative verb=""care""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""tighten"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal head=""height"" dependent=""120""
+@n3 syntax.nominal head=""width"" dependent=""260""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+50,"chubby version of the object Intro, 120 tall","@n1 syntax.nominal dependent=""chubby"" head=""version""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""object""
+@n3 syntax.nominal head=""Intro""
+@n4 syntax.nominal head=""120"" dependent=""tall""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n4
+@r3 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal dependent=""chubby"" head=""version""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@n3 syntax.nominal dependent=""120"" head=""tall""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+51,"legend now uses the newer swatch set, so update the object Intro to color Main and rename it Second to match","@n1 syntax.nominal head=""legend""
+@c1 syntax.clause form=declarative modifier=""now"" verb=""uses"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""newer"" dependent=""swatch"" head=""set""
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""update"" complement=$n3 complement=$n5
+@n3 syntax.nominal dependent=""the"" head=""object""
+@n4 syntax.nominal head=""Intro""
+@n5 syntax.nominal dependent=""to"" dependent=""color"" head=""Main""
+@c3 syntax.clause form=imperative verb=""rename"" complement=$n6 complement=$n7
+@n6 syntax.nominal head=""it""
+@n7 syntax.nominal head=""Second""
+@r1 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""match""
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""legend""
+@c1 syntax.clause form=declarative modifier=""now"" verb=""uses"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""newer"" dependent=""swatch"" head=""set""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""update"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r1 syntax.relation marker=""to"" from=$n3 to=$c3
+@c3 syntax.clause form=nonfinite verb=""color"" complement=$n4
+@n4 syntax.nominal head=""Main""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""rename"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Second""
+@r2 syntax.relation marker=""to"" from=$n6 to=$c5
+@c5 syntax.clause form=nonfinite verb=""match""",
+52,"Main tint, object Intro","@n1 syntax.nominal dependent=""Main"" dependent=""tint"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""Main"" head=""tint""
+@n2 syntax.nominal head=""object"" dependent=""Intro""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+53,"grow the object Intro until it spans 260, painted Main","@c1 syntax.clause form=imperative verb=""grow"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@r1 syntax.relation marker=""until"" from=$c1 to=$c2
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""spans"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""260""
+@c3 syntax.clause form=nonfinite verb=""painted"" complement=$n5
+@n5 syntax.nominal head=""Main""
+@r2 syntax.relation from=$c1 to=$c3
+@r3 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""grow"" modifier=""painted"" complement=$n1 complement=$n3 complement=$n4
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r1 syntax.relation marker=""until"" from=$c1 to=$n2
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""spans"" dependent=""260""
+@n4 syntax.nominal head=""Main""",
+54,"surrounding modules all slimmed down, so bring the object Intro to a 260 span and calm it with Main","@n1 syntax.nominal dependent=""surrounding"" head=""modules""
+@n2 syntax.nominal head=""all""
+@c1 syntax.clause form=nonfinite verb=""slimmed"" modifier=""down"" subject=$n1
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""bring"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""object""
+@n4 syntax.nominal head=""Intro""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""260"" head=""span""
+@c3 syntax.clause form=imperative verb=""calm"" complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c3 to=$n7
+@n7 syntax.nominal head=""Main""
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=nonfinite verb=""surrounding"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""modules""
+@n2 syntax.nominal head=""all""
+@c2 syntax.clause form=nonfinite verb=""slimmed"" modifier=""down""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""bring"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""260"" head=""span""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""calm"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Main""
+@r3 syntax.relation from=$n2 to=$c2",
+55,rescale object Intro,"@n1 syntax.nominal dependent=""rescale"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""rescale"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""",
+56,"go big: object Intro, Main, 260","@c1 syntax.clause form=imperative verb=""go"" modifier=""big""
+@n1 syntax.nominal dependent=""object"" head=""Intro""
+@n2 syntax.nominal head=""Main""
+@n3 syntax.nominal head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=imperative verb=""go"" modifier=""big"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""
+@n2 syntax.nominal head=""Main""
+@n3 syntax.nominal head=""260""
+@r1 syntax.relation from=$c1 to=$n2
+@r2 syntax.relation from=$c1 to=$n3",
+57,"matching the intro text upstream, the object Intro should sit at 260 with color Intro for consistency","@c1 syntax.clause form=nonfinite verb=""matching"" modifier=""upstream"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""intro"" head=""text""
+@n2 syntax.nominal dependent=""the"" dependent=""object"" head=""Intro""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""sit"" subject=$n2
+@r1 syntax.relation marker=""at"" from=$c2 to=$n3
+@n3 syntax.nominal head=""260""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""color"" head=""Intro""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""consistency""
+@r4 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=nonfinite verb=""matching"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""intro"" dependent=""text"" head=""upstream""
+@n2 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""sit"" subject=$n2
+@r1 syntax.relation marker=""at"" from=$c2 to=$n3
+@n3 syntax.nominal head=""260""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal head=""color"" dependent=""Intro""
+@r3 syntax.relation marker=""for"" from=$n2 to=$n5
+@n5 syntax.nominal head=""consistency""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+58,"an object for me, Deep Dive 30","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Deep"" head=""Dive""
+@n4 syntax.nominal head=""30""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Deep Dive 30""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+59,"an object for me, Status 120 260","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Status""
+@n4 syntax.nominal head=""120""
+@n5 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n4 to=$n5","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Status 120 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+60,change an obect Status 120 260,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""obect"" head=""Status""
+@n2 syntax.nominal head=""120""
+@n3 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect"" dependent=""Status"" dependent=""120"" dependent=""260""",
+61,"an object for me, Follow-up Roadmap Rough","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" head=""Rough""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Follow-up Roadmap Rough""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+62,change an objject Follow-up Roadmap Rough,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""objject""
+@n2 syntax.nominal dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" head=""Rough""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""objject"" dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" dependent=""Rough""",
+63,"Roadmap Rough 120 — change an object, please","@n1 syntax.nominal dependent=""Roadmap"" head=""Rough""
+@n2 syntax.nominal head=""120""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n3
+@n3 syntax.nominal dependent=""an"" head=""object""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""Roadmap"" complement=$n1
+@n1 syntax.nominal head=""Rough 120""
+@c2 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation from=$c1 to=$c2",
+64,"an object for me, Roadmap Rough 120","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Roadmap"" head=""Rough""
+@n4 syntax.nominal head=""120""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roadmap Rough 120""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+65,change an obejct Roadmap Rough 120,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""obejct"" dependent=""Roadmap"" head=""Rough""
+@n2 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obejct"" dependent=""Roadmap"" dependent=""Rough"" dependent=""120""",
+66,change an obect Roadmap Rough 120,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect""
+@n2 syntax.nominal head=""Roadmap""
+@n3 syntax.nominal head=""Rough""
+@n4 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect"" dependent=""Roadmap"" dependent=""Rough"" dependent=""120""",
+67,change an objject Roadmap Rough 120,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""objject""
+@n2 syntax.nominal head=""Roadmap""
+@n3 syntax.nominal head=""Rough""
+@n4 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""objject"" dependent=""Roadmap"" dependent=""Rough"" dependent=""120""",
+68,"Rough 260 Open Items — change an object, please","@n1 syntax.nominal dependent=""Rough"" dependent=""260"" dependent=""Open"" head=""Items""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""object""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@c1 syntax.clause form=fragment modifier=""Rough"" complement=$n1
+@n1 syntax.nominal dependent=""260"" head=""Open Items""
+@c2 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation from=$c2 to=$c1",
+69,"an object for me, Rough 260 Open Items","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" dependent=""260"" dependent=""Open"" head=""Items""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""an"" head=""object""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough 260 Open Items""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+70,change an object Follow-up Roadmap Rough,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" head=""Rough""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" dependent=""Rough""",
+71,make one object Roadmap Rough 120,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object""
+@n2 syntax.nominal head=""Roadmap""
+@n3 syntax.nominal head=""Rough""
+@n4 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object"" dependent=""Roadmap"" dependent=""Rough"" dependent=""120""",
+72,update an object Roadmap Rough 120,"@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal head=""Roadmap""
+@n3 syntax.nominal head=""Rough""
+@n4 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Roadmap"" dependent=""Rough"" dependent=""120""",
+73,change an object Open Items 260 Rough,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal head=""Open""
+@n3 syntax.nominal head=""Items""
+@n4 syntax.nominal head=""260"" dependent=""Rough""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Open"" dependent=""Items"" dependent=""260"" dependent=""Rough""",
+74,"change an object Goal 260, 240 400 30","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal dependent=""Goal"" dependent=""260"" dependent=""240"" dependent=""400"" head=""30""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Goal"" dependent=""260""
+@n2 syntax.nominal head=""240 400 30""
+@r1 syntax.relation from=$c1 to=$n2",
+75,"make one object Goal 260, 240 400 30","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object""
+@n2 syntax.nominal dependent=""Goal"" dependent=""260"" dependent=""240"" dependent=""400"" head=""30""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object"" dependent=""Goal"" dependent=""260""
+@n2 syntax.nominal head=""240 400 30""
+@r1 syntax.relation from=$c1 to=$n2",
+76,place an object Deep Dive about thirty,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal dependent=""Deep"" head=""Dive""
+@n3 syntax.nominal dependent=""about"" head=""thirty""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Deep"" dependent=""Dive""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal head=""thirty""",
+77,"update an object Intro 260, 240 400 30","@c1 syntax.clause form=imperative verb=""update"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal dependent=""260"" dependent=""240"" dependent=""400"" head=""30""
+@r1 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Intro"" dependent=""260""
+@n2 syntax.nominal head=""240 400 30""
+@r1 syntax.relation from=$c1 to=$n2",
+78,"change an object 30 400 260, 240 Intro","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal dependent=""30"" dependent=""400"" dependent=""260"" dependent=""240"" head=""Intro""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""30"" dependent=""400"" dependent=""260""
+@n2 syntax.nominal dependent=""240"" head=""Intro""
+@r1 syntax.relation from=$c1 to=$n2",
+79,re-tint object Intro,"@n1 syntax.nominal dependent=""re"" dependent=""tint"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""re-tint"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""",
+80,"Main at 260 — the object Intro, restyled","@n1 syntax.nominal head=""Main""
+@r1 syntax.relation marker=""at"" from=$n1 to=$n2
+@n2 syntax.nominal head=""260""
+@n3 syntax.nominal dependent=""the"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=nonfinite verb=""restyled""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n3
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@c1 syntax.clause form=fragment modifier=""Main"" complement=$n2
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal head=""260""
+@n2 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@c2 syntax.clause form=nonfinite verb=""restyled""
+@r2 syntax.relation from=$c1 to=$c2",
+81,"hoping to stretch the object Intro out to 120 high, 260 across","@c1 syntax.clause form=nonfinite verb=""hoping""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""stretch"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""120"" dependent=""high"" head=""260"" dependent=""across""
+@r3 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=nonfinite verb=""hoping""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""stretch"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""120"" head=""high""
+@n3 syntax.nominal head=""260"" dependent=""across""
+@r3 syntax.relation from=$c2 to=$n3",
+82,change an obejct Status 120 260,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""obejct"" head=""Status""
+@n2 syntax.nominal head=""120""
+@n3 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obejct"" dependent=""Status"" dependent=""120"" dependent=""260""",
+83,change an obect Follow-up Roadmap Rough,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect""
+@n2 syntax.nominal dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" head=""Rough""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect"" dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" dependent=""Rough""",
+84,set one object Follow-up Roadmap Rough,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object""
+@n2 syntax.nominal dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" head=""Rough""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""object"" dependent=""Follow"" dependent=""up"" dependent=""Roadmap"" dependent=""Rough""",
+85,"something else, since we are making things: an object called Intro joins the sheet at 120, over on 400, 30","@n1 syntax.nominal head=""something"" dependent=""else""
+@r1 syntax.relation marker=""since"" from=$c4 to=$c1
+@n2 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative auxiliary=""are"" verb=""making"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""things""
+@n4 syntax.nominal dependent=""an"" head=""object""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n5
+@n5 syntax.nominal head=""Intro""
+@c3 syntax.clause form=declarative verb=""joins"" modifier=""over"" subject=$n4 complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""sheet""
+@r2 syntax.relation marker=""at"" from=$c3 to=$n7
+@n7 syntax.nominal head=""120""
+@r3 syntax.relation marker=""on"" from=$c3 to=$n8
+@n8 syntax.nominal head=""400""
+@n9 syntax.nominal head=""30""
+@c4 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c4 conjunct=$c3 conjunct=$c5
+@r4 syntax.relation from=$n4 to=$c2
+@c5 syntax.clause form=fragment complement=$n9","@n1 syntax.nominal head=""something"" dependent=""else""
+@r1 syntax.relation marker=""since"" from=$c3 to=$c1
+@n2 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative auxiliary=""are"" verb=""making"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""things""
+@n4 syntax.nominal dependent=""an"" head=""object""
+@c2 syntax.clause form=declarative verb=""called"" modifier=""over"" subject=$n4 complement=$n5 complement=$n6
+@n5 syntax.nominal head=""Intro joins""
+@n6 syntax.nominal dependent=""the"" head=""sheet""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n7
+@n7 syntax.nominal head=""120""
+@r3 syntax.relation marker=""on"" from=$n7 to=$k1
+@n8 syntax.nominal head=""400""
+@n9 syntax.nominal head=""30""
+@c3 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$c1 to=$c2
+@k1 syntax.coordination conjunct=$n8 conjunct=$n9",
+86,produce a circel standing 30 tall and 120 wide,"@c1 syntax.clause form=imperative verb=""produce"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circel""
+@c2 syntax.clause form=nonfinite verb=""standing"" modifier=""tall"" discourse=""and"" modifier=""wide"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""30""
+@n3 syntax.nominal head=""120""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""produce"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circel""
+@c2 syntax.clause form=nonfinite verb=""standing"" complement=$k1
+@n2 syntax.nominal dependent=""30"" head=""tall""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""120"" head=""wide""
+@r1 syntax.relation from=$n1 to=$c2",
+87,the new disc runs 30 tall against 120 wide,"@n1 syntax.nominal dependent=""the"" dependent=""new"" head=""disc""
+@c1 syntax.clause form=declarative verb=""runs"" modifier=""tall"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""30""
+@r1 syntax.relation marker=""against"" from=$c1 to=$n3
+@n3 syntax.nominal head=""120"" dependent=""wide""","@n1 syntax.nominal dependent=""the"" dependent=""new"" head=""disc""
+@c1 syntax.clause form=declarative verb=""runs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""30"" head=""tall""
+@r1 syntax.relation marker=""against"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""120"" head=""wide""",
+88,"draw one circle at 30 tall and 120 wide, then a second circle — make it Intro with the name Main","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""circle""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""30"" dependent=""tall"" dependent=""and"" dependent=""120"" dependent=""wide""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c2
+@n3 syntax.nominal dependent=""a"" dependent=""second"" head=""circle""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""with"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""name""
+@n7 syntax.nominal head=""Main""
+@c3 syntax.clause form=fragment complement=$n3 ellipsis=$c1
+@r3 syntax.relation from=$n6 to=$n7","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""circle""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$k1
+@n2 syntax.nominal dependent=""30"" head=""tall""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""120"" head=""wide""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal dependent=""a"" dependent=""second"" head=""circle""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""name"" dependent=""Main""
+@r3 syntax.relation from=$c1 to=$c2
+@c3 syntax.clause form=fragment complement=$n4",
+89,"add the object Intro at 120, coordinates 400, 30, then wrap the object Intro into a group labeled Main and named Second","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal head=""120""
+@n4 syntax.nominal head=""coordinates""
+@n5 syntax.nominal head=""400""
+@n6 syntax.nominal head=""30""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c5 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""wrap"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""object""
+@n8 syntax.nominal head=""Intro""
+@r2 syntax.relation marker=""into"" from=$c2 to=$n9
+@n9 syntax.nominal dependent=""a"" head=""group""
+@c3 syntax.clause form=nonfinite verb=""labeled"" complement=$n10
+@n10 syntax.nominal head=""Main""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""named"" complement=$n11
+@n11 syntax.nominal head=""Second""
+@r3 syntax.relation from=$n1 to=$n2
+@c5 syntax.clause form=fragment complement=$n4
+@r4 syntax.relation from=$n4 to=$n5
+@r5 syntax.relation from=$n4 to=$n6
+@r6 syntax.relation from=$n7 to=$n8
+@r7 syntax.relation from=$n9 to=$k2","@c1 syntax.clause form=imperative verb=""add"" modifier=""coordinates"" complement=$n1 complement=$k3
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r1 syntax.relation marker=""at"" from=$n1 to=$n2
+@n2 syntax.nominal head=""120""
+@n3 syntax.nominal head=""400""
+@n4 syntax.nominal head=""30""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""wrap"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@r2 syntax.relation marker=""into"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""a"" head=""group""
+@c3 syntax.clause form=nonfinite verb=""labeled"" complement=$n7
+@n7 syntax.nominal head=""Main""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""named"" complement=$n8
+@n8 syntax.nominal head=""Second""
+@k3 syntax.coordination conjunct=$n3 conjunct=$n4
+@r3 syntax.relation from=$n6 to=$c3",
+90,"spawn the object Intro, 120 units, coordinates 400, 30","@c1 syntax.clause form=imperative verb=""spawn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""object""
+@n2 syntax.nominal head=""Intro""
+@n3 syntax.nominal dependent=""120"" head=""units""
+@n4 syntax.nominal head=""coordinates""
+@n5 syntax.nominal head=""400""
+@n6 syntax.nominal head=""30""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3
+@r1 syntax.relation from=$n1 to=$n2
+@c2 syntax.clause form=fragment complement=$n3
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n4 to=$n5
+@c3 syntax.clause form=fragment complement=$n6","@c1 syntax.clause form=imperative verb=""spawn"" modifier=""coordinates"" complement=$n1 complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""object"" dependent=""Intro""
+@n2 syntax.nominal dependent=""120"" head=""units""
+@n3 syntax.nominal head=""400""
+@n4 syntax.nominal head=""30""
+@r1 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+91,"an object Intro, moderate size","@n1 syntax.nominal dependent=""an"" head=""object""
+@n2 syntax.nominal dependent=""Intro"" dependent=""moderate"" head=""size""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""an"" head=""object"" dependent=""Intro""
+@n2 syntax.nominal dependent=""moderate"" head=""size""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",
+92,"tempting: one more object Intro — 260, 240, 400 wide","@n1 syntax.nominal dependent=""tempting"" dependent=""one"" dependent=""more"" dependent=""object"" head=""Intro""
+@n2 syntax.nominal head=""260"" dependent=""wide""
+@n3 syntax.nominal head=""240""
+@n4 syntax.nominal head=""400""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3 conjunct=$n4","@c1 syntax.clause form=nonfinite verb=""tempting""
+@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""object"" dependent=""Intro""
+@n2 syntax.nominal head=""260""
+@n3 syntax.nominal head=""240""
+@n4 syntax.nominal dependent=""400"" head=""wide""
+@r1 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3 conjunct=$n4",
+93,brand-new object Intro,"@n1 syntax.nominal dependent=""brand"" dependent=""new"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""brand-new"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""",
+94,wide-ish object Intro,"@n1 syntax.nominal dependent=""wide"" dependent=""ish"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""wide-ish"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""",
+95,roughly there — object Intro,"@n1 syntax.nominal dependent=""roughly"" dependent=""there"" dependent=""object"" head=""Intro""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""roughly"" modifier=""there"" complement=$n1
+@n1 syntax.nominal head=""object"" dependent=""Intro""",
+96,"let a circle object appear, height 30, width 120","@c1 syntax.clause form=imperative verb=""let""
+@n1 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@c2 syntax.clause form=nonfinite verb=""appear"" subject=$n1
+@n2 syntax.nominal head=""height""
+@n3 syntax.nominal head=""30""
+@n4 syntax.nominal head=""width""
+@n5 syntax.nominal head=""120""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r1 syntax.relation from=$c1 to=$c2
+@c3 syntax.clause form=fragment complement=$n2
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n2 to=$n4
+@r4 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@c2 syntax.clause form=nonfinite verb=""appear"" subject=$n1
+@n2 syntax.nominal head=""height"" dependent=""30""
+@n3 syntax.nominal head=""width"" dependent=""120""
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c1 to=$c3
+@c3 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+97,"hero spot needed accent geometry, so drop a circle object there — 30 tall, 120 wide","@n1 syntax.nominal dependent=""hero"" head=""spot""
+@c1 syntax.clause form=nonfinite verb=""needed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""accent"" head=""geometry""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""drop"" modifier=""there"" modifier=""tall"" modifier=""wide"" complement=$n3 complement=$n4 complement=$n5
+@n3 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@n4 syntax.nominal head=""30""
+@n5 syntax.nominal head=""120""","@n1 syntax.nominal dependent=""hero"" head=""spot""
+@c1 syntax.clause form=declarative verb=""needed"" modifier=""geometry"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""accent""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""drop"" modifier=""there"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@n4 syntax.nominal dependent=""30"" head=""tall""
+@n5 syntax.nominal dependent=""120"" head=""wide""
+@r1 syntax.relation from=$n3 to=$k2
+@k2 syntax.coordination conjunct=$n4 conjunct=$n5",
+98,"sketchbook study wants one centered accent: a circle object, Intro colored, 120 across","@n1 syntax.nominal dependent=""sketchbook"" head=""study""
+@c1 syntax.clause form=declarative verb=""wants"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""one"" dependent=""centered"" head=""accent""
+@n3 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@c2 syntax.clause form=nonfinite modifier=""Intro"" verb=""colored""
+@n4 syntax.nominal head=""120"" dependent=""across""
+@r1 syntax.relation from=$n2 to=$n3
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n3 to=$c2","@c1 syntax.clause form=imperative verb=""sketchbook"" modifier=""study"" modifier=""wants"" complement=$n1
+@n1 syntax.nominal dependent=""one"" dependent=""centered"" head=""accent""
+@n2 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@n3 syntax.nominal head=""Intro""
+@c2 syntax.clause form=declarative verb=""colored"" subject=$n3
+@n4 syntax.nominal head=""120"" dependent=""across""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$n2
+@c3 syntax.clause form=fragment complement=$n4",
+99,"I'm after a circle object — 120 wide, colored Second","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""'m"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@n3 syntax.nominal dependent=""120"" dependent=""wide"" dependent=""colored"" head=""Second""
+@r2 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""'m"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@n3 syntax.nominal dependent=""120"" head=""wide""
+@c2 syntax.clause form=fragment modifier=""colored"" complement=$n3 complement=$n4
+@n4 syntax.nominal head=""Second""
+@r2 syntax.relation from=$c1 to=$c2",
+100,"nimble beats big for the floating layer, meaning a circle object in Second with a lean 120 size","@n1 syntax.nominal head=""nimble""
+@c1 syntax.clause form=declarative verb=""beats"" modifier=""big"" subject=$n1
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""floating"" head=""layer""
+@c2 syntax.clause form=nonfinite verb=""meaning"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Second""
+@r3 syntax.relation marker=""with"" from=$n3 to=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""lean"" dependent=""120"" head=""size""
+@r4 syntax.relation from=$c1 to=$c2","@r1 syntax.relation marker=""for"" from=$c1 to=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""floating"" head=""layer""
+@n2 syntax.nominal head=""meaning""
+@n3 syntax.nominal dependent=""a"" dependent=""circle"" head=""object""
+@c1 syntax.clause form=imperative verb=""nimble"" modifier=""beats"" modifier=""big"" modifier=""with"" modifier=""a"" complement=$n3
+@r2 syntax.relation marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Second""
+@c2 syntax.clause form=imperative verb=""lean"" complement=$n5
+@n5 syntax.nominal dependent=""120"" head=""size""
+@r3 syntax.relation from=$c1 to=$c2
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+101,"a lake for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""lake""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""lake""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+102,"a lake for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""lake""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""Take"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""260""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""a"" head=""lake""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+103,add a laek Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""laek""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""2""
+@n3 syntax.nominal head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""laek"" dependent=""Take"" dependent=""2"" dependent=""260""",
+104,add a lae Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""lae""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""lae"" dependent=""Take"" dependent=""2"" dependent=""260""",
+105,add a lakke Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" dependent=""2"" head=""260""
+@n2 syntax.nominal dependent=""lakke"" head=""Take""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""lakke"" dependent=""Take"" dependent=""2"" dependent=""260""",
+106,add a rievr Hub 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""rievr"" head=""Hub""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rievr"" dependent=""Hub"" dependent=""260""",
+107,add a rier Hub 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""rier"" head=""Hub""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rier"" dependent=""Hub"" dependent=""260""",
+108,"a road for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""road""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""road""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+109,add a roda Roundup 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""roda"" head=""Roundup""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""roda"" dependent=""Roundup"" dependent=""260""",
+110,add a roaad Roundup 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""roaad"" head=""Roundup""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""roaad"" dependent=""Roundup"" dependent=""260""",
+111,"a field for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""field""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""field""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+112,add a filed Rough Take 2,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""filed""
+@n2 syntax.nominal dependent=""Rough"" head=""Take""
+@n3 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""filed"" head=""Rough Take 2""",
+113,add a fild Rough Take 2,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""fild"" dependent=""Rough"" head=""Take""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""fild"" dependent=""Rough"" dependent=""Take"" dependent=""2""",
+114,"a field for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""field""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take""
+@n4 syntax.nominal head=""2""
+@n5 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n4
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n4 to=$n5","@n1 syntax.nominal dependent=""a"" head=""field""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+115,add a filed Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""filed""
+@n2 syntax.nominal head=""Take""
+@n3 syntax.nominal dependent=""2"" head=""260""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""filed"" head=""Take 2 260""",
+116,add a fieeld Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""fieeld""
+@n2 syntax.nominal head=""Take""
+@n3 syntax.nominal head=""2""
+@n4 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n4
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""fieeld"" dependent=""Take"" dependent=""2"" dependent=""260""",
+117,"a hill for me, 260 400","@n1 syntax.nominal dependent=""a"" head=""hill""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""260"" head=""400""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3","@n1 syntax.nominal dependent=""a"" head=""hill""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""260 400""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+118,"a hill for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""hill""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""hill""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+119,"a house for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+120,add a houuse Rough Take 2,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""houuse"" dependent=""Rough"" head=""Take""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""houuse"" dependent=""Rough"" dependent=""Take"" dependent=""2""",
+121,"a house for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""Take"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""260""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+122,add a hosue Take 2 260,"@c1 syntax.clause form=imperative verb=""add""
+@c2 syntax.clause form=imperative modifier=""a"" modifier=""hosue"" verb=""Take"" complement=$n1
+@n1 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hosue"" dependent=""Take"" dependent=""2"" dependent=""260""",
+123,add a hose Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hose""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hose"" dependent=""Take"" dependent=""2"" dependent=""260""",
+124,add a houuse Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" dependent=""houuse"" dependent=""2"" head=""260""
+@n2 syntax.nominal head=""Take""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""houuse"" dependent=""Take"" dependent=""2"" dependent=""260""",
+125,"a sun for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""sun""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""sun""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+126,"a cloud for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+127,"a cloud for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""Take"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""260""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+128,add a cluod Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cluod""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cluod"" dependent=""Take"" dependent=""2"" dependent=""260""",
+129,add a clud Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""clud""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""clud"" dependent=""Take"" dependent=""2"" dependent=""260""",
+130,add a clooud Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" dependent=""clooud"" dependent=""2"" head=""260""
+@n2 syntax.nominal head=""Take""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""clooud"" dependent=""Take"" dependent=""2"" dependent=""260""",
+131,"a flower for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""flower""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""flower""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+132,add a flwoer Roundup 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""flwoer"" head=""Roundup""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""flwoer"" dependent=""Roundup"" dependent=""260""",
+133,"a cat for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""cat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""cat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+134,add a catt Take 2 260,"@c1 syntax.clause form=imperative verb=""add""
+@c2 syntax.clause form=imperative modifier=""a"" modifier=""catt"" verb=""Take"" complement=$n1
+@n1 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""catt"" dependent=""Take"" dependent=""2"" dependent=""260""",
+135,"a fish for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""fish""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""fish""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+136,add a fihs Roundup 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""fihs"" head=""Roundup""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""fihs"" dependent=""Roundup"" dependent=""260""",
+137,"a bird for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+138,"a bird for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""Take"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""260""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+139,add a bidr Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bidr""
+@c2 syntax.clause form=imperative verb=""Take"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""260""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bidr"" dependent=""Take"" dependent=""2"" dependent=""260""",
+140,add a birrd Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" dependent=""birrd"" head=""Take""
+@n2 syntax.nominal dependent=""2"" head=""260""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""birrd"" dependent=""Take"" dependent=""2"" dependent=""260""",
+141,"a mountain for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""mountain""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""mountain""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+142,add a mouuntain Roundup 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""mouuntain"" head=""Roundup""
+@n2 syntax.nominal head=""260""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""mouuntain"" dependent=""Roundup"" dependent=""260""",
+143,"a rainbow for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""rainbow""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""rainbow""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+144,add a raiinbow Rough Take 2,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""raiinbow"" dependent=""Rough"" head=""Take""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""raiinbow"" dependent=""Rough"" dependent=""Take"" dependent=""2""",
+145,"a rainbow for me, Take 2 260","@n1 syntax.nominal dependent=""a"" head=""rainbow""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""Take"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""260""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""a"" head=""rainbow""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Take 2 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+146,add a ranibow Take 2 260,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""ranibow""
+@n2 syntax.nominal dependent=""Take"" dependent=""2"" head=""260""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ranibow"" dependent=""Take"" dependent=""2"" dependent=""260""",
+147,"a balloon for me, Roundup 260","@n1 syntax.nominal dependent=""a"" head=""balloon""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup""
+@n4 syntax.nominal head=""260""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""balloon""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Roundup 260""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+148,"a rocket for me, 260 400","@n1 syntax.nominal dependent=""a"" head=""rocket""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""260"" head=""400""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3","@n1 syntax.nominal dependent=""a"" head=""rocket""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""260 400""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+149,"a rocket for me, Rough Take 2","@n1 syntax.nominal dependent=""a"" head=""rocket""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""Rough"" head=""Take""
+@n4 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""a"" head=""rocket""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""Rough Take 2""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+150,add a rokcet Rough Take 2,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""rokcet"" dependent=""Rough"" head=""Take""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rokcet"" dependent=""Rough"" dependent=""Take"" dependent=""2""",

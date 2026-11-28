@@ -1,0 +1,31 @@
+n,text,sop,label_state
+250,"Maybe plot values above 100 on Revenue by region, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""plot"" complement=$n1
+@n1 syntax.nominal head=""values""
+@r1 syntax.relation marker=""above"" from=$n1 to=$n2
+@n2 syntax.nominal head=""100""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""",
+865,Maybe show a tick every 10 on Orders by weekday.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""show"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""tick""
+@n2 syntax.nominal dependent=""every"" head=""10""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""weekday""",
+873,"Show a tick every 5 on Monthly sales, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""tick""
+@n2 syntax.nominal dependent=""every"" head=""5""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Monthly"" head=""sales""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""values""
+@r2 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""chart""",

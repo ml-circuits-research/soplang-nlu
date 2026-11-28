@@ -1,0 +1,708 @@
+n,text,sop,alt,label_state
+3,I want the Review event selected,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""selected"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""selected"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""",
+8,I need the Review event selected,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""selected"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""selected""
+@r1 syntax.relation from=$n2 to=$c2",
+11,"actually, before changing anything, select the Review event for me","@c1 syntax.clause form=imperative modifier=""actually"" verb=""select"" complement=$n2
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n1
+@n1 syntax.nominal head=""anything""
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""","@c1 syntax.clause form=fragment modifier=""actually""
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n1
+@n1 syntax.nominal head=""anything""
+@c3 syntax.clause form=imperative verb=""select"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@r2 syntax.relation marker=""for"" from=$c3 to=$n3
+@n3 syntax.nominal head=""me""
+@r3 syntax.relation from=$c3 to=$c1",
+17,"Review, select","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=imperative verb=""select""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=imperative verb=""select""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+35,"add an event Planning (planning) on 2026-11-18, 10:00 UTC, 30 minutes","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""event""
+@n2 syntax.nominal head=""Planning""
+@n3 syntax.nominal head=""planning""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""2026-11-18""
+@n5 syntax.nominal dependent=""10:00"" head=""UTC""
+@n6 syntax.nominal dependent=""30"" head=""minutes""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n1 to=$k1
+@r4 syntax.relation from=$n2 to=$n3
+@k1 syntax.coordination conjunct=$n5 conjunct=$n6","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""event"" dependent=""Planning""
+@n2 syntax.nominal head=""planning""
+@r1 syntax.relation marker=""on"" from=$n2 to=$k1
+@n3 syntax.nominal head=""2026-11-18""
+@n4 syntax.nominal head=""10:00"" dependent=""UTC""
+@n5 syntax.nominal dependent=""30"" head=""minutes""
+@r2 syntax.relation from=$c1 to=$n5
+@r3 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+69,rename Review to Team review,"@c1 syntax.clause form=imperative verb=""rename"" modifier=""review"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Team""","@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Team review""",
+70,rename Review to Team review and set notes to Bring draft,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1 complement=$n3
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Team""
+@n3 syntax.nominal head=""review""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n4
+@n4 syntax.nominal head=""notes""
+@r2 syntax.relation marker=""to"" from=$n4 to=$c3
+@c3 syntax.clause form=nonfinite verb=""Bring"" complement=$n5
+@n5 syntax.nominal head=""draft""","@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Team review""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n3
+@n3 syntax.nominal head=""notes""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Bring draft""",
+71,move Review to 2026-11-18 10:00 UTC,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""2026-11-18"" dependent=""10:00"" head=""UTC""","@c1 syntax.clause form=imperative verb=""move"" complement=$n1 complement=$n3
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@n3 syntax.nominal head=""10:00"" dependent=""UTC""",
+74,"move the review to 2026-11-18 in the morning, UTC","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""morning""
+@n4 syntax.nominal head=""UTC""
+@r3 syntax.relation from=$n2 to=$n4","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""morning""
+@n4 syntax.nominal head=""UTC""
+@r3 syntax.relation from=$c1 to=$n4",
+104,I need the review event's title changed to Weekly review,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""title""
+@c2 syntax.clause form=nonfinite verb=""changed"" subject=$n3
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""Weekly"" head=""review""
+@r3 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""title""
+@c2 syntax.clause form=nonfinite verb=""changed""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Weekly review""
+@r3 syntax.relation from=$n3 to=$c2",
+107,"so the meeting happens every Monday, call the review event Weekly review","@r1 syntax.relation marker=""so"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" head=""meeting""
+@c1 syntax.clause form=declarative verb=""happens"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""every"" head=""Monday""
+@c2 syntax.clause form=imperative verb=""call"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@n4 syntax.nominal dependent=""Weekly"" head=""review""
+@r2 syntax.relation from=$n3 to=$n4","@r1 syntax.relation marker=""so"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" head=""meeting""
+@c1 syntax.clause form=declarative verb=""happens"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""every"" head=""Monday""
+@c2 syntax.clause form=imperative verb=""call"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""review"" dependent=""event"" dependent=""Weekly"" head=""review""",
+111,rename the review event to something that says weekly,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""something""
+@r2 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""says"" modifier=""weekly""","@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""something""
+@r2 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""says"" complement=$n3
+@n3 syntax.nominal head=""weekly""",
+114,"Weekly review for the review event, change it","@n1 syntax.nominal dependent=""Weekly"" head=""review""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@c1 syntax.clause form=imperative verb=""change"" complement=$n3
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""Weekly"" head=""review""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""review"" head=""event""
+@c1 syntax.clause form=imperative verb=""change"" complement=$n3
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+120,"um, move the Review event to 2026-11-18, 10:00 UTC","@c1 syntax.clause form=imperative discourse=""um"" verb=""move"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@n3 syntax.nominal dependent=""10:00"" head=""UTC""","@c1 syntax.clause form=imperative discourse=""um"" verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@n3 syntax.nominal head=""10:00"" dependent=""UTC""
+@r2 syntax.relation from=$c1 to=$n3",
+123,I need Review moved to 2026-11-18 at 10:00 UTC,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""Review""
+@c2 syntax.clause form=nonfinite verb=""moved"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""10:00"" head=""UTC""
+@r3 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Review""
+@c2 syntax.clause form=nonfinite verb=""moved""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""10:00"" dependent=""UTC""
+@r3 syntax.relation from=$n2 to=$c2",
+125,"ok, now move Review to 2026-11-18 at 10:00 UTC because the room is free then","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""now"" verb=""move"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""10:00"" head=""UTC""
+@r3 syntax.relation marker=""because"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" head=""room""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""free"" modifier=""then"" subject=$n4","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""now"" verb=""move"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""10:00"" dependent=""UTC""
+@r3 syntax.relation marker=""because"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" head=""room""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""free"" modifier=""then"" subject=$n4",
+126,"actually, that day doesn't work, so reschedule Review to 2026-11-18 at 10:00 UTC","@c1 syntax.clause form=declarative modifier=""actually"" auxiliary=""does"" negation=""n't"" verb=""work"" subject=$n1
+@n1 syntax.nominal dependent=""that"" head=""day""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative verb=""reschedule"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""10:00"" head=""UTC""","@c1 syntax.clause form=declarative modifier=""actually"" auxiliary=""does"" negation=""n't"" verb=""work"" subject=$n1
+@n1 syntax.nominal dependent=""that"" head=""day""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""reschedule"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""10:00"" dependent=""UTC""",
+128,"so people are travelling, shift Review to 2026-11-18 at 10:00 UTC","@c1 syntax.clause form=declarative modifier=""so"" auxiliary=""are"" verb=""travelling"" subject=$n1
+@n1 syntax.nominal head=""people""
+@c2 syntax.clause form=imperative verb=""shift"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""10:00"" head=""UTC""
+@r3 syntax.relation from=$n2 to=$c1","@c1 syntax.clause form=declarative discourse=""so"" auxiliary=""are"" verb=""travelling"" subject=$n1
+@n1 syntax.nominal head=""people""
+@c2 syntax.clause form=imperative verb=""shift"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""10:00"" dependent=""UTC""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+135,"move the Review event, 2026-11-18 10:00 UTC","@c1 syntax.clause form=imperative verb=""move"" complement=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@n2 syntax.nominal head=""2026-11-18""
+@n3 syntax.nominal dependent=""10:00"" head=""UTC""","@c1 syntax.clause form=imperative verb=""move"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@n2 syntax.nominal head=""2026-11-18""
+@n3 syntax.nominal head=""10:00"" dependent=""UTC""
+@r1 syntax.relation from=$c1 to=$n2",
+136,"2026-11-18 10:00 UTC for Review, reschedule it","@n1 syntax.nominal head=""2026-11-18""
+@n2 syntax.nominal dependent=""10:00"" head=""UTC""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Review""
+@c1 syntax.clause form=imperative verb=""reschedule"" complement=$n1 complement=$n2 complement=$n4
+@n4 syntax.nominal head=""it""","@n1 syntax.nominal head=""2026-11-18""
+@n2 syntax.nominal head=""10:00"" dependent=""UTC""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Review""
+@c1 syntax.clause form=imperative verb=""reschedule"" complement=$n4
+@n4 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r2 syntax.relation from=$c1 to=$c2",
+139,I want the Review event deleted,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""deleted"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""deleted"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""",
+140,get rid of the Review event,"@c1 syntax.clause form=imperative auxiliary=""get"" verb=""rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""","@c1 syntax.clause form=imperative verb=""get rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""",
+144,I need the Review event gone,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""gone"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""gone""
+@r1 syntax.relation from=$n2 to=$c2",
+147,"actually, nobody can make it, so cancel the Review event","@c1 syntax.clause form=declarative modifier=""actually"" auxiliary=""can"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""nobody""
+@n2 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative verb=""cancel"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""","@c1 syntax.clause form=declarative modifier=""actually"" auxiliary=""can"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""nobody""
+@n2 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""cancel"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""",
+150,"right, I'd like the Review event removed before I share the calendar","@c1 syntax.clause form=declarative discourse=""right"" auxiliary=""'d"" verb=""like"" subject=$n1
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""removed"" subject=$n2
+@r1 syntax.relation marker=""before"" from=$c1 to=$c3
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""share"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""calendar""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=declarative modifier=""right"" auxiliary=""'d"" verb=""like"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""removed""
+@r1 syntax.relation marker=""before"" from=$c2 to=$c3
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""share"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""calendar""
+@r2 syntax.relation from=$n2 to=$c2",
+162,I need Review deleted from my schedule,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""Review""
+@c2 syntax.clause form=nonfinite verb=""deleted"" subject=$n2
+@r1 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""my"" head=""schedule""
+@r2 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Review""
+@c2 syntax.clause form=nonfinite verb=""deleted""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""my"" head=""schedule""
+@r2 syntax.relation from=$n2 to=$c2",
+173,"Review gone, please","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=nonfinite verb=""gone"" discourse=""please"" subject=$n1","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=declarative verb=""gone"" discourse=""please"" subject=$n1",
+183,"actually, I'm not sure about my week, so show me what's on my calendar","@c1 syntax.clause form=imperative modifier=""actually"" verb=""'m"" negation=""not"" modifier=""sure"" complement=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""what""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n4
+@r2 syntax.relation marker=""on"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""my"" head=""calendar""
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=declarative modifier=""actually"" auxiliary=""'m"" negation=""not"" verb=""sure"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""what""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n4
+@r2 syntax.relation marker=""on"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""my"" head=""calendar""
+@r3 syntax.relation from=$c1 to=$c3",
+184,"hey, could you tell me what meetings I have on my calendar? I want to avoid clashes","@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""could"" verb=""tell"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""what"" head=""meetings""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""have"" subject=$n4 complement=$n3
+@r1 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""my"" head=""calendar""
+@n6 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""want"" subject=$n6
+@r2 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""avoid"" complement=$n7
+@n7 syntax.nominal head=""clashes""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""could"" verb=""tell"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""what"" head=""meetings""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=interrogative verb=""have"" modifier=""on"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""my"" head=""calendar""
+@n6 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""want"" subject=$n6
+@r1 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""avoid"" complement=$n7
+@n7 syntax.nominal head=""clashes""
+@r2 syntax.relation from=$n3 to=$c2",
+193,anything on my calendar? tell me,"@n1 syntax.nominal head=""anything""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""calendar""
+@c1 syntax.clause form=imperative verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""anything""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""calendar""
+@c1 syntax.clause form=imperative verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@c2 syntax.clause form=fragment complement=$n1",
+198,"um, move Review to 2026-11-18 at 10:00 UTC and then the event title, make it Weekly review","@c1 syntax.clause form=imperative discourse=""um"" verb=""move"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""10:00"" head=""UTC""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=fragment modifier=""then"" complement=$n4 ellipsis=$c1
+@n4 syntax.nominal dependent=""the"" dependent=""event"" head=""title""
+@c3 syntax.clause form=imperative verb=""make"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal dependent=""Weekly"" head=""review""","@c1 syntax.clause form=imperative discourse=""um"" verb=""move"" discourse=""and"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2026-11-18""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""10:00"" dependent=""UTC""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal dependent=""the"" dependent=""event"" head=""title""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Weekly review""
+@r3 syntax.relation from=$c1 to=$c2
+@c3 syntax.clause form=fragment complement=$n4",
+215,let's book a short planning meeting tomorrow morning,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""book"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""book"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@r1 syntax.relation from=$c1 to=$c2",
+216,a short planning meeting tomorrow morning would be nice to have,"@n1 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n2 syntax.nominal dependent=""tomorrow"" head=""morning""
+@c1 syntax.clause form=declarative auxiliary=""would"" verb=""be"" modifier=""nice"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have""
+@r2 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n2 syntax.nominal dependent=""tomorrow"" head=""morning""
+@c1 syntax.clause form=imperative auxiliary=""would"" verb=""be"" modifier=""nice""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have""
+@c3 syntax.clause form=fragment complement=$n1 complement=$n2",
+217,give me a short planning meeting tomorrow morning,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""",
+219,"actually, I need a planning meeting tomorrow morning, a short one, so we can sort out who does what","@c1 syntax.clause form=declarative modifier=""actually"" verb=""need"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@n4 syntax.nominal dependent=""a"" dependent=""short"" head=""one""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n5 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""sort"" modifier=""out"" subject=$n5
+@n6 syntax.nominal head=""who""
+@c3 syntax.clause form=declarative verb=""does"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""what""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n4
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=declarative modifier=""actually"" verb=""need"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@n4 syntax.nominal dependent=""a"" dependent=""short"" head=""one""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n5 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""sort"" modifier=""out"" subject=$n5
+@r2 syntax.relation marker=""who"" from=$c2 to=$c3
+@c3 syntax.clause form=declarative verb=""does"" subject=$n6
+@n6 syntax.nominal head=""what""
+@r3 syntax.relation from=$n3 to=$n4",
+221,"hey, I'd like to book a short planning meeting tomorrow morning since the team wants to align","@c1 syntax.clause form=declarative discourse=""hey"" auxiliary=""'d"" verb=""like"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""book"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@r2 syntax.relation marker=""since"" from=$c1 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""team""
+@c3 syntax.clause form=declarative verb=""wants"" subject=$n4
+@r3 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""align""
+@r4 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=declarative discourse=""hey"" auxiliary=""'d"" verb=""like"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""book"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""a"" dependent=""short"" dependent=""planning"" head=""meeting""
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@r2 syntax.relation marker=""since"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""team""
+@c3 syntax.clause form=declarative verb=""wants"" subject=$n4
+@r3 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""align""",
+223,"planning meeting tomorrow, add it","@n1 syntax.nominal dependent=""planning"" head=""meeting""
+@c1 syntax.clause form=fragment modifier=""tomorrow"" complement=$n1
+@c2 syntax.clause form=imperative verb=""add"" complement=$n2
+@n2 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""planning"" head=""meeting""
+@c1 syntax.clause form=fragment modifier=""tomorrow"" complement=$n1
+@c2 syntax.clause form=imperative verb=""add"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation from=$c2 to=$c1",
+225,schedule a planning meeting early tomorrow,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@r1 syntax.relation marker=""early"" from=$c1 to=$n2
+@n2 syntax.nominal head=""tomorrow""","@c1 syntax.clause form=imperative verb=""schedule"" modifier=""early"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""",
+236,"would be nice to have Review a bit later, with the same duration","@c1 syntax.clause form=declarative auxiliary=""would"" verb=""be"" modifier=""nice""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have"" modifier=""later"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Review""
+@n2 syntax.nominal dependent=""a"" head=""bit""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""duration""","@c1 syntax.clause form=imperative auxiliary=""would"" verb=""be"" modifier=""nice""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have"" modifier=""a"" modifier=""bit"" modifier=""later"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""duration""",
+248,"Review needs moving, somewhat later","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""moving"" modifier=""somewhat"" modifier=""later""
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""Review""
+@c1 syntax.clause form=declarative verb=""needs"" modifier=""moving"" modifier=""somewhat"" modifier=""later"" subject=$n1",
+249,I want the event twice as long,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""twice"" modifier=""as"" modifier=""long"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""twice"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""",
+251,"um, extend the event so it's twice as long","@c1 syntax.clause form=imperative discourse=""um"" verb=""extend"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""'s"" modifier=""twice"" modifier=""as"" modifier=""long"" subject=$n2","@c1 syntax.clause form=imperative discourse=""um"" verb=""extend"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""'s"" modifier=""twice"" subject=$n2
+@r2 syntax.relation marker=""as"" from=$c2 to=$n3
+@n3 syntax.nominal head=""long""",
+252,let's make the event twice as long,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""twice"" modifier=""as"" modifier=""long"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""twice"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""
+@r2 syntax.relation from=$c1 to=$c2",
+253,I need the event twice as long,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" modifier=""twice"" modifier=""as"" modifier=""long"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" modifier=""twice"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""",
+254,would be nice to have the event twice as long,"@c1 syntax.clause form=declarative auxiliary=""would"" verb=""be"" modifier=""nice""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have"" modifier=""twice"" modifier=""as"" modifier=""long"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""","@c1 syntax.clause form=imperative auxiliary=""would"" verb=""be"" modifier=""nice""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""have"" modifier=""twice"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r2 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal head=""long""",
+255,"lengthen the event, twice as long as it is now","@c1 syntax.clause form=imperative verb=""lengthen"" modifier=""twice"" modifier=""as"" modifier=""long"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$c1 to=$c2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""now"" subject=$n2","@c1 syntax.clause form=imperative verb=""lengthen"" modifier=""twice"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal head=""long""
+@r2 syntax.relation marker=""as"" from=$c1 to=$c2
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""now"" subject=$n3",
+256,"the event keeps running over, so make the event twice as long and give everyone time","@n1 syntax.nominal dependent=""the"" head=""event""
+@c1 syntax.clause form=declarative verb=""keeps"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""running"" modifier=""over""
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""make"" modifier=""twice"" modifier=""as"" modifier=""long"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@c4 syntax.clause form=imperative verb=""give"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""everyone""
+@n4 syntax.nominal head=""time""
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""the"" head=""event""
+@c1 syntax.clause form=declarative verb=""keeps"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""running"" modifier=""over""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""twice"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""give"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""everyone""
+@n5 syntax.nominal head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+257,"the Review event is too brief, can you extend it to be twice as long?","@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""too"" modifier=""brief"" subject=$n1
+@c2 syntax.clause form=interrogative auxiliary=""can"" verb=""extend"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""be"" modifier=""twice"" modifier=""as"" modifier=""long""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""the"" dependent=""Review"" head=""event""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""too"" head=""brief""
+@c2 syntax.clause form=interrogative auxiliary=""can"" verb=""extend"" subject=$n3
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""be"" modifier=""twice"" subject=$n4
+@r2 syntax.relation marker=""as"" from=$c3 to=$n5
+@n5 syntax.nominal head=""long""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+258,"before I forget, make the event twice as long so we can fit the demo in","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""forget"" subject=$n1
+@c2 syntax.clause form=imperative verb=""make"" modifier=""twice"" modifier=""as"" modifier=""long"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n3 syntax.nominal head=""we""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""fit"" modifier=""in"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""demo""","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""forget"" subject=$n1
+@c2 syntax.clause form=imperative verb=""make"" modifier=""twice"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r2 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""
+@r3 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal head=""we""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""fit"" modifier=""in"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""demo""",
+262,extend the event a lot,"@c1 syntax.clause form=imperative verb=""extend"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""event""
+@n2 syntax.nominal dependent=""a"" head=""lot""","@c1 syntax.clause form=imperative verb=""extend"" modifier=""a"" modifier=""lot"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""",
+278,"bump Review, keep the length","@c1 syntax.clause form=imperative verb=""bump"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@c2 syntax.clause form=imperative verb=""keep"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""length""
+@r1 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=imperative verb=""bump"" complement=$n1
+@n1 syntax.nominal head=""Review""
+@c2 syntax.clause form=imperative verb=""keep"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""length""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+289,I want Review deleted,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""Review""
+@c2 syntax.clause form=nonfinite verb=""deleted"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""deleted"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Review""",
+291,"put a planning meeting on for tomorrow, in the morning","@c1 syntax.clause form=imperative verb=""put"" modifier=""on"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""tomorrow""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""morning""","@c1 syntax.clause form=imperative verb=""put"" modifier=""on"" modifier=""for"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""morning""",
+294,can you make the event twice as long?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""make"" modifier=""twice"" modifier=""as"" modifier=""long"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""event""","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""make"" modifier=""twice"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""",
+298,"could you make a planning meeting for tomorrow morning? short, please","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""
+@c2 syntax.clause form=fragment modifier=""short"" discourse=""please""","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""make"" modifier=""short"" discourse=""please"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""planning"" head=""meeting""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""tomorrow"" head=""morning""",
+314,please stretch the event to be twice as long,"@c1 syntax.clause form=imperative discourse=""please"" verb=""stretch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""be"" modifier=""twice"" modifier=""as"" modifier=""long""","@c1 syntax.clause form=imperative discourse=""please"" verb=""stretch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""to"" from=$n1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""be"" modifier=""twice""
+@r2 syntax.relation marker=""as"" from=$c2 to=$n2
+@n2 syntax.nominal head=""long""",
+318,"actually, I need the event twice as long, because we always run out of time","@c1 syntax.clause form=declarative modifier=""actually"" verb=""need"" modifier=""twice"" modifier=""as"" modifier=""long"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""because"" from=$c1 to=$c2
+@n3 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative modifier=""always"" verb=""run"" subject=$n3
+@r2 syntax.relation marker=""out of"" from=$c2 to=$n4
+@n4 syntax.nominal head=""time""","@c1 syntax.clause form=declarative modifier=""actually"" verb=""need"" modifier=""twice"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""the"" head=""event""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""long""
+@r2 syntax.relation marker=""because"" from=$c1 to=$c2
+@n4 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative modifier=""always"" verb=""run"" subject=$n4
+@r3 syntax.relation marker=""out of"" from=$c2 to=$n5
+@n5 syntax.nominal head=""time""",

@@ -1,0 +1,3079 @@
+n,text,sop,alt,label_state
+1,"the zero values in the sales chart disappear, make them visible","@n1 syntax.nominal dependent=""the"" dependent=""zero"" head=""values""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative verb=""disappear"" subject=$n1
+@c2 syntax.clause form=imperative verb=""make"" modifier=""visible"" complement=$n3
+@n3 syntax.nominal head=""them""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""the"" dependent=""zero"" head=""values""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative verb=""disappear"" subject=$n1
+@c2 syntax.clause form=imperative verb=""make"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""them""
+@n4 syntax.nominal head=""visible""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+3,go ahead and make the zero visible and show the values,"@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""make"" modifier=""visible"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""zero""
+@c3 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""values""","@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""zero"" head=""visible""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""values""",
+6,"the axis in the sales chart only has month and quarter, break it into weeks","@n1 syntax.nominal dependent=""the"" head=""axis""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative modifier=""only"" verb=""has"" subject=$n1 complement=$k1
+@n3 syntax.nominal head=""month""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""quarter""
+@c2 syntax.clause form=imperative verb=""break"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation marker=""into"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weeks""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""the"" head=""axis""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative modifier=""only"" verb=""has"" modifier=""month"" discourse=""and"" subject=$n1 complement=$n3
+@n3 syntax.nominal head=""quarter""
+@c2 syntax.clause form=imperative verb=""break"" complement=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation marker=""into"" from=$c2 to=$n5
+@n5 syntax.nominal head=""weeks""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+7,go ahead and make the axis weekly and label it date,"@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""make"" modifier=""weekly"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""axis""
+@c3 syntax.clause form=imperative verb=""label"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""date""","@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""weekly"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""axis""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""label"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""date""",
+11,go ahead and add a trend line and show the values,"@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""trend"" head=""line""
+@c3 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""values""","@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""trend"" head=""line""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""values""",
+15,each data point should be its own bar,"@n1 syntax.nominal dependent=""each"" dependent=""data"" head=""point""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""its"" dependent=""own"" head=""bar""","@n1 syntax.nominal dependent=""each"" dependent=""data"" head=""point""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""bar"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""its"" head=""own""",
+16,"do not aggregate, show the individual points","@c1 syntax.clause form=imperative auxiliary=""do"" negation=""not"" verb=""aggregate""
+@c2 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""individual"" head=""points""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""do"" negation=""not"" modifier=""aggregate""
+@c2 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""individual"" head=""points""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+18,"show all the data points of the dimension, not one sum","@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" dependent=""data"" head=""points""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""dimension""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n3 ellipsis=$c1
+@n3 syntax.nominal dependent=""one"" head=""sum""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" dependent=""data"" head=""points""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""dimension""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n3 ellipsis=$c1
+@n3 syntax.nominal dependent=""one"" head=""sum""",
+20,"the bar chart is showing one giant total for the whole dimension and i cannot see the individual rows, so turn aggregation off and draw a bar for every data point","@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""showing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""one"" dependent=""giant"" head=""total""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""whole"" head=""dimension""
+@k1 syntax.coordination conjunction=""and"" conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3 conjunct=$c4
+@n4 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative negation=""cannot"" verb=""see"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""individual"" head=""rows""
+@c3 syntax.clause form=imperative verb=""turn"" modifier=""off"" complement=$n6
+@n6 syntax.nominal head=""aggregation""
+@c4 syntax.clause form=imperative verb=""draw"" complement=$n7
+@n7 syntax.nominal dependent=""a"" head=""bar""
+@r2 syntax.relation marker=""for"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""every"" dependent=""data"" head=""point""","@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""showing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""one"" dependent=""giant"" head=""total""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""whole"" head=""dimension""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative auxiliary=""cannot"" verb=""see"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""individual"" head=""rows""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""turn"" modifier=""off"" complement=$n6
+@n6 syntax.nominal head=""aggregation""
+@k3 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""draw"" complement=$n7
+@n7 syntax.nominal dependent=""a"" head=""bar""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""every"" dependent=""data"" head=""point""",
+23,"i want the chart to show every observation in the dimension rather than a single summed bar, because the average hides the outliers i am looking for","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$k1
+@n3 syntax.nominal dependent=""every"" head=""observation""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""dimension""
+@k1 syntax.coordination conjunction=""rather than"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""single"" dependent=""summed"" head=""bar""
+@r3 syntax.relation marker=""because"" from=$c1 to=$c3
+@n6 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=declarative verb=""hides"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""outliers""
+@n8 syntax.nominal head=""i""
+@c4 syntax.clause form=declarative auxiliary=""am"" verb=""looking"" subject=$n8
+@r4 syntax.relation marker=""for"" from=$c4 to=$n7
+@r5 syntax.relation from=$n7 to=$c4","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""every"" head=""observation""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""dimension""
+@r3 syntax.relation attachment=ambiguous marker=""rather than"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""single"" dependent=""summed"" head=""bar""
+@r4 syntax.relation marker=""because"" from=$c1 to=$c3
+@n6 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=declarative verb=""hides"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""outliers""
+@n8 syntax.nominal head=""i""
+@c4 syntax.clause form=declarative auxiliary=""am"" verb=""looking"" modifier=""for"" subject=$n8
+@r5 syntax.relation from=$n7 to=$c4",
+25,quick question: can u show every data point please,"@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""show"" discourse=""please"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""u""
+@n3 syntax.nominal dependent=""every"" dependent=""data"" head=""point""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=imperative auxiliary=""can"" verb=""u"" modifier=""show"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""every"" dependent=""data"" head=""point""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+28,go ahead and show every point and sort them,"@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""point""
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""them""","@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""point""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""them""",
+34,"Set the title to ""Data Size"" and the legend to ""Score"".","@c1 syntax.clause form=imperative verb=""Set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""title""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Data Size""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" head=""legend""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Score""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1","@c1 syntax.clause form=imperative verb=""Set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""title""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Data Size""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" head=""legend""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Score""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+35,"Change the chart title to ""Revenue by month for the northern region, excluding the pilot stores"", so the title still reads on the printed page.","@c1 syntax.clause form=imperative verb=""Change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""chart"" head=""title""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Revenue by month for the northern region, excluding the pilot stores""
+@r2 syntax.relation marker=""so"" from=$c1 to=$c2
+@n3 syntax.nominal dependent=""the"" head=""title""
+@c2 syntax.clause form=declarative modifier=""still"" verb=""reads"" subject=$n3
+@r3 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""printed"" head=""page""","@c1 syntax.clause form=imperative verb=""Change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""chart"" head=""title""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Revenue by month for the northern region, excluding the pilot stores""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" head=""title""
+@c2 syntax.clause form=declarative modifier=""still"" verb=""reads"" subject=$n3
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""printed"" head=""page""",
+36,"Name the chart ""Power"" and move the legend to the bottom.","@c1 syntax.clause form=imperative verb=""Name"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""chart""
+@n2 syntax.nominal head=""Power""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""legend""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""bottom""","@c1 syntax.clause form=imperative verb=""Name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""chart"" dependent=""Power""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""legend""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""",
+37,"Title the chart ""Data Size"", then make the legend font bigger.","@c1 syntax.clause form=imperative verb=""Title"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""chart""
+@n2 syntax.nominal head=""Data Size""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""legend"" head=""font""","@c1 syntax.clause form=imperative verb=""Title"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""chart"" dependent=""Data"" dependent=""Size""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""legend"" head=""font""",
+45,"Make the font as big as possible, then take the title font down one step because it no longer fits.","@c1 syntax.clause form=imperative verb=""Make"" modifier=""as"" modifier=""big"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""font""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal head=""possible""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""take"" modifier=""down"" complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""title"" head=""font""
+@n4 syntax.nominal dependent=""one"" head=""step""
+@r2 syntax.relation marker=""because"" from=$c2 to=$c3
+@n5 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative modifier=""no"" modifier=""longer"" verb=""fits"" subject=$n5","@c1 syntax.clause form=imperative verb=""Make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""font""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal head=""big""
+@r2 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""possible""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""take"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""title"" head=""font""
+@r3 syntax.relation attachment=ambiguous marker=""down"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""one"" head=""step""
+@r4 syntax.relation marker=""because"" from=$c2 to=$c3
+@n6 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative modifier=""no"" modifier=""longer"" verb=""fits"" subject=$n6",
+46,Font bigger.,"@n1 syntax.nominal head=""Font""
+@c1 syntax.clause form=fragment modifier=""bigger"" complement=$n1","@n1 syntax.nominal head=""Font"" dependent=""bigger""
+@c1 syntax.clause form=fragment complement=$n1",
+52,Maybe set the Monthly sales chart to aggregate with the mean.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""aggregate""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""mean""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""aggregate""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""mean""",
+53,What if Orders by weekday showed the average revenue?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=declarative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""average"" head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=interrogative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""average"" head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1",
+56,"I'd like you to show the average of order value on Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation marker=""by"" from=$n5 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+60,"I'd like you to show the average of order value on Orders by weekday, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+62,"Let's show the average of order value on Revenue by region, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""average""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""order"" head=""value""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""average""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""order"" head=""value""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$c2",
+65,"Let's show the mean of sales on the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+66,"Let's change Orders by weekday so the values are the average for each weekday, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""average""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""average""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$c2",
+71,Recalculate Revenue by region using the overall and keep the department in the same order.,"@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""department""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""department""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$n2 to=$c2",
+74,Maybe set the Monthly sales chart to aggregate with the total.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""aggregate""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""total""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""aggregate""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""total""",
+75,What if Orders by weekday showed the total sales?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=declarative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""total"" head=""sales""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=interrogative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""total"" head=""sales""
+@c2 syntax.clause form=fragment complement=$n1",
+78,"I'd like you to show the overall of profit on Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation marker=""by"" from=$n5 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+82,"I'd like you to show the overall of profit on Orders by weekday, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""overall""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+84,"Let's show the overall of profit on Revenue by region, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""overall""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""profit""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""overall""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""profit""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$c2",
+86,"Let's show the total of revenue on the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""total""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""total""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+87,"Let's change Orders by weekday so the values are the overall for each department, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""overall""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""department""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""overall""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""department""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$c2",
+88,Could you also total only on the Monthly sales chart?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" modifier=""also"" verb=""total"" modifier=""only"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@c1 syntax.clause form=interrogative verb=""Could"" modifier=""also"" modifier=""only"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""total""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+93,Recalculate Revenue by region using the count and keep the channel in the same order.,"@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""channel""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""channel""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$n2 to=$c2",
+95,"For the summary, Monthly sales should carry the number returns per reason, so nobody has to add the reason up by hand","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""summary""
+@n2 syntax.nominal dependent=""Monthly"" head=""sales""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""carry"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""number"" head=""returns""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""reason""
+@r3 syntax.relation marker=""so"" from=$c1 to=$c2
+@n5 syntax.nominal head=""nobody""
+@c2 syntax.clause form=declarative verb=""has"" subject=$n5
+@r4 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""add"" modifier=""up"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""reason""
+@r5 syntax.relation marker=""by"" from=$c3 to=$n7
+@n7 syntax.nominal head=""hand""","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""summary""
+@n2 syntax.nominal head=""Monthly sales""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""carry"" modifier=""returns"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""number""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n4
+@n4 syntax.nominal head=""reason""
+@r3 syntax.relation marker=""so"" from=$c1 to=$c2
+@n5 syntax.nominal head=""nobody""
+@c2 syntax.clause form=declarative verb=""has"" subject=$n5
+@r4 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""add"" modifier=""up"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""reason""
+@r5 syntax.relation marker=""by"" from=$n6 to=$n7
+@n7 syntax.nominal head=""hand""",
+96,Maybe set the Monthly sales chart to aggregate with the number.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""aggregate""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""number""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""aggregate""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""number""",
+98,"I'd like you to show the count of signups on Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""signups""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""signups""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation marker=""by"" from=$n5 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+102,"I'd like you to show the count of signups on Orders by weekday, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""signups""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""count""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""signups""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+104,"Let's show the count of signups on Revenue by region, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""signups""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""signups""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$c2",
+107,"Let's show the number of tickets on the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""tickets""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""tickets""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+114,Recalculate Revenue by region using the maximum and keep the city in the same order.,"@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""city""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""city""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$n2 to=$c2",
+117,Maybe set the Monthly sales chart to aggregate with the highest.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""aggregate""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""highest""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""aggregate""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""highest""",
+118,What if Orders by weekday showed the maximum revenue?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=declarative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""maximum"" head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=interrogative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""maximum"" head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1",
+121,"I'd like you to show the maximum of temperature on Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n3 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation marker=""by"" from=$n5 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+125,"I'd like you to show the maximum of temperature on Orders by weekday, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""maximum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+127,"Let's show the maximum of temperature on Revenue by region, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""maximum""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""temperature""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""maximum""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""temperature""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$c2",
+130,"Let's show the highest of sales on the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""highest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""highest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+131,Could you also highest only on the Monthly sales chart?,"@c1 syntax.clause form=interrogative verb=""Could"" modifier=""also"" modifier=""highest"" modifier=""only"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@c1 syntax.clause form=interrogative verb=""Could"" modifier=""also"" modifier=""only"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""highest""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+137,Recalculate Revenue by region using the minimum and keep the city in the same order.,"@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""city""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Recalculate"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""using"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""city""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation from=$n2 to=$c2",
+140,Maybe set the Monthly sales chart to aggregate with the lowest.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""aggregate""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lowest""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""aggregate""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lowest""",
+141,What if Orders by weekday showed the minimum revenue?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=declarative verb=""showed"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""minimum"" head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=interrogative verb=""showed"" modifier=""revenue"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""minimum""
+@c2 syntax.clause form=fragment complement=$n1",
+143,"I'd like you to show the minimum of temperature on Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n3 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Revenue""
+@r4 syntax.relation marker=""by"" from=$n5 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+146,"I'd like you to show the minimum of temperature on Orders by weekday, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""minimum""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""temperature""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Orders""
+@r4 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+148,"Let's show the minimum of temperature on Revenue by region, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""minimum""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""temperature""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""minimum""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""temperature""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation from=$c1 to=$c2",
+151,"Let's show the lowest of sales on the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""lowest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""lowest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""sales""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+152,"Let's change Orders by weekday so the values are the minimum for each city, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""minimum""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""city""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""change"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""values""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""minimum""
+@r3 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""each"" head=""city""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""sort"" complement=$n7
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c4 to=$n8
+@n8 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c4 to=$n9
+@n9 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$c2",
+158,Let's make Revenue by region show each bar as a percentage.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make""
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""region""
+@c3 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""each"" head=""bar""
+@r2 syntax.relation marker=""as"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""percentage""
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@c3 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n4
+@n4 syntax.nominal dependent=""each"" head=""bar""
+@r2 syntax.relation marker=""as"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""percentage""
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$c2 to=$c3",
+161,What if the Monthly sales chart showed shares instead of totals?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative verb=""showed"" subject=$n2 complement=$k1
+@n3 syntax.nominal head=""shares""
+@k1 syntax.coordination conjunction=""instead of"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""totals""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=interrogative verb=""showed"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""shares""
+@r2 syntax.relation attachment=ambiguous marker=""instead of"" from=$c1 to=$n4
+@n4 syntax.nominal head=""totals""
+@c2 syntax.clause form=fragment complement=$n1",
+162,Is Orders by weekday showing shares yet?,"@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""showing"" modifier=""yet"" subject=$n1 complement=$n3
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@n3 syntax.nominal head=""shares""","@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@c2 syntax.clause form=nonfinite verb=""showing"" modifier=""yet"" complement=$n3
+@n3 syntax.nominal head=""shares""
+@r2 syntax.relation from=$n2 to=$c2",
+165,"I'd like you to make Revenue by region show each bar as a percentage, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@c3 syntax.clause form=nonfinite verb=""show"" subject=$n3 complement=$n5
+@n5 syntax.nominal dependent=""each"" head=""bar""
+@r3 syntax.relation attachment=ambiguous marker=""as"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""a"" head=""percentage""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""
+@r4 syntax.relation from=$c2 to=$k1","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@c3 syntax.clause form=nonfinite verb=""show"" subject=$n3 complement=$n5
+@n5 syntax.nominal dependent=""each"" head=""bar""
+@r3 syntax.relation marker=""as"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""a"" head=""percentage""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""
+@r4 syntax.relation from=$c2 to=$c3",
+169,"Let's show each category on Revenue by region as a percent of the total, and hide the legend.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""each"" head=""category""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""as"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""percent""
+@r4 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""legend""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""each"" head=""category""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""as"" from=$n2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""percent""
+@r4 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""legend""
+@r5 syntax.relation from=$c1 to=$c2",
+180,Let's show Q3 on Revenue by region and leave the other categories out of the count.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" complement=$n2
+@n2 syntax.nominal head=""Q3""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""leave"" complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""other"" head=""categories""
+@r3 syntax.relation marker=""out of"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""count""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Q3""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""other"" head=""categories""
+@r3 syntax.relation marker=""out of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""count""
+@r4 syntax.relation from=$c1 to=$c2",
+187,"I'd like you to filter Orders by weekday to Q3, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""filter"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Q3""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""filter"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Q3""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""font""",
+191,"Maybe make Revenue by region use only the rows for Q3, so the chart can go straight into the pack, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""make""
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""use"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""only"" dependent=""the"" head=""rows""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Q3""
+@r3 syntax.relation marker=""so"" from=$c1 to=$c3
+@n5 syntax.nominal dependent=""the"" head=""chart""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""go"" modifier=""straight"" subject=$n5
+@r4 syntax.relation marker=""into"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""pack""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""put"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""legend""
+@r5 syntax.relation marker=""on"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""right""
+@r6 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@c2 syntax.clause form=nonfinite verb=""use"" modifier=""only"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""rows""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Q3""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal dependent=""the"" head=""chart""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""go"" modifier=""straight"" subject=$n5
+@r3 syntax.relation marker=""into"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""pack""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""put"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""right""
+@r5 syntax.relation from=$c1 to=$c2",
+192,"Let's set Orders by weekday to the trial plan, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""set"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""trial"" head=""plan""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""set"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""trial"" head=""plan""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal head=""lowest""
+@r5 syntax.relation from=$c1 to=$c2",
+195,I'd also like you to only show the trial plan on the Monthly sales chart.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite modifier=""only"" verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""trial"" head=""plan""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative modifier=""only"" verb=""show"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""trial"" head=""plan""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+199,Leave returns out of Revenue by region and keep the rest exactly as it is.,"@c1 syntax.clause form=imperative verb=""Leave"" complement=$n1
+@n1 syntax.nominal head=""returns""
+@r1 syntax.relation marker=""out of"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Revenue""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""keep"" modifier=""exactly"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""rest""
+@r3 syntax.relation marker=""as"" from=$c2 to=$c3
+@n5 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5","@c1 syntax.clause form=imperative verb=""Leave"" modifier=""returns""
+@r1 syntax.relation marker=""out of"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""keep"" modifier=""exactly"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""rest""
+@r3 syntax.relation marker=""as"" from=$c2 to=$c3
+@n4 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n4",
+201,"For the board version, Monthly sales should leave the empty categories out, so the chart can go straight into the pack","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""board"" head=""version""
+@n2 syntax.nominal dependent=""Monthly"" head=""sales""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""leave"" modifier=""out"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""empty"" head=""categories""
+@r2 syntax.relation marker=""so"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""go"" modifier=""straight"" subject=$n4
+@r3 syntax.relation marker=""into"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""pack""","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""board"" head=""version""
+@n2 syntax.nominal head=""Monthly sales""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""leave"" modifier=""out"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""empty"" head=""categories""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""go"" modifier=""straight"" subject=$n4
+@r2 syntax.relation marker=""into"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""pack""",
+202,What if Orders by weekday dropped weekends?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=declarative verb=""dropped"" subject=$n2 complement=$n4
+@n4 syntax.nominal head=""weekends""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@c1 syntax.clause form=interrogative verb=""dropped"" subject=$n2 complement=$n4
+@n4 syntax.nominal head=""weekends""
+@c2 syntax.clause form=fragment complement=$n1",
+204,"I'd like you to drop returns from Revenue by region, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""drop"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""returns""
+@r2 syntax.relation marker=""from"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drop"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""returns""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""",
+210,"Let's drop the trial rows from the regional revenue chart, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""drop"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""trial"" head=""rows""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation marker=""from"" from=$c3 to=$n5
+@n5 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""lowest""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""drop"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""trial"" head=""rows""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation marker=""from"" from=$c3 to=$n5
+@n5 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""lowest""
+@r4 syntax.relation from=$c1 to=$c2",
+215,Could you keep only orders between 10 and 50 on the Monthly sales chart?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""keep"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""only"" head=""orders""
+@r1 syntax.relation marker=""between"" from=$n2 to=$k1
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""50""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""keep"" modifier=""only"" modifier=""orders"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""between"" from=$c1 to=$k1
+@n2 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""50""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+225,"Maybe set Orders by weekday to orders between 10 and 50, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""orders""
+@r3 syntax.relation marker=""between"" from=$n3 to=$k1
+@n4 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""50""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""right""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""set"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""orders""
+@r3 syntax.relation marker=""between"" from=$c1 to=$k1
+@n4 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""50""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""right""",
+227,"Keep only orders between 10 and 50 on Revenue by region, and title it ""Monthly sales"".","@c1 syntax.clause form=imperative verb=""Keep"" complement=$n1
+@n1 syntax.nominal dependent=""only"" head=""orders""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""50""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n5
+@n5 syntax.nominal head=""region""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n6 complement=$n7
+@n6 syntax.nominal head=""it""
+@n7 syntax.nominal head=""Monthly sales""","@c1 syntax.clause form=imperative verb=""Keep"" modifier=""only"" modifier=""orders""
+@r1 syntax.relation marker=""between"" from=$c1 to=$k1
+@n1 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""50""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""region""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Monthly sales""",
+231,"Keep only orders between 10 and 50 on Orders by weekday, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Keep"" complement=$n1
+@n1 syntax.nominal dependent=""only"" head=""orders""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""50""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Orders""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n5
+@n5 syntax.nominal head=""weekday""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""values""
+@r4 syntax.relation marker=""on"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""chart""","@c1 syntax.clause form=imperative verb=""Keep"" modifier=""only"" modifier=""orders""
+@r1 syntax.relation marker=""between"" from=$c1 to=$k1
+@n1 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""50""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""weekday""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r4 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""",
+233,"Maybe restrict Revenue by region to orders between 10 and 50, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""restrict"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""orders""
+@r3 syntax.relation marker=""between"" from=$n3 to=$k1
+@n4 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""50""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""right""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""restrict"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""orders""
+@r3 syntax.relation marker=""between"" from=$c1 to=$k1
+@n4 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""50""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""right""",
+234,Now limit Monthly sales to orders between 10 and 50.,"@c1 syntax.clause form=imperative modifier=""Now"" verb=""limit"" complement=$n1
+@n1 syntax.nominal dependent=""Monthly"" head=""sales""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""orders""
+@r2 syntax.relation marker=""between"" from=$n2 to=$k1
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""50""","@c1 syntax.clause form=imperative modifier=""Now"" verb=""limit"" complement=$n1
+@n1 syntax.nominal head=""Monthly sales""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""orders""
+@r2 syntax.relation marker=""between"" from=$c1 to=$k1
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""50""",
+236,Could you show only values above 100 on the Monthly sales chart?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""show"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""only"" head=""values""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""100""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""show"" modifier=""only"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""values""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""100""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+237,Let's filter Revenue by region to bars under 20 and keep the surviving categories in place.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""filter"" complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""bars""
+@r3 syntax.relation marker=""under"" from=$n4 to=$n5
+@n5 syntax.nominal head=""20""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""keep"" complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""surviving"" head=""categories""
+@r4 syntax.relation marker=""in"" from=$c3 to=$n7
+@n7 syntax.nominal head=""place""
+@r5 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""filter"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""bars""
+@r3 syntax.relation marker=""under"" from=$n4 to=$n5
+@n5 syntax.nominal head=""20""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""surviving"" head=""categories""
+@r4 syntax.relation marker=""in"" from=$c3 to=$n7
+@n7 syntax.nominal head=""place""
+@r5 syntax.relation from=$c1 to=$c2",
+239,the Monthly sales chart should keep regions above plan and nothing else.,"@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""keep"" discourse=""and"" subject=$n1 complement=$n2 complement=$n4
+@n2 syntax.nominal head=""regions""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""plan""
+@n4 syntax.nominal head=""nothing"" dependent=""else""","@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""keep"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""regions""
+@r1 syntax.relation marker=""above"" from=$n2 to=$k1
+@n3 syntax.nominal head=""plan""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""nothing"" dependent=""else""",
+245,"Show only values above 100 on Revenue by region, and title it ""Monthly sales"".","@c1 syntax.clause form=imperative verb=""Show"" complement=$n1
+@n1 syntax.nominal dependent=""only"" head=""values""
+@r1 syntax.relation marker=""above"" from=$n1 to=$n2
+@n2 syntax.nominal head=""100""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Monthly sales""","@c1 syntax.clause form=imperative verb=""Show"" modifier=""only"" complement=$n1
+@n1 syntax.nominal head=""values""
+@r1 syntax.relation marker=""above"" from=$n1 to=$n2
+@n2 syntax.nominal head=""100""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Revenue""
+@r3 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Monthly sales""",
+248,"Show only values above 100 on Orders by weekday, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Show"" complement=$n1
+@n1 syntax.nominal dependent=""only"" head=""values""
+@r1 syntax.relation marker=""above"" from=$n1 to=$n2
+@n2 syntax.nominal head=""100""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r4 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""","@c1 syntax.clause form=imperative verb=""Show"" modifier=""only"" complement=$n1
+@n1 syntax.nominal head=""values""
+@r1 syntax.relation marker=""above"" from=$n1 to=$n2
+@n2 syntax.nominal head=""100""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r4 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""",
+251,"Let's keep Orders by weekday at bars under 20, and sort it from highest to lowest.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""keep"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""bars""
+@r3 syntax.relation marker=""under"" from=$n4 to=$n5
+@n5 syntax.nominal head=""20""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""sort"" complement=$n6
+@n6 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c3 to=$n7
+@n7 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c3 to=$n8
+@n8 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""keep"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""bars""
+@r3 syntax.relation marker=""under"" from=$n4 to=$n5
+@n5 syntax.nominal head=""20""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""sort"" complement=$n6
+@n6 syntax.nominal head=""it""
+@r4 syntax.relation marker=""from"" from=$c3 to=$n7
+@n7 syntax.nominal head=""highest""
+@r5 syntax.relation marker=""to"" from=$c3 to=$n8
+@n8 syntax.nominal head=""lowest""
+@r6 syntax.relation from=$c1 to=$c2",
+253,I'd also like you to show only bars under 20 on the Monthly sales chart.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""only"" head=""bars""
+@r2 syntax.relation marker=""under"" from=$n3 to=$n4
+@n4 syntax.nominal head=""20""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" modifier=""only"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""bars""
+@r2 syntax.relation attachment=ambiguous marker=""under"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@r3 syntax.relation marker=""on"" from=$n3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""",
+255,Maybe filter Orders by weekday to the rows where sales beat target.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""filter"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""rows""
+@r3 syntax.relation marker=""where"" from=$n3 to=$c2
+@n4 syntax.nominal head=""sales""
+@c2 syntax.clause form=declarative verb=""beat"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""target""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""filter"" modifier=""where"" modifier=""sales"" modifier=""beat"" modifier=""target"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""rows""",
+263,"Maybe use the rows where profit is positive for Orders by weekday, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""rows""
+@r1 syntax.relation marker=""where"" from=$n1 to=$c2
+@n2 syntax.nominal head=""profit""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""positive"" subject=$n2
+@r2 syntax.relation marker=""for"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r3 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""put"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""use"" modifier=""profit"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""rows""
+@r1 syntax.relation marker=""where"" from=$c2 to=$c1
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n2
+@n2 syntax.nominal head=""positive""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""put"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""",
+273,Now keep the months where profit is positive on Monthly sales.,"@c1 syntax.clause form=imperative modifier=""Now"" verb=""keep"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""months""
+@r1 syntax.relation marker=""where"" from=$n1 to=$c2
+@n2 syntax.nominal head=""profit""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""positive"" subject=$n2
+@r2 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""Monthly"" head=""sales""","@c1 syntax.clause form=imperative modifier=""Now"" verb=""keep"" modifier=""profit"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""months""
+@r1 syntax.relation marker=""where"" from=$c2 to=$c1
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n2
+@n2 syntax.nominal head=""positive""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Monthly sales""",
+276,Could you sort the chart largest to smallest?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" modifier=""largest"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""smallest""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""chart"" head=""largest""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""smallest""",agreement
+277,Maybe order Orders by weekday in descending order.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""order"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""descending"" head=""order""","@c1 syntax.clause form=fragment modifier=""Maybe"" modifier=""order"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""descending"" head=""order""",
+280,Could you put the regional revenue chart largest to smallest?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""put"" modifier=""largest"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""smallest""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""put"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" dependent=""chart"" head=""largest""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""smallest""",agreement
+284,"Can we have it largest to smallest, because the numbers in the sheet are still moving","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""have"" modifier=""largest"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""smallest""
+@r2 syntax.relation marker=""because"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" head=""numbers""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""sheet""
+@c2 syntax.clause form=declarative auxiliary=""are"" modifier=""still"" verb=""moving"" subject=$n4","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""have"" modifier=""largest"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""smallest""
+@r2 syntax.relation marker=""because"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" head=""numbers""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""sheet""
+@c2 syntax.clause form=declarative verb=""are"" modifier=""still"" modifier=""moving"" subject=$n4",
+285,Could you set this chart to run from the top down?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""set"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""down"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""set"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$n2 to=$c2
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""down""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""",
+288,I'd like to see the chart from highest to lowest rather than in the order the table gave us.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" modifier=""rather"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""to"" from=$n2 to=$n4
+@n4 syntax.nominal head=""lowest""
+@r4 syntax.relation marker=""than in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""order""
+@n6 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""us""
+@r5 syntax.relation from=$n5 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" complement=$n2 complement=$n6
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""lowest""
+@r4 syntax.relation marker=""rather than in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""order""
+@n6 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=nonfinite verb=""gave"" complement=$n7
+@n7 syntax.nominal head=""us""
+@r5 syntax.relation from=$n6 to=$c3",
+289,Let's show the column chart largest to smallest.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" modifier=""largest"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""column"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""smallest""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""column"" dependent=""chart"" head=""largest""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""smallest""
+@r2 syntax.relation from=$c1 to=$c2",
+291,Could you make it read in descending order?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""descending"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""descending"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2",
+292,I'd like you to line this chart up with the biggest first.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" modifier=""up"" modifier=""first"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""biggest""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" modifier=""up"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""biggest"" head=""first""",
+294,What if the chart ran from the top down?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=declarative verb=""ran"" modifier=""down"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=interrogative verb=""ran"" modifier=""down"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@c2 syntax.clause form=fragment complement=$n1",
+295,Maybe the bar chart should run in descending order.,"@c1 syntax.clause form=declarative modifier=""Maybe"" auxiliary=""should"" verb=""run"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""descending"" head=""order""","@c1 syntax.clause form=declarative modifier=""Maybe"" auxiliary=""should"" verb=""run"" modifier=""in"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@n2 syntax.nominal dependent=""descending"" head=""order""",
+296,Let's sort Orders by weekday with the biggest first.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" modifier=""first"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""biggest""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""biggest"" head=""first""
+@r3 syntax.relation from=$c1 to=$c2",
+306,"I'd like you to rank Orders by weekday from highest to lowest, and show the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""lowest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal head=""highest""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""lowest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""grid""",
+308,"Let's sort Revenue by region in descending order, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""descending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""descending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$c2",
+314,The next thing is to sort it with the biggest first.,"@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""sort"" modifier=""first"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""biggest""","@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""biggest"" head=""first""",
+317,I'd also like you to show the Monthly sales chart with the biggest first.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""biggest"" head=""first""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" head=""Monthly""
+@n4 syntax.nominal dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""with"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""biggest"" head=""first""",
+322,"I need it from lowest to highest before I can talk about the top of the list, because the previous version was redrawn three times","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""lowest""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""before"" from=$c1 to=$c2
+@n5 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""talk"" subject=$n5
+@r4 syntax.relation marker=""about"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""top""
+@r5 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""list""
+@r6 syntax.relation marker=""because"" from=$c1 to=$c3
+@n8 syntax.nominal dependent=""the"" dependent=""previous"" head=""version""
+@c3 syntax.clause form=declarative auxiliary=""was"" verb=""redrawn"" subject=$n8 complement=$n9
+@n9 syntax.nominal dependent=""three"" head=""times""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""lowest""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""before"" from=$c1 to=$c2
+@n5 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""talk"" subject=$n5
+@r4 syntax.relation marker=""about"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""top""
+@r5 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""list""
+@r6 syntax.relation marker=""because"" from=$c2 to=$c3
+@n8 syntax.nominal dependent=""the"" dependent=""previous"" head=""version""
+@c3 syntax.clause form=declarative verb=""was"" subject=$n8 complement=$n9
+@n9 syntax.nominal dependent=""redrawn"" dependent=""three"" head=""times""",
+325,"I'd like you to sort the Orders by weekday chart smallest first and keep the labels on the bars, because the numbers in the sheet are still moving.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""sort"" modifier=""smallest"" modifier=""first"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""Orders""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""weekday"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""keep"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""labels""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""bars""
+@r4 syntax.relation marker=""because"" from=$c3 to=$c4
+@n7 syntax.nominal dependent=""the"" head=""numbers""
+@r5 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""sheet""
+@c4 syntax.clause form=declarative auxiliary=""are"" modifier=""still"" verb=""moving"" subject=$n7","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""weekday"" head=""chart"" dependent=""smallest"" dependent=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""labels""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""bars""
+@r4 syntax.relation marker=""because"" from=$c3 to=$c4
+@n7 syntax.nominal dependent=""the"" head=""numbers""
+@r5 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""sheet""
+@c4 syntax.clause form=declarative auxiliary=""are"" modifier=""still"" verb=""moving"" subject=$n7",
+330,"For the review, reorder the sales chart from the bottom up without changing the values.","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@c1 syntax.clause form=imperative verb=""reorder"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom"" dependent=""up""
+@r3 syntax.relation marker=""without"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""values""","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@c1 syntax.clause form=imperative verb=""reorder"" modifier=""up"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation marker=""without"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""values""",
+332,I'd like to see the chart smallest first rather than in the order the table gave us.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" modifier=""smallest"" modifier=""first"" modifier=""rather"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""than in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""order""
+@n4 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""us""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" modifier=""smallest"" modifier=""first"" complement=$n2 complement=$n4
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""rather than in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""order""
+@n4 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=nonfinite verb=""gave"" complement=$n5
+@n5 syntax.nominal head=""us""
+@r3 syntax.relation from=$n4 to=$c3",
+335,Could you make it read in ascending order?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""ascending"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""ascending"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2",
+336,I'd like you to line this chart up smallest first.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" modifier=""up"" modifier=""smallest"" modifier=""first"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""up"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""smallest"" head=""first""",
+338,Let the Monthly sales chart run from the bottom up.,"@c1 syntax.clause form=imperative verb=""Let""
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""up"" subject=$n1
+@r1 syntax.relation marker=""from"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bottom""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""up"" subject=$n1
+@r1 syntax.relation marker=""from"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bottom""
+@r2 syntax.relation from=$c1 to=$c2",
+339,What if the chart ran in ascending order?,"@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=declarative verb=""ran"" subject=$n2
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""ascending"" head=""order""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=interrogative verb=""ran"" subject=$n2
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""ascending"" head=""order""
+@c2 syntax.clause form=fragment complement=$n1",
+346,"I'd like you to arrange Revenue by region in ascending order, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""arrange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""arrange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""",
+350,"I'd like you to rank Orders by weekday in ascending order, and show the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""",
+352,"Let's sort Revenue by region in ascending order, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$c2",
+356,"Let's sort Orders by weekday in ascending order, and make the font bigger.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""font""
+@r3 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""ascending"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""font""
+@r3 syntax.relation from=$c1 to=$c2",
+364,I'd also like you to show the Monthly sales chart in ascending order.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""ascending"" head=""order""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" modifier=""also"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""show"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" head=""Monthly""
+@n4 syntax.nominal dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""ascending"" head=""order""",
+370,Could you sort the chart from A to Z?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""A""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Z""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" modifier=""from"" modifier=""A"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Z""",
+372,Maybe order Orders by weekday by name.,"@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""order"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""name""","@c1 syntax.clause form=fragment modifier=""Maybe"" modifier=""order"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n3
+@n3 syntax.nominal head=""name""",
+373,"I need it alphabetically before I can talk about the top of the list, because the previous version was redrawn three times","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" modifier=""alphabetically"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""talk"" subject=$n3
+@r2 syntax.relation marker=""about"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""top""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""list""
+@r4 syntax.relation marker=""because"" from=$c1 to=$c3
+@n6 syntax.nominal dependent=""the"" dependent=""previous"" head=""version""
+@c3 syntax.clause form=declarative auxiliary=""was"" verb=""redrawn"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""three"" head=""times""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" modifier=""alphabetically"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""talk"" subject=$n3
+@r2 syntax.relation marker=""about"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""top""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""list""
+@r4 syntax.relation marker=""because"" from=$c2 to=$c3
+@n6 syntax.nominal dependent=""the"" dependent=""previous"" head=""version""
+@c3 syntax.clause form=declarative verb=""was"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""redrawn"" dependent=""three"" head=""times""",
+379,Could you set this chart to run alphabetically?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""set"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""alphabetically"" subject=$n2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""set"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$n2 to=$c2
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""alphabetically""",
+380,"For the review, reorder the sales chart from A to Z without changing the values.","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@c1 syntax.clause form=imperative verb=""reorder"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""A""
+@r3 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Z""
+@r4 syntax.relation marker=""without"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@c1 syntax.clause form=imperative verb=""reorder"" modifier=""from"" modifier=""A"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Z""
+@r3 syntax.relation marker=""without"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""changing"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""values""",
+382,I'd like to see the chart by name rather than in the order the table gave us.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""name""
+@k1 syntax.coordination conjunction=""rather than"" conjunct=$r2 conjunct=$r3
+@r3 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""order""
+@n5 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""us""
+@r4 syntax.relation from=$n4 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" complement=$n2 complement=$n5
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""name""
+@r3 syntax.relation marker=""rather than in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""order""
+@n5 syntax.nominal dependent=""the"" head=""table""
+@c3 syntax.clause form=nonfinite verb=""gave"" complement=$n6
+@n6 syntax.nominal head=""us""
+@r4 syntax.relation from=$n5 to=$c3",
+383,Could you make it read in alphabetical order?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""alphabetical"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""read"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""alphabetical"" head=""order""
+@r2 syntax.relation from=$c1 to=$c2",
+386,Let the Monthly sales chart run from A to Z.,"@c1 syntax.clause form=imperative verb=""Let""
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c2 syntax.clause form=nonfinite verb=""run"" subject=$n1
+@r1 syntax.relation marker=""from"" from=$c2 to=$n2
+@n2 syntax.nominal head=""A""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Z""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""from"" modifier=""A"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal head=""Z""
+@r2 syntax.relation from=$c1 to=$c2",
+389,Is it running from A to Z yet?,"@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""running"" modifier=""yet"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""A""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Z""","@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""running"" modifier=""from"" modifier=""A"" modifier=""yet"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Z""",
+390,The order I want on this chart is in alphabetical order.,"@n1 syntax.nominal dependent=""The"" head=""order""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""The"" head=""order""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""on"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@c2 syntax.clause form=declarative verb=""is""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@r3 syntax.relation from=$c1 to=$c2",
+393,Could you order the chart from A to Z?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""order"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""A""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Z""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""order"" modifier=""from"" modifier=""A"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Z""",
+394,"I'd like you to arrange Revenue by region in alphabetical order, and hide the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""arrange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""arrange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Revenue""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""hide"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""",
+398,"I'd like you to rank Orders by weekday in alphabetical order, and show the grid.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""rank"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""grid""",
+400,"Let's sort Revenue by region in alphabetical order, and show the values on the chart.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""region""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""values""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@r4 syntax.relation from=$c1 to=$c2",
+403,"Let's sort Orders by weekday in alphabetical order, and make the font bigger.","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""font""
+@r3 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""sort"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""font""
+@r3 syntax.relation from=$c1 to=$c2",
+408,Could you also sort this chart from A to Z?,"@c1 syntax.clause form=interrogative auxiliary=""Could"" modifier=""also"" verb=""sort"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""A""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Z""","@c1 syntax.clause form=interrogative auxiliary=""Could"" modifier=""also"" verb=""sort"" modifier=""from"" modifier=""A"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Z""",
+410,Let's also sort the sales chart from A to Z.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite modifier=""also"" verb=""sort"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal head=""A""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Z""
+@r3 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite modifier=""also"" verb=""sort"" modifier=""from"" modifier=""A"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Z""
+@r2 syntax.relation from=$c1 to=$c2",
+413,"Could you sort the chart by revenue per order, highest first?","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@r3 syntax.relation from=$n3 to=$n5","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""sort"" modifier=""first"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n5",
+414,"The next thing is to sort the bar chart by revenue per order, highest first.","@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""sort"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@r4 syntax.relation from=$n3 to=$n5","@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""sort"" modifier=""first"" complement=$k1
+@n2 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation attachment=ambiguous marker=""per"" from=$c2 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n5",
+415,"Maybe order Orders by weekday by revenue per order, highest first.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""order"" modifier=""highest"" modifier=""first"" complement=$n1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""","@c1 syntax.clause form=fragment modifier=""Maybe"" modifier=""order"" complement=$k1
+@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""weekday""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n5",
+416,"this chart by revenue per order, highest first","@n1 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""order""
+@c1 syntax.clause form=fragment modifier=""highest"" modifier=""first"" complement=$n1","@n1 syntax.nominal dependent=""this"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""order""
+@n4 syntax.nominal head=""highest"" dependent=""first""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n4",
+417,"Could you rank the regional revenue chart by revenue per order, highest first?","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""rank"" modifier=""highest"" modifier=""first"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""rank"" modifier=""first"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""regional"" dependent=""revenue"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n5",
+421,"Can we have it by revenue per order, highest first, since the last version did not survive the review","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""have"" modifier=""first"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""since"" from=$c1 to=$c2
+@n6 syntax.nominal dependent=""the"" dependent=""last"" head=""version""
+@c2 syntax.clause form=declarative auxiliary=""did"" negation=""not"" verb=""survive"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""review""
+@r4 syntax.relation from=$n3 to=$n5","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""have"" modifier=""first"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@r3 syntax.relation marker=""since"" from=$c1 to=$c2
+@n6 syntax.nominal dependent=""the"" dependent=""last"" head=""version""
+@c2 syntax.clause form=declarative auxiliary=""did"" negation=""not"" verb=""survive"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""review""
+@r4 syntax.relation from=$c1 to=$n5",
+428,"Could you make it run by revenue per order, highest first?","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""run"" subject=$n2
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$n3 to=$n5","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""first"" subject=$n2
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n3 to=$k1
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@r3 syntax.relation from=$c1 to=$c2
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5",
+429,"I'd like you to line this chart up by revenue per order, highest first.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" modifier=""up"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""order""
+@n6 syntax.nominal head=""highest"" dependent=""first""
+@r4 syntax.relation from=$n4 to=$n6","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""line"" modifier=""up"" modifier=""first"" subject=$n2 complement=$k1
+@n3 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""order""
+@n6 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n6",
+430,"What if the orders chart were ordered by revenue per order, highest first?","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" dependent=""orders"" head=""chart""
+@c1 syntax.clause form=declarative auxiliary=""were"" verb=""ordered"" subject=$n2
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n3 to=$n5","@n1 syntax.nominal head=""What""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" dependent=""orders"" head=""chart""
+@c1 syntax.clause form=interrogative auxiliary=""were"" verb=""ordered"" subject=$n2
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$k1
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n4 conjunct=$n5",
+431,"Maybe the Monthly sales chart should run by revenue per order, highest first.","@c1 syntax.clause form=declarative modifier=""Maybe"" auxiliary=""should"" verb=""run"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""order""
+@n4 syntax.nominal head=""highest"" dependent=""first""
+@r3 syntax.relation from=$n2 to=$n4","@c1 syntax.clause form=declarative modifier=""Maybe"" auxiliary=""should"" verb=""run"" modifier=""first"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Monthly"" dependent=""sales"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$k1
+@n3 syntax.nominal head=""order""
+@n4 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+433,"Is the bar chart sorted by revenue per order yet, highest first?","@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""sorted"" modifier=""yet"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""order""
+@c2 syntax.clause form=fragment modifier=""highest"" modifier=""first"" ellipsis=$c1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""sorted"" modifier=""yet"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$k1
+@n3 syntax.nominal head=""order""
+@n4 syntax.nominal head=""highest"" dependent=""first""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+434,"The ranking I want on Orders by weekday is by revenue per order, highest first.","@n1 syntax.nominal dependent=""The"" head=""ranking""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""weekday""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""highest"" modifier=""first"" subject=$n1
+@r3 syntax.relation marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""revenue""
+@r4 syntax.relation marker=""per"" from=$n5 to=$n6
+@n6 syntax.nominal head=""order""
+@r5 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""The"" head=""ranking""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""on"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""weekday""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""first""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n5 to=$k1
+@n6 syntax.nominal head=""order""
+@n7 syntax.nominal head=""highest""
+@c3 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$c1
+@r5 syntax.relation from=$c1 to=$c2
+@k1 syntax.coordination conjunct=$n6 conjunct=$n7",
+436,"The next thing is to only rank this chart by revenue per order, highest first.","@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite modifier=""only"" verb=""rank"" modifier=""highest"" modifier=""first"" complement=$n2
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""","@n1 syntax.nominal dependent=""The"" dependent=""next"" head=""thing""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative modifier=""only"" verb=""rank"" modifier=""first"" complement=$k1
+@n2 syntax.nominal dependent=""this"" head=""chart""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""order""
+@n5 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n5",
+443,"Sort Revenue by region by profit per customer, highest first, and title it ""Monthly sales"".","@c1 syntax.clause form=imperative verb=""Sort"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""customer""
+@k1 syntax.coordination conjunction=""highest first, and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal head=""Monthly sales""","@c1 syntax.clause form=imperative verb=""Sort"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""profit""
+@r3 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n4
+@n4 syntax.nominal head=""customer""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""title"" complement=$n6 complement=$n7
+@n6 syntax.nominal head=""it""
+@n7 syntax.nominal head=""Monthly sales""
+@r4 syntax.relation from=$c1 to=$n5",
+444,"I'd like you to put Orders by weekday in order count order, from the top down, and make the font bigger.","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""put"" modifier=""down"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""order"" dependent=""count"" head=""order""
+@r4 syntax.relation marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""top""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""put"" modifier=""down"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Orders""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""weekday""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""order"" dependent=""count"" head=""order""
+@r4 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""top""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""font""",
+449,"Maybe sort Revenue by region by profit per customer, highest first, and put the legend on the right.","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""sort"" modifier=""highest"" modifier=""first"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""profit""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""customer""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""","@c1 syntax.clause form=imperative modifier=""Maybe"" verb=""sort"" complement=$n1
+@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""region""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""profit""
+@r3 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n4
+@n4 syntax.nominal head=""customer""
+@n5 syntax.nominal head=""highest"" dependent=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""legend""
+@r4 syntax.relation marker=""on"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""right""
+@r5 syntax.relation from=$c1 to=$n5",

@@ -1,0 +1,50 @@
+n,text,sop,label_state
+14,the same for the fourth box,"@n1 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""fourth"" head=""box""
+@c1 syntax.clause form=fragment complement=$n1",
+34,tell me what comes before Approve in the flow?,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""what""
+@c2 syntax.clause form=declarative verb=""comes"" subject=$n2
+@r1 syntax.relation marker=""before"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Approve""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""flow""
+@r3 syntax.relation from=$c1 to=$c2",
+184,undo the moves from steps 2 and 4,"@c1 syntax.clause form=imperative verb=""undo"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""moves""
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal head=""steps""
+@n3 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""4""
+@r2 syntax.relation from=$n2 to=$k1",
+474,"and one more, right after Verify","@c1 syntax.clause form=fragment discourse=""and"" modifier=""right"" complement=$n1
+@n1 syntax.nominal head=""one"" dependent=""more""
+@r1 syntax.relation marker=""after"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Verify""",
+593,one size for the chart: 4 inches either way,"@n1 syntax.nominal dependent=""one"" head=""size""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@n3 syntax.nominal dependent=""4"" head=""inches""
+@n4 syntax.nominal dependent=""either"" head=""way""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n4
+@r2 syntax.relation from=$n1 to=$n3",
+603,"and also Monthly profit: y axis at 100, not from zero","@c1 syntax.clause form=fragment discourse=""and"" modifier=""also"" complement=$n1
+@n1 syntax.nominal dependent=""Monthly"" head=""profit""
+@n2 syntax.nominal dependent=""y"" head=""axis""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""100""
+@r2 syntax.relation attachment=ambiguous negation=""not"" marker=""from"" from=$c1 to=$n4
+@n4 syntax.nominal head=""zero""
+@r3 syntax.relation from=$n1 to=$n2",
+993,at the top edge on pages 2 and 3,"@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""edge""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""pages""
+@n3 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""3""
+@r3 syntax.relation from=$n2 to=$k1
+@c1 syntax.clause form=fragment",

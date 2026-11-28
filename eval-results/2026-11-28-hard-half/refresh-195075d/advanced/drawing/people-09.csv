@@ -1,0 +1,572 @@
+n,text,sop,alt,label_state
+6,give the avatar the robot look,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""the"" head=""robot""
+@n3 syntax.nominal head=""look""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""the"" dependent=""robot"" head=""look""",
+8,let the avatar smile,"@c1 syntax.clause form=imperative verb=""let""
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""smile"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""smile""",
+9,name the avatar Alex,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""Alex""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""name"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""Alex""",
+11,show the avatar part IDs for 4 seconds,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""part"" head=""IDs""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""","@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""part"" dependent=""IDs""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""",
+12,keep avatar part IDs visible,"@c1 syntax.clause form=imperative verb=""keep"" modifier=""visible"" complement=$n1
+@n1 syntax.nominal dependent=""avatar"" dependent=""part"" head=""IDs""","@c1 syntax.clause form=imperative verb=""keep"" complement=$n1
+@n1 syntax.nominal dependent=""avatar"" dependent=""part"" dependent=""IDs"" head=""visible""",
+13,hide avatar part IDs,"@c1 syntax.clause form=imperative verb=""hide"" complement=$n1
+@n1 syntax.nominal dependent=""avatar"" dependent=""part"" head=""IDs""","@c1 syntax.clause form=imperative verb=""hide"" complement=$n1
+@n1 syntax.nominal dependent=""avatar"" head=""part"" dependent=""IDs""",
+16,make the entire face 20 percent bigger,"@c1 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""entire"" head=""face""
+@n2 syntax.nominal dependent=""20"" head=""percent""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""entire""
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""bigger"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""20"" head=""percent""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+21,change the mouth to smile,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""smile""","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""smile""",
+24,make the mouth smiling,"@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@c2 syntax.clause form=nonfinite verb=""smiling"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" modifier=""smiling"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""",
+29,remove both the eyes and mouth,"@c1 syntax.clause form=imperative verb=""remove"" complement=$k1
+@k1 syntax.coordination conjunction=""both"" conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n1 syntax.nominal dependent=""the"" head=""eyes""
+@n2 syntax.nominal head=""mouth""","@c1 syntax.clause form=imperative verb=""remove"" complement=$k1
+@n1 syntax.nominal dependent=""both"" dependent=""the"" head=""eyes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""mouth""",
+36,redo that avatar edit,"@c1 syntax.clause form=imperative verb=""redo"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""that"" head=""avatar""
+@n2 syntax.nominal head=""edit""","@c1 syntax.clause form=imperative verb=""redo"" complement=$n1
+@n1 syntax.nominal dependent=""that"" dependent=""avatar"" head=""edit""",
+53,use the woman with curly hair appearance for the avatar,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""woman"" head=""appearance""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""curly"" head=""hair""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""avatar""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""woman""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""curly"" dependent=""hair"" head=""appearance""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""avatar""",
+69,use long straight for the back hair,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""long"" head=""straight""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""back"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" modifier=""long"" modifier=""straight""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""back"" head=""hair""",
+71,use long curly for the back hair,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""long"" head=""curly""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""back"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" modifier=""long"" modifier=""curly""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""back"" head=""hair""",
+98,use thick for the neck,"@c1 syntax.clause form=imperative verb=""use"" modifier=""thick""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""neck""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""thick""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""neck""",
+102,give the avatar round ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""round"" head=""ears""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""round"" head=""ears""",
+103,give the avatar small ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""small"" head=""ears""","@c1 syntax.clause form=imperative verb=""give"" modifier=""small"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""ears""",
+104,give the avatar large ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""large"" head=""ears""","@c1 syntax.clause form=imperative verb=""give"" modifier=""large"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""ears""",
+105,give the avatar pointed ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""pointed"" head=""ears""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""pointed"" complement=$n2
+@n2 syntax.nominal head=""ears""
+@r1 syntax.relation from=$n1 to=$c2",
+106,give the avatar long ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""long"" head=""ears""","@c1 syntax.clause form=imperative verb=""give"" modifier=""long"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""ears""",
+107,give the avatar square ears,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""square"" head=""ears""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""square"" head=""ears""",
+110,use long for the head,"@c1 syntax.clause form=imperative verb=""use"" modifier=""long""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""head""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""long""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""head""",
+112,use wide for the head,"@c1 syntax.clause form=imperative verb=""use"" modifier=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""head""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""head""",
+114,give the avatar blush cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""blush"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""blush"" head=""cheeks""",
+116,give the avatar freckles cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""freckles"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""freckles"" head=""cheeks""",
+117,give the avatar dimple cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""dimple"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""dimple"" head=""cheeks""",
+118,give the avatar wrinkles cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""wrinkles"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""wrinkles"" head=""cheeks""",
+119,give the avatar mole cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""mole"" head=""cheeks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""mole"" head=""cheeks""",
+120,give the avatar tear cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""tear"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""tear"" head=""cheeks""",
+121,use full for the beard,"@c1 syntax.clause form=imperative verb=""use"" modifier=""full""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""beard""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""full""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""beard""",
+124,use long for the beard,"@c1 syntax.clause form=imperative verb=""use"" modifier=""long""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""beard""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""long""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""beard""",
+129,use open for the mouth,"@c1 syntax.clause form=imperative verb=""use""
+@c2 syntax.clause form=nonfinite verb=""open""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""open""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""",
+132,use wide for the mouth,"@c1 syntax.clause form=imperative verb=""use"" modifier=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""",
+137,use half open for the mouth,"@c1 syntax.clause form=imperative verb=""use"" modifier=""half"" modifier=""open""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""","@c1 syntax.clause form=imperative verb=""use"" modifier=""open"" complement=$n1
+@n1 syntax.nominal head=""half""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""",
+138,use pressed for the mouth,"@n1 syntax.nominal head=""use""
+@c1 syntax.clause form=nonfinite verb=""pressed""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=imperative verb=""use""
+@c2 syntax.clause form=nonfinite verb=""pressed""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r2 syntax.relation from=$c1 to=$c2",
+141,use thin for the moustache,"@c1 syntax.clause form=imperative verb=""use"" modifier=""thin""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""moustache""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""thin""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""moustache""",
+142,use thick for the moustache,"@c1 syntax.clause form=imperative verb=""use"" modifier=""thick""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""moustache""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""thick""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""moustache""",
+148,use long for the nose,"@c1 syntax.clause form=imperative verb=""use"" modifier=""long""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""nose""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""long""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""nose""",
+149,use wide for the nose,"@c1 syntax.clause form=imperative verb=""use"" modifier=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""nose""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""wide""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""nose""",
+154,give the avatar round eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""round"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""round"" head=""eyes""",
+155,give the avatar dot eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""dot"" head=""eyes""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""dot"" head=""eyes""",
+156,give the avatar oval eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""oval"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""oval"" head=""eyes""",
+157,give the avatar narrow eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""narrow"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""narrow"" head=""eyes""",
+158,give the avatar closed eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""closed"" head=""eyes""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""closed"" complement=$n2
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2",
+159,give the avatar happy eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""happy"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" modifier=""happy"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyes""",
+160,give the avatar sleepy eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""sleepy"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""sleepy"" head=""eyes""",
+161,give the avatar square eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""square"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""square"" head=""eyes""",
+162,give the avatar downcast eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""downcast"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""downcast"" head=""eyes""",
+163,give the avatar looking up eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""looking"" modifier=""up""
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""looking"" modifier=""up"" complement=$n2
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2",
+164,give the avatar looking out eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""looking"" modifier=""out""
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""looking"" modifier=""out"" complement=$n2
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2",
+166,give the avatar straight eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""straight"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" modifier=""straight"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyebrows""",
+167,give the avatar thick eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""thick"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" modifier=""thick"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyebrows""",
+168,give the avatar thick arched eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""thick"" dependent=""arched"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" modifier=""thick"" modifier=""arched"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyebrows""",
+169,give the avatar angry eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""angry"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" modifier=""angry"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyebrows""",
+170,give the avatar sad eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""sad"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""sad"" head=""eyebrows""",
+171,give the avatar short eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""short"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" modifier=""short"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyebrows""",
+173,use small round for the glasses,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""small"" head=""round""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""glasses""","@c1 syntax.clause form=imperative verb=""use"" modifier=""small"" modifier=""round""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""glasses""",
+174,use large for the glasses,"@c1 syntax.clause form=imperative verb=""use"" modifier=""large""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""glasses""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""large""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""glasses""",
+181,use side parting for the front hair,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""side"" head=""parting""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""side""
+@c2 syntax.clause form=nonfinite verb=""parting""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@r2 syntax.relation from=$n1 to=$c2",
+182,use curly for the front hair,"@c1 syntax.clause form=imperative verb=""use"" modifier=""curly""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""curly""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""",
+186,use centre parting for the front hair,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal dependent=""centre"" head=""parting""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""centre""
+@c2 syntax.clause form=nonfinite verb=""parting""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@r2 syntax.relation from=$n1 to=$c2",
+188,use wavy for the front hair,"@c1 syntax.clause form=imperative verb=""use"" modifier=""wavy""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""","@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""wavy""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""",
+220,make this a human avatar,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal dependent=""a"" dependent=""human"" head=""avatar""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""a"" dependent=""human"" head=""avatar""",
+221,make this a robot avatar,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal dependent=""a"" dependent=""robot"" head=""avatar""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""a"" dependent=""robot"" head=""avatar""",
+222,make this a alien avatar,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal dependent=""a"" dependent=""alien"" head=""avatar""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""a"" dependent=""alien"" head=""avatar""",
+226,"make the avatar look happy, then move the mouth up","@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""happy"" subject=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""move"" modifier=""up"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""happy"" subject=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""move"" modifier=""up"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation from=$c1 to=$c2",
+227,make the avatar look a bit happier,"@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""happier"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""bit""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""a"" modifier=""bit"" modifier=""happier"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+243,display the avatar part IDs for 4 seconds,"@c1 syntax.clause form=imperative verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""part"" head=""IDs""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""","@c1 syntax.clause form=imperative verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""part"" dependent=""IDs""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""",
+244,let me see avatar object IDs for 4 seconds,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=nonfinite verb=""see"" complement=$n2
+@n2 syntax.nominal dependent=""avatar"" dependent=""object"" head=""IDs""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""4"" head=""seconds""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=nonfinite verb=""see"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""avatar"" head=""object"" dependent=""IDs""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""4"" head=""seconds""
+@r2 syntax.relation from=$c1 to=$c2",
+245,avatar part IDs visible for 4 seconds,"@n1 syntax.nominal dependent=""avatar"" dependent=""part"" head=""IDs""
+@c1 syntax.clause form=fragment modifier=""visible"" complement=$n1
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""","@n1 syntax.nominal dependent=""avatar"" head=""part"" dependent=""IDs"" dependent=""visible""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""
+@c1 syntax.clause form=fragment complement=$n1",
+260,set the mouth feel to smiling,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""mouth"" head=""feel""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""smiling""","@c1 syntax.clause form=imperative verb=""set"" modifier=""feel"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""smiling""",
+261,mouth feel: smiling,"@n1 syntax.nominal dependent=""mouth"" head=""feel""
+@n2 syntax.nominal head=""smiling""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal head=""mouth"" dependent=""feel""
+@c1 syntax.clause form=fragment modifier=""smiling"" complement=$n1",
+266,the hat removed,"@n1 syntax.nominal dependent=""the"" head=""hat""
+@c1 syntax.clause form=nonfinite verb=""removed"" subject=$n1","@n1 syntax.nominal dependent=""the"" head=""hat""
+@c1 syntax.clause form=declarative verb=""removed"" subject=$n1",
+272,tell me which parts this avatar has,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" head=""parts""
+@n3 syntax.nominal dependent=""this"" head=""avatar""
+@c2 syntax.clause form=declarative verb=""has"" subject=$n3 complement=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" head=""parts""
+@n3 syntax.nominal dependent=""this"" head=""avatar""
+@c2 syntax.clause form=declarative verb=""has"" subject=$n3
+@r1 syntax.relation from=$n2 to=$c2",
+275,one avatar edit back,"@n1 syntax.nominal dependent=""one"" dependent=""avatar"" head=""edit""
+@c1 syntax.clause form=fragment modifier=""back"" complement=$n1","@n1 syntax.nominal dependent=""one"" dependent=""avatar"" head=""edit"" dependent=""back""
+@c1 syntax.clause form=fragment complement=$n1",
+276,repeat the avatar action that was undone,"@c1 syntax.clause form=imperative verb=""repeat"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""action""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative auxiliary=""was"" verb=""undone""","@c1 syntax.clause form=imperative verb=""repeat"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""action""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""was"" modifier=""undone""",
+277,go forward one avatar edit,"@c1 syntax.clause form=imperative verb=""go"" modifier=""forward"" complement=$n1
+@n1 syntax.nominal dependent=""one"" dependent=""avatar"" head=""edit""","@c1 syntax.clause form=imperative verb=""go"" complement=$n1
+@n1 syntax.nominal dependent=""forward"" dependent=""one"" dependent=""avatar"" head=""edit""",
+282,"update the mouth, to the smile variant, big","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""smile"" head=""variant"" dependent=""big""","@c1 syntax.clause form=imperative verb=""update"" modifier=""big"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mouth""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""smile"" head=""variant""",
+283,"update the front hair, back hair and eyebrows, coloured blue","@c1 syntax.clause form=imperative verb=""update"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@n2 syntax.nominal dependent=""back"" head=""hair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""eyebrows""
+@c2 syntax.clause form=nonfinite verb=""coloured"" modifier=""blue""
+@r1 syntax.relation from=$k1 to=$c2","@c1 syntax.clause form=imperative verb=""update"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@n2 syntax.nominal dependent=""back"" head=""hair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""eyebrows""
+@c2 syntax.clause form=nonfinite verb=""coloured"" complement=$n4
+@n4 syntax.nominal head=""blue""
+@r1 syntax.relation from=$n1 to=$c2",
+285,"update the front hair, back hair and eyebrows, coloured blue, big","@c1 syntax.clause form=imperative verb=""update"" modifier=""big"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@n2 syntax.nominal dependent=""back"" head=""hair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""eyebrows""
+@c2 syntax.clause form=nonfinite verb=""coloured"" modifier=""blue""
+@r1 syntax.relation from=$n1 to=$k1
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""update"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""hair""
+@n2 syntax.nominal dependent=""back"" head=""hair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""eyebrows""
+@c2 syntax.clause form=nonfinite verb=""coloured"" modifier=""big"" complement=$n4
+@n4 syntax.nominal head=""blue""
+@r1 syntax.relation from=$n1 to=$c2",
+286,temporarily display the avatar part IDs,"@c1 syntax.clause form=imperative modifier=""temporarily"" verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""part"" head=""IDs""","@c1 syntax.clause form=imperative modifier=""temporarily"" verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""part"" dependent=""IDs""",
+295,give the avatar bushy eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""bushy"" head=""eyebrows""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""bushy"" head=""eyebrows""",
+302,erase both the eyes and mouth,"@c1 syntax.clause form=imperative verb=""erase"" complement=$k1
+@k1 syntax.coordination conjunction=""both"" conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n1 syntax.nominal dependent=""the"" head=""eyes""
+@n2 syntax.nominal head=""mouth""","@c1 syntax.clause form=imperative verb=""erase"" complement=$k1
+@n1 syntax.nominal dependent=""both"" dependent=""the"" head=""eyes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""mouth""",
+303,eyes and mouth removed,"@n1 syntax.nominal head=""eyes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""mouth""
+@c1 syntax.clause form=nonfinite verb=""removed"" subject=$k1","@n1 syntax.nominal head=""eyes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n2 syntax.nominal head=""mouth""
+@c1 syntax.clause form=declarative verb=""removed"" subject=$n2
+@c2 syntax.clause form=fragment complement=$n1",
+304,"temporarily display the avatar part IDs, for 4 seconds","@c1 syntax.clause form=imperative modifier=""temporarily"" verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""part"" head=""IDs""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""","@c1 syntax.clause form=imperative modifier=""temporarily"" verb=""display"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" head=""part"" dependent=""IDs""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""",
+307,give the avatar scar cheeks,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""scar"" head=""cheeks""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""scar"" head=""cheeks""",
+312,mouth variant: smile,"@n1 syntax.nominal dependent=""mouth"" head=""variant""
+@n2 syntax.nominal head=""smile""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""mouth"" head=""variant""
+@c1 syntax.clause form=fragment modifier=""smile"" complement=$n1",
+321,give the avatar surprised eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""surprised"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""surprised"" complement=$n2
+@n2 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$c2",
+322,give the avatar lashes eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""lashes""
+@n3 syntax.nominal head=""eyes""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""avatar"" dependent=""lashes"" head=""eyes""",
+323,give the avatar arched eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""arched"" head=""eyebrows""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""arched"" complement=$n2
+@n2 syntax.nominal head=""eyebrows""
+@r1 syntax.relation from=$n1 to=$c2",
+324,give the avatar raised eyebrows,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""raised"" head=""eyebrows""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""give"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""raised"" complement=$n2
+@n2 syntax.nominal head=""eyebrows""
+@r1 syntax.relation from=$n1 to=$c2",
+330,make the avatar look happy,"@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""happy"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""happy"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+334,give the avatar large eyes,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal dependent=""large"" head=""eyes""","@c1 syntax.clause form=imperative verb=""give"" modifier=""large"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""avatar""
+@n2 syntax.nominal head=""eyes""",

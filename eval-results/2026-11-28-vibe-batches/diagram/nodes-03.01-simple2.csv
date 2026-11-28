@@ -1,0 +1,29 @@
+n,text,sop,label_state
+851,put the deleted figures from steps 1 and 2 back in the row,"@c1 syntax.clause form=imperative verb=""put"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""deleted"" head=""figures""
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal head=""steps""
+@n3 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""2""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""row""
+@r3 syntax.relation from=$n2 to=$k1",
+970,"undo step 2, then redo it","@c1 syntax.clause form=imperative verb=""undo"" complement=$n1
+@n1 syntax.nominal head=""step""
+@n2 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""redo"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation from=$n1 to=$n2",
+997,"reverse step 2, then put the figure from step 1 back","@c1 syntax.clause form=imperative verb=""reverse"" complement=$n1
+@n1 syntax.nominal head=""step""
+@n2 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" modifier=""back"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal head=""step""
+@n5 syntax.nominal head=""1""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n4 to=$n5",

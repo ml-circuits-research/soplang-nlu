@@ -1,0 +1,2614 @@
+n,text,sop,alt,label_state
+1,"key for the shapes too, not just the colours","@n1 syntax.nominal head=""key""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shapes""
+@c1 syntax.clause form=fragment modifier=""too"" complement=$n1
+@n3 syntax.nominal dependent=""not"" dependent=""just"" dependent=""the"" head=""colours""
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal head=""key""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shapes""
+@c1 syntax.clause form=fragment modifier=""too"" negation=""not"" modifier=""just"" complement=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""colours""",
+2,"draw the message order for a checkout between browser, api and payment service","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""message"" head=""order""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""checkout""
+@r2 syntax.relation marker=""between"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""browser"" dependent=""api"" dependent=""and"" dependent=""payment"" head=""service""","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""message"" head=""order""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""checkout""
+@r2 syntax.relation marker=""between"" from=$n1 to=$k1
+@n3 syntax.nominal head=""browser""
+@n4 syntax.nominal head=""api""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""payment"" head=""service""",
+3,"branch the flow at the credit check, one path approve and one path reject","@c1 syntax.clause form=imperative verb=""branch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""credit"" head=""check""
+@n3 syntax.nominal dependent=""one"" head=""path""
+@n4 syntax.nominal head=""approve""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal dependent=""one"" head=""path""
+@n6 syntax.nominal head=""reject""
+@r2 syntax.relation from=$n1 to=$k1
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n5 to=$n6","@c1 syntax.clause form=imperative verb=""branch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""credit"" head=""check""
+@n3 syntax.nominal dependent=""one"" head=""path""
+@c2 syntax.clause form=declarative verb=""approve"" discourse=""and"" modifier=""reject"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""one"" head=""path""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+4,draw the supply and demand model so my student can see the shift,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""supply"" dependent=""and"" dependent=""demand"" head=""model""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""my"" head=""student""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""see"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""shift""","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""supply""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""demand"" complement=$n2
+@n2 syntax.nominal head=""model""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@n3 syntax.nominal dependent=""my"" head=""student""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""see"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""shift""",
+5,"same request, second try","@n1 syntax.nominal dependent=""same"" head=""request""
+@n2 syntax.nominal dependent=""second"" head=""try""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""same"" head=""request""
+@c1 syntax.clause form=fragment modifier=""second"" complement=$n1
+@c2 syntax.clause form=imperative verb=""try""
+@r1 syntax.relation from=$c2 to=$c1",
+6,"not the refund, the chargeback process","@n1 syntax.nominal dependent=""not"" dependent=""the"" head=""refund""
+@n2 syntax.nominal dependent=""the"" dependent=""chargeback"" head=""process""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment negation=""not"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""refund""
+@n2 syntax.nominal dependent=""the"" dependent=""chargeback"" head=""process""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+7,"not that process, the escalation path","@n1 syntax.nominal dependent=""not"" dependent=""that"" head=""process""
+@n2 syntax.nominal dependent=""the"" dependent=""escalation"" head=""path""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment negation=""not"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""process""
+@n2 syntax.nominal dependent=""the"" dependent=""escalation"" head=""path""
+@r1 syntax.relation from=$n1 to=$n2",
+8,show whech model feeds which,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""whech"" dependent=""model"" head=""feeds""
+@n2 syntax.nominal head=""which""
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""show"" dependent=""whech"" head=""model""
+@c1 syntax.clause form=declarative verb=""feeds"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""which""",
+9,could you show the substitution and income effects,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""show"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""substitution"" dependent=""and"" dependent=""income"" head=""effects""","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""show"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""substitution""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""income"" head=""effects""",
+10,draw the demand and supply lines,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""demand"" dependent=""and"" dependent=""supply"" head=""lines""","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""demand""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""supply"" complement=$n2
+@n2 syntax.nominal head=""lines""",
+11,show the reveune and cost curves,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""reveune"" dependent=""and"" dependent=""cost"" head=""curves""","@c1 syntax.clause form=imperative verb=""show"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""reveune""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""cost"" head=""curves""",
+12,draw the leaf and lable every part,"@c1 syntax.clause form=imperative verb=""draw"" complement=$k1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""leaf""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""lable""
+@n3 syntax.nominal dependent=""every"" head=""part""","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""leaf""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""lable"" complement=$n2
+@n2 syntax.nominal dependent=""every"" head=""part""",
+13,rebuild the row from the arrangement at step one and then move the middle figure to the front of the row,"@c1 syntax.clause form=imperative verb=""rebuild"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative modifier=""then"" verb=""move"" complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""middle"" head=""figure""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""front""
+@r4 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""rebuild"" discourse=""and"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""step"" head=""one""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""middle"" head=""figure""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""front""
+@r4 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""row""",
+14,"go back to the checkpoint, then exchange the figures in the second and fourth spots","@c1 syntax.clause form=imperative verb=""go"" modifier=""back""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""checkpoint""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""exchange"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""fourth"" head=""spots""","@c1 syntax.clause form=imperative verb=""go"" modifier=""back""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""checkpoint""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""exchange"" complement=$k2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal dependent=""fourth"" head=""spots""",
+15,i need you to restore the original order and insert a new shape between the first and second figures,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""restore"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""original"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""insert"" complement=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""new"" head=""shape""
+@r2 syntax.relation marker=""between"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""first"" dependent=""and"" dependent=""second"" head=""figures""","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""restore"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""original"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""insert"" complement=$k2
+@n4 syntax.nominal dependent=""a"" dependent=""new"" head=""shape""
+@r2 syntax.relation marker=""between"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""first""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n6
+@n6 syntax.nominal dependent=""second"" head=""figures""",
+16,"would you reset to the saved row, then count and list","@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""reset"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""saved"" head=""row""
+@k1 syntax.coordination conjunction=""then"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""count""
+@c3 syntax.clause form=imperative verb=""list""","@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""reset"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""saved"" head=""row""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""count""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""list""
+@c2 syntax.clause form=fragment complement=$k2",
+17,"lifelines, show activation bars","@n1 syntax.nominal head=""lifelines""
+@c1 syntax.clause form=declarative verb=""show"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""activation"" head=""bars""","@n1 syntax.nominal head=""lifelines""
+@c1 syntax.clause form=imperative verb=""show"" modifier=""activation"" modifier=""bars""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+18,rebuild the row from the arrangement saved at step one and then move the figure in the middle to the very front of the rebuilt row,"@c1 syntax.clause form=imperative verb=""rebuild"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@c2 syntax.clause form=nonfinite verb=""saved""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative modifier=""then"" verb=""move"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""figure""
+@r3 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""middle""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""very"" head=""front""
+@r5 syntax.relation marker=""of"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" dependent=""rebuilt"" head=""row""
+@r6 syntax.relation from=$n2 to=$c2
+@r7 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""rebuild"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@c2 syntax.clause form=nonfinite verb=""saved"" discourse=""and""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""step"" head=""one""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""move"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""figure""
+@r3 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""middle""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""very"" head=""front""
+@r5 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""rebuilt"" head=""row""
+@r6 syntax.relation from=$n2 to=$c2",
+19,rebuild the row from the arrangement at step one and then move the figure in the middle to the very front,"@c1 syntax.clause form=imperative verb=""rebuild"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative modifier=""then"" verb=""move"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""figure""
+@r3 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""middle""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""very"" head=""front""
+@r5 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""rebuild"" discourse=""and"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""step"" head=""one""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""figure""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""middle""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""very"" head=""front""",
+20,could you restore the earlier row and exchange the second and fourth figures,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""restore"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""earlier"" head=""row""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""exchange"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""fourth"" head=""figures""","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""restore"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""earlier"" head=""row""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""exchange"" complement=$k2
+@n3 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""fourth"" head=""figures""",
+21,"not that one, the refund","@n1 syntax.nominal dependent=""not"" dependent=""that"" head=""one""
+@n2 syntax.nominal dependent=""the"" head=""refund""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment negation=""not"" complement=$k1
+@n1 syntax.nominal dependent=""that"" head=""one""
+@n2 syntax.nominal dependent=""the"" head=""refund""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+22,"make it look hand drawn, with slightly wobbly lines and no perfectly straight corners anywhere","@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""look"" modifier=""hand"" modifier=""drawn"" modifier=""anywhere"" subject=$n1
+@r1 syntax.relation marker=""with"" from=$c2 to=$k1
+@n2 syntax.nominal dependent=""slightly"" dependent=""wobbly"" head=""lines""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""no"" dependent=""perfectly"" dependent=""straight"" head=""corners""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" modifier=""anywhere"" complement=$n1
+@n1 syntax.nominal head=""it""
+@c2 syntax.clause form=nonfinite verb=""look"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""hand""
+@c3 syntax.clause form=nonfinite verb=""drawn""
+@r1 syntax.relation marker=""with"" from=$c1 to=$k1
+@n3 syntax.nominal dependent=""slightly"" dependent=""wobbly"" head=""lines""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""no"" dependent=""perfectly"" dependent=""straight"" head=""corners""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+23,"rough hand-drawn lines, not perfect ones","@n1 syntax.nominal dependent=""rough"" dependent=""hand"" dependent=""drawn"" head=""lines""
+@n2 syntax.nominal dependent=""not"" dependent=""perfect"" head=""ones""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""rough"" dependent=""hand"" dependent=""drawn"" head=""lines""
+@c1 syntax.clause form=fragment negation=""not"" complement=$n1 complement=$n2
+@n2 syntax.nominal dependent=""perfect"" head=""ones""",
+24,"not a corporate template, draw it like a person would","@n1 syntax.nominal dependent=""not"" dependent=""a"" dependent=""corporate"" head=""template""
+@c1 syntax.clause form=imperative verb=""draw"" complement=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""like"" from=$c1 to=$c2
+@n3 syntax.nominal dependent=""a"" head=""person""
+@c2 syntax.clause form=declarative verb=""would"" subject=$n3","@c1 syntax.clause form=fragment negation=""not"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""corporate"" head=""template""
+@c2 syntax.clause form=imperative verb=""draw"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""like"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""person""
+@c3 syntax.clause form=declarative verb=""would""
+@r2 syntax.relation from=$c2 to=$c1
+@r3 syntax.relation from=$c2 to=$c3",
+25,"the previous diagram plus a five-box limit, and keep the same labels we already approved for the refund flow before you change anything else","@n1 syntax.nominal dependent=""the"" dependent=""previous"" head=""diagram""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""five"" dependent=""box"" head=""limit""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c1
+@c1 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""labels""
+@n4 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative modifier=""already"" verb=""approved"" subject=$n4
+@r1 syntax.relation marker=""for"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""refund"" head=""flow""
+@r2 syntax.relation marker=""before"" from=$c1 to=$c3
+@n6 syntax.nominal head=""you""
+@c3 syntax.clause form=declarative verb=""change"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""anything"" dependent=""else""
+@c4 syntax.clause form=fragment complement=$k1
+@r3 syntax.relation from=$n3 to=$c2","@n1 syntax.nominal dependent=""the"" dependent=""previous"" head=""diagram""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c4 conjunct=$c1
+@n2 syntax.nominal dependent=""a"" head=""five-box""
+@c1 syntax.clause form=declarative verb=""limit"" subject=$n2
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""keep"" modifier=""already"" modifier=""approved"" complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""labels""
+@n4 syntax.nominal head=""we""
+@r1 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""refund"" head=""flow""
+@r2 syntax.relation marker=""before"" from=$c2 to=$c3
+@n6 syntax.nominal head=""you""
+@c3 syntax.clause form=declarative verb=""change"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""anything"" dependent=""else""
+@c4 syntax.clause form=fragment complement=$n1",
+26,"a coral background end to end, and the labels up in olive","@n1 syntax.nominal dependent=""a"" dependent=""coral"" head=""background""
+@n2 syntax.nominal head=""end""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""end""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n4
+@n4 syntax.nominal dependent=""the"" head=""labels""
+@c1 syntax.clause form=fragment modifier=""up"" complement=$k1
+@r2 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal head=""olive""
+@r3 syntax.relation from=$n1 to=$n2","@n1 syntax.nominal dependent=""a"" dependent=""coral"" dependent=""background"" head=""end""
+@r1 syntax.relation marker=""to"" from=$n1 to=$k1
+@n2 syntax.nominal head=""end""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" head=""labels""
+@c1 syntax.clause form=fragment modifier=""up"" complement=$n1
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal head=""olive""",
+27,"the canvas takes navy, then the diamond text can go teal","@n1 syntax.nominal dependent=""the"" head=""canvas""
+@c1 syntax.clause form=declarative verb=""takes"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""navy""
+@c2 syntax.clause form=declarative modifier=""then"" auxiliary=""can"" verb=""go"" subject=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""diamond"" head=""text""
+@n4 syntax.nominal head=""teal""
+@r1 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal dependent=""the"" head=""canvas""
+@c1 syntax.clause form=declarative verb=""takes"" modifier=""navy"" subject=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""diamond"" head=""text""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""go"" modifier=""teal"" subject=$n2",
+28,hand drawen look please,"@n1 syntax.nominal dependent=""hand"" head=""drawen""
+@c1 syntax.clause form=declarative verb=""look"" discourse=""please"" subject=$n1","@c1 syntax.clause form=imperative verb=""hand"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""drawen"" head=""look""",
+29,"dont leave any box in a deploy pipeline blank, fill in Build and Test","@c1 syntax.clause form=imperative negation=""dont"" verb=""leave"" modifier=""blank"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""box""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""deploy"" head=""pipeline""
+@c2 syntax.clause form=imperative verb=""fill"" modifier=""in"" complement=$k1
+@n3 syntax.nominal head=""Build""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""Test""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""dont""
+@c1 syntax.clause form=declarative verb=""leave"" modifier=""blank"" subject=$n1 complement=$k2
+@n2 syntax.nominal dependent=""any"" head=""box""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""deploy"" head=""pipeline""
+@n4 syntax.nominal head=""fill""
+@r2 syntax.relation marker=""in"" from=$c1 to=$k1
+@n5 syntax.nominal head=""Build""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""Test""
+@k2 syntax.coordination conjunct=$n2 conjunct=$n4",
+30,label the boxes Screen through Offer,"@c1 syntax.clause form=imperative verb=""label"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@c2 syntax.clause form=imperative verb=""Screen"" modifier=""through""
+@n2 syntax.nominal head=""Offer""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r1 syntax.relation from=$n2 to=$c2
+@c3 syntax.clause form=fragment complement=$n2","@c1 syntax.clause form=imperative verb=""label"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@n2 syntax.nominal head=""Screen""
+@r1 syntax.relation marker=""through"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Offer""",
+31,"the customer renamed the stage to Fulfilment last week, so the diagram still uses the old word in four places and every one of them has to change","@n1 syntax.nominal dependent=""the"" head=""customer""
+@c1 syntax.clause form=declarative verb=""renamed"" subject=$n1 complement=$n2 complement=$n4
+@n2 syntax.nominal dependent=""the"" head=""stage""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Fulfilment""
+@n4 syntax.nominal dependent=""last"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@n5 syntax.nominal dependent=""the"" head=""diagram""
+@c2 syntax.clause form=declarative modifier=""still"" verb=""uses"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""old"" head=""word""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""four"" head=""places""
+@n8 syntax.nominal dependent=""every"" head=""one""
+@r3 syntax.relation marker=""of"" from=$n8 to=$n9
+@n9 syntax.nominal head=""them""
+@c3 syntax.clause form=declarative verb=""has"" subject=$n8
+@r4 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""change""","@n1 syntax.nominal dependent=""the"" head=""customer""
+@c1 syntax.clause form=declarative verb=""renamed"" subject=$n1 complement=$n2 complement=$n4
+@n2 syntax.nominal dependent=""the"" head=""stage""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Fulfilment""
+@n4 syntax.nominal dependent=""last"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""the"" head=""diagram""
+@c2 syntax.clause form=declarative modifier=""still"" verb=""uses"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""old"" head=""word""
+@r2 syntax.relation marker=""in"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""four"" head=""places""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n8 syntax.nominal dependent=""every"" dependent=""one"" dependent=""of"" head=""them""
+@c3 syntax.clause form=declarative verb=""has"" subject=$n8
+@r3 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""change""",
+32,go ahead and make the labels larger and the boxes a bit taller,"@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""make"" modifier=""larger"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""labels""
+@n2 syntax.nominal dependent=""the"" head=""boxes""
+@n3 syntax.nominal dependent=""a"" head=""bit""
+@c3 syntax.clause form=fragment modifier=""taller"" complement=$n2 complement=$n3 ellipsis=$c2","@c1 syntax.clause form=imperative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""larger"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""labels""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n2 syntax.nominal dependent=""the"" head=""boxes""
+@c3 syntax.clause form=fragment modifier=""a"" modifier=""bit"" modifier=""taller"" complement=$n2 ellipsis=$c2",
+33,i need you to put the two processes side by side and link the ends,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""put"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""processes""
+@n4 syntax.nominal head=""side""
+@r2 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""side""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""link"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""ends""","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""put"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""processes"" dependent=""side"" dependent=""by"" dependent=""side""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""ends""",
+34,branches wider apart too,"@n1 syntax.nominal head=""branches""
+@c1 syntax.clause form=fragment modifier=""wider"" modifier=""apart"" modifier=""too"" complement=$n1","@n1 syntax.nominal head=""branches"" dependent=""wider""
+@c1 syntax.clause form=fragment modifier=""apart"" modifier=""too"" complement=$n1",
+35,adequate spacing between nodes plz,"@n1 syntax.nominal dependent=""adequate"" head=""spacing""
+@r1 syntax.relation marker=""between"" from=$n1 to=$n2
+@n2 syntax.nominal head=""nodes""
+@n3 syntax.nominal head=""plz""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""adequate"" discourse=""plz"" complement=$n1
+@n1 syntax.nominal head=""spacing""
+@r1 syntax.relation marker=""between"" from=$n1 to=$n2
+@n2 syntax.nominal head=""nodes""",
+36,merge the intake and billing diagrams and move the shared Triage box to the middle of the result,"@c1 syntax.clause form=imperative verb=""merge"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""intake"" dependent=""and"" dependent=""billing"" head=""diagrams""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""shared"" dependent=""Triage"" head=""box""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""result""","@c1 syntax.clause form=imperative verb=""merge"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""intake""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""billing"" head=""diagrams""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""shared"" dependent=""Triage"" head=""box""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""middle""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""result""",
+37,which step swapped the second and third figures?,"@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""swapped"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""third"" head=""figures""","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=nonfinite verb=""swapped"" complement=$k1
+@n2 syntax.nominal dependent=""the"" head=""second""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""third"" head=""figures""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$c1",
+38,"the row looks wrong and i want to undo the exact move that caused it, so which step swapped the second and third figures?","@n1 syntax.nominal dependent=""the"" head=""row""
+@c1 syntax.clause form=declarative verb=""looks"" modifier=""wrong"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunction=""so"" conjunct=$c1 conjunct=$c2 conjunct=$c5
+@n2 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""undo"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""exact"" head=""move""
+@r2 syntax.relation marker=""that"" from=$n3 to=$c4
+@c4 syntax.clause form=declarative verb=""caused"" complement=$n4
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""which"" head=""step""
+@c5 syntax.clause form=interrogative verb=""swapped"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""third"" head=""figures""","@n1 syntax.nominal dependent=""the"" head=""row""
+@c1 syntax.clause form=declarative verb=""looks"" modifier=""wrong"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""undo"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""exact"" head=""move""
+@r2 syntax.relation marker=""that"" from=$n3 to=$c4
+@c4 syntax.clause form=declarative verb=""caused"" discourse=""so"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""which"" head=""step""
+@c5 syntax.clause form=nonfinite verb=""swapped"" complement=$k2
+@n6 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n6 conjunct=$n7
+@n7 syntax.nominal dependent=""third"" head=""figures""
+@r3 syntax.relation from=$n5 to=$c5",
+39,how many left?,"@n1 syntax.nominal dependent=""how"" head=""many""
+@c1 syntax.clause form=nonfinite verb=""left"" subject=$n1","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""left""
+@c1 syntax.clause form=fragment complement=$n1",
+40,"which pair sits closer, the left pair or the right pair? and say whether they match or not, and which of the two is closer to the original starting order of the row","@n1 syntax.nominal dependent=""which"" head=""pair""
+@c1 syntax.clause form=interrogative verb=""sits"" modifier=""closer"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""left"" head=""pair""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""right"" head=""pair""
+@c2 syntax.clause form=imperative discourse=""and"" verb=""say""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$k2
+@n4 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""match"" subject=$n4
+@k2 syntax.coordination conjunction=""or"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=fragment discourse=""not"" ellipsis=$c3
+@k3 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c5
+@n5 syntax.nominal head=""which""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""two""
+@c5 syntax.clause form=interrogative verb=""is"" modifier=""closer"" subject=$n5
+@r3 syntax.relation marker=""to"" from=$c5 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""original"" dependent=""starting"" head=""order""
+@r4 syntax.relation marker=""of"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal dependent=""which"" head=""pair""
+@c1 syntax.clause form=interrogative verb=""sits"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""closer""
+@n3 syntax.nominal dependent=""the"" dependent=""left"" head=""pair""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""right"" head=""pair""
+@c2 syntax.clause form=imperative discourse=""and"" verb=""say""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n5 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""match"" discourse=""or"" negation=""not"" discourse=""and"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""which""
+@r2 syntax.relation marker=""of"" from=$c3 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""two""
+@c4 syntax.clause form=imperative auxiliary=""is"" verb=""closer""
+@r3 syntax.relation marker=""to"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""original""
+@c5 syntax.clause form=nonfinite verb=""starting""
+@r4 syntax.relation marker=""order of"" from=$c5 to=$n9
+@n9 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation from=$n8 to=$c5",
+41,tell me whether the first and last swapped or the first two,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""last""
+@c2 syntax.clause form=nonfinite verb=""swapped"" discourse=""or"" subject=$k1 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" head=""two""","@c1 syntax.clause form=imperative verb=""tell"" modifier=""the"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c1
+@c2 syntax.clause form=imperative verb=""first"" discourse=""and"" modifier=""last"" modifier=""swapped"" discourse=""or"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""two""",
+42,"which two boxes moved, the first and last or the first two?","@n1 syntax.nominal dependent=""which"" dependent=""two"" head=""boxes""
+@c1 syntax.clause form=nonfinite verb=""moved"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n3 syntax.nominal head=""last""
+@n4 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@r1 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal head=""which""
+@n2 syntax.nominal dependent=""two"" head=""boxes""
+@c1 syntax.clause form=nonfinite verb=""moved""
+@n3 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n4 syntax.nominal head=""last""
+@n5 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@c2 syntax.clause form=fragment complement=$n1 complement=$k1
+@r1 syntax.relation from=$n2 to=$c1",
+43,"tell me which two figures you swapped, the ends or the first pair","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" dependent=""two"" head=""figures""
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""swapped"" subject=$n3 complement=$n2
+@n4 syntax.nominal dependent=""the"" head=""ends""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""first"" head=""pair""
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$n3 to=$k1","@c1 syntax.clause form=imperative verb=""tell"" subject=$n2 complement=$n1 complement=$n4 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""which""
+@n3 syntax.nominal dependent=""two"" head=""figures""
+@n4 syntax.nominal head=""you""
+@c2 syntax.clause form=nonfinite verb=""swapped""
+@n5 syntax.nominal dependent=""the"" head=""ends""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""first"" head=""pair""
+@r1 syntax.relation from=$n4 to=$c2",
+44,"quick question: are the end figures swapped, and not the adjacent pair?","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""swapped"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""end"" head=""figures""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1 conjunct=$c3
+@n3 syntax.nominal dependent=""not"" dependent=""the"" dependent=""adjacent"" head=""pair""
+@c2 syntax.clause form=fragment complement=$n1
+@c3 syntax.clause form=fragment complement=$n3 ellipsis=$c1","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""swapped"" discourse=""and"" negation=""not"" subject=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""end"" head=""figures""
+@n3 syntax.nominal dependent=""the"" dependent=""adjacent"" head=""pair""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+45,how many trade steps are left before every pair has moved?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""trade"" head=""steps""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""left"" subject=$n1
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""every"" head=""pair""
+@c2 syntax.clause form=declarative auxiliary=""has"" verb=""moved"" subject=$n2","@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""trade"" complement=$n1
+@n1 syntax.nominal head=""steps""
+@c2 syntax.clause form=declarative verb=""are"" modifier=""left"" subject=$n1
+@r1 syntax.relation marker=""before"" from=$c2 to=$c3
+@n2 syntax.nominal dependent=""every"" head=""pair""
+@c3 syntax.clause form=interrogative auxiliary=""has"" verb=""moved"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2",
+46,how many swaps are left before every pair has swapped? and tell me which of the two differs and explain why that difference matters for the whole arrangement in the row,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""swaps""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""left"" subject=$n1
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""every"" head=""pair""
+@c2 syntax.clause form=declarative auxiliary=""has"" verb=""swapped"" subject=$n2
+@c3 syntax.clause form=imperative discourse=""and"" verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""which""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""two""
+@c4 syntax.clause form=declarative verb=""differs"" subject=$n4
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""explain""
+@c6 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n6
+@n6 syntax.nominal dependent=""that"" head=""difference""
+@r3 syntax.relation marker=""for"" from=$c6 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r4 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation from=$c3 to=$c4
+@r6 syntax.relation from=$c5 to=$c6","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""swaps""
+@c1 syntax.clause form=interrogative verb=""are"" modifier=""left"" subject=$n1
+@r1 syntax.relation marker=""before"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""every"" head=""pair""
+@c2 syntax.clause form=interrogative auxiliary=""has"" verb=""swapped"" subject=$n2
+@c3 syntax.clause form=imperative discourse=""and"" verb=""tell"" subject=$n4 complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""which""
+@r2 syntax.relation marker=""of"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""two"" head=""differs""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""explain""
+@c5 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n6
+@n6 syntax.nominal dependent=""that"" head=""difference""
+@r3 syntax.relation marker=""for"" from=$c5 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r4 syntax.relation marker=""in"" from=$c5 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation from=$c4 to=$c5",
+47,tell me how far back in the history was the second figure taken out?,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""far"" modifier=""back"" auxiliary=""was"" verb=""taken"" modifier=""out"" subject=$n3
+@r1 syntax.relation marker=""in"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""history""
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""tell"" modifier=""how"" modifier=""far"" modifier=""back"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""history""
+@c2 syntax.clause form=declarative verb=""was"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@c3 syntax.clause form=nonfinite verb=""taken"" modifier=""out""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n3 to=$c3",
+48,tell me how many steps ago the first figure left the row,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c2 syntax.clause form=declarative modifier=""ago"" verb=""left"" subject=$n3 complement=$n2 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""
+@n4 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""tell"" modifier=""left"" complement=$n1 complement=$n2 complement=$n3 complement=$n4
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""
+@n4 syntax.nominal dependent=""the"" head=""row""",
+49,how many steps ago did the figure next to the last one disappear?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""did"" verb=""disappear"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""last"" head=""one""","@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative verb=""did"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""last"" head=""one""
+@c2 syntax.clause form=interrogative verb=""disappear""
+@r2 syntax.relation from=$c1 to=$c2",
+50,"quick question: how many steps ago was the second figure removed, counting from now?","@n1 syntax.nominal dependent=""quick"" head=""question""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""was"" verb=""removed"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@c2 syntax.clause form=nonfinite verb=""counting""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal head=""now""
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1
+@r2 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""quick"" head=""question""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative auxiliary=""was"" verb=""removed"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@c2 syntax.clause form=nonfinite verb=""counting"" modifier=""from"" modifier=""now""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n3 to=$c2",
+51,"how many steps ago was the second figure removed, and was it a removal or a move?","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""was"" verb=""removed"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""was"" subject=$n3 complement=$k2
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal dependent=""a"" head=""removal""
+@k2 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""move""","@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative auxiliary=""was"" verb=""removed"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""was"" subject=$n3 complement=$k2
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal dependent=""a"" head=""removal""
+@k2 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""move""",
+52,"how many steps ago was the second figure removed, roughly?","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""was"" verb=""removed"" modifier=""roughly"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""","@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative auxiliary=""was"" verb=""removed"" modifier=""roughly"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""",
+53,"tell me how many steps ago was the second figure removed, again?","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c2 syntax.clause form=interrogative modifier=""ago"" auxiliary=""was"" verb=""removed"" modifier=""again"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c2 syntax.clause form=interrogative auxiliary=""was"" verb=""removed"" modifier=""again"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@r1 syntax.relation from=$c1 to=$c2",
+54,how many steps ago was the second figure removed? and tell me which of the two differs and explain why that difference matters for the whole arrangement in the row,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""was"" verb=""removed"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@c2 syntax.clause form=imperative discourse=""and"" verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""two""
+@c3 syntax.clause form=declarative verb=""differs"" subject=$n4
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""explain""
+@c5 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n6
+@n6 syntax.nominal dependent=""that"" head=""difference""
+@r2 syntax.relation marker=""for"" from=$c5 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r3 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation from=$c2 to=$c3
+@r5 syntax.relation from=$c4 to=$c5","@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative auxiliary=""was"" verb=""removed"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""figure""
+@c2 syntax.clause form=imperative discourse=""and"" verb=""tell"" subject=$n4 complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""two"" head=""differs""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""explain""
+@c4 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n6
+@n6 syntax.nominal dependent=""that"" head=""difference""
+@r2 syntax.relation marker=""for"" from=$c4 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r3 syntax.relation marker=""in"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation from=$c3 to=$c4",
+55,now tell me how many steps ago the third figure was removed,"@c1 syntax.clause form=imperative discourse=""now"" verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c2 syntax.clause form=declarative modifier=""ago"" auxiliary=""was"" verb=""removed"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@n3 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@c2 syntax.clause form=declarative auxiliary=""was"" verb=""removed"" subject=$n3
+@r1 syntax.relation from=$n2 to=$c2",
+56,"so which step removed the third figure, and how many steps ago was that?","@c1 syntax.clause form=interrogative modifier=""so"" verb=""removed"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""which"" head=""step""
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c2 syntax.clause form=interrogative modifier=""ago"" verb=""was"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""that""","@r1 syntax.relation marker=""so"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=declarative verb=""removed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c2 syntax.clause form=interrogative verb=""was"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""that""",
+57,"which step removed the third figure, and how many steps ago was that? and tell me which of the two differs and explain why that difference matters for the whole arrangement in the row","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""removed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c2 syntax.clause form=interrogative modifier=""ago"" verb=""was"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""that""
+@c3 syntax.clause form=imperative discourse=""and"" verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""two""
+@c4 syntax.clause form=declarative verb=""differs"" subject=$n6
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""explain""
+@c6 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n8
+@n8 syntax.nominal dependent=""that"" head=""difference""
+@r2 syntax.relation marker=""for"" from=$c6 to=$n9
+@n9 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r3 syntax.relation marker=""in"" from=$n9 to=$n10
+@n10 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation from=$c3 to=$c4
+@r5 syntax.relation from=$c5 to=$c6","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=nonfinite verb=""removed"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c6 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c2 syntax.clause form=interrogative verb=""was"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""that""
+@c3 syntax.clause form=imperative discourse=""and"" verb=""tell"" subject=$n6 complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""two"" head=""differs""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""explain""
+@c5 syntax.clause form=declarative modifier=""why"" verb=""matters"" subject=$n8
+@n8 syntax.nominal dependent=""that"" head=""difference""
+@r2 syntax.relation marker=""for"" from=$c5 to=$n9
+@n9 syntax.nominal dependent=""the"" dependent=""whole"" head=""arrangement""
+@r3 syntax.relation marker=""in"" from=$c5 to=$n10
+@n10 syntax.nominal dependent=""the"" head=""row""
+@c6 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$c1
+@r5 syntax.relation from=$c4 to=$c5",
+58,go ahead and chart or diagram? i need the diagarm,"@c1 syntax.clause form=interrogative verb=""go"" modifier=""ahead""
+@k1 syntax.coordination conjunction=""and"" conjunction=""or"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=interrogative verb=""chart""
+@c3 syntax.clause form=interrogative verb=""diagram""
+@n1 syntax.nominal head=""i""
+@c4 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""diagarm""","@c1 syntax.clause form=interrogative verb=""go"" modifier=""ahead"" discourse=""and"" complement=$k1
+@n1 syntax.nominal head=""chart""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""diagram""
+@n3 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""diagarm""",
+59,"what number of swaps until the boxes are sorted A to Z, and what number of turns until the labels run from A to Z?","@n1 syntax.nominal dependent=""what"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""swaps""
+@r2 syntax.relation marker=""until"" from=$n1 to=$c1
+@n3 syntax.nominal dependent=""the"" head=""boxes""
+@c1 syntax.clause form=declarative auxiliary=""are"" verb=""sorted"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""A""
+@r3 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Z""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n6
+@n6 syntax.nominal dependent=""what"" head=""number""
+@r4 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal head=""turns""
+@r5 syntax.relation marker=""until"" from=$n6 to=$c2
+@n8 syntax.nominal dependent=""the"" head=""labels""
+@c2 syntax.clause form=declarative verb=""run"" subject=$n8
+@r6 syntax.relation marker=""from"" from=$c2 to=$n9
+@n9 syntax.nominal head=""A""
+@r7 syntax.relation marker=""to"" from=$c2 to=$n10
+@n10 syntax.nominal head=""Z""
+@c3 syntax.clause form=fragment complement=$k1","@n1 syntax.nominal dependent=""what"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""swaps""
+@r2 syntax.relation marker=""until"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boxes""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""sorted"" modifier=""A"" discourse=""and"" modifier=""what"" subject=$n1 complement=$n5
+@r3 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Z""
+@n5 syntax.nominal head=""number""
+@r4 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal head=""turns""
+@r5 syntax.relation marker=""until"" from=$c1 to=$c2
+@n7 syntax.nominal dependent=""the"" head=""labels""
+@c2 syntax.clause form=interrogative verb=""run"" modifier=""from"" modifier=""A"" subject=$n7
+@r6 syntax.relation marker=""to"" from=$c2 to=$n8
+@n8 syntax.nominal head=""Z""",
+60,"i need to know check whether the row is unchanged since my last turn, and tell me what you would check first in the row, and why, to be sure the answer is right?","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=interrogative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""know""
+@c3 syntax.clause form=nonfinite verb=""check""
+@r2 syntax.relation marker=""whether"" from=$c3 to=$c4
+@n2 syntax.nominal dependent=""the"" head=""row""
+@c4 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n2
+@r3 syntax.relation marker=""since"" from=$c4 to=$n3
+@n3 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c5
+@c5 syntax.clause form=nonfinite verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@n5 syntax.nominal head=""what""
+@n6 syntax.nominal head=""you""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" subject=$n6 complement=$n5
+@r4 syntax.relation marker=""in"" from=$c6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c6 conjunct=$c7
+@c7 syntax.clause form=fragment discourse=""why"" ellipsis=$c6
+@r5 syntax.relation marker=""to"" from=$c6 to=$c8
+@c8 syntax.clause form=nonfinite verb=""be"" modifier=""sure""
+@n8 syntax.nominal dependent=""the"" head=""answer""
+@c9 syntax.clause form=declarative verb=""is"" modifier=""right"" subject=$n8
+@r6 syntax.relation from=$c2 to=$c3
+@r7 syntax.relation from=$c5 to=$k2
+@r8 syntax.relation from=$c8 to=$c9","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know"" complement=$n2
+@n2 syntax.nominal head=""check""
+@r2 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n3 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n3
+@r3 syntax.relation marker=""since"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal head=""what""
+@n7 syntax.nominal head=""you""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" discourse=""and"" modifier=""why"" subject=$n7 complement=$n6
+@r4 syntax.relation marker=""in"" from=$c5 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation marker=""to"" from=$c5 to=$c6
+@c6 syntax.clause form=nonfinite auxiliary=""be"" verb=""sure""
+@n9 syntax.nominal dependent=""the"" head=""answer""
+@c7 syntax.clause form=interrogative verb=""is"" modifier=""right"" subject=$n9
+@r6 syntax.relation from=$c4 to=$c5",
+61,aer the boxes still identical to the row you left me with?,"@n1 syntax.nominal head=""aer""
+@n2 syntax.nominal dependent=""the"" head=""boxes""
+@c1 syntax.clause form=fragment modifier=""still"" modifier=""identical"" complement=$n1 complement=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""row""
+@n4 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""left"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""me""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n3
+@r3 syntax.relation from=$n3 to=$c2","@c1 syntax.clause form=interrogative verb=""aer"" modifier=""still"" modifier=""identical"" modifier=""left"" modifier=""with"" complement=$n1 complement=$n4
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""row""
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal head=""me""
+@r2 syntax.relation from=$n2 to=$n3",
+62,"i need to know check whether the top row is a match for the other row, and tell me what you would check first in the row, and why, to be sure the answer is right?","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=interrogative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know""
+@c3 syntax.clause form=nonfinite verb=""check""
+@r2 syntax.relation marker=""whether"" from=$c3 to=$c4
+@n2 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""match""
+@r3 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""other"" head=""row""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c5
+@c5 syntax.clause form=nonfinite verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal head=""what""
+@n7 syntax.nominal head=""you""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" subject=$n7 complement=$n6
+@r4 syntax.relation marker=""in"" from=$c6 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c6 conjunct=$c7
+@c7 syntax.clause form=fragment discourse=""why"" ellipsis=$c6
+@r5 syntax.relation marker=""to"" from=$c6 to=$c8
+@c8 syntax.clause form=nonfinite verb=""be"" modifier=""sure""
+@n9 syntax.nominal dependent=""the"" head=""answer""
+@c9 syntax.clause form=declarative verb=""is"" modifier=""right"" subject=$n9
+@r6 syntax.relation from=$c2 to=$k1
+@r7 syntax.relation from=$c5 to=$k2
+@r8 syntax.relation from=$c8 to=$c9","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know"" complement=$n2
+@n2 syntax.nominal head=""check""
+@r2 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n3 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""match""
+@r3 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""other"" head=""row""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n6
+@n6 syntax.nominal head=""me""
+@n7 syntax.nominal head=""what""
+@n8 syntax.nominal head=""you""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" discourse=""and"" modifier=""why"" subject=$n8 complement=$n7
+@r4 syntax.relation marker=""in"" from=$c5 to=$n9
+@n9 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation marker=""to"" from=$c5 to=$c6
+@c6 syntax.clause form=nonfinite auxiliary=""be"" verb=""sure""
+@n10 syntax.nominal dependent=""the"" head=""answer""
+@c7 syntax.clause form=interrogative verb=""is"" modifier=""right"" subject=$n10
+@r6 syntax.relation from=$c4 to=$c5",
+63,pair same again?,"@n1 syntax.nominal head=""pair""
+@c1 syntax.clause form=fragment modifier=""same"" modifier=""again"" complement=$n1","@n1 syntax.nominal head=""pair"" dependent=""same""
+@c1 syntax.clause form=fragment modifier=""again"" complement=$n1",
+64,"i need to know check whether the row is unchanged by reversing it again, and tell me what you would check first in the row, and why, to be sure the answer is right?","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=interrogative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know""
+@c3 syntax.clause form=nonfinite verb=""check""
+@r2 syntax.relation marker=""whether"" from=$c3 to=$c4
+@n2 syntax.nominal dependent=""the"" head=""row""
+@c4 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n2
+@r3 syntax.relation marker=""by"" from=$c4 to=$c5
+@c5 syntax.clause form=nonfinite verb=""reversing"" modifier=""again"" complement=$n3
+@n3 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c6
+@c6 syntax.clause form=nonfinite verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@n5 syntax.nominal head=""what""
+@n6 syntax.nominal head=""you""
+@c7 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" subject=$n6 complement=$n5
+@r4 syntax.relation marker=""in"" from=$c7 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c7 conjunct=$c8
+@c8 syntax.clause form=fragment discourse=""why"" ellipsis=$c7
+@r5 syntax.relation marker=""to"" from=$c7 to=$c9
+@c9 syntax.clause form=nonfinite verb=""be"" modifier=""sure""
+@n8 syntax.nominal dependent=""the"" head=""answer""
+@c10 syntax.clause form=declarative verb=""is"" modifier=""right"" subject=$n8
+@r6 syntax.relation from=$c2 to=$k1
+@r7 syntax.relation from=$c6 to=$k2
+@r8 syntax.relation from=$c9 to=$c10","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know"" complement=$n2
+@n2 syntax.nominal head=""check""
+@r2 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n3 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n3
+@r3 syntax.relation marker=""by"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""reversing"" modifier=""again"" complement=$n4
+@n4 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal head=""what""
+@n7 syntax.nominal head=""you""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""check"" modifier=""first"" discourse=""and"" modifier=""why"" subject=$n7 complement=$n6
+@r4 syntax.relation marker=""in"" from=$c6 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation marker=""to"" from=$c6 to=$c7
+@c7 syntax.clause form=nonfinite auxiliary=""be"" verb=""sure""
+@n9 syntax.nominal dependent=""the"" head=""answer""
+@c8 syntax.clause form=interrogative verb=""is"" modifier=""right"" subject=$n9
+@r6 syntax.relation from=$c5 to=$c6",
+65,tell me does green in the key mean done or in progress,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""mean"" subject=$n2
+@n2 syntax.nominal head=""green""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""key""
+@c3 syntax.clause form=nonfinite verb=""done""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c3 conjunct=$c4
+@r2 syntax.relation marker=""in"" from=$c4 to=$n4
+@n4 syntax.nominal head=""progress""
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$c2 to=$k1
+@c4 syntax.clause form=fragment ellipsis=$c3","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=nonfinite verb=""does"" modifier=""green"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""key"" head=""mean"" dependent=""done""
+@k1 syntax.coordination conjunction=""or"" conjunct=$r1 conjunct=$r2
+@r2 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal head=""progress""
+@r3 syntax.relation from=$c1 to=$c2",
+66,read the key and then tell me which shape is a decision,"@c1 syntax.clause form=imperative verb=""read"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""key""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative modifier=""then"" verb=""tell"" complement=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""which"" head=""shape""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""decision""
+@r1 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""read"" discourse=""and"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""key""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""which"" head=""shape""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""a"" head=""decision""
+@r1 syntax.relation from=$c2 to=$c3",
+67,"we ended up where step 2 was, right","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""ended"" modifier=""up"" discourse=""right"" subject=$n1
+@c2 syntax.clause form=declarative modifier=""where"" verb=""was"" subject=$n2
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""2""
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""ended"" modifier=""up"" subject=$n1
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@n2 syntax.nominal head=""step"" dependent=""2""
+@c2 syntax.clause form=declarative verb=""was"" modifier=""right"" subject=$n2",
+68,"i think this is the step 4 order, is it","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""think"" subject=$n1
+@n2 syntax.nominal head=""this""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""step"" dependent=""4"" head=""order""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""think"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""this""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""order"" subject=$n3
+@n3 syntax.nominal dependent=""the"" head=""step"" dependent=""4""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$c2
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3",
+69,"which step matches the current row, step 2 or step 3","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""matches"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""current"" head=""row""
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""3""
+@r1 syntax.relation from=$n2 to=$k1
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""matches"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""the"" dependent=""current"" head=""row""
+@n3 syntax.nominal head=""step"" dependent=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""step"" dependent=""3""",
+70,tell me which of step 1 and step 3 does the row match,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n2 to=$k1
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""3""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""match"" subject=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@r2 syntax.relation from=$n2 to=$c1
+@c3 syntax.clause form=fragment complement=$n2
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n5 to=$n6
+@r5 syntax.relation from=$n5 to=$c2","@c1 syntax.clause form=imperative verb=""tell"" subject=$n2 complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n3
+@n3 syntax.nominal head=""step"" dependent=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal head=""step"" dependent=""3""
+@c2 syntax.clause form=declarative verb=""does"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""row"" head=""match""",
+71,"which earlier step has this same order, step 1 or step 2","@n1 syntax.nominal dependent=""which"" dependent=""earlier"" head=""step""
+@c1 syntax.clause form=interrogative verb=""has"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""this"" dependent=""same"" head=""order""
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""2""
+@r1 syntax.relation from=$n2 to=$k1
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""which"" dependent=""earlier"" head=""step""
+@c1 syntax.clause form=interrogative verb=""has"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""this"" dependent=""same"" head=""order""
+@n3 syntax.nominal head=""step"" dependent=""1""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""step"" dependent=""2""",
+72,"which of the two steps does this match, 2 or 4","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""two"" head=""steps""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""match"" subject=$n3 complement=$n1 complement=$k1
+@n3 syntax.nominal head=""this""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""4""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""two"" head=""steps""
+@c1 syntax.clause form=declarative verb=""does"" complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""match""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""4""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$k1",
+73,"which step does the current order belong to, step 2 or step 3","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""belong"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""current"" head=""order""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""3""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n3 to=$n4
+@c2 syntax.clause form=fragment complement=$k1
+@r3 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""belong"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""current"" head=""order""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@n3 syntax.nominal head=""step"" dependent=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""step"" dependent=""3""
+@c2 syntax.clause form=fragment complement=$k1",
+74,quick question: is this closer to step 2 or step 3,"@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""closer"" subject=$n2
+@n2 syntax.nominal head=""this""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""3""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2
+@n2 syntax.nominal dependent=""this"" head=""closer""
+@r1 syntax.relation marker=""to"" from=$n2 to=$k1
+@n3 syntax.nominal head=""step"" dependent=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""step"" dependent=""3""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+75,which of step 1 and step 2 does it look like,"@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$k1
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""step""
+@n5 syntax.nominal head=""2""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" modifier=""like"" subject=$n6
+@n6 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n4 to=$n5
+@r4 syntax.relation from=$n4 to=$c1","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n2
+@n2 syntax.nominal head=""step"" dependent=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c1
+@n3 syntax.nominal head=""step"" dependent=""2""
+@c1 syntax.clause form=declarative verb=""does"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""look""
+@c2 syntax.clause form=imperative verb=""like""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+76,"which step, 3 or 4?","@n1 syntax.nominal dependent=""which"" head=""step""
+@n2 syntax.nominal head=""3""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""4""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal head=""which""
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""3""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""4""
+@c1 syntax.clause form=fragment complement=$n1 complement=$k1",
+77,"the second and fourth figures switched once and i cannot remember which one is which, so tell me which figure moved","@n1 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""fourth"" head=""figures""
+@c1 syntax.clause form=declarative verb=""switched"" modifier=""once"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunction=""so"" conjunct=$c1 conjunct=$c2 conjunct=$c4
+@n2 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative negation=""cannot"" verb=""remember"" subject=$n2
+@n3 syntax.nominal dependent=""which"" head=""one""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""which""
+@c4 syntax.clause form=declarative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal dependent=""which"" head=""figure""
+@c5 syntax.clause form=declarative verb=""moved"" subject=$n6
+@r1 syntax.relation from=$c2 to=$c3
+@r2 syntax.relation from=$c4 to=$c5","@n1 syntax.nominal dependent=""the"" head=""second""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c6 conjunct=$c1
+@n2 syntax.nominal dependent=""fourth"" head=""figures""
+@c1 syntax.clause form=declarative verb=""switched"" modifier=""once"" subject=$n2
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative auxiliary=""cannot"" verb=""remember"" subject=$n3
+@n4 syntax.nominal dependent=""which"" head=""one""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""which"" subject=$n4
+@k3 syntax.coordination conjunction=""so"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n5 complement=$n6
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal dependent=""which"" head=""figure""
+@c5 syntax.clause form=nonfinite verb=""moved""
+@c6 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n6 to=$c5",
+78,whech figure moved,"@c1 syntax.clause form=declarative modifier=""whech"" verb=""moved"" subject=$n1
+@n1 syntax.nominal head=""figure""","@n1 syntax.nominal dependent=""whech"" head=""figure""
+@c1 syntax.clause form=declarative verb=""moved"" subject=$n1",
+79,quick question: which figure left its starting slot and where did it end up after the last swap in the row please,"@n1 syntax.nominal dependent=""quick"" head=""question""
+@n2 syntax.nominal dependent=""which"" head=""figure""
+@c1 syntax.clause form=declarative verb=""left"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""its"" dependent=""starting"" head=""slot""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative modifier=""where"" auxiliary=""did"" verb=""end"" modifier=""up"" discourse=""please"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation marker=""after"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""last"" head=""swap""
+@r2 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal dependent=""quick"" head=""question""
+@n2 syntax.nominal dependent=""which"" head=""figure""
+@c1 syntax.clause form=fragment modifier=""left"" discourse=""and"" complement=$n1 complement=$n2 complement=$n3
+@n3 syntax.nominal dependent=""its"" dependent=""starting"" head=""slot""
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@c2 syntax.clause form=interrogative verb=""did"" modifier=""up"" discourse=""please"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""end""
+@r2 syntax.relation marker=""after"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""last"" head=""swap""
+@r3 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""",
+80,"are these the same figures, just reordered","@c1 syntax.clause form=interrogative verb=""are"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""these""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""figures""
+@c2 syntax.clause form=nonfinite modifier=""just"" verb=""reordered""
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative verb=""are"" modifier=""just"" modifier=""reordered"" subject=$n1
+@n1 syntax.nominal dependent=""these"" dependent=""the"" dependent=""same"" head=""figures""",
+81,"we moved several figures around but i need to be sure none of them was replaced, so compare the sets before and after","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""moved"" modifier=""around"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""several"" head=""figures""
+@k1 syntax.coordination conjunction=""but"" conjunction=""so"" conjunct=$c1 conjunct=$c2 conjunct=$c5
+@n3 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n3
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""be"" modifier=""sure""
+@n4 syntax.nominal head=""none""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal head=""them""
+@c4 syntax.clause form=declarative auxiliary=""was"" verb=""replaced"" subject=$n4
+@c5 syntax.clause form=imperative verb=""compare"" modifier=""before"" discourse=""and"" modifier=""after"" complement=$n6
+@n6 syntax.nominal dependent=""the"" head=""sets""
+@r3 syntax.relation from=$c3 to=$c4","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""moved"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""several"" head=""figures"" dependent=""around""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""i""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n3
+@r1 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite auxiliary=""be"" verb=""sure"" complement=$n4
+@n4 syntax.nominal dependent=""none"" dependent=""of"" head=""them""
+@c4 syntax.clause form=imperative auxiliary=""was"" verb=""replaced""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""compare"" modifier=""before"" discourse=""and"" modifier=""after"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""sets""",
+82,"are the figures the same, and if so what order are they in now","@n1 syntax.nominal dependent=""the"" head=""figures""
+@c1 syntax.clause form=interrogative verb=""are"" modifier=""the"" modifier=""same"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@r1 syntax.relation marker=""if"" from=$c3 to=$c2
+@c2 syntax.clause form=fragment modifier=""so""
+@n2 syntax.nominal dependent=""what"" head=""order""
+@c3 syntax.clause form=interrogative verb=""are"" modifier=""now"" subject=$n3
+@n3 syntax.nominal head=""they""
+@r2 syntax.relation marker=""in"" from=$c3 to=$n2","@c1 syntax.clause form=interrogative verb=""are"" discourse=""and"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""figures""
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@r2 syntax.relation marker=""so"" from=$c1 to=$c2
+@n3 syntax.nominal dependent=""what"" head=""order""
+@c2 syntax.clause form=interrogative verb=""are"" modifier=""in"" modifier=""now"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""they""",
+83,check the first figure is now last,"@c1 syntax.clause form=declarative discourse=""check"" verb=""is"" modifier=""now"" modifier=""last"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""","@c1 syntax.clause form=imperative verb=""check""
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""now"" modifier=""last"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+84,"we reversed the ends and then reversed step one, so tell me whether the row is a clean reversal of the original","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""reversed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""ends""
+@k1 syntax.coordination conjunction=""and"" conjunction=""so"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=declarative modifier=""then"" verb=""reversed"" complement=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""one""
+@c3 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c3 to=$c4
+@n6 syntax.nominal dependent=""the"" head=""row""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""a"" dependent=""clean"" head=""reversal""
+@r2 syntax.relation marker=""of"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""original""
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""reversed"" discourse=""and"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""ends""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@n3 syntax.nominal dependent=""reversed"" dependent=""step"" head=""one""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c4 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n5 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""a"" dependent=""clean"" head=""reversal""
+@r2 syntax.relation marker=""of"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""original""
+@c4 syntax.clause form=fragment complement=$n3",
+85,"one figure was removed and then added back, so the count should be unchanged, but tell me the number now and the number at the start","@n1 syntax.nominal dependent=""one"" head=""figure""
+@c1 syntax.clause form=declarative auxiliary=""was"" verb=""removed"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunction=""so"" conjunction=""but"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3 conjunct=$c4 conjunct=$c5
+@c2 syntax.clause form=declarative modifier=""then"" verb=""added"" modifier=""back""
+@n2 syntax.nominal dependent=""the"" head=""count""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""unchanged"" subject=$n2
+@c4 syntax.clause form=imperative verb=""tell"" modifier=""now"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""the"" head=""number""
+@n5 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""at"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""start""
+@c5 syntax.clause form=fragment complement=$n5 ellipsis=$c4","@n1 syntax.nominal dependent=""one"" head=""figure""
+@c1 syntax.clause form=declarative auxiliary=""was"" verb=""removed"" discourse=""and"" subject=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=nonfinite verb=""added"" modifier=""back""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@n2 syntax.nominal dependent=""the"" head=""count""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""unchanged"" subject=$n2
+@k3 syntax.coordination conjunction=""but"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" modifier=""now"" complement=$n3 complement=$k4
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""the"" head=""number""
+@k4 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""start""",
+86,how many are left compared with the start,"@n1 syntax.nominal dependent=""how"" head=""many""
+@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""left"" subject=$n1
+@r1 syntax.relation marker=""compared with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""start""","@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" auxiliary=""are"" modifier=""left"" verb=""compared""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""start""",
+87,"the figure deleted in step two was added back, but the row still looks short, so tell me whether anything is missing","@n1 syntax.nominal dependent=""the"" head=""figure""
+@c1 syntax.clause form=nonfinite verb=""deleted""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""two""
+@c2 syntax.clause form=declarative auxiliary=""was"" verb=""added"" modifier=""back"" subject=$n1
+@k1 syntax.coordination conjunction=""but"" conjunction=""so"" conjunct=$c2 conjunct=$c3 conjunct=$c4
+@n4 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=declarative modifier=""still"" verb=""looks"" modifier=""short"" subject=$n4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@r2 syntax.relation marker=""whether"" from=$c4 to=$c5
+@n6 syntax.nominal head=""anything""
+@c5 syntax.clause form=declarative auxiliary=""is"" verb=""missing"" subject=$n6
+@r3 syntax.relation from=$n1 to=$c1
+@r4 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal dependent=""the"" head=""figure""
+@c1 syntax.clause form=declarative verb=""deleted"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""step"" dependent=""two""
+@c2 syntax.clause form=imperative auxiliary=""was"" verb=""added"" modifier=""back""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c2 conjunct=$c3
+@n3 syntax.nominal dependent=""the"" head=""row""
+@c3 syntax.clause form=declarative modifier=""still"" verb=""looks"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""short""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@r2 syntax.relation marker=""whether"" from=$c4 to=$c5
+@n6 syntax.nominal head=""anything""
+@c5 syntax.clause form=declarative auxiliary=""is"" verb=""missing"" subject=$n6",
+88,is one of the figurs gone,"@c1 syntax.clause form=interrogative auxiliary=""is"" verb=""gone"" subject=$n1
+@n1 syntax.nominal head=""one""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figurs""","@c1 syntax.clause form=interrogative auxiliary=""is"" verb=""gone"" subject=$n1
+@n1 syntax.nominal dependent=""one"" dependent=""of"" dependent=""the"" head=""figurs""",
+89,"two of the four figures are going away in the next steps, so tell me how many will still be in the row","@n1 syntax.nominal head=""two""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""four"" head=""figures""
+@c1 syntax.clause form=declarative auxiliary=""are"" verb=""going"" modifier=""away"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""next"" head=""steps""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@n5 syntax.nominal dependent=""how"" head=""many""
+@c3 syntax.clause form=declarative auxiliary=""will"" modifier=""still"" verb=""be"" subject=$n5
+@r3 syntax.relation marker=""in"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""two""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""four"" head=""figures""
+@c1 syntax.clause form=declarative auxiliary=""are"" verb=""going"" modifier=""away"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""next"" head=""steps""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@c3 syntax.clause form=declarative modifier=""how"" modifier=""many"" auxiliary=""will"" modifier=""still"" verb=""be""
+@r3 syntax.relation marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation from=$c2 to=$c3",
+90,count what remanes after the next removes,"@c1 syntax.clause form=imperative verb=""count""
+@n1 syntax.nominal head=""what""
+@c2 syntax.clause form=declarative verb=""remanes"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c2 to=$c3
+@n2 syntax.nominal dependent=""the"" head=""next""
+@c3 syntax.clause form=declarative verb=""removes"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""count"" complement=$n1
+@n1 syntax.nominal dependent=""what"" head=""remanes""
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""next"" head=""removes""",
+91,how many left after that,"@n1 syntax.nominal dependent=""how"" head=""many""
+@c1 syntax.clause form=interrogative verb=""left"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal head=""that""","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""left""
+@c1 syntax.clause form=fragment modifier=""after"" modifier=""that"" complement=$n1",
+92,"if two more go, how many stay, and which ones","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal head=""two"" dependent=""more""
+@c1 syntax.clause form=declarative verb=""go"" subject=$n1
+@n2 syntax.nominal dependent=""how"" head=""many""
+@c2 syntax.clause form=interrogative verb=""stay"" subject=$n2
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n3 syntax.nominal dependent=""which"" head=""ones""
+@c3 syntax.clause form=fragment complement=$n3","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal head=""two""
+@c1 syntax.clause form=fragment modifier=""more"" modifier=""go"" complement=$n1
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""stay"" discourse=""and"" modifier=""which"" complement=$n2
+@n2 syntax.nominal head=""ones""",
+93,look at the decision box in the flow and explain the condition that sends work down each of the two branches,"@c1 syntax.clause form=imperative verb=""look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""decision"" head=""box""
+@r2 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""flow""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""explain"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""condition""
+@r3 syntax.relation marker=""that"" from=$n3 to=$c3
+@c3 syntax.clause form=declarative verb=""sends"" complement=$n4
+@n4 syntax.nominal head=""work""
+@r4 syntax.relation marker=""down"" from=$c3 to=$n5
+@n5 syntax.nominal head=""each""
+@r5 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""two"" head=""branches""","@c1 syntax.clause form=imperative verb=""look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""decision"" head=""box""
+@r2 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""flow""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""explain"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""condition""
+@r3 syntax.relation marker=""that"" from=$n3 to=$c3
+@c3 syntax.clause form=declarative verb=""sends"" modifier=""down"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""work""
+@n5 syntax.nominal dependent=""each"" dependent=""of"" dependent=""the"" dependent=""two"" head=""branches""",
+94,where does this flow brance,"@c1 syntax.clause form=interrogative modifier=""where"" auxiliary=""does"" verb=""flow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal head=""brance""","@c1 syntax.clause form=declarative modifier=""where"" verb=""does"" complement=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""flow"" head=""brance""",
+95,explain the loop and when it stpos,"@c1 syntax.clause form=imperative verb=""explain"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""loop""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative modifier=""when"" verb=""stpos"" subject=$n2
+@n2 syntax.nominal head=""it""","@c1 syntax.clause form=imperative verb=""explain"" discourse=""and"" modifier=""when"" complement=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""loop""
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""stpos""",
+96,tell me where this flow starts and how it ends,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""where"" verb=""starts"" subject=$n2
+@n2 syntax.nominal dependent=""this"" head=""flow""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=declarative modifier=""how"" verb=""ends"" subject=$n3
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""this"" head=""flow""
+@c2 syntax.clause form=declarative verb=""starts"" discourse=""and"" modifier=""how"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal head=""ends""",
+97,explain the entry and exit points of the flow,"@c1 syntax.clause form=imperative verb=""explain"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""entry"" dependent=""and"" dependent=""exit"" head=""points""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""flow""","@c1 syntax.clause form=imperative verb=""explain"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""entry""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""exit"" head=""points""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""flow""",
+98,what changed between flow a and flow b,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""changed"" subject=$n1
+@r1 syntax.relation marker=""between"" from=$c1 to=$k1
+@n2 syntax.nominal dependent=""flow"" head=""a""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""flow"" head=""b""","@n1 syntax.nominal head=""what""
+@r1 syntax.relation marker=""between"" from=$c1 to=$n2
+@n2 syntax.nominal head=""flow""
+@c1 syntax.clause form=interrogative verb=""changed"" modifier=""a"" discourse=""and"" modifier=""flow"" modifier=""b"" subject=$n1",
+99,"put the two flows side by side and list every step that differs between them, including any box that was added or removed","@c1 syntax.clause form=imperative verb=""put"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""flows""
+@n2 syntax.nominal head=""side""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""side""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""list"" complement=$n4
+@n4 syntax.nominal dependent=""every"" head=""step""
+@r2 syntax.relation marker=""that"" from=$n4 to=$c3
+@c3 syntax.clause form=declarative verb=""differs""
+@r3 syntax.relation marker=""between"" from=$c3 to=$n5
+@n5 syntax.nominal head=""them""
+@r4 syntax.relation marker=""including"" from=$n4 to=$n6
+@n6 syntax.nominal dependent=""any"" head=""box""
+@r5 syntax.relation marker=""that"" from=$n6 to=$k2
+@c4 syntax.clause form=declarative auxiliary=""was"" verb=""added""
+@k2 syntax.coordination conjunction=""or"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=declarative verb=""removed""","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""flows"" dependent=""side"" dependent=""by"" dependent=""side""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""list"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""every"" head=""step""
+@r1 syntax.relation marker=""that"" from=$c3 to=$c2
+@n3 syntax.nominal head=""differs""
+@r2 syntax.relation marker=""between"" from=$n3 to=$n4
+@n4 syntax.nominal head=""them""
+@c3 syntax.clause form=nonfinite verb=""including"" complement=$n5
+@n5 syntax.nominal dependent=""any"" head=""box""
+@r3 syntax.relation marker=""that"" from=$n5 to=$c4
+@c4 syntax.clause form=declarative auxiliary=""was"" verb=""added"" discourse=""or"" modifier=""removed""
+@r4 syntax.relation from=$n2 to=$c3",
+100,"put the rebuilt and saved rows together, do they match","@c1 syntax.clause form=imperative verb=""put"" modifier=""together"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rebuilt"" dependent=""and"" dependent=""saved"" head=""rows""
+@c2 syntax.clause form=interrogative auxiliary=""do"" verb=""match"" subject=$n2
+@n2 syntax.nominal head=""they""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""put"" modifier=""together"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""rebuilt""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""saved"" head=""rows""
+@c2 syntax.clause form=interrogative auxiliary=""do"" verb=""match"" subject=$n3
+@n3 syntax.nominal head=""they""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2",
+101,how many remain,"@n1 syntax.nominal dependent=""how"" head=""many""
+@c1 syntax.clause form=interrogative verb=""remain"" subject=$n1","@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""remain""",
+102,"how many steps have we done, and are they all swaps?","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative auxiliary=""have"" verb=""done"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""are"" subject=$n3 complement=$n4 complement=$n5
+@n3 syntax.nominal head=""they""
+@n4 syntax.nominal head=""all""
+@n5 syntax.nominal head=""swaps""","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative verb=""have"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""we""
+@c2 syntax.clause form=imperative verb=""done""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=interrogative verb=""are"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""they""
+@n4 syntax.nominal dependent=""all"" head=""swaps""
+@r1 syntax.relation from=$c1 to=$c2",
+103,are the middle pair and the end pair arranged the same way?,"@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""arranged"" subject=$k1 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""middle"" head=""pair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""end"" head=""pair""
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""way""","@c1 syntax.clause form=interrogative verb=""are"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""middle"" head=""pair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""end"" head=""pair""
+@c2 syntax.clause form=interrogative verb=""arranged"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""way""",
+104,quick question: can u check nothing was lost please,"@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""check"" discourse=""please"" subject=$n2
+@n2 syntax.nominal head=""u""
+@n3 syntax.nominal head=""nothing""
+@c2 syntax.clause form=declarative auxiliary=""was"" verb=""lost"" subject=$n3
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=imperative auxiliary=""can"" verb=""u"" modifier=""check"" complement=$n2
+@n2 syntax.nominal head=""nothing""
+@c2 syntax.clause form=imperative auxiliary=""was"" verb=""lost"" discourse=""please""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$c1 to=$c2",
+105,quick question: can u tell me how many will be left please,"@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""tell"" discourse=""please"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""u""
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""how"" head=""many""
+@c2 syntax.clause form=declarative auxiliary=""will"" auxiliary=""be"" verb=""left"" subject=$n4
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""quick"" head=""question""
+@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""tell"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""u""
+@n3 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""how"" modifier=""many"" auxiliary=""will"" verb=""be"" modifier=""left"" discourse=""please""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$c1 to=$c2",
+106,"i am writing a note on how much work this took, so tell me how many moves are still left before the row matches the target","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative auxiliary=""am"" verb=""writing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""note""
+@r1 syntax.relation marker=""on"" from=$n2 to=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""much"" head=""work""
+@n4 syntax.nominal head=""this""
+@c2 syntax.clause form=declarative verb=""took"" subject=$n4 complement=$n3
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""tell"" complement=$n5
+@n5 syntax.nominal head=""me""
+@n6 syntax.nominal dependent=""how"" dependent=""many"" head=""moves""
+@c4 syntax.clause form=declarative auxiliary=""are"" modifier=""still"" verb=""left"" subject=$n6
+@r2 syntax.relation marker=""before"" from=$c4 to=$c5
+@n7 syntax.nominal dependent=""the"" head=""row""
+@c5 syntax.clause form=declarative verb=""matches"" subject=$n7 complement=$n8
+@n8 syntax.nominal dependent=""the"" head=""target""
+@r3 syntax.relation from=$c3 to=$c4","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative auxiliary=""am"" verb=""writing"" modifier=""on"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""note""
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""work"" complement=$n3
+@n3 syntax.nominal head=""this""
+@c3 syntax.clause form=nonfinite verb=""took""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@n5 syntax.nominal dependent=""how"" dependent=""many"" head=""moves""
+@c5 syntax.clause form=declarative verb=""are"" modifier=""still"" modifier=""left"" subject=$n5
+@r1 syntax.relation marker=""before"" from=$c5 to=$c6
+@n6 syntax.nominal dependent=""the"" head=""row""
+@c6 syntax.clause form=declarative verb=""matches"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""target""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n3 to=$c3
+@r4 syntax.relation from=$c4 to=$c5",
+107,how many steps ago did the third box get deleted?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""steps""
+@c1 syntax.clause form=interrogative modifier=""ago"" auxiliary=""did"" auxiliary=""get"" verb=""deleted"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""box""","@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""steps"" head=""ago""
+@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""get"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""box""
+@c2 syntax.clause form=interrogative verb=""deleted""
+@r1 syntax.relation from=$c1 to=$c2",
+108,tell me where this flow strats and how it ends,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""where"" verb=""strats"" subject=$n2
+@n2 syntax.nominal dependent=""this"" head=""flow""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=declarative modifier=""how"" verb=""ends"" subject=$n3
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""this"" head=""flow""
+@c2 syntax.clause form=declarative verb=""strats"" discourse=""and"" modifier=""how"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal head=""ends""",
+109,is this the original arrangement or not,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal dependent=""the"" dependent=""original"" head=""arrangement""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment discourse=""not"" ellipsis=$c1","@c1 syntax.clause form=interrogative verb=""is"" discourse=""or"" negation=""not"" subject=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""the"" dependent=""original"" head=""arrangement""",
+110,show me where the flow branches and which branch is longer,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""where"" verb=""branches"" subject=$n2
+@n2 syntax.nominal dependent=""the"" head=""flow""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n3 syntax.nominal dependent=""which"" head=""branch""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""longer"" subject=$n3
+@r1 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""where"" from=$c2 to=$c1
+@n2 syntax.nominal dependent=""the"" dependent=""flow"" head=""branches""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""branch""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""longer""",
+111,"compare the two flows, name the step the second adds, and say which step the first leaves out","@c1 syntax.clause form=imperative verb=""compare"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""flows""
+@c2 syntax.clause form=imperative verb=""name"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""step""
+@n3 syntax.nominal dependent=""the"" head=""second""
+@c3 syntax.clause form=declarative verb=""adds"" subject=$n3
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""say""
+@n4 syntax.nominal dependent=""which"" head=""step""
+@n5 syntax.nominal dependent=""the"" head=""first""
+@c5 syntax.clause form=declarative verb=""leaves"" modifier=""out"" subject=$n5 complement=$n4
+@r1 syntax.relation from=$n2 to=$c3
+@r2 syntax.relation from=$c4 to=$c5","@c1 syntax.clause form=imperative verb=""compare"" complement=$k2 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""flows""
+@n2 syntax.nominal head=""name""
+@n3 syntax.nominal dependent=""the"" head=""step""
+@n4 syntax.nominal dependent=""the"" head=""second""
+@c2 syntax.clause form=declarative verb=""adds"" subject=$n4
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""say"" modifier=""out"" complement=$n5 complement=$n6
+@n5 syntax.nominal dependent=""which"" head=""step""
+@n6 syntax.nominal dependent=""the"" dependent=""first"" head=""leaves""
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2
+@r1 syntax.relation from=$n3 to=$c2",
+112,"put these exact words in the boxes: Intake, Triage, Repair, Return","@c1 syntax.clause form=imperative verb=""put"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""these"" dependent=""exact"" head=""words""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boxes""
+@n3 syntax.nominal dependent=""Intake"" dependent=""Triage"" dependent=""Repair"" head=""Return""","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""these"" dependent=""exact"" head=""words""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boxes""
+@n3 syntax.nominal head=""Intake""
+@n4 syntax.nominal head=""Triage""
+@n5 syntax.nominal head=""Repair""
+@n6 syntax.nominal head=""Return""
+@r2 syntax.relation from=$n1 to=$k1
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4 conjunct=$n5 conjunct=$n6",
+113,"the labels must be exactly Received, Checked, Filed","@n1 syntax.nominal dependent=""the"" head=""labels""
+@c1 syntax.clause form=declarative auxiliary=""must"" auxiliary=""be"" modifier=""exactly"" verb=""Received"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""Checked""
+@c3 syntax.clause form=nonfinite verb=""Filed""
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c1 to=$c3","@n1 syntax.nominal dependent=""the"" head=""labels""
+@c1 syntax.clause form=declarative auxiliary=""must"" verb=""be"" modifier=""exactly"" modifier=""Filed"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""Received""
+@n3 syntax.nominal head=""Checked""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+114,"write Draft, Sign, Send in the three boxes, nothing else","@c1 syntax.clause form=imperative verb=""write"" complement=$n1
+@n1 syntax.nominal head=""Draft""
+@n2 syntax.nominal head=""Sign""
+@c2 syntax.clause form=imperative verb=""Send"" modifier=""in"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""three"" head=""boxes""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3 conjunct=$c2 conjunct=$c4
+@c3 syntax.clause form=fragment complement=$n2
+@c4 syntax.clause form=fragment complement=$n4","@c1 syntax.clause form=imperative verb=""write"" complement=$k2
+@n1 syntax.nominal head=""Draft""
+@n2 syntax.nominal head=""Sign""
+@c2 syntax.clause form=imperative verb=""Send""
+@r1 syntax.relation marker=""in"" from=$c2 to=$k3
+@n3 syntax.nominal dependent=""the"" dependent=""three"" head=""boxes""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2
+@k3 syntax.coordination conjunct=$n3 conjunct=$n4",
+115,"could you use the exact words from the policy: submit, assess, settle","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""use"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""exact"" head=""words""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""policy""
+@c2 syntax.clause form=imperative verb=""submit""
+@c3 syntax.clause form=imperative verb=""assess""
+@c4 syntax.clause form=imperative verb=""settle""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3 conjunct=$c4","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""use"" modifier=""submit"" subject=$n1 complement=$k2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""exact"" head=""words""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""policy""
+@n4 syntax.nominal head=""assess""
+@c2 syntax.clause form=imperative verb=""settle""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@k2 syntax.coordination conjunct=$n2 conjunct=$n4",
+116,"write Step one, Step two, Step three as the labels, keep the capitals","@c1 syntax.clause form=imperative verb=""write"" complement=$n1
+@n1 syntax.nominal head=""Step""
+@n2 syntax.nominal head=""one""
+@n3 syntax.nominal head=""Step""
+@n4 syntax.nominal head=""two""
+@n5 syntax.nominal head=""Step""
+@n6 syntax.nominal head=""three""
+@r1 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""labels""
+@c2 syntax.clause form=imperative verb=""keep"" complement=$n8
+@n8 syntax.nominal dependent=""the"" head=""capitals""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n1 to=$n3
+@r4 syntax.relation from=$n1 to=$n5
+@r5 syntax.relation from=$n3 to=$n4
+@r6 syntax.relation from=$n5 to=$n6","@c1 syntax.clause form=imperative verb=""write"" complement=$n1
+@n1 syntax.nominal dependent=""Step"" head=""one""
+@n2 syntax.nominal head=""Step two""
+@n3 syntax.nominal head=""Step three""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""labels""
+@c2 syntax.clause form=imperative verb=""keep"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""capitals""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$n2
+@r3 syntax.relation from=$c1 to=$n3",
+117,nothing but placeholders in the boxes,"@n1 syntax.nominal head=""nothing""
+@r1 syntax.relation marker=""but"" from=$n1 to=$n2
+@n2 syntax.nominal head=""placeholders""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boxes""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""nothing""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal head=""placeholders""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boxes""
+@c1 syntax.clause form=fragment complement=$n1
+@c2 syntax.clause form=fragment complement=$n2",
+118,"how many turns until the row is in alphabetical order, and how many swaps until the boxes are sorted A to Z?","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""turns""
+@r1 syntax.relation marker=""until"" from=$n1 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""row""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n2
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n4
+@n4 syntax.nominal dependent=""how"" dependent=""many"" head=""swaps""
+@r3 syntax.relation marker=""until"" from=$n4 to=$c2
+@n5 syntax.nominal dependent=""the"" head=""boxes""
+@c2 syntax.clause form=declarative auxiliary=""are"" verb=""sorted"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""A""
+@r4 syntax.relation attachment=ambiguous marker=""to"" from=$c2 to=$n7
+@n7 syntax.nominal head=""Z""
+@c3 syntax.clause form=fragment complement=$k1","@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""turns""
+@r1 syntax.relation marker=""until"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""row""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""alphabetical"" head=""order""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" dependent=""many"" head=""swaps""
+@r3 syntax.relation marker=""until"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""boxes""
+@c2 syntax.clause form=interrogative auxiliary=""are"" verb=""sorted"" modifier=""A"" subject=$n4
+@r4 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""Z""",
+119,"no, Approve is wrong, it should be Authorise and the box should be yellow","@c1 syntax.clause form=declarative discourse=""no"" auxiliary=""should"" verb=""be"" subject=$n2 complement=$n3
+@n1 syntax.nominal head=""Approve""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""wrong"" subject=$n1
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""Authorise""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal dependent=""the"" head=""box""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""yellow"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=declarative discourse=""no"" verb=""is"" modifier=""wrong"" subject=$n1
+@n1 syntax.nominal head=""Approve""
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Authorise""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@n4 syntax.nominal dependent=""the"" head=""box""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""yellow"" subject=$n4",
+120,set the first box to Authorise and the fifth to Closed,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""box""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Authorise""
+@k1 syntax.coordination conjunction=""and"" conjunction=""to"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=nonfinite modifier=""the"" modifier=""fifth"" verb=""Closed""","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""box""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Authorise""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" head=""fifth""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Closed""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+121,"not the colour, the label","@n1 syntax.nominal dependent=""not"" dependent=""the"" head=""colour""
+@n2 syntax.nominal dependent=""the"" head=""label""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment negation=""not"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@n2 syntax.nominal dependent=""the"" head=""label""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+122,"not the arrow, the box: change the second box and leave the link alone","@n1 syntax.nominal dependent=""not"" dependent=""the"" head=""arrow""
+@n2 syntax.nominal dependent=""the"" head=""box""
+@c1 syntax.clause form=imperative verb=""change"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""box""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" modifier=""alone"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""link""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=fragment negation=""not"" complement=$k2
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@n2 syntax.nominal dependent=""the"" head=""box""
+@c2 syntax.clause form=imperative verb=""change"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""box""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" modifier=""alone"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""link""
+@r1 syntax.relation from=$c2 to=$c1
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2",
+123,"you fixed the second box, so do exactly the same to the fourth one and keep the rest untouched","@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""fixed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""box""
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""do"" complement=$n3
+@n3 syntax.nominal dependent=""exactly"" dependent=""the"" head=""same""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""fourth"" head=""one""
+@c3 syntax.clause form=imperative verb=""keep"" modifier=""untouched"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""rest""","@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""fixed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""box""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""do"" modifier=""exactly"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""fourth"" head=""one""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""rest"" head=""untouched""",
+124,"i want the first three to move round by one, so the first ends up where the third was and the other two shift along","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""three""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""move"" modifier=""round"" subject=$n2
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""one""
+@r3 syntax.relation marker=""so"" from=$c1 to=$k1
+@n4 syntax.nominal dependent=""the"" head=""first""
+@c3 syntax.clause form=declarative verb=""ends"" modifier=""up"" subject=$n4
+@c4 syntax.clause form=declarative modifier=""where"" verb=""was"" subject=$n5
+@n5 syntax.nominal dependent=""the"" head=""third""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c5
+@n6 syntax.nominal dependent=""the"" dependent=""other"" head=""two""
+@c5 syntax.clause form=declarative verb=""shift"" modifier=""along"" subject=$n6
+@r4 syntax.relation from=$c3 to=$c4","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""three""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""move"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""round""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@n5 syntax.nominal dependent=""the"" dependent=""first"" head=""ends""
+@c3 syntax.clause form=fragment modifier=""up"" complement=$n5
+@r3 syntax.relation marker=""where"" from=$c3 to=$c4
+@n6 syntax.nominal dependent=""the"" head=""third""
+@c4 syntax.clause form=declarative verb=""was"" subject=$n6
+@k2 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c5
+@n7 syntax.nominal dependent=""the"" dependent=""other"" head=""two""
+@c5 syntax.clause form=declarative verb=""shift"" modifier=""along"" subject=$n7",
+125,"make the first three trade places in a cycle, then check the order reads correctly","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""three"" dependent=""trade"" head=""places""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""cycle""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""check""
+@n3 syntax.nominal dependent=""the"" head=""order""
+@c3 syntax.clause form=declarative verb=""reads"" modifier=""correctly"" subject=$n3
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""three""
+@c2 syntax.clause form=nonfinite verb=""trade"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""places""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""cycle""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@n4 syntax.nominal head=""check""
+@n5 syntax.nominal dependent=""the"" head=""order""
+@c3 syntax.clause form=declarative verb=""reads"" modifier=""correctly"" subject=$n5
+@r2 syntax.relation from=$c1 to=$c2
+@c4 syntax.clause form=fragment complement=$n4
+@r3 syntax.relation from=$n4 to=$c3",
+126,"i need all three pairs moved in one go, so swap the first two, the middle two and the last two, and do not stop between them","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal dependent=""all"" dependent=""three"" head=""pairs""
+@c2 syntax.clause form=nonfinite verb=""moved"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""one"" head=""go""
+@c3 syntax.clause form=imperative verb=""swap"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@n5 syntax.nominal dependent=""the"" dependent=""middle"" head=""two""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@k1 syntax.coordination conjunction=""so"" conjunction=""and"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@n6 syntax.nominal dependent=""the"" dependent=""last"" head=""two""
+@c4 syntax.clause form=imperative auxiliary=""do"" negation=""not"" verb=""stop""
+@r2 syntax.relation marker=""between"" from=$c4 to=$n7
+@n7 syntax.nominal head=""them""
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$n4 to=$k2","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""all""
+@n3 syntax.nominal dependent=""three"" head=""pairs""
+@c2 syntax.clause form=nonfinite verb=""moved""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal head=""one""
+@c3 syntax.clause form=imperative verb=""go""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""swap"" complement=$k2
+@n5 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@n6 syntax.nominal dependent=""the"" dependent=""middle"" head=""two""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6 conjunct=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""last"" head=""two""
+@k3 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""do"" negation=""not"" modifier=""stop""
+@r2 syntax.relation marker=""between"" from=$c5 to=$n8
+@n8 syntax.nominal head=""them""
+@r3 syntax.relation from=$c1 to=$c3
+@r4 syntax.relation from=$n3 to=$c2",
+127,"could you swap the first with the last, the second with the last but one, and the two in the middle","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""swap"" subject=$n1 complement=$k2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""last""
+@n4 syntax.nominal dependent=""the"" head=""second""
+@r2 syntax.relation marker=""with"" from=$n4 to=$k1
+@n5 syntax.nominal dependent=""the"" head=""last""
+@k1 syntax.coordination conjunction=""but"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""one""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4 conjunct=$n7
+@n7 syntax.nominal dependent=""the"" head=""two""
+@r3 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""middle""","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""swap"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""last""
+@n4 syntax.nominal dependent=""the"" head=""second""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""last""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@n6 syntax.nominal head=""one""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n6 conjunct=$n7
+@n7 syntax.nominal dependent=""the"" head=""two""
+@r3 syntax.relation marker=""in"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" head=""middle""
+@c2 syntax.clause form=fragment complement=$n4 ellipsis=$c1
+@k3 syntax.coordination conjunct=$c1 conjunct=$c2
+@c3 syntax.clause form=fragment complement=$k2",
+128,swap the first and last objects,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""and"" dependent=""last"" head=""objects""","@c1 syntax.clause form=imperative verb=""swap"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""last"" head=""objects""",
+129,would you swap the first and last objets,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""swap"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""first"" dependent=""and"" dependent=""last"" head=""objets""","@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""swap"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""last"" head=""objets""",
+130,switch the second and feurth figures,"@c1 syntax.clause form=imperative verb=""switch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""feurth"" head=""figures""","@c1 syntax.clause form=imperative verb=""switch"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""second""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""feurth"" head=""figures""",
+131,"now that the figure is back, swap it with the neighbour on its left","@c1 syntax.clause form=imperative modifier=""now"" verb=""swap"" complement=$n2
+@r1 syntax.relation marker=""that"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""figure""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""back"" subject=$n1
+@n2 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""neighbour""
+@r3 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""its"" head=""left""","@c1 syntax.clause form=declarative modifier=""now"" verb=""is"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""that"" dependent=""the"" head=""figure""
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""neighbour""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""its"" head=""left""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+132,make the second and third trade places and leave the rest alone,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""third"" dependent=""trade"" head=""places""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" modifier=""alone"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""rest""","@c1 syntax.clause form=imperative verb=""make"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""second""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""third"" dependent=""trade"" head=""places""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" modifier=""alone"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""rest""",
+133,"last two, swap","@n1 syntax.nominal dependent=""last"" head=""two""
+@c1 syntax.clause form=imperative verb=""swap""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""last"" head=""two""
+@c1 syntax.clause form=imperative verb=""swap""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+134,keep the middle figure fixed and exchange only the two figures standing directly to its left and right,"@c1 syntax.clause form=imperative verb=""keep""
+@n1 syntax.nominal dependent=""the"" dependent=""middle"" head=""figure""
+@c2 syntax.clause form=nonfinite verb=""fixed"" subject=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""exchange"" complement=$n2
+@n2 syntax.nominal dependent=""only"" dependent=""the"" dependent=""two"" head=""figures""
+@c4 syntax.clause form=nonfinite verb=""standing"" modifier=""directly""
+@r1 syntax.relation marker=""to"" from=$c4 to=$k2
+@n3 syntax.nominal dependent=""its"" head=""left""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""right""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c4","@c1 syntax.clause form=imperative verb=""keep"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""middle"" head=""figure""
+@c2 syntax.clause form=nonfinite verb=""fixed""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""exchange"" modifier=""only"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""two"" head=""figures""
+@c4 syntax.clause form=nonfinite verb=""standing"" modifier=""directly"" discourse=""and"" modifier=""right""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n3
+@n3 syntax.nominal dependent=""its"" head=""left""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n2 to=$c4",
+135,the third figure from the last swap and the last figure exchange places,"@n1 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""last"" head=""swap""
+@c1 syntax.clause form=fragment discourse=""and"" complement=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""last"" dependent=""figure"" dependent=""exchange"" head=""places""","@n1 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""last"" head=""swap""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n3 syntax.nominal dependent=""the"" dependent=""last"" dependent=""figure"" head=""exchange""
+@c1 syntax.clause form=declarative verb=""places"" subject=$n3
+@c2 syntax.clause form=fragment complement=$n1",
+136,i need you to exchange box 1 with box 3 and exchange box 2 with box 4,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""exchange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""box""
+@n4 syntax.nominal head=""1""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal head=""box""
+@n6 syntax.nominal head=""3""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""exchange"" complement=$n7
+@n7 syntax.nominal head=""box""
+@n8 syntax.nominal head=""2""
+@r3 syntax.relation marker=""with"" from=$c3 to=$n9
+@n9 syntax.nominal head=""box""
+@n10 syntax.nominal head=""4""
+@r4 syntax.relation from=$n3 to=$n4
+@r5 syntax.relation from=$n5 to=$n6
+@r6 syntax.relation from=$n7 to=$n8
+@r7 syntax.relation from=$n9 to=$n10","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""exchange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""box"" dependent=""1""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal head=""box"" dependent=""3""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""exchange"" complement=$n5
+@n5 syntax.nominal head=""box"" dependent=""2""
+@r3 syntax.relation marker=""with"" from=$c3 to=$n6
+@n6 syntax.nominal head=""box"" dependent=""4""",
+137,"the first figure should end up where the third figure started and the third should end up where the first started, and the second and fourth should do exactly the same","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""end"" modifier=""up"" subject=$n1
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@c2 syntax.clause form=declarative verb=""started"" subject=$n2
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c3 conjunct=$c5
+@n3 syntax.nominal dependent=""the"" head=""third""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""end"" modifier=""up"" subject=$n3
+@r2 syntax.relation marker=""where"" from=$c3 to=$c4
+@n4 syntax.nominal dependent=""the"" head=""first""
+@c4 syntax.clause form=declarative verb=""started"" subject=$n4
+@n5 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""fourth""
+@c5 syntax.clause form=declarative auxiliary=""should"" verb=""do"" subject=$k2 complement=$n7
+@n7 syntax.nominal dependent=""exactly"" dependent=""the"" head=""same""","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""figure""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""end"" modifier=""up"" subject=$n1
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@c2 syntax.clause form=declarative verb=""started"" subject=$n2
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n3 syntax.nominal dependent=""the"" head=""third""
+@c3 syntax.clause form=declarative auxiliary=""should"" verb=""end"" modifier=""up"" subject=$n3
+@r2 syntax.relation marker=""where"" from=$c3 to=$c4
+@n4 syntax.nominal dependent=""the"" head=""first""
+@c4 syntax.clause form=declarative verb=""started"" discourse=""and"" subject=$n4
+@n5 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c6 conjunct=$c5
+@n6 syntax.nominal head=""fourth""
+@c5 syntax.clause form=declarative auxiliary=""should"" verb=""do"" modifier=""exactly"" subject=$n6 complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""same""
+@r3 syntax.relation from=$c1 to=$c6
+@c6 syntax.clause form=fragment complement=$n5",
+138,"do those two swaps again, first with third and second with fourth","@c1 syntax.clause form=imperative verb=""do"" modifier=""again"" modifier=""first"" discourse=""and"" modifier=""second"" complement=$n1
+@n1 syntax.nominal dependent=""those"" dependent=""two"" head=""swaps""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""third""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""fourth""","@c1 syntax.clause form=imperative verb=""do"" modifier=""first"" complement=$n1
+@n1 syntax.nominal dependent=""those"" dependent=""two"" head=""swaps"" dependent=""again""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""third""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""second""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal head=""fourth""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+139,swap box one with box five and swap box two with box four,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal head=""box""
+@n2 syntax.nominal head=""one""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""box""
+@n4 syntax.nominal head=""five""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n5
+@n5 syntax.nominal head=""box""
+@n6 syntax.nominal head=""two""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c2 to=$n7
+@n7 syntax.nominal head=""box""
+@n8 syntax.nominal head=""four""
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n3 to=$n4
+@r5 syntax.relation from=$n5 to=$n6
+@r6 syntax.relation from=$n7 to=$n8","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""box"" head=""one""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""box"" dependent=""five""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n3
+@n3 syntax.nominal head=""box"" dependent=""two""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal head=""box"" dependent=""four""",
+140,"swap the first and fifth, then the second and fourth, working inward from the ends","@c1 syntax.clause form=imperative verb=""swap"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""fifth""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""fourth""
+@c2 syntax.clause form=nonfinite verb=""working"" modifier=""inward""
+@r1 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""ends""
+@c3 syntax.clause form=fragment complement=$k3 ellipsis=$c1
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""swap"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""fifth""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""fourth""
+@c2 syntax.clause form=nonfinite verb=""working"" complement=$n5
+@n5 syntax.nominal head=""inward""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""ends""
+@r2 syntax.relation from=$n3 to=$c2
+@c3 syntax.clause form=fragment complement=$k3",
+141,swap the first with the fifth and swap the second with the fourth and leave every one of the other figures in the row exactly where it is so the arrangement stays clear and readable,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""and"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""fourth""
+@c3 syntax.clause form=imperative verb=""leave"" modifier=""exactly"" complement=$n5
+@n5 syntax.nominal dependent=""every"" head=""one""
+@r3 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""other"" head=""figures""
+@r4 syntax.relation marker=""in"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation marker=""where"" from=$n5 to=$c4
+@n8 syntax.nominal head=""it""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n8
+@r6 syntax.relation marker=""so"" from=$c3 to=$c5
+@n9 syntax.nominal dependent=""the"" head=""arrangement""
+@c5 syntax.clause form=declarative verb=""stays"" modifier=""clear"" discourse=""and"" modifier=""readable"" subject=$n9","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""fourth""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" modifier=""exactly"" complement=$n5
+@n5 syntax.nominal dependent=""every"" dependent=""one"" dependent=""of"" dependent=""the"" dependent=""other"" head=""figures""
+@r3 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation marker=""where"" from=$c3 to=$c4
+@n7 syntax.nominal head=""it""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n7
+@r5 syntax.relation marker=""so"" from=$c4 to=$c5
+@n8 syntax.nominal dependent=""the"" head=""arrangement""
+@c5 syntax.clause form=declarative verb=""stays"" modifier=""clear"" subject=$n8
+@k3 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c6
+@c6 syntax.clause form=imperative verb=""readable""",
+142,"trade box one with box four, then box two with box three","@c1 syntax.clause form=imperative verb=""trade"" complement=$n1
+@n1 syntax.nominal head=""box""
+@n2 syntax.nominal head=""one""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal head=""box""
+@n4 syntax.nominal head=""four""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal head=""box""
+@n6 syntax.nominal head=""two""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c2 to=$n7
+@n7 syntax.nominal head=""box""
+@n8 syntax.nominal head=""three""
+@c2 syntax.clause form=fragment complement=$n5 ellipsis=$c1
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$n3 to=$n4
+@r5 syntax.relation from=$n5 to=$n6
+@r6 syntax.relation from=$n7 to=$n8","@c1 syntax.clause form=imperative verb=""trade"" complement=$n1
+@n1 syntax.nominal dependent=""box"" head=""one""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""box"" dependent=""four""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""box"" dependent=""two""
+@r2 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal head=""box"" dependent=""three""
+@c2 syntax.clause form=fragment complement=$n3",
+143,"swap positions one and four, then positions two and three","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal head=""positions""
+@n2 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""four""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal head=""positions""
+@n5 syntax.nominal head=""two""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""three""
+@c2 syntax.clause form=fragment complement=$n4 ellipsis=$c1
+@r1 syntax.relation from=$n1 to=$k1
+@r2 syntax.relation from=$n4 to=$k3","@c1 syntax.clause form=imperative verb=""swap"" complement=$k1
+@n1 syntax.nominal dependent=""positions"" head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""four""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative verb=""positions"" complement=$k3
+@n3 syntax.nominal head=""two""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""three""",
+144,now cross the first and fourth boxes again,"@c1 syntax.clause form=imperative modifier=""now"" verb=""cross"" modifier=""again"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""and"" dependent=""fourth"" head=""boxes""","@c1 syntax.clause form=imperative modifier=""now"" verb=""cross"" modifier=""again"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""fourth"" head=""boxes""",
+145,"swap the first with the fourth and the second with the third, then stop","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fourth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=fragment modifier=""the"" modifier=""second"" ellipsis=$c1
+@r2 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""third""
+@c3 syntax.clause form=imperative modifier=""then"" verb=""stop""","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""first""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fourth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" head=""second""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""third""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal head=""stop""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1
+@c3 syntax.clause form=fragment complement=$n5",
+146,"trade the fifth and fourth boxes first, then trade the first and second","@c1 syntax.clause form=imperative verb=""trade"" modifier=""first"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""fifth"" dependent=""and"" dependent=""fourth"" head=""boxes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""trade"" complement=$k2
+@n2 syntax.nominal dependent=""the"" head=""first""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""second""","@c1 syntax.clause form=imperative verb=""trade"" modifier=""first"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""fourth"" head=""boxes""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""trade"" complement=$k3
+@n3 syntax.nominal dependent=""the"" head=""first""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""second""",
+147,"the fifth and fourth boxes trade first, then the second and first boxes","@n1 syntax.nominal dependent=""the"" dependent=""fifth"" dependent=""and"" dependent=""fourth"" head=""boxes""
+@c1 syntax.clause form=declarative verb=""trade"" modifier=""first"" subject=$n1
+@c2 syntax.clause form=fragment modifier=""then"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" dependent=""and"" dependent=""first"" head=""boxes""
+@r1 syntax.relation from=$n2 to=$c1","@n1 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n2 syntax.nominal dependent=""fourth"" head=""boxes""
+@c1 syntax.clause form=declarative verb=""trade"" modifier=""first"" subject=$n2
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n3 syntax.nominal dependent=""the"" head=""second""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""first"" head=""boxes""
+@c2 syntax.clause form=fragment complement=$n1
+@c3 syntax.clause form=fragment complement=$k3",
+148,"first the upper pair, five and four, then the lower pair, two and one","@c1 syntax.clause form=fragment modifier=""first"" modifier=""then"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""upper"" head=""pair""
+@n2 syntax.nominal head=""five""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""four""
+@n4 syntax.nominal dependent=""the"" dependent=""lower"" head=""pair""
+@n5 syntax.nominal head=""two""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""one""
+@r1 syntax.relation from=$n1 to=$k1
+@r2 syntax.relation from=$n1 to=$n4
+@r3 syntax.relation from=$n4 to=$k2","@c1 syntax.clause form=imperative verb=""first"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""upper"" head=""pair""
+@n2 syntax.nominal head=""five""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""four""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""the"" dependent=""lower"" head=""pair""
+@n5 syntax.nominal head=""two""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""one""
+@r1 syntax.relation from=$c1 to=$k1
+@c2 syntax.clause form=fragment complement=$k3",
+149,"trade the fifth and fourth boxes first, then trade the firts and second","@c1 syntax.clause form=imperative verb=""trade"" modifier=""first"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""fifth"" dependent=""and"" dependent=""fourth"" head=""boxes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""trade"" complement=$k2
+@n2 syntax.nominal dependent=""the"" head=""firts""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""second""","@c1 syntax.clause form=imperative verb=""trade"" modifier=""first"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""fourth"" head=""boxes""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""trade"" complement=$k3
+@n3 syntax.nominal dependent=""the"" head=""firts""
+@k3 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""second""",
+150,"swap the fourth with the fifth, then swap the first with the second and leave every one of the other figures in the row exactly where it is so the arrangement stays clear and readable","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""fourth""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""then"" conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""first""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""second""
+@c3 syntax.clause form=imperative verb=""leave"" modifier=""exactly"" complement=$n5
+@n5 syntax.nominal dependent=""every"" head=""one""
+@r3 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""other"" head=""figures""
+@r4 syntax.relation marker=""in"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""row""
+@r5 syntax.relation marker=""where"" from=$n5 to=$c4
+@n8 syntax.nominal head=""it""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n8
+@r6 syntax.relation marker=""so"" from=$c3 to=$c5
+@n9 syntax.nominal dependent=""the"" head=""arrangement""
+@c5 syntax.clause form=declarative verb=""stays"" modifier=""clear"" discourse=""and"" modifier=""readable"" subject=$n9","@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""fourth""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fifth""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""swap"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""first""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""second""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" modifier=""exactly"" complement=$n5
+@n5 syntax.nominal dependent=""every"" dependent=""one"" dependent=""of"" dependent=""the"" dependent=""other"" head=""figures""
+@r3 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""row""
+@r4 syntax.relation marker=""where"" from=$c3 to=$c4
+@n7 syntax.nominal head=""it""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n7
+@r5 syntax.relation marker=""so"" from=$c4 to=$c5
+@n8 syntax.nominal dependent=""the"" head=""arrangement""
+@c5 syntax.clause form=declarative verb=""stays"" modifier=""clear"" subject=$n8
+@k3 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c6
+@c6 syntax.clause form=imperative verb=""readable""",

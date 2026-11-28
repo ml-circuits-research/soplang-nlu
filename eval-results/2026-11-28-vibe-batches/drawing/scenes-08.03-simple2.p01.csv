@@ -1,0 +1,26 @@
+n,text,sop,label_state
+66,"i want a summer fair in the sun at noon: four small white ducks right around the pond, behind the fence, a medium brown pony, a small boy with a happy face facing right right next to the fence, and down at the bottom, a small red boat","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""right"" modifier=""down"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""summer"" head=""fair""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""sun""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n4
+@n4 syntax.nominal head=""noon""
+@n5 syntax.nominal dependent=""four"" dependent=""small"" dependent=""white"" head=""ducks""
+@r3 syntax.relation marker=""around"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""pond""
+@r4 syntax.relation attachment=ambiguous marker=""behind"" from=$c1 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""fence""
+@n8 syntax.nominal dependent=""a"" dependent=""medium"" dependent=""brown"" head=""pony""
+@n9 syntax.nominal dependent=""a"" dependent=""small"" head=""boy""
+@r5 syntax.relation marker=""with"" from=$n9 to=$n10
+@n10 syntax.nominal dependent=""a"" dependent=""happy"" head=""face""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""right"" modifier=""right""
+@r6 syntax.relation marker=""next to"" from=$c2 to=$n11
+@n11 syntax.nominal dependent=""the"" head=""fence""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n8 conjunct=$n9 conjunct=$n13
+@r7 syntax.relation marker=""at"" from=$n13 to=$n12
+@n12 syntax.nominal dependent=""the"" head=""bottom""
+@n13 syntax.nominal dependent=""a"" dependent=""small"" dependent=""red"" head=""boat""
+@r8 syntax.relation from=$n2 to=$k1
+@r9 syntax.relation from=$n9 to=$c2",

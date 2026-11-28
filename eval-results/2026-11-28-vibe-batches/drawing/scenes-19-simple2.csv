@@ -1,0 +1,121 @@
+n,text,sop,label_state
+40,"cat at 250, 330","@n1 syntax.nominal head=""cat""
+@r1 syntax.relation marker=""at"" from=$n1 to=$k1
+@n2 syntax.nominal head=""250""
+@n3 syntax.nominal head=""330""
+@c1 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+41,"a sun at 500, 50","@n1 syntax.nominal dependent=""a"" head=""sun""
+@r1 syntax.relation marker=""at"" from=$n1 to=$k1
+@n2 syntax.nominal head=""500""
+@n3 syntax.nominal head=""50""
+@c1 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+100,"place a bus at 250, 380","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bus""
+@r1 syntax.relation marker=""at"" from=$c1 to=$k1
+@n2 syntax.nominal head=""250""
+@n3 syntax.nominal head=""380""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+102,"tent at 450, 330","@n1 syntax.nominal head=""tent""
+@r1 syntax.relation marker=""at"" from=$n1 to=$k1
+@n2 syntax.nominal head=""450""
+@n3 syntax.nominal head=""330""
+@c1 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+131,"a little bigger, the mountain","@c1 syntax.clause form=fragment modifier=""a"" modifier=""little"" modifier=""bigger"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mountain""",
+140,"set the position of the sun to 450, 60","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""position""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""450""
+@n4 syntax.nominal head=""60""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+176,"change the cloud to grey and set it at 300, 80","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cloud""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""grey""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation marker=""at"" from=$c2 to=$k2
+@n4 syntax.nominal head=""300""
+@n5 syntax.nominal head=""80""
+@k2 syntax.coordination conjunct=$n4 conjunct=$n5",
+190,"move the house to 100, 200","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""100""
+@n3 syntax.nominal head=""200""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+192,"please put the car at 260, 410","@c1 syntax.clause form=imperative discourse=""please"" verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""car""
+@r1 syntax.relation marker=""at"" from=$c1 to=$k1
+@n2 syntax.nominal head=""260""
+@n3 syntax.nominal head=""410""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+195,"lake to 240, 390","@n1 syntax.nominal head=""lake""
+@r1 syntax.relation marker=""to"" from=$n1 to=$k1
+@n2 syntax.nominal head=""240""
+@n3 syntax.nominal head=""390""
+@c1 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+236,"move the selected object to 300, 200","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""selected"" head=""object""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""300""
+@n3 syntax.nominal head=""200""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+465,"shift the window of the house to 150, 220","@c1 syntax.clause form=imperative verb=""shift"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""window""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""150""
+@n4 syntax.nominal head=""220""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+468,"chimney to 230, 90","@n1 syntax.nominal head=""chimney""
+@r1 syntax.relation marker=""to"" from=$n1 to=$k1
+@n2 syntax.nominal head=""230""
+@n3 syntax.nominal head=""90""
+@c1 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+471,"drag the head of the person to 410, 170","@c1 syntax.clause form=imperative verb=""drag"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""head""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""person""
+@r2 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""410""
+@n4 syntax.nominal head=""170""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+549,"there's space on the left, so place a dog at 90, 340","@n1 syntax.nominal head=""there""
+@c1 syntax.clause form=declarative verb=""'s"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""space""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""place"" complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""dog""
+@r2 syntax.relation marker=""at"" from=$c2 to=$k2
+@n5 syntax.nominal head=""90""
+@n6 syntax.nominal head=""340""
+@k2 syntax.coordination conjunct=$n5 conjunct=$n6",
+562,"the boat drifted onto land, move it back to 210, 360","@n1 syntax.nominal dependent=""the"" head=""boat""
+@c1 syntax.clause form=declarative verb=""drifted"" subject=$n1
+@r1 syntax.relation marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal head=""land""
+@c2 syntax.clause form=imperative verb=""move"" modifier=""back"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation marker=""to"" from=$c2 to=$k2
+@n4 syntax.nominal head=""210""
+@n5 syntax.nominal head=""360""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@k2 syntax.coordination conjunct=$n4 conjunct=$n5",
+620,"move mountain to 400, 180","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""mountain""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""400""
+@n3 syntax.nominal head=""180""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",

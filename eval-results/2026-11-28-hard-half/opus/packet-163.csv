@@ -1,0 +1,1659 @@
+n,text,sop,alt,label_state
+1,I need you to make Closed won red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Closed""
+@c3 syntax.clause form=nonfinite verb=""won"" modifier=""red"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""red"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Closed"" head=""won""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+2,make Q1 to Q4 bars blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Q1"" head=""bars""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Q4""","@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""Q1""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Q4 bars""",
+3,Could you make Shipped orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Shipped""
+@c2 syntax.clause form=nonfinite verb=""orange"" subject=$n2
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""Shipped"" modifier=""orange"" discourse=""Thanks"" subject=$n1
+@n1 syntax.nominal head=""you""",
+4,"Please, make Packed orange. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""Packed"" head=""orange""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""Packed"" modifier=""orange"" discourse=""Thanks""",
+5,make Placed orange.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""Placed"" head=""orange""","@c1 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Placed""",
+6,"Please, make Paid orange. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""Paid"" head=""orange""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""orange"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Paid""",
+7,"Hey, make Favourite subject survey red.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""Favourite"" dependent=""subject"" head=""survey""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""survey"" modifier=""red"" complement=$n1
+@n1 syntax.nominal head=""Favourite subject""",
+8,"Please, make Grades term 2 orange. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Grades"" head=""term""
+@n2 syntax.nominal head=""2""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""orange"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Grades term 2""",
+9,"Hey, make Snack vote green.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@n1 syntax.nominal head=""Snack""
+@c2 syntax.clause form=nonfinite verb=""vote"" modifier=""green"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal head=""Snack vote""",
+10,Let us make Snack vote purple. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make""
+@n2 syntax.nominal head=""Snack""
+@c3 syntax.clause form=nonfinite verb=""vote"" modifier=""purple"" subject=$n2
+@n3 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Snack vote""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2",
+11,I need you to make Snack vote purple. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Snack""
+@c3 syntax.clause form=nonfinite verb=""vote"" modifier=""purple"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""purple"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Snack vote""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+12,Could you make Snack vote orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Snack""
+@c2 syntax.clause form=nonfinite verb=""vote"" modifier=""orange"" subject=$n2
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Snack vote""",
+13,Could you make Supplier orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Supplier"" head=""orange""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Supplier""",
+14,Could you make Supplier A red. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""red"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""red""",
+15,Let us make Supplier A yellow. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""yellow"" complement=$n2
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""yellow""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+16,Let us make Supplier A blue. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" complement=$n2
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""blue""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+17,Could you make Supplier A blue. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""blue""",
+18,Could you make Supplier A orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""orange""",
+19,make Supplier A green.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""Supplier"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Supplier""
+@n2 syntax.nominal dependent=""A"" head=""green""",
+20,I need you to make Supplier A orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Supplier"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Supplier""
+@n4 syntax.nominal dependent=""A"" head=""orange""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+21,I need you to make Supplier A yellow. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""yellow"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Supplier"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Supplier""
+@n4 syntax.nominal dependent=""A"" head=""yellow""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+22,make Supplier A blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Supplier"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Supplier""
+@n2 syntax.nominal dependent=""A"" head=""blue""",
+23,I need you to make Supplier A blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Supplier"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Supplier""
+@n4 syntax.nominal dependent=""A"" head=""blue""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+24,make Verify email orange.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n3
+@n1 syntax.nominal head=""Verify""
+@n2 syntax.nominal head=""email""
+@n3 syntax.nominal head=""orange""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Verify email""",
+25,Let us make Password ok? green. That would help.,"@c1 syntax.clause form=interrogative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""ok"" modifier=""green"" complement=$n2
+@n2 syntax.nominal head=""Password""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Password""
+@c3 syntax.clause form=declarative discourse=""ok"" modifier=""green"" auxiliary=""would"" verb=""help"" subject=$n3
+@n3 syntax.nominal head=""That""
+@r1 syntax.relation from=$c1 to=$c2",
+26,"Please, make Log in purple. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""in"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal head=""Log""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Log""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""purple""",
+27,I need you to make Sign up orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2
+@c3 syntax.clause form=imperative verb=""Sign"" modifier=""up""
+@n3 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Sign""
+@r2 syntax.relation marker=""up"" from=$c2 to=$n4
+@n4 syntax.nominal head=""orange""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+28,Could you make Enter email blue. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" subject=$n1
+@n1 syntax.nominal head=""you""
+@c2 syntax.clause form=imperative verb=""Enter"" complement=$n2
+@n2 syntax.nominal head=""email""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Enter email""",
+29,"Please, make Bar chart: logins purple. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Bar"" head=""chart""
+@n2 syntax.nominal head=""logins""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""logins"" modifier=""purple"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Bar chart""",
+30,I need you to make Password ok? red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=interrogative verb=""need"" modifier=""red"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""ok"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Password""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Password""
+@c3 syntax.clause form=declarative discourse=""ok"" modifier=""red"" verb=""appreciate"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""I""
+@n5 syntax.nominal head=""it""",
+31,Could you make Weekly run pace purple. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""purple"" subject=$n2
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$c2",
+32,I need you to make Weekly run pace yellow. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""yellow"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Weekly""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""yellow"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3",
+33,"Hey, make Weekly run pace purple.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""purple"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+34,Could you make Weekly run pace red. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""red"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""red"" discourse=""Thanks"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+35,Let us make Weekly run pace red. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""red"" complement=$n2
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Weekly""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""red"" subject=$n2
+@n3 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3",
+36,"Hey, make Weekly run pace orange. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""orange"" subject=$n1
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+37,Could you make Weekly run pace yellow. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""yellow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""yellow"" discourse=""Thanks"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+38,I need you to make Weekly run pace blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Weekly""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""blue"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3",
+39,Could you make Weekly run pace red. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""red"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""red"" subject=$n2
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$c2",
+40,I need you to make Weekly run pace orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Weekly""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""orange"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3",
+41,"Hey, make Weekly run pace purple. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""purple"" subject=$n1
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+42,Could you make Weekly run pace orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Weekly""
+@c2 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""orange"" discourse=""Thanks"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+43,make Box A purple.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Box"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Box""
+@n2 syntax.nominal dependent=""A"" head=""purple""",
+44,Let us make Bar A orange. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" complement=$n2
+@n2 syntax.nominal dependent=""Bar"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Bar""
+@n3 syntax.nominal dependent=""A"" head=""orange""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+45,make Node A red.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""A"" modifier=""red"" complement=$n1
+@n1 syntax.nominal head=""Node""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Node""
+@n2 syntax.nominal dependent=""A"" head=""red""",
+46,Let us make Bar A purple. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""purple"" complement=$n2
+@n2 syntax.nominal dependent=""Bar"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Bar""
+@n3 syntax.nominal dependent=""A"" head=""purple""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+47,"Hey, make Bar A yellow. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""yellow"" complement=$n1
+@n1 syntax.nominal dependent=""Bar"" head=""A""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Bar""
+@n2 syntax.nominal dependent=""A"" head=""yellow""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+48,make Diamond A blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Diamond""
+@n2 syntax.nominal head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Diamond""
+@n2 syntax.nominal dependent=""A"" head=""blue""",
+49,I need you to make Slice A purple. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""purple"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Slice"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Slice""
+@n4 syntax.nominal dependent=""A"" head=""purple""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+50,I need you to make Bar A orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Bar"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Bar""
+@n4 syntax.nominal dependent=""A"" head=""orange""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+51,"Hey, make Pie A yellow. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""yellow"" complement=$n1
+@n1 syntax.nominal dependent=""Pie"" head=""A""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Pie""
+@n2 syntax.nominal dependent=""A"" head=""yellow""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+52,make Pie slice A yellow.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""Pie"" head=""slice""
+@n2 syntax.nominal head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Pie slice""
+@n2 syntax.nominal dependent=""A"" head=""yellow""",
+53,"Hey, make Bar A purple.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Bar"" head=""A""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Bar""
+@n2 syntax.nominal dependent=""A"" head=""purple""",
+54,I need you to make Bar A blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Bar"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Bar""
+@n4 syntax.nominal dependent=""A"" head=""blue""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+55,Could you make Box A green. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""green"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Box"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Box""
+@n3 syntax.nominal dependent=""A"" head=""green""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+56,Could you make Box A yellow. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""yellow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Box"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Box""
+@n3 syntax.nominal dependent=""A"" head=""yellow""",
+57,Could you make Bar A green. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""green"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Bar"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Bar""
+@n3 syntax.nominal dependent=""A"" head=""green""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+58,Let us make Circle A green. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""green"" complement=$n2
+@n2 syntax.nominal dependent=""Circle"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Circle""
+@n3 syntax.nominal dependent=""A"" head=""green""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+59,"Hey, make Bar A green. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""Bar"" head=""A""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Bar""
+@n2 syntax.nominal dependent=""A"" head=""green""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+60,Could you make Box 1 orange. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n4
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Box""
+@n3 syntax.nominal head=""1""
+@n4 syntax.nominal head=""orange""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Box 1""",
+61,Could you make Link A red. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""A"" modifier=""red"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Link""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Link""
+@n3 syntax.nominal dependent=""A"" head=""red""",
+62,make Box A blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Box"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Box""
+@n2 syntax.nominal dependent=""A"" head=""blue""",
+63,Could you make Pie A purple. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Pie"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Pie""
+@n3 syntax.nominal dependent=""A"" head=""purple""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+64,make Box One blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""Box""
+@n2 syntax.nominal head=""One""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Box"" head=""One""",
+65,Could you make Server A blue. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Server"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Server""
+@n3 syntax.nominal dependent=""A"" head=""blue""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+66,make Stage A yellow.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n1
+@n1 syntax.nominal dependent=""Stage"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Stage""
+@n2 syntax.nominal dependent=""A"" head=""yellow""",
+67,I need you to make Signup flow blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Signup""
+@c3 syntax.clause form=nonfinite verb=""flow"" modifier=""blue"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Signup flow""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+68,Could you make Intake to review blue. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Intake""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""review"" modifier=""blue"" subject=$n2
+@c3 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Intake""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""review""",
+69,Could you make Expense flow purple. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Expense""
+@c2 syntax.clause form=nonfinite verb=""flow"" modifier=""purple"" subject=$n2
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""purple"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Expense flow""",
+70,Could you make Tree A purple. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Tree"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Tree""
+@n3 syntax.nominal dependent=""A"" head=""purple""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+71,I need you to make Agile flow red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Agile""
+@c3 syntax.clause form=nonfinite verb=""flow"" modifier=""red"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""red"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Agile flow""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+72,Could you make Board 3 orange. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n4
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Board""
+@n3 syntax.nominal head=""3""
+@n4 syntax.nominal head=""orange""
+@n5 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Board 3""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""",
+73,"Please, make Edge proxy purple. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Edge"" head=""proxy""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""proxy"" modifier=""purple"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Edge""",
+74,"Hey, make Group A green.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""Group"" head=""A""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Group""
+@n2 syntax.nominal dependent=""A"" head=""green""",
+75,I need you to make Zone A blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""blue"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Zone"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Zone""
+@n4 syntax.nominal dependent=""A"" head=""blue""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+76,make Peer A orange.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Peer"" head=""A""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Peer""
+@n2 syntax.nominal dependent=""A"" head=""orange""",
+77,"Hey, make Order received red. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@n1 syntax.nominal head=""Order""
+@c2 syntax.clause form=declarative verb=""received"" modifier=""red"" subject=$n1
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""red"" complement=$n1
+@n1 syntax.nominal head=""Order received""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2",
+78,"Please, make Power grid orange. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Power"" head=""grid""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""grid"" modifier=""orange"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Power""",
+79,Could you make Server A yellow. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""yellow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Server"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Server""
+@n3 syntax.nominal dependent=""A"" head=""yellow""",
+80,"Please, make Music theory purple. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Music"" head=""theory""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""theory"" modifier=""purple"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Music""",
+81,"Hey, make Prison visit log blue.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Prison"" dependent=""visit"" head=""log""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""Prison visit log""",
+82,"Hey, make Lap times yellow.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@n1 syntax.nominal dependent=""Lap"" head=""times""
+@c2 syntax.clause form=nonfinite verb=""yellow"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""yellow"" complement=$n1
+@n1 syntax.nominal head=""Lap times""",
+83,"Please, make Lab workflow orange. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Lab"" head=""workflow""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""workflow"" modifier=""orange"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Lab""",
+84,"Hey, make Orange link blue.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Orange"" head=""link""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Orange""
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""blue"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+85,Let us make Team A yellow. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""yellow"" complement=$n2
+@n2 syntax.nominal dependent=""Team"" head=""A""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Team""
+@n3 syntax.nominal dependent=""A"" head=""yellow""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r1 syntax.relation from=$c1 to=$c2",
+86,"Hey, make Cell A orange. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal dependent=""Cell"" head=""A""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Cell""
+@n2 syntax.nominal dependent=""A"" head=""orange""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+87,"Hey, make Submit request orange. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""orange""
+@c2 syntax.clause form=imperative verb=""Submit"" complement=$n1
+@n1 syntax.nominal head=""request""
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""request"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Submit""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2",
+88,make Is it done? orange.,"@c1 syntax.clause form=interrogative verb=""make""
+@c2 syntax.clause form=interrogative auxiliary=""Is"" verb=""done"" modifier=""orange"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make""
+@c2 syntax.clause form=interrogative verb=""Is"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal head=""done""
+@r1 syntax.relation from=$c1 to=$c2",
+89,make Escalate to tier 2 orange.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""tier"" dependent=""2"" head=""orange""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""tier"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""orange""",
+90,Let us make Escalate to tier 2 yellow. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""yellow"" complement=$n2
+@n2 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""tier""
+@n4 syntax.nominal head=""2""
+@n5 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""tier"" complement=$n3
+@n3 syntax.nominal dependent=""2"" head=""yellow""
+@n4 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+91,"Hey, make Refund approved? yellow. That would help.","@c1 syntax.clause form=interrogative discourse=""Hey"" verb=""make"" modifier=""yellow""
+@n1 syntax.nominal head=""Refund""
+@c2 syntax.clause form=nonfinite verb=""approved"" subject=$n1
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative discourse=""Hey"" verb=""make"" modifier=""approved"" complement=$n1
+@n1 syntax.nominal head=""Refund""
+@c2 syntax.clause form=declarative modifier=""yellow"" auxiliary=""would"" verb=""help"" subject=$n2
+@n2 syntax.nominal head=""That""",
+92,Could you make Log in purple. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""in"" modifier=""purple"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Log""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Log""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""purple""",
+93,Could you make Log in yellow. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""in"" modifier=""yellow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Log""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Log""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""yellow""",
+94,I need you to make Tree 1 orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Tree""
+@n4 syntax.nominal dependent=""1"" head=""orange""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Tree 1""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+95,Could you make Bar A yellow. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""yellow"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Bar"" head=""A""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" discourse=""Thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Bar""
+@n3 syntax.nominal dependent=""A"" head=""yellow""",
+96,Could you make Graph A orange. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Graph"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Graph""
+@n3 syntax.nominal dependent=""A"" head=""orange""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+97,"Please, make Vendor onboarding green. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""Vendor"" head=""onboarding""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""onboarding"" modifier=""green"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Vendor""",
+98,"Hey, make Preheat oven orange.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@c2 syntax.clause form=nonfinite verb=""Preheat"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""oven""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Preheat oven""",
+99,Could you make Q1 to Q4 bars blue. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Q1"" head=""bars""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Q4""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""blue"" discourse=""Thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Q1""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Q4 bars""",
+100,I need you to make Supplier A red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""red"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Supplier"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Supplier""
+@n4 syntax.nominal dependent=""A"" head=""red""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+101,"Hey, make Mood scatter orange. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@n1 syntax.nominal head=""Mood""
+@c2 syntax.clause form=nonfinite verb=""scatter"" modifier=""orange"" subject=$n1
+@n2 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""scatter"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Mood""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2",
+102,"Hey, make Order received orange. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make""
+@n1 syntax.nominal head=""Order""
+@c2 syntax.clause form=declarative verb=""received"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""orange""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""orange"" complement=$n1
+@n1 syntax.nominal head=""Order received""
+@n2 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n2",
+103,I need you to make Sprint 1 orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Sprint""
+@n4 syntax.nominal dependent=""1"" head=""orange""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Sprint 1""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+104,"Hey, make Favourite subject survey green.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""Favourite"" dependent=""subject"" head=""survey""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""survey"" modifier=""green"" complement=$n1
+@n1 syntax.nominal head=""Favourite subject""",
+105,Let us make Weekly run pace green. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""green"" complement=$n2
+@n2 syntax.nominal dependent=""Weekly"" dependent=""run"" head=""pace""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Weekly""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""pace"" modifier=""green"" subject=$n2
+@n3 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3",
+106,I need you to make Box A red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""red"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Box"" head=""A""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Box""
+@n4 syntax.nominal dependent=""A"" head=""red""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+107,"Please, make Idea flow green. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""green"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Idea""
+@n2 syntax.nominal head=""flow""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" modifier=""green"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Idea flow""",
+108,Let us make Ticket trend purple. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make""
+@n2 syntax.nominal head=""Ticket""
+@c3 syntax.clause form=nonfinite verb=""trend"" modifier=""purple"" subject=$n2
+@n3 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Ticket trend""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2",
+109,I need you to make Refund approved? red. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=interrogative verb=""need"" modifier=""red"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2
+@n3 syntax.nominal head=""Refund""
+@c3 syntax.clause form=nonfinite verb=""approved"" subject=$n3
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""approved"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Refund""
+@c3 syntax.clause form=declarative modifier=""red"" verb=""appreciate"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""I""
+@n5 syntax.nominal head=""it""",
+110,Could you make Supplier A green. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""green"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Supplier"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Supplier""
+@n3 syntax.nominal dependent=""A"" head=""green""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+111,I need you to make Box 1 orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3 complement=$n5
+@n3 syntax.nominal head=""Box""
+@n4 syntax.nominal head=""1""
+@n5 syntax.nominal head=""orange""
+@n6 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""orange"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Box 1""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+112,"Hey, make Circle A purple.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" modifier=""purple"" complement=$n1
+@n1 syntax.nominal dependent=""Circle"" head=""A""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Circle""
+@n2 syntax.nominal dependent=""A"" head=""purple""",
+113,Could you make Box A purple. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" modifier=""purple"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Box"" head=""A""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Box""
+@n3 syntax.nominal dependent=""A"" head=""purple""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+114,make Escalate to tier 2 red.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""tier"" dependent=""2"" head=""red""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Escalate""
+@r1 syntax.relation marker=""to"" from=$n1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""tier"" complement=$n2
+@n2 syntax.nominal dependent=""2"" head=""red""",
+115,make Sign up orange.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@c2 syntax.clause form=nonfinite verb=""Sign"" modifier=""up""
+@n1 syntax.nominal head=""orange""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Sign""
+@r1 syntax.relation marker=""up"" from=$c1 to=$n2
+@n2 syntax.nominal head=""orange""",
+116,make Vertical menu map blue.,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""Vertical"" dependent=""menu"" head=""map""","@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""Vertical menu map""",
+117,I need you to link Submit request to Manager approval. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""Submit"" complement=$n3
+@n3 syntax.nominal head=""request""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""Manager"" head=""approval""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r3 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""approval"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Submit request""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Manager""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+118,I need you to connect Node 5124 to Fill form. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Node""
+@n4 syntax.nominal head=""5124""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=imperative verb=""Fill"" complement=$n5
+@n5 syntax.nominal head=""form""
+@n6 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Node 5124""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Fill form""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+119,"Hey, connect Quote request to Price check.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect"" complement=$n1
+@n1 syntax.nominal dependent=""Quote"" head=""request""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Price"" head=""check""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Quote request""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Price"" dependent=""check""",
+120,Let us link Quote request to Price check. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" complement=$n2
+@n2 syntax.nominal dependent=""Quote"" head=""request""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""Price"" head=""check""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""check"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Quote request""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Price""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+121,Let us connect Submit request to Manager approval. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect""
+@c3 syntax.clause form=imperative verb=""Submit"" complement=$n2
+@n2 syntax.nominal head=""request""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n3
+@n3 syntax.nominal dependent=""Manager"" head=""approval""
+@n4 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$k1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Submit request""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Manager"" dependent=""approval""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+122,Could you connect Order received to Card charged. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""connect"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Order""
+@c2 syntax.clause form=nonfinite verb=""received""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Card""
+@c3 syntax.clause form=nonfinite verb=""charged""
+@n4 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2
+@r3 syntax.relation from=$n3 to=$c3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""connect"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Order received""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Card"" dependent=""charged""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""",
+123,"Hey, connect Start to Fill form.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect"" complement=$n1
+@n1 syntax.nominal dependent=""Start"" head=""form""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Fill""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Start""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Fill form""",
+124,I need you to link Receive order to Check stock. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""Receive"" complement=$n3
+@n3 syntax.nominal head=""order""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c4
+@c4 syntax.clause form=imperative verb=""Check"" complement=$n4
+@n4 syntax.nominal head=""stock""
+@n5 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r3 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""order"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Receive""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Check stock""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+125,"Hey, link Start to Fill form.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal dependent=""Start"" head=""form""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Fill""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Start""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Fill form""",
+126,I need you to link Pick items to Pack box. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2
+@c3 syntax.clause form=imperative verb=""Pick"" complement=$n3
+@n3 syntax.nominal head=""items""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""Pack"" head=""box""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Pick items""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Pack box""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+127,I need you to connect Start to Take payment. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Start""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""Take"" complement=$n4
+@n4 syntax.nominal head=""payment""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Start""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Take"" dependent=""payment""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",
+128,"Please, link Quote request to Price check. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""link"" complement=$n1
+@n1 syntax.nominal dependent=""Quote"" head=""request""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Price"" head=""check""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""link"" modifier=""check"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Quote request""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Price""",
+129,Let us link Submit request to Manager approval. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link""
+@c3 syntax.clause form=nonfinite verb=""Submit"" complement=$n2
+@n2 syntax.nominal head=""request""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""Manager"" head=""approval""
+@n4 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""approval"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Submit request""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Manager""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+130,"Hey, link Pick items to Pack box. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link""
+@c2 syntax.clause form=imperative verb=""Pick"" complement=$n1
+@n1 syntax.nominal head=""items""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Pack"" head=""box""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Pick items""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Pack box""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+131,Could you link 1789 to Storming the Bastille. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""link"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""1789""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""Storming"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""Bastille""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative verb=""Could"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""link"" dependent=""1789""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Storming""
+@n4 syntax.nominal dependent=""the"" head=""Bastille""
+@n5 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$n4",
+132,Let us connect Is it toasted to Toast. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect""
+@c3 syntax.clause form=declarative verb=""Is""
+@n2 syntax.nominal head=""it""
+@c4 syntax.clause form=nonfinite verb=""toasted"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c4 to=$n3
+@n3 syntax.nominal head=""Toast""
+@n4 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c1 to=$k1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c4","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n1
+@c3 syntax.clause form=interrogative verb=""Is"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""toasted""
+@r1 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Toast""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c1 to=$c3",
+133,"Hey, link Eggs to Mix batter. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Eggs""
+@c2 syntax.clause form=declarative auxiliary=""to"" verb=""Mix"" complement=$n2
+@n2 syntax.nominal head=""batter""
+@n3 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Eggs""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Mix batter""
+@n3 syntax.nominal head=""That""
+@c2 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n3",
+134,Let us link Preheat oven to Mix batter. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link""
+@c3 syntax.clause form=nonfinite verb=""Preheat"" complement=$n2
+@n2 syntax.nominal head=""oven""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c4
+@c4 syntax.clause form=nonfinite verb=""Mix"" complement=$n3
+@n3 syntax.nominal head=""batter""
+@n4 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Preheat oven""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Mix batter""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+135,"Please, connect Check billing to Refund approved?. Thanks!","@c1 syntax.clause form=interrogative discourse=""Please"" verb=""connect"" complement=$n1
+@n1 syntax.nominal dependent=""Check"" head=""billing""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Refund""
+@c2 syntax.clause form=nonfinite verb=""approved""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative discourse=""Please"" verb=""connect"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Check billing""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Refund"" dependent=""approved""",
+136,"Hey, link Start to Customer reports issue.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal dependent=""Start"" head=""issue""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Customer"" head=""reports""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Start""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Customer reports issue""",
+137,"Please, connect Reset password to Is account locked?. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" complement=$n1
+@n1 syntax.nominal dependent=""Reset"" head=""password""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=interrogative verb=""Is""
+@n2 syntax.nominal head=""account""
+@c3 syntax.clause form=nonfinite verb=""locked"" subject=$n2
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Reset password""
+@r1 syntax.relation marker=""to"" from=$n1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""Is"" complement=$n2
+@n2 syntax.nominal head=""account""
+@c3 syntax.clause form=nonfinite verb=""locked"" discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c3",
+138,"Please, link Refund approved? to Refund issued. Thanks!","@c1 syntax.clause form=interrogative discourse=""Please"" verb=""link"" complement=$n1
+@n1 syntax.nominal head=""Refund""
+@c2 syntax.clause form=nonfinite verb=""approved""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Refund""
+@c3 syntax.clause form=nonfinite verb=""issued""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=interrogative discourse=""Please"" verb=""link"" modifier=""approved"" complement=$n1
+@n1 syntax.nominal head=""Refund""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal head=""Refund"" dependent=""issued""
+@c2 syntax.clause form=fragment discourse=""Thanks""",
+139,I need you to link Customer reports issue to Escalate to tier 2. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""Customer"" dependent=""reports"" head=""issue""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Escalate""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""tier""
+@n6 syntax.nominal head=""2""
+@n7 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r4 syntax.relation from=$n5 to=$n6","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""Customer reports issue""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Escalate""
+@r3 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""tier"" complement=$n5
+@n5 syntax.nominal head=""2""
+@n6 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""",
+140,Let us connect Check billing to Refund approved?. That would help.,"@c1 syntax.clause form=interrogative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect"" complement=$n2
+@n2 syntax.nominal dependent=""Check"" head=""billing""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Refund""
+@c3 syntax.clause form=nonfinite verb=""approved""
+@n4 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n3 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""connect"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Check billing""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Refund"" dependent=""approved""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+141,link Check billing to Refund approved?.,"@c1 syntax.clause form=interrogative verb=""link"" complement=$n1
+@n1 syntax.nominal dependent=""Check"" head=""billing""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Refund""
+@c2 syntax.clause form=nonfinite verb=""approved""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative verb=""link"" modifier=""approved"" complement=$n1
+@n1 syntax.nominal head=""Check billing""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Refund""",
+142,Let us link Q1 bars to Q2 bars. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" complement=$n2
+@n2 syntax.nominal dependent=""Q1"" head=""bars""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""Q2"" head=""bars""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@n2 syntax.nominal head=""Q1 bars""
+@c2 syntax.clause form=nonfinite verb=""link"" modifier=""bars"" subject=$n1 complement=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Q2""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+143,"Hey, link Log in to Sign up.","@c1 syntax.clause form=imperative discourse=""Hey"" modifier=""link"" verb=""Log"" modifier=""in""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""Sign"" modifier=""up""","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""link"" modifier=""in"" modifier=""up"" complement=$n1
+@n1 syntax.nominal head=""Log""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Sign""",
+144,"Please, connect Error to Log in. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Error""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative verb=""Log"" modifier=""in""
+@c3 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" modifier=""in"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Error""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Log""",
+145,"Hey, connect Password ok? to Enter email.","@c1 syntax.clause form=interrogative discourse=""Hey"" verb=""connect"" discourse=""ok"" complement=$n1
+@n1 syntax.nominal head=""Password""
+@c2 syntax.clause form=declarative auxiliary=""to"" verb=""Enter"" complement=$n2
+@n2 syntax.nominal head=""email""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative discourse=""Hey"" verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Password""
+@c2 syntax.clause form=fragment discourse=""ok""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal head=""Enter email""",
+146,Let us link Verify email to 2FA code. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link""
+@c3 syntax.clause form=imperative verb=""Verify"" complement=$n2
+@n2 syntax.nominal head=""email""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""2FA"" head=""code""
+@n4 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""link"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Verify email""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""2FA code""
+@n4 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n4
+@r2 syntax.relation from=$c1 to=$c2",
+147,"Hey, connect Log in to Dashboard.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect""
+@c2 syntax.clause form=nonfinite verb=""Log"" modifier=""in""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n1
+@n1 syntax.nominal head=""Dashboard""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""connect"" modifier=""in"" complement=$n1
+@n1 syntax.nominal head=""Log""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Dashboard""",
+148,"Please, link Hiring plan to Recruiter. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""link""
+@c2 syntax.clause form=nonfinite verb=""Hiring"" complement=$n1
+@n1 syntax.nominal head=""plan""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Recruiter""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""link"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Hiring plan""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Recruiter""",
+149,"Please, connect Onboarding to Welcome email. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" discourse=""Welcome"" complement=$n1
+@n1 syntax.nominal head=""Onboarding""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""email""
+@c2 syntax.clause form=fragment discourse=""Thanks""","@c1 syntax.clause form=imperative discourse=""Please"" verb=""connect"" discourse=""Thanks"" complement=$n1
+@n1 syntax.nominal head=""Onboarding""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Welcome email""",
+150,connect Onboarding to Welcome email.,"@c1 syntax.clause form=imperative verb=""connect"" discourse=""Welcome"" complement=$n1
+@n1 syntax.nominal head=""Onboarding""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""email""","@c1 syntax.clause form=imperative verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Onboarding""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Welcome email""",

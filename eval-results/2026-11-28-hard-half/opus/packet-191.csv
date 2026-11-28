@@ -1,0 +1,3170 @@
+n,text,sop,alt,label_state
+1,"Please, add a orange diamond labelled Canary 1. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Canary""
+@n3 syntax.nominal head=""1""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Canary 1""
+@r1 syntax.relation from=$n1 to=$c2",
+2,"Please, create a orange diamond labelled Shard 1. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Shard""
+@n3 syntax.nominal head=""1""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Shard 1""
+@r1 syntax.relation from=$n1 to=$c2",
+3,"Please, add a red triangle labelled Results list. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""triangle""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Results"" head=""list""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Results list""
+@r1 syntax.relation from=$n1 to=$c2",
+4,"Hey, create a rectangle labelled Node A; then link Node A to Node B. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1 complement=$n4
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Node"" head=""A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" modifier=""to"" complement=$n3
+@n3 syntax.nominal dependent=""Node"" head=""A""
+@n4 syntax.nominal dependent=""Node"" head=""B""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Node A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Node A""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Node B""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$n1 to=$c2",
+5,"Hey, make a diamond labelled Sales Q1-Q4; then connect Sales Q1-Q4 to Q3.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Sales"" head=""Q1""
+@n3 syntax.nominal head=""Q4""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Sales"" head=""Q1""
+@n5 syntax.nominal head=""Q4""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""Q3""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3
+@r4 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Sales Q1-Q4""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Sales Q1-Q4""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Q3""
+@r2 syntax.relation from=$n1 to=$c2",
+6,Could you make a diamond labelled Client; then connect Client to API gateway. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@n3 syntax.nominal dependent=""labelled"" head=""Client""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Client""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""API"" head=""gateway""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Client""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" discourse=""Thanks"" complement=$n4
+@n4 syntax.nominal head=""Client""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""API gateway""
+@r2 syntax.relation from=$n2 to=$c2",
+7,"Please, make a rectangle labelled Hiring plan; then connect Hiring plan to Recruiter. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Hiring"" head=""plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect""
+@c4 syntax.clause form=nonfinite verb=""Hiring"" complement=$n3
+@n3 syntax.nominal head=""plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Recruiter""
+@c5 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$c3 to=$c4","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Hiring plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Hiring plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Recruiter""
+@r2 syntax.relation from=$n1 to=$c2",
+8,I need you to create a star labelled Order received; then link Order received to Packing. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Order""
+@c4 syntax.clause form=nonfinite verb=""received""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Order""
+@c6 syntax.clause form=nonfinite verb=""received""
+@r2 syntax.relation marker=""to"" from=$c5 to=$n6
+@n6 syntax.nominal head=""Packing""
+@n7 syntax.nominal head=""I""
+@c7 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3
+@r4 syntax.relation from=$n4 to=$c4
+@r5 syntax.relation from=$n5 to=$c6","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Order received""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Order received""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Packing""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+9,"Please, create a ellipse labelled Ingest; then link Ingest to Queue. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" modifier=""then"" verb=""link"" complement=$n3
+@c2 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Ingest""
+@n3 syntax.nominal head=""Ingest""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Queue""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$c3","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Ingest""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Ingest""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Queue""
+@r2 syntax.relation from=$n1 to=$c2",
+10,I need you to create a ellipse labelled Platform map; then connect Platform map to Cloud. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@n4 syntax.nominal dependent=""labelled"" dependent=""Platform"" head=""map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Platform"" head=""map""
+@r2 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""Cloud""
+@n7 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Platform map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Platform map""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Cloud""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+11,make a green star labelled Services map.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""star""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Services"" head=""map""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Services map""
+@r1 syntax.relation from=$n1 to=$c2",
+12,"Please, make a purple star labelled Queue flow. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Queue"" head=""flow""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Queue flow""
+@r1 syntax.relation from=$n1 to=$c2",
+13,"Please, make a red diamond labelled Data group. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Data"" head=""group""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Data group""
+@r1 syntax.relation from=$n1 to=$c2",
+14,Could you make a green ellipse labelled Web tier. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Web"" head=""tier""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Web""
+@c3 syntax.clause form=nonfinite verb=""tier"" discourse=""Thanks"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n2 to=$c2",
+15,Let us add a circle labelled Core map; then link Core map to Ellipse A. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1 complement=$n5
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Core"" head=""map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" modifier=""to"" complement=$n4
+@n4 syntax.nominal dependent=""Core"" head=""map""
+@n5 syntax.nominal dependent=""Ellipse"" head=""A""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Core map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Core map""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Ellipse A""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+16,"Please, add a purple ellipse labelled Nav bar. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Nav"" head=""bar""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Nav bar""
+@r1 syntax.relation from=$n1 to=$c2",
+17,"Please, add a blue hexagon labelled Rect map. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""hexagon""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Rect"" head=""map""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Rect map""
+@r1 syntax.relation from=$n1 to=$c2",
+18,"Please, make a orange star labelled Build pipeline. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Build"" head=""pipeline""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Build pipeline""
+@r1 syntax.relation from=$n1 to=$c2",
+19,"Hey, add a red ellipse labelled Metrics board.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Metrics"" head=""board""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Metrics board""
+@r1 syntax.relation from=$n1 to=$c2",
+20,I need you to make a diamond labelled Stack plan; then connect Stack plan to Top one. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@n4 syntax.nominal dependent=""labelled"" dependent=""Stack"" head=""plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Stack"" head=""plan""
+@r2 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""Top""
+@n7 syntax.nominal head=""one""
+@n8 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$n4
+@r4 syntax.relation from=$n6 to=$n7","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Stack plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Stack plan""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Top"" head=""one""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+21,"Please, make a red ellipse labelled Payments map. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Payments"" head=""map""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Payments map""
+@r1 syntax.relation from=$n1 to=$c2",
+22,Could you add a yellow hexagon labelled Pair sketch. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""yellow"" head=""hexagon""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Pair"" head=""sketch""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""yellow"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Pair sketch""
+@r1 syntax.relation from=$n2 to=$c2",
+23,"Please, make a yellow star labelled Corner plan. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Corner"" head=""plan""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Corner plan""
+@r1 syntax.relation from=$n1 to=$c2",
+24,"Please, create a purple rectangle labelled Web tier. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Web"" head=""tier""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Web tier""
+@r1 syntax.relation from=$n1 to=$c2",
+25,Could you add a red hexagon labelled Storage map. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""hexagon""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Storage"" head=""map""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Storage map""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r1 syntax.relation from=$n2 to=$c2",
+26,"Please, add a green star labelled Infra net. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Infra"" head=""net""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Infra net""
+@r1 syntax.relation from=$n1 to=$c2",
+27,"Please, make a green hexagon labelled Login flow. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""Login""
+@n3 syntax.nominal head=""flow""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Login flow""
+@r1 syntax.relation from=$n1 to=$c2",
+28,Could you add a blue diamond labelled Sales Q1-Q4. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" modifier=""Q4"" complement=$n3
+@n3 syntax.nominal head=""Sales""
+@n4 syntax.nominal head=""Q1""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$c2
+@r2 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Sales Q1-Q4""
+@r1 syntax.relation from=$n2 to=$c2",
+29,Could you make a triangle labelled Pay run; then connect Pay run to approve. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""Pay""
+@n4 syntax.nominal head=""run""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect""
+@n5 syntax.nominal head=""Pay""
+@c4 syntax.clause form=nonfinite verb=""run"" complement=$n5
+@r1 syntax.relation marker=""to"" from=$c3 to=$c5
+@c5 syntax.clause form=nonfinite verb=""approve""
+@c6 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c2
+@r3 syntax.relation from=$c3 to=$c4","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Pay run""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Pay run""
+@r1 syntax.relation marker=""to"" from=$n4 to=$c4
+@c4 syntax.clause form=nonfinite verb=""approve"" discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c2",
+30,Let us create a star labelled Tide chart; then connect Tide chart to high; then make Tide chart red. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Tide"" head=""chart""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Tide"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""high""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal dependent=""Tide"" head=""chart""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Tide chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Tide chart""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""high""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal head=""Tide chart""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+31,"Hey, create a triangle labelled Lunch plan; then connect Lunch plan to soup; then make Lunch plan purple.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Lunch"" head=""plan""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Lunch"" head=""plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""soup""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n5
+@n5 syntax.nominal dependent=""Lunch"" head=""plan""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Lunch plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Lunch plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""soup""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n5
+@n5 syntax.nominal head=""Lunch plan""
+@r2 syntax.relation from=$n1 to=$c2",
+32,Could you make a rectangle labelled Study plan; then connect Study plan to reading; then make Study plan blue. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Study"" head=""plan""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Study"" head=""plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""reading""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n6
+@n6 syntax.nominal dependent=""Study"" head=""plan""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Study plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Study plan""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""reading""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n6
+@n6 syntax.nominal head=""Study plan""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2",
+33,Could you make a circle labelled Cloud setup; then connect Cloud setup to edge; then make Cloud setup purple. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Cloud"" head=""setup""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Cloud"" head=""setup""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""edge""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal dependent=""Cloud"" head=""setup""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Cloud setup""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Cloud setup""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""edge""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal head=""Cloud setup""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2",
+34,"Hey, add a star labelled Bike parts; then connect Bike parts to frame; then make Bike parts purple.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Bike"" head=""parts""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Bike"" head=""parts""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""frame""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n5
+@n5 syntax.nominal dependent=""Bike"" head=""parts""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Bike parts""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Bike parts""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""frame""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n5
+@n5 syntax.nominal head=""Bike parts""
+@r2 syntax.relation from=$n1 to=$c2",
+35,I need you to create a rectangle labelled Maths topics; then connect Maths topics to fractions. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Maths"" head=""topics""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Maths"" head=""topics""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""fractions""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Maths topics""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Maths topics""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""fractions""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+36,"Please, make a circle labelled Vaccine rollout; then link Vaccine rollout to clinic A. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Vaccine"" head=""rollout""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Vaccine"" head=""rollout""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""clinic"" head=""A""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Vaccine rollout""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" modifier=""A"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Vaccine rollout""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""clinic""
+@r2 syntax.relation from=$n1 to=$c2",
+37,I need you to add a triangle labelled Restaurant floor; then link Restaurant floor to bar; then make Restaurant floor blue. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Restaurant"" head=""floor""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c2 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Restaurant"" head=""floor""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""bar""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n7
+@n7 syntax.nominal dependent=""Restaurant"" head=""floor""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Restaurant floor""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Restaurant floor""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""bar""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n7
+@n7 syntax.nominal head=""Restaurant floor""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+38,Let us make a diamond labelled Robot arm; then link Robot arm to grip. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Robot"" head=""arm""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Robot"" head=""arm""
+@r1 syntax.relation marker=""to"" from=$c4 to=$c5
+@c5 syntax.clause form=nonfinite verb=""grip""
+@n5 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Robot arm""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Robot arm""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""grip""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+39,"Please, create a circle labelled Board game; then link Board game to start. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Board"" head=""game""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Board"" head=""game""
+@r1 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""start""
+@c5 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Board game""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Board game""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""start""
+@r2 syntax.relation from=$n1 to=$c2",
+40,Could you make a star labelled Lab results; then connect Lab results to group A. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Lab"" head=""results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Lab"" head=""results""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""group"" head=""A""
+@n6 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Lab results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Lab results""
+@r1 syntax.relation marker=""to"" from=$n4 to=$c4
+@c4 syntax.clause form=nonfinite verb=""group"" modifier=""A""
+@n5 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2",
+41,I need you to create a rectangle labelled Dev setup; then link Dev setup to clone. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Dev"" head=""setup""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Dev"" head=""setup""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""clone""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Dev setup""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Dev setup""
+@r2 syntax.relation marker=""to"" from=$n5 to=$c5
+@c5 syntax.clause form=nonfinite verb=""clone""
+@n6 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+42,I need you to add a ellipse labelled Tax flow; then link Tax flow to income; then make Tax flow orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Tax"" head=""flow""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c2 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Tax"" head=""flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""income""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n7
+@n7 syntax.nominal dependent=""Tax"" head=""flow""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Tax flow""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Tax flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""income""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n7
+@n7 syntax.nominal head=""Tax flow""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+43,Let us create a triangle labelled Greek myth tree; then link Greek myth tree to Zeus. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Greek"" dependent=""myth"" head=""tree""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Greek"" dependent=""myth"" head=""tree""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Zeus""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Greek myth tree""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Greek myth tree""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Zeus""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+44,"Please, create a star labelled Cell towers; then connect Cell towers to tower A. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Cell"" head=""towers""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Cell"" head=""towers""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""tower"" head=""A""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Cell towers""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" modifier=""A"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Cell towers""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""tower""
+@r2 syntax.relation from=$n1 to=$c2",
+45,Let us make a rectangle labelled Tennis ladder; then connect Tennis ladder to Kim; then make Tennis ladder purple. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Tennis"" head=""ladder""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Tennis"" head=""ladder""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Kim""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal dependent=""Tennis"" head=""ladder""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Tennis ladder""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Tennis ladder""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Kim""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal head=""Tennis ladder""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+46,"Please, make a yellow triangle labelled Dessert menu. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Dessert"" head=""menu""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Dessert menu""
+@r1 syntax.relation from=$n1 to=$c2",
+47,make a diamond labelled Protest route; then link Protest route to march.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Protest"" head=""route""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Protest"" head=""route""
+@r1 syntax.relation marker=""to"" from=$c3 to=$c4
+@n4 syntax.nominal head=""march""
+@r2 syntax.relation from=$n1 to=$c2
+@c4 syntax.clause form=fragment complement=$n4","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Protest route""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Protest route""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""march""
+@r2 syntax.relation from=$n1 to=$c2",
+48,I need you to add a circle labelled Museum floor; then link Museum floor to dinosaur hall. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Museum"" head=""floor""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Museum"" head=""floor""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""dinosaur"" head=""hall""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Museum floor""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Museum floor""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""dinosaur"" head=""hall""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+49,I need you to make a rectangle labelled Gardening beds; then connect Gardening beds to tomatoes. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Gardening"" head=""beds""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Gardening"" head=""beds""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""tomatoes""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Gardening beds""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Gardening beds""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""tomatoes""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+50,"Please, create a blue ellipse labelled Project plan. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Project"" head=""plan""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Project plan""
+@r1 syntax.relation from=$n1 to=$c2",
+51,"Please, add a purple triangle labelled Workshop plan. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Workshop"" head=""plan""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Workshop plan""
+@r1 syntax.relation from=$n1 to=$c2",
+52,"Please, create a blue triangle labelled Hiring funnel. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Hiring"" head=""funnel""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Hiring funnel""
+@r1 syntax.relation from=$n1 to=$c2",
+53,"Please, create a purple diamond labelled Library loans. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Library"" head=""loans""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Library loans""
+@r1 syntax.relation from=$n1 to=$c2",
+54,"Please, make a green hexagon labelled Peak hour line. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Peak"" dependent=""hour"" head=""line""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Peak hour line""
+@r1 syntax.relation from=$n1 to=$c2",
+55,I need you to add a orange hexagon labelled Sales spreadsheet. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""orange"" dependent=""hexagon"" dependent=""labelled"" dependent=""Sales"" head=""spreadsheet""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""orange"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Sales spreadsheet""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+56,"Please, add a green rectangle labelled Team budget. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Team"" head=""budget""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Team budget""
+@r1 syntax.relation from=$n1 to=$c2",
+57,"Please, create a yellow rectangle labelled Survey results. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Survey"" head=""results""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Survey results""
+@r1 syntax.relation from=$n1 to=$c2",
+58,Could you make a blue rectangle labelled Sales Q1-Q4. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Sales"" dependent=""Q1"" head=""Q4""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Sales Q1-Q4""
+@r1 syntax.relation from=$n2 to=$c2",
+59,I need you to create a star labelled Test scores; then connect Test scores to Test 3. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Test"" head=""scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Test"" head=""scores""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Test""
+@n7 syntax.nominal head=""3""
+@n8 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3
+@r4 syntax.relation from=$n6 to=$n7","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Test scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Test scores""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Test 3""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+60,I need you to add a yellow diamond labelled Lunch survey. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""yellow"" dependent=""diamond"" dependent=""labelled"" dependent=""Lunch"" head=""survey""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""yellow"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Lunch survey""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+61,"Please, create a red ellipse labelled Ops steps. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Ops"" head=""steps""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Ops steps""
+@r1 syntax.relation from=$n1 to=$c2",
+62,"Please, add a red ellipse labelled Round scores. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Round"" head=""scores""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Round scores""
+@r1 syntax.relation from=$n1 to=$c2",
+63,"Please, create a orange hexagon labelled Daily sales. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Daily"" head=""sales""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Daily sales""
+@r1 syntax.relation from=$n1 to=$c2",
+64,I need you to create a diamond labelled Reporting flow; then connect Reporting flow to Database. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Reporting"" head=""flow""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Reporting"" head=""flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Database""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Reporting flow""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Reporting flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Database""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+65,Let us make a triangle labelled Floor plan sketch; then connect Floor plan sketch to Grid lines. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Floor"" dependent=""plan"" head=""sketch""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Floor"" dependent=""plan"" head=""sketch""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal dependent=""Grid"" head=""lines""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Floor plan sketch""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Floor plan sketch""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Grid lines""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+66,add a triangle labelled Clock widget; then connect Clock widget to Timestamp.,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Clock"" head=""widget""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Clock"" head=""widget""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Timestamp""
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Clock widget""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Clock widget""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Timestamp""
+@r2 syntax.relation from=$n1 to=$c2",
+67,Let us add a star labelled Service map; then connect Service map to API. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""star""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Service"" head=""map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Service"" head=""map""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""API""
+@n6 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Service map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Service map""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""API""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+68,"Please, add a hexagon labelled Cloud setup; then connect Cloud setup to Cloud icon. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Cloud"" head=""setup""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Cloud"" head=""setup""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""Cloud"" head=""icon""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Cloud setup""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Cloud setup""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Cloud"" dependent=""icon""
+@r2 syntax.relation from=$n1 to=$c2",
+69,I need you to add a triangle labelled Batch jobs; then link Batch jobs to Output node. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Batch"" head=""jobs""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Batch"" head=""jobs""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Output"" head=""node""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Batch jobs""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Batch jobs""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Output node""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+70,make a ellipse labelled Server estate; then connect Server estate to Main server node.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Server"" head=""estate""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Server"" head=""estate""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""Main"" dependent=""server"" head=""node""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Server estate""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Server estate""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Main server node""
+@r2 syntax.relation from=$n1 to=$c2",
+71,"Please, create a hexagon labelled Lane chart; then connect Lane chart to Dev. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Lane"" head=""chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Lane"" head=""chart""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Dev""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Lane chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Lane chart""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Dev""
+@r2 syntax.relation from=$n1 to=$c2",
+72,I need you to make a rectangle labelled Mesh topology; then link Mesh topology to Edge. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Mesh"" head=""topology""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Mesh"" head=""topology""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Edge""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Mesh topology""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Mesh topology""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Edge""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+73,I need you to make a triangle labelled Meeting plan; then connect Meeting plan to Agenda item 1. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Meeting"" head=""plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Meeting"" head=""plan""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Agenda"" head=""item""
+@n7 syntax.nominal head=""1""
+@n8 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3
+@r4 syntax.relation from=$n6 to=$n7","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Meeting plan""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Meeting plan""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Agenda item 1""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+74,"Hey, make a rectangle labelled Study notes map; then link Study notes map to Topic A.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Study"" dependent=""notes"" head=""map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Study"" dependent=""notes"" head=""map""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""Topic"" head=""A""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Study notes map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Study notes map""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Topic A""
+@r2 syntax.relation from=$n1 to=$c2",
+75,I need you to add a hexagon labelled Escalation chart; then connect Escalation chart to Support. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Escalation"" head=""chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Escalation"" head=""chart""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Support""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Escalation chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Escalation chart""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Support""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+76,I need you to add a triangle labelled Fulfilment steps; then connect Fulfilment steps to Pick. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Fulfilment"" head=""steps""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Fulfilment"" head=""steps""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Pick""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""triangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Fulfilment steps""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Fulfilment steps""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Pick""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+77,I need you to add a ellipse labelled Org chart draft; then link Org chart draft to VP. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Org"" dependent=""chart"" head=""draft""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Org"" dependent=""chart"" head=""draft""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""VP""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Org chart draft""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Org chart draft""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""VP""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+78,"Please, add a red diamond labelled Sky scene. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Sky"" head=""scene""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Sky scene""
+@r1 syntax.relation from=$n1 to=$c2",
+79,make a blue triangle labelled Notes board.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""triangle""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Notes"" head=""board""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Notes board""
+@r1 syntax.relation from=$n1 to=$c2",
+80,"Hey, make a purple diamond labelled Org chart 2026.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Org"" head=""chart""
+@n3 syntax.nominal head=""2026""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Org chart 2026""
+@r1 syntax.relation from=$n1 to=$c2",
+81,"Please, make a purple circle labelled Product milestones. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Product"" head=""milestones""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Product milestones""
+@r1 syntax.relation from=$n1 to=$c2",
+82,Could you add a rectangle labelled Sales Q1-Q4; then connect Sales Q1-Q4 to Q3. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Sales"" head=""Q1""
+@n4 syntax.nominal head=""Q4""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Sales"" dependent=""Q1"" head=""Q4""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""Q3""
+@c4 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c2
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Sales Q1-Q4""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" discourse=""Thanks"" complement=$n4
+@n4 syntax.nominal head=""Sales Q1-Q4""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Q3""
+@r2 syntax.relation from=$n2 to=$c2",
+83,Let us add a circle labelled Survey results; then link Survey results to Speed; then make Survey results blue. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Survey"" head=""results""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Survey"" head=""results""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Speed""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n6
+@n6 syntax.nominal dependent=""Survey"" head=""results""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Survey results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Survey results""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Speed""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n6
+@n6 syntax.nominal head=""Survey results""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+84,I need you to add a hexagon labelled Team sizes; then link Team sizes to Engineering. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Team"" head=""sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Team"" head=""sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Team sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Team sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+85,I need you to create a hexagon labelled Test scores; then connect Test scores to Group A. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Test"" head=""scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Test"" head=""scores""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Group"" head=""A""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Test scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Test scores""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Group A""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+86,Let us create a hexagon labelled Budget split; then connect Budget split to Food; then make Budget split purple. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Budget"" head=""split""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Budget"" head=""split""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Food""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal dependent=""Budget"" head=""split""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Budget split""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Budget split""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Food""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""purple"" complement=$n6
+@n6 syntax.nominal head=""Budget split""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+87,I need you to add a diamond labelled Team sizes; then connect Team sizes to Engineering. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Team"" head=""sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Team"" head=""sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Team sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Team sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+88,Could you add a diamond labelled Budget split; then link Budget split to Food. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Budget"" head=""split""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Budget"" head=""split""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Food""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Budget split""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" discourse=""Thanks"" complement=$n4
+@n4 syntax.nominal head=""Budget split""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Food""
+@r2 syntax.relation from=$n2 to=$c2",
+89,I need you to add a hexagon labelled Survey results; then link Survey results to Speed. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Survey"" head=""results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Survey"" head=""results""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Speed""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Survey results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Survey results""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Speed""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+90,Let us add a hexagon labelled Test scores; then link Test scores to Group A. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" modifier=""A"" complement=$n1 complement=$n5
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Test"" head=""scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" modifier=""to"" complement=$n4
+@n4 syntax.nominal dependent=""Test"" head=""scores""
+@n5 syntax.nominal head=""Group""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Test scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Test scores""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Group A""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+91,"Hey, create a ellipse labelled Survey results; then link Survey results to Speed. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Survey"" head=""results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Survey"" head=""results""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Speed""
+@n5 syntax.nominal head=""That""
+@c3 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Survey results""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Survey results""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Speed""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$n1 to=$c2",
+92,I need you to add a rectangle labelled Team sizes; then connect Team sizes to Engineering. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Team"" head=""sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Team"" head=""sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Team sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Team sizes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Engineering""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+93,I need you to create a circle labelled Bar A; then link Bar A to Bar B. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Bar"" head=""A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Bar"" head=""A""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Bar"" head=""B""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Bar A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Bar A""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Bar B""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+94,Could you create a triangle labelled Start; then link Start to Check; then make Start green. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""create"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4 conjunct=$c5
+@c3 syntax.clause form=imperative verb=""link""
+@c4 syntax.clause form=imperative verb=""Start""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n4
+@n4 syntax.nominal head=""Check""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""green"" complement=$n5
+@n5 syntax.nominal head=""Start""
+@c6 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""create"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Start""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Check""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""green"" discourse=""Thanks"" complement=$n6
+@n6 syntax.nominal head=""Start""
+@r2 syntax.relation from=$n2 to=$c2",
+95,"Please, make a yellow circle labelled Great-aunt Hilda. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Great"" dependent=""aunt"" head=""Hilda""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Great-aunt Hilda""
+@r1 syntax.relation from=$n1 to=$c2",
+96,"Please, create a red circle labelled Issue resolved?. Thanks!","@c1 syntax.clause form=interrogative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" modifier=""resolved"" complement=$n2
+@n2 syntax.nominal head=""Issue""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Issue resolved""
+@r1 syntax.relation from=$n1 to=$c2",
+97,"Please, create a yellow triangle labelled Project ideas. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Project"" head=""ideas""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Project ideas""
+@r1 syntax.relation from=$n1 to=$c2",
+98,make a triangle labelled Sales bar; then connect Sales bar to Costs bar.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Sales"" head=""bar""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Sales"" head=""bar""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""Costs"" head=""bar""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Sales bar""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Sales bar""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Costs"" dependent=""bar""
+@r2 syntax.relation from=$n1 to=$c2",
+99,I need you to add a circle labelled Fish catch; then connect Fish catch to Reference. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Fish"" head=""catch""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Fish"" head=""catch""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Reference""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Fish catch""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Fish catch""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Reference""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+100,"Please, add a purple circle labelled Wedding plan. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Wedding"" head=""plan""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Wedding plan""
+@r1 syntax.relation from=$n1 to=$c2",
+101,"Hey, create a hexagon labelled Heat map; then connect Heat map to Room.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Heat"" head=""map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Heat"" head=""map""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Room""
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Heat map""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Heat map""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Room""
+@r2 syntax.relation from=$n1 to=$c2",
+102,I need you to make a orange circle labelled Org chart. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""orange"" dependent=""circle"" dependent=""labelled"" dependent=""Org"" head=""chart""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""orange"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Org chart""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+103,Let us make a diamond labelled Kitchen rota; then connect Kitchen rota to prep. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Kitchen"" head=""rota""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Kitchen"" head=""rota""
+@r1 syntax.relation marker=""to"" from=$c4 to=$c5
+@c5 syntax.clause form=nonfinite verb=""prep""
+@n5 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""diamond""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Kitchen rota""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Kitchen rota""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""prep""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+104,Could you add a yellow hexagon labelled Tree diagram. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""yellow"" head=""hexagon""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Tree"" head=""diagram""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""yellow"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Tree diagram""
+@r1 syntax.relation from=$n2 to=$c2",
+105,Let us add a hexagon labelled Sales funnel; then connect Sales funnel to Lead. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Sales"" head=""funnel""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Sales"" head=""funnel""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Lead""
+@n6 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Sales funnel""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Sales funnel""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Lead""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+106,make a rectangle labelled Lab steps; then link Lab steps to Mix; then make Lab steps yellow.,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Lab"" head=""steps""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Lab"" head=""steps""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Mix""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n5
+@n5 syntax.nominal dependent=""Lab"" head=""steps""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Lab steps""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Lab steps""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Mix""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n5
+@n5 syntax.nominal head=""Lab steps""
+@r2 syntax.relation from=$n1 to=$c2",
+107,"Please, create a blue rectangle labelled Payments board. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Payments"" head=""board""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Payments board""
+@r1 syntax.relation from=$n1 to=$c2",
+108,Could you make a rectangle labelled Lease tracker; then link Lease tracker to unit 4B. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Lease"" head=""tracker""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Lease"" head=""tracker""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""unit"" head=""4B""
+@n6 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Lease tracker""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Lease tracker""
+@r1 syntax.relation marker=""to"" from=$n4 to=$c4
+@c4 syntax.clause form=nonfinite verb=""unit"" complement=$n5
+@n5 syntax.nominal head=""4B""
+@n6 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2",
+109,"Please, add a blue diamond labelled Bake sale. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Bake"" head=""sale""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Bake sale""
+@r1 syntax.relation from=$n1 to=$c2",
+110,I need you to add a hexagon labelled Budget split; then connect Budget split to Food; then make Budget split yellow. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Budget"" head=""split""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c2 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Budget"" head=""split""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Food""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n7
+@n7 syntax.nominal dependent=""Budget"" head=""split""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Budget split""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Budget split""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Food""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""yellow"" complement=$n7
+@n7 syntax.nominal head=""Budget split""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+111,I need you to make a ellipse labelled API; then link API to Database. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""ellipse"" dependent=""labelled"" head=""API""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""API""
+@r2 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Database""
+@n6 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n6 complement=$n7
+@n7 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""API""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""API""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Database""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+112,"Please, create a purple star labelled Expense claim. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Expense"" head=""claim""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Expense claim""
+@r1 syntax.relation from=$n1 to=$c2",
+113,Let us create a hexagon labelled Monthly sales; then connect Monthly sales to Sales by region; then make Monthly sales red. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Monthly"" head=""sales""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal dependent=""Monthly"" head=""sales""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Sales""
+@r2 syntax.relation marker=""by"" from=$c4 to=$n6
+@n6 syntax.nominal head=""region""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n7
+@n7 syntax.nominal dependent=""Monthly"" head=""sales""
+@n8 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n8
+@r3 syntax.relation from=$c1 to=$k1
+@r4 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Monthly sales""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Monthly sales""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Sales""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c4 to=$n6
+@n6 syntax.nominal head=""region""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n7
+@n7 syntax.nominal head=""Monthly sales""
+@n8 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n8
+@r3 syntax.relation from=$c1 to=$c2
+@r4 syntax.relation from=$n2 to=$c3",
+114,create a rectangle labelled Club sign ups; then connect Club sign ups to Tennis.,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Club"" dependent=""sign"" head=""ups""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Club"" dependent=""sign"" head=""ups""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Tennis""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Club sign ups""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Club sign ups""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Tennis""
+@r2 syntax.relation from=$n1 to=$c2",
+115,"Please, make a purple hexagon labelled Check billing. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Check""
+@n3 syntax.nominal head=""billing""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Check billing""
+@r1 syntax.relation from=$n1 to=$c2",
+116,add a rectangle labelled Team below About; then add a rectangle labelled Press below About; then add a rectangle labelled Jobs below About.,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Team""
+@r1 syntax.relation marker=""below"" from=$c1 to=$n3
+@n3 syntax.nominal head=""About""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c5
+@c3 syntax.clause form=imperative verb=""add"" complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""rectangle""
+@c4 syntax.clause form=nonfinite verb=""labelled"" complement=$n5
+@n5 syntax.nominal head=""Press""
+@r2 syntax.relation marker=""below"" from=$c4 to=$n6
+@n6 syntax.nominal head=""About""
+@c5 syntax.clause form=imperative verb=""add"" complement=$n7
+@n7 syntax.nominal dependent=""a"" head=""rectangle""
+@c6 syntax.clause form=nonfinite verb=""labelled"" complement=$n8
+@n8 syntax.nominal head=""Jobs""
+@r3 syntax.relation attachment=ambiguous marker=""below"" from=$c6 to=$n9
+@n9 syntax.nominal head=""About""
+@r4 syntax.relation from=$n1 to=$c2
+@r5 syntax.relation from=$n4 to=$c4
+@r6 syntax.relation from=$n7 to=$c6","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" modifier=""below"" modifier=""About"" complement=$n2
+@n2 syntax.nominal head=""Team""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c4 syntax.clause form=nonfinite verb=""labelled"" modifier=""below"" modifier=""About"" complement=$n4
+@n4 syntax.nominal head=""Press""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""add"" complement=$n5
+@n5 syntax.nominal dependent=""a"" head=""rectangle""
+@c6 syntax.clause form=nonfinite verb=""labelled"" modifier=""below"" modifier=""About"" complement=$n6
+@n6 syntax.nominal head=""Jobs""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n3 to=$c4
+@r3 syntax.relation from=$n5 to=$c6",
+117,"Please, make a yellow diamond labelled Quiz scores. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Quiz"" head=""scores""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Quiz scores""
+@r1 syntax.relation from=$n1 to=$c2",
+118,Let us add a rectangle labelled Enter email; then connect Enter email to Error. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled""
+@c4 syntax.clause form=imperative verb=""Enter"" complement=$n3
+@n3 syntax.nominal head=""email""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""connect""
+@c6 syntax.clause form=nonfinite verb=""Enter"" complement=$n4
+@n4 syntax.nominal head=""email""
+@r1 syntax.relation marker=""to"" from=$c5 to=$n5
+@n5 syntax.nominal head=""Error""
+@n6 syntax.nominal head=""That""
+@c7 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3
+@r4 syntax.relation from=$c3 to=$c4
+@r5 syntax.relation from=$c5 to=$c6","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Enter email""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Enter email""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Error""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+119,"Hey, make a red rectangle labelled Log in.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled""
+@c3 syntax.clause form=imperative verb=""Log"" modifier=""in""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""red"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" modifier=""in"" complement=$n2
+@n2 syntax.nominal head=""Log""
+@r1 syntax.relation from=$n1 to=$c2",
+120,I need you to create a star labelled Sensor A; then link Sensor A to Sensor B. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Sensor"" head=""A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Sensor"" head=""A""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Sensor"" head=""B""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Sensor A""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Sensor A""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Sensor B""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+121,I need you to create a circle labelled Team lanes; then link Team lanes to Design; then make Team lanes orange. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Team"" head=""lanes""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c2 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Team"" head=""lanes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Design""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n7
+@n7 syntax.nominal dependent=""Team"" head=""lanes""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Team lanes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Team lanes""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Design""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n7
+@n7 syntax.nominal head=""Team lanes""
+@n8 syntax.nominal head=""I""
+@c6 syntax.clause form=declarative verb=""appreciate"" subject=$n8 complement=$n9
+@n9 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+122,Could you create a triangle labelled Wedding budget; then link Wedding budget to Venue; then make Wedding budget red. I appreciate it.,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""create"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Wedding"" head=""budget""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Wedding"" head=""budget""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Venue""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal dependent=""Wedding"" head=""budget""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""create"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Wedding budget""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Wedding budget""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Venue""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal head=""Wedding budget""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r2 syntax.relation from=$n2 to=$c2",
+123,"Please, make a orange diamond labelled Ticket volume. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Ticket"" head=""volume""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Ticket volume""
+@r1 syntax.relation from=$n1 to=$c2",
+124,I need you to make a purple star labelled Cost bars. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@n4 syntax.nominal dependent=""labelled"" dependent=""Cost"" head=""bars""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Cost bars""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+125,I need you to add a yellow star labelled Survey tree. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""yellow"" dependent=""star"" dependent=""labelled"" dependent=""Survey"" head=""tree""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""yellow"" head=""star""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Survey tree""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+126,"Hey, make a diamond labelled Category tree; then link Category tree to Root.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@n2 syntax.nominal dependent=""labelled"" dependent=""Category"" head=""tree""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Category"" head=""tree""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Root""
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Category tree""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Category tree""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Root""
+@r2 syntax.relation from=$n1 to=$c2",
+127,"Please, make a orange rectangle labelled Expense claim. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Expense"" head=""claim""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Expense claim""
+@r1 syntax.relation from=$n1 to=$c2",
+128,"Please, add a rectangle labelled Team sizes; then link Team sizes to Hours worked. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Team"" head=""sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal dependent=""Team"" head=""sizes""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Hours""
+@c4 syntax.clause form=nonfinite verb=""worked""
+@c5 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n4 to=$c4","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Team sizes""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" complement=$n3
+@n3 syntax.nominal head=""Team sizes""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Hours""
+@c4 syntax.clause form=nonfinite verb=""worked"" discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n3 to=$c4",
+129,I need you to make a hexagon labelled Crash flow; then link Crash flow to Alert. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Crash"" head=""flow""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal dependent=""Crash"" head=""flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Alert""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""hexagon""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Crash flow""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n5
+@n5 syntax.nominal head=""Crash flow""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Alert""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+130,Could you make a triangle labelled Footfall; then connect Footfall to Door 1; then make Footfall red; then place Footfall below Door 1. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Footfall""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4 conjunct=$c5
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Footfall""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Door""
+@n6 syntax.nominal head=""1""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n7
+@n7 syntax.nominal head=""Footfall""
+@c5 syntax.clause form=imperative verb=""place"" complement=$n8
+@n8 syntax.nominal head=""Footfall""
+@r2 syntax.relation marker=""below"" from=$c5 to=$n9
+@n9 syntax.nominal head=""Door""
+@n10 syntax.nominal head=""1""
+@c6 syntax.clause form=fragment discourse=""Thanks""
+@r3 syntax.relation from=$n2 to=$c2
+@r4 syntax.relation from=$n5 to=$n6
+@r5 syntax.relation from=$n9 to=$n10","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Footfall""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Footfall""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Door 1""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal head=""Footfall""
+@k3 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""place"" discourse=""Thanks"" complement=$n7
+@n7 syntax.nominal head=""Footfall""
+@r2 syntax.relation marker=""below"" from=$c5 to=$n8
+@n8 syntax.nominal head=""Door 1""
+@r3 syntax.relation from=$n2 to=$c2",
+131,"Please, create a orange rectangle labelled Book ideas. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Book"" head=""ideas""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Book ideas""
+@r1 syntax.relation from=$n1 to=$c2",
+132,"Hey, create a diamond labelled Cinema hall; then connect Cinema hall to screen; then make Cinema hall blue. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Cinema"" head=""hall""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal dependent=""Cinema"" head=""hall""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""screen""
+@c4 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n5
+@n5 syntax.nominal dependent=""Cinema"" head=""hall""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Cinema hall""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Cinema hall""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""screen""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n5
+@n5 syntax.nominal head=""Cinema hall""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$n1 to=$c2",
+133,"Please, add a yellow rectangle labelled Sprint plan. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Sprint"" head=""plan""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Sprint plan""
+@r1 syntax.relation from=$n1 to=$c2",
+134,"Please, add a yellow diamond labelled Round scores. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Round"" head=""scores""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""yellow"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Round scores""
+@r1 syntax.relation from=$n1 to=$c2",
+135,"Please, make a purple hexagon labelled Garage game art. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Garage"" dependent=""game"" head=""art""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Garage game art""
+@r1 syntax.relation from=$n1 to=$c2",
+136,"Please, make a blue diamond labelled Quote request. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make""
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Quote"" head=""request""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Quote request""
+@r1 syntax.relation from=$n1 to=$c2",
+137,create a star labelled Votes per option; then connect Votes per option to Team lunch; then make Votes per option orange.,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Votes""
+@r1 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""option""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c3 conjunct=$c4
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Votes""
+@r2 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""option""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""Team"" head=""lunch""
+@c4 syntax.clause form=imperative verb=""make"" complement=$n7 complement=$n9
+@n7 syntax.nominal head=""Votes""
+@r4 syntax.relation marker=""per"" from=$n7 to=$n8
+@n8 syntax.nominal head=""option""
+@n9 syntax.nominal head=""orange""
+@r5 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Votes""
+@r1 syntax.relation marker=""per"" from=$c2 to=$n3
+@n3 syntax.nominal head=""option""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n4
+@n4 syntax.nominal head=""Votes""
+@r2 syntax.relation marker=""per"" from=$c3 to=$n5
+@n5 syntax.nominal head=""option""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""Team lunch""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""make"" complement=$n7
+@n7 syntax.nominal head=""Votes""
+@r4 syntax.relation marker=""per"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""option"" head=""orange""
+@r5 syntax.relation from=$n1 to=$c2",
+138,"Please, add a green ellipse labelled Mix batter. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Mix"" head=""batter""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Mix batter""
+@r1 syntax.relation from=$n1 to=$c2",
+139,"Please, make a purple star labelled Close ticket. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Close"" head=""ticket""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""star""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Close ticket""
+@r1 syntax.relation from=$n1 to=$c2",
+140,"Please, make a purple circle labelled Reset password. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Reset"" head=""password""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Reset password""
+@r1 syntax.relation from=$n1 to=$c2",
+141,Let us add a circle labelled Lunch orders; then link Lunch orders to Sandwiches; then make Lunch orders red. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Lunch"" head=""orders""
+@k1 syntax.coordination conjunction=""then"" conjunction=""then"" conjunct=$c1 conjunct=$c4 conjunct=$c5
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Lunch"" head=""orders""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Sandwiches""
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal dependent=""Lunch"" head=""orders""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Lunch orders""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Lunch orders""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Sandwiches""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c4 conjunct=$c5
+@c5 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n6
+@n6 syntax.nominal head=""Lunch orders""
+@n7 syntax.nominal head=""That""
+@c6 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n7
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+142,I need you to add a circle labelled Table chart; then connect Table chart to Document table. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal dependent=""Table"" head=""chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal dependent=""Table"" head=""chart""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""Document"" head=""table""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Table chart""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""connect"" complement=$n5
+@n5 syntax.nominal head=""Table chart""
+@r2 syntax.relation marker=""to"" from=$c4 to=$n6
+@n6 syntax.nominal head=""Document table""
+@n7 syntax.nominal head=""I""
+@c5 syntax.clause form=declarative verb=""appreciate"" subject=$n7 complement=$n8
+@n8 syntax.nominal head=""it""
+@r3 syntax.relation from=$n3 to=$c3",
+143,"Please, create a orange hexagon labelled Vacation approvals. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Vacation"" head=""approvals""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""orange"" head=""hexagon""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Vacation approvals""
+@r1 syntax.relation from=$n1 to=$c2",
+144,"Please, add a purple triangle labelled Bake sale. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Bake"" head=""sale""
+@c3 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n2
+@n2 syntax.nominal head=""Bake sale""
+@r1 syntax.relation from=$n1 to=$c2",
+145,I need you to add a blue ellipse labelled Alerts map. I appreciate it.,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""blue"" head=""ellipse""
+@n4 syntax.nominal dependent=""labelled"" dependent=""Alerts"" head=""map""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""add"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""blue"" head=""ellipse""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Alerts map""
+@n5 syntax.nominal head=""I""
+@c4 syntax.clause form=declarative verb=""appreciate"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""
+@r2 syntax.relation from=$n3 to=$c3",
+146,"Hey, add a triangle labelled Bottom net; then connect Bottom net to Cyl A. That would help.","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" modifier=""A"" complement=$n1 complement=$n4
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Bottom"" head=""net""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" modifier=""to"" complement=$n3
+@n3 syntax.nominal dependent=""Bottom"" head=""net""
+@n4 syntax.nominal head=""Cyl""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""Hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Bottom net""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""connect"" complement=$n3
+@n3 syntax.nominal head=""Bottom net""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Cyl A""
+@n5 syntax.nominal head=""That""
+@c4 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n5
+@r2 syntax.relation from=$n1 to=$c2",
+147,Could you add a red diamond labelled Growth bars. Thanks!,"@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@n3 syntax.nominal dependent=""labelled"" dependent=""Growth"" head=""bars""
+@c2 syntax.clause form=fragment discourse=""Thanks""
+@r1 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""diamond""
+@c2 syntax.clause form=nonfinite verb=""labelled"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Growth bars""
+@r1 syntax.relation from=$n2 to=$c2",
+148,add a green ellipse labelled Check billing.,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled""
+@c3 syntax.clause form=imperative verb=""Check"" complement=$n2
+@n2 syntax.nominal head=""billing""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""green"" head=""ellipse""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Check billing""
+@r1 syntax.relation from=$n1 to=$c2",
+149,Let us create a circle labelled Test scores; then link Test scores to Group A. That would help.,"@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal dependent=""Test"" head=""scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=nonfinite verb=""link"" complement=$n4
+@n4 syntax.nominal dependent=""Test"" head=""scores""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal dependent=""Group"" head=""A""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3
+@r4 syntax.relation from=$c5 to=$k1","@c1 syntax.clause form=imperative verb=""Let"" complement=$n1
+@n1 syntax.nominal head=""us""
+@c2 syntax.clause form=nonfinite verb=""create"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Test scores""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""link"" complement=$n4
+@n4 syntax.nominal head=""Test scores""
+@r1 syntax.relation marker=""to"" from=$c4 to=$n5
+@n5 syntax.nominal head=""Group A""
+@n6 syntax.nominal head=""That""
+@c5 syntax.clause form=declarative auxiliary=""would"" verb=""help"" subject=$n6
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$c3",
+150,"Please, add a circle labelled Mix batter; then link Mix batter to Bake. Thanks!","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal dependent=""Mix"" head=""batter""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link""
+@c4 syntax.clause form=nonfinite verb=""Mix"" complement=$n3
+@n3 syntax.nominal head=""batter""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Bake""
+@c5 syntax.clause form=fragment discourse=""Thanks""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$c3 to=$c4","@c1 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Mix batter""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""link"" discourse=""Thanks"" complement=$n3
+@n3 syntax.nominal head=""Mix batter""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""Bake""
+@r2 syntax.relation from=$n1 to=$c2",
