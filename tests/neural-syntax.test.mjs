@@ -27,8 +27,8 @@ const found = (variable, ...places) => process.env[variable] ?? places.find(plac
 const settings = {
   distilbertPython: found('SOP_NLU_DISTILBERT_PYTHON', join(homedir(), 'nlp-venv/bin/python')),
   distilbertModel: found('SOP_NLU_DISTILBERT_MODEL', join(root, '.local-models/distilbert/syntax-v1/checkpoint')),
-  python: found('SOP_NLU_SYNTAX_PYTHON', '/tmp/sop-nlu-trf-model/python-trf-one'),
-  model: found('SOP_NLU_SYNTAX_MODEL', '/tmp/sop-nlu-trf-model/en_core_web_trf/en_core_web_trf-3.8.0'),
+  python: found('SOP_NLU_SYNTAX_PYTHON', join(homedir(), 'models/sop-nlu-trf/python-trf-one')),
+  model: found('SOP_NLU_SYNTAX_MODEL', join(homedir(), 'models/sop-nlu-trf/venv/lib/python3.12/site-packages/en_core_web_trf/en_core_web_trf-3.8.0')),
   adaptedModel: found('SOP_NLU_ADAPTED_TRF_MODEL', '/tmp/wm-spacy-trf-heads/adapted-model'),
   compactPython: found('SOP_NLU_COMPACT_PYTHON', join(homedir(), 'spacy-venv/bin/python')),
   compactModel: found('SOP_NLU_COMPACT_MODEL', '/tmp/wm-spacy-adaptation/adapted-model'),

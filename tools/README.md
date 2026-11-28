@@ -30,3 +30,16 @@ tail ~/.local/state/soplang-memwatch.log
 
 `MemAvailable` drops by the memory the GPU takes (checked: 20 GB on the GPU lowered it by 21 GB), so the
 watchdog sees GPU pressure.
+
+## The spaCy environment
+
+`/tmp` lost the transformer model at the restart of 2026-11-28. It was rebuilt in `~/models/sop-nlu-trf/`
+(spaCy 3.8.16, `en_core_web_trf` 3.8.0, spacy-curated-transformers 0.3.1, torch 2.15 CPU) and gives the
+recorded parses exactly (459 of 459 messages, every 400th of the dataset). Before running a strategy:
+
+```sh
+. ~/models/sop-nlu-trf/env.sh
+```
+
+The adapted spaCy models of `spacy-beam` / `spacy-direct` (`SOP_NLU_ADAPTED_TRF_MODEL`, `SOP_NLU_COMPACT_MODEL`)
+were lost with `/tmp` and are not rebuilt; the main spaCy strategy does not use them.

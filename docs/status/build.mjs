@@ -424,7 +424,7 @@ const facts = memo(() => {
     spacy: {runtime: 'Python with spaCy and spacy-transformers (PyTorch)', browserShort: 'no', trainingShort: 'none by us', labels: 'no: English treebanks, by its makers',
       runs: 'Python with spaCy 3.8 and the transformer pipeline en_core_web_trf 3.8.0, called from Node; on the CPU in the benchmark.',
       browser: 'No: it needs Python and a transformer of about half a gigabyte.',
-      models: [['en_core_web_trf', '/tmp/sop-nlu-trf-model/en_core_web_trf']],
+      models: [['en_core_web_trf', process.env.HOME + '/models/sop-nlu-trf/venv/lib/python3.12/site-packages/en_core_web_trf']],
       training: 'None by us: a pipeline trained by its makers on large English treebanks. Our part is the layer that writes circuits from its parse.',
       source: 'A transformer dependency parser trained on large English treebanks, plus our rules that turn its parse into a circuit.'},
     distilbert: {runtime: 'Python with PyTorch and Hugging Face transformers; CUDA for the GPU', browserShort: 'not as it is', labels: 'yes: judged labels, and agreement labels at a lower weight',
