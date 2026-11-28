@@ -114,7 +114,10 @@ if (!isMainThread) {
     }
     for (const c of Object.values(counts)) { c.share = +(100 * c.identical / c.circuits).toFixed(3); c.shareNormalForm = +(100 * c.identicalNormalForm / c.circuits).toFixed(3); c.fromWritten.share = +(100 * c.fromWritten.identical / c.circuits).toFixed(3); c.movesPerWord = +(c.moves / c.words).toFixed(3); delete c.moves; delete c.words }
     summary[name] = Object.fromEntries(Object.entries(counts).sort())
-    writeFileSync(join(dir, 'moves-' + name + '.jsonl.gz'), gzipSync(outLines.map(line => JSON.stringify(line)).join('\n') + '\n'))
+    // joined in pieces: one string of a large set is longer than V8 allows
+    const pieces = []
+    for (let i = 0; i < outLines.length; i += 20000) pieces.push(Buffer.from(outLines.slice(i, i + 20000).map(line => JSON.stringify(line)).join('\n') + '\n'))
+    writeFileSync(join(dir, 'moves-' + name + '.jsonl.gz'), gzipSync(Buffer.concat(pieces)))
   }
   const report = {built: new Date().toISOString(), seconds: Math.round((performance.now() - t0) / 1000), threads, distinctCircuits: items.length, oracle: 'strategies/rvss/hierarchy-checks/v2/oracle2.mjs derive(late) + replay', summary}
   writeFileSync(join(dir, 'moves.json'), JSON.stringify(report, null, 1) + '\n')

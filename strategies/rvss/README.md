@@ -125,6 +125,58 @@ node strategies/rvss/model/export.mjs
 python strategies/rvss/model/prep.py .local-data/rvss/model/distill.jsonl .local-data/rvss/model/d9f2 --workers 4 --view 2
 ```
 
+## Sprint 4 (2026-11-28, from 14:40): verified labels as targets, weak-spot weights, reading rules, all data
+
+The coordinator's plan (rVSS above spaCy's ceiling by learning from verified labels), then the owner's direction of
+16:00: train on all annotated data (nothing held out; dev-B / dev-G become seen data, a diagnostic of fit only); the real
+measurement is a new random 1% of the dataset per run, judged by Opus (drawn by the coordinator).
+
+**Measures used here.** dev-B is now the 14,761 of its 15,104 texts still in the dataset (343 were typo copies deleted or
+corrected at dataset 83c7436); the old benchmark keeps its 1,831 messages (57 of its texts are no longer in the dataset).
+`eval/accepted.mjs` counts a circuit as accepted when it equals the message's label or a circuit the registry accepted,
+rejected when the registry rejected it, else unjudged (so the share is a lower bound): on the 1,000 dev-G messages of the
+head-to-head (`eval-results/2026-11-28-h2h-general`, fully judged for spaCy and g15) it gives spaCy 93.0% and g15 80.2%,
+as the judges did. `eval/measure16.sh` measures a model on all of these.
+
+**Decisions by distance (teacher forcing, targets 3f13f69).** dev-B / dev-G, decisions right:
+
+| Decision | n (dev-B) | dag12 | ft15 | g15 | g15rb | n (dev-G) | dag12 | ft15 | g15 | g15rb |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| all | 398,322 | 0.9712 | 0.9721 | 0.9727 | 0.9726 | 73,886 | 0.9451 | 0.9466 | 0.9684 | 0.9684 |
+| open 1 / 2-3 / 4-7 / 8+ | 43,182 / 20,634 / 7,464 / 1,858 | .972 / .948 / .929 / .892 | .973 / .950 / .934 / .891 | .974 / .952 / .933 / .889 | .974 / .952 / .933 / .893 | 7,976 / 4,057 / 1,525 / 162 | .930 / .886 / .902 / .858 | .932 / .890 / .898 / .852 | .965 / .936 / .934 / .889 | .964 / .936 / .937 / .877 |
+| close 2-3 / 4-7 / 8+ | 25,860 / 15,017 / 6,383 | .944 / .951 / .957 | .944 / .959 / .960 | .944 / .958 / .961 | .945 / .959 / .960 | 3,294 / 1,376 / 222 | .882 / .911 / .914 | .883 / .912 / .919 | .917 / .946 / .946 | .917 / .943 / .946 |
+| place | 163,680 | .9838 | .9836 | .9845 | .9844 | 30,300 | .9548 | .9556 | .9768 | .9766 |
+| coordination | 5,659 | .955 | .952 | .952 | .950 | 315 | .908 | .911 | .927 | .927 |
+| reopen | 726 | .448 | .464 | .468 | .463 | 51 | .490 | .471 | .549 | .569 |
+
+### 1. Verified labels as targets (`data/build-labels.mjs`, set `d16l`, dataset a6b3fbb)
+
+Every message of the dataset now (245,714: webmeet 179,584 after the spelling corrections, syntactic/general 66,130),
+found by text. Target: a label a judge accepted or wrote > a circuit the registry accepted (also the judges' written
+corrections) > the agreement label > a plausible label (odd-sentences, real-word-variants) > spaCy's circuit (3f13f69;
+2,659 new texts were parsed for it); a message whose only target a judge rejected is left out (350). Judged targets
+weigh 3. dev-B, dev-G and the old benchmark held out by text; 137 corrections of held-out texts and 556 training texts
+one edit from a held-out text left out.
+
+| Count | train | dev-B | dev-G |
+| --- | ---: | ---: | ---: |
+| messages | 224,744 | 14,672 | 3,286 |
+| judge / written | 6,456 | 1,590 | 84 |
+| agreement | 73,090 | 7,214 | |
+| plausible | 621 | 2 | |
+| spaCy (webmeet / general) | 82,938 / 62,195 | 5,866 | 3,202 |
+| targets differing from spaCy's circuit | 36,740 (16.3%; agreement 34,426 of 73,090) | 3,771 | 0 |
+
+| Run (dag12 + 1 epoch, beam 4) | dev-B = spaCy | dev-B = label target | dev-G = spaCy | h2h dev-G accepted (unjudged) | old benchmark accepted (unjudged) | dev-B accepted (unjudged) |
+| --- | ---: | ---: | ---: | --- | --- | --- |
+| g15 (d15g: spaCy targets) | 61.2% | 45.0% | 57.8% | 80.2% (0) | 82.8% (175) | 29.4% (10,331) |
+| l16 (d16l: label targets) | 47.1% | 53.7% | 58.0% | 73.8% (141; rejected 115 against g15's 190) | 76.2% (290; rejected 136 against 130) | 41.1% (8,611) |
+
+The label targets move the circuits toward the labels (+8.7 points on dev-B) and away from spaCy (-14.1); the agreement
+labels follow conventions that differ from spaCy's in 47% of messages. Judged acceptance cannot decide between the two
+until the new circuits are judged (l16 has 141 and 290 unjudged circuits where g15 has 0 and 175; its known rejections
+are fewer on dev-G and about equal on the benchmark).
+
 ## Evening sprint (2026-11-28, from 12:50): the general corpora, targets at 3f13f69, the route book
 
 **In short.** spaCy (HEAD 3f13f69, round 15) wrote circuits for the 65,494 messages of `syntactic/general/` (CLINC150, SGD,
@@ -134,7 +186,11 @@ into **dev-G**, a held-out set outside webmeet (`data/README.md`, "The general c
 vsa2k2hmm-dag12 on webmeet + general, **vsa2k2hmm-g15 with beam 4**, equals spaCy on **57.8% of dev-G** (dag12: 40.2%, the
 same epoch on webmeet only: 40.7%) and **60.8% of dev-B** (dag12 on the same targets 59.4%, webmeet-only epoch 60.5%).
 Outside webmeet the logistic control (98.6 M weights) reaches only 24.5%: its dev-B lead was memorised templates.
-The route book inside the pilot (`--rb`, DESIGN 7) gives no gain under teacher forcing; free running is being measured.
+The route book inside the pilot (`--rb`, DESIGN 7) gives no gain under teacher forcing (open at 8+ words 0.8929 against
+0.8886, n = 1,858) and +0.1 / +0.5 points in free running (within noise), at 55.5 ms instead of 45.6 ms per message;
+`current` is g15 (beam 4). Its old-benchmark circuits for judges: `eval-results/2026-11-28-levels-rvss-vsa2k2hmm-g15-b4/`,
+953 equal to the label, 563 already accepted, 130 already rejected, 10 without a valid circuit, **175 to judge in 2
+packets** (170 + 5).
 
 ### Results (targets 3f13f69; dev-B 15,104 messages; dev-G 3,296; beam 4 for the VSA runs)
 
@@ -144,7 +200,7 @@ The route book inside the pilot (`--rb`, DESIGN 7) gives no gain under teacher f
 | vsa2k2hmm-dag12, beam 4 (scored on the new targets) | | | 59.4% | 68.8% | 99.7% | 69.6 / 50.4 / 17.2 | 40.2% | 50.3% | 99.0% | 50.9 / 23.9 / 0 of 24 |
 | vsa2k2hmm-ft15 (+1 epoch, `d15`: webmeet only) | 0.9721 | 0.618 | 60.5% | 70.0% | 99.6% | 69.8 / 52.2 / 23.2 | 40.7% | 51.0% | 98.6% | 51.5 / 24.1 / 4.2 |
 | **vsa2k2hmm-g15** (+1 epoch, `d15g`: webmeet + general) | 0.9727 | 0.623 | **60.8%** | **70.3%** | 99.7% | 70.0 / 52.8 / 23.4 | **57.8%** | **68.2%** | 99.4% | 69.2 / 40.4 / 12.5 |
-| vsa2k2hmm-g15rb (as g15, `--rb 256`) | 0.9726 | 0.622 | measuring | | | | | | | |
+| vsa2k2hmm-g15rb (as g15, `--rb 256`) | 0.9726 | 0.622 | 60.9% | 70.3% | 99.7% | 70.0 / 52.9 / 24.1 | 58.3% | 68.5% | 99.2% | 69.6 / 41.2 / 8.3 |
 
 dev-G by corpus (exact): dag12 clinc150 47.4%, sgd 41.3%, snips-nlu-benchmark 26.0%, snips-built-in 33.0%, generated
 37.1%; g15 61.8%, 59.6%, 50.7%, 42.0%, 45.4%. Old benchmark (held out, registry of now, a lower bound): g15 1,532 known

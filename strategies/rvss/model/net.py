@@ -33,7 +33,7 @@ def off_index(off):
 
 
 class VSA(nn.Module):
-    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0, view=2, rb=0):
+    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0, view=2, rb=0, path=0):
         super().__init__()
         # view 3 (core.py): two more bundled parts, the condensed stars of the open and of the last closed constellation
         self.nview = 10 if view >= 3 else NPARTS
@@ -84,6 +84,17 @@ class VSA(nn.Module):
             self.Qrb = nn.Parameter(torch.rand(rb, D) * 2 * math.pi)
             self.beta_rb = nn.Parameter(torch.tensor(4.0))
             self.Grb = nn.Parameter(torch.zeros(2, rb, nlabels))
+        # path: the route book's path drawing (DESIGN 7.2): from the opener of X to the incoming word, the running product
+        # of per-kind keys, exp(i sum_j sum_c pi_j(c) theta_P[c]), bound with X's type and read against `path` learned key
+        # stars; the values beside the keys are gate numbers of every move, as for the pair code. It tells what kinds lie
+        # between the opener and the word, however far apart they are.
+        self.path = path
+        if path:
+            if not rb: raise ValueError('--path needs --rb (the route book)')
+            self.thP = nn.Parameter(torch.randn(C, D) * 0.3)
+            self.Qp = nn.Parameter(torch.rand(path, D) * 2 * math.pi)
+            self.beta_p = nn.Parameter(torch.tensor(4.0))
+            self.Gp = nn.Parameter(torch.zeros(2, path, nlabels))
         nparts = len(self.act_parts) + len(BOUND) + (1 if sit else 0)
         if sit:
             # the situation memory (DESIGN 9.1): the whole view, each part bound with a fixed part star, read
@@ -102,10 +113,10 @@ class VSA(nn.Module):
         self.biasg = nn.Parameter(torch.zeros(4))
 
     def phase_params(self):
-        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else []) + ([self.K2] if self.k2 else []) + ([self.Qrb, self.Grb] if self.rb else [])
+        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else []) + ([self.K2] if self.k2 else []) + ([self.Qrb, self.Grb] if self.rb else []) + ([self.thP, self.Qp, self.Gp] if self.path else [])
 
     def scalar_params(self):
-        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else []) + ([self.gam] if self.lex else []) + ([self.lam2, self.beta_k2, self.g2] if self.k2 else []) + ([self.lamh] if self.hmm else []) + ([self.beta_rb] if self.rb else [])
+        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else []) + ([self.gam] if self.lex else []) + ([self.lam2, self.beta_k2, self.g2] if self.k2 else []) + ([self.lamh] if self.hmm else []) + ([self.beta_rb] if self.rb else []) + ([self.beta_p] if self.path else [])
 
     def situation(self, V):
         """V (N, parts, D) -> (N, 1, D)"""
@@ -170,6 +181,21 @@ class VSA(nn.Module):
         Va = torch.cat([V, Vb], 1)
         if self.sit: Va = torch.cat([Va, self.situation(Va)], 1)
         return self.score_parts(Va, self.Pr, self.u, self.beta) + self.bias
+
+    def path_logits(self, pi, s, o1, t1, o2, t2):
+        """the path drawing's gate numbers: pi (T, C) first-level kinds of the batch's tokens (messages contiguous); the
+        path from opener o to word s is exp(i (S[s+1] - S[o])) with S the running sum of pi @ theta_P -> (N, nlabels)"""
+        T = pi.shape[0]
+        S = torch.cat([torch.zeros(1, self.D, device=pi.device), torch.cumsum(pi @ self.thP, 0)])
+        Qc = torch.polar(torch.ones_like(self.Qp), self.Qp)
+        out = 0
+        for j, (o, t) in enumerate(((o1, t1), (o2, t2))):
+            ok = (o < T) & (s < T) & (o <= s)
+            ph = torch.where(ok[:, None], S[s.clamp(max=T - 1) + 1] - S[o.clamp(max=T - 1)], torch.zeros(1, self.D, device=pi.device))
+            q = self.Trb[t] * torch.polar(torch.ones_like(ph), ph)
+            att = torch.softmax(self.beta_p * (q @ Qc.conj().T).real / math.sqrt(self.D), -1)
+            out = out + att @ self.Gp[j]
+        return out
 
     def rb_logits(self, kap, s, o1, t1, o2, t2):
         """the route book's gate numbers for every move: s the incoming word's kap row; (o1, t1) the opener row and type of

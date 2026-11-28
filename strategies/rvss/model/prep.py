@@ -99,7 +99,7 @@ def pack(msgs, wid, gl):
     R['cand'] = np.array(c_rows, np.int32).reshape(-1, 3)
     R['cterm_part'] = np.array(ct_p, np.int8); R['cterm_atom'] = np.array(ct_a, np.int32)
     R['cterm_off'] = np.array(ct_o, np.int8); R['cterm_tok'] = np.array(ct_k, np.int16)
-    R['origin'] = np.array([{'spacy': 0, 'agreement': 1, 'judge': 2, 'written': 3, 'general': 4}[m['origin']] for m in msgs], np.int8)
+    R['origin'] = np.array([{'spacy': 0, 'agreement': 1, 'judge': 2, 'written': 3, 'general': 4, 'plausible': 5}[m['origin']] for m in msgs], np.int8)
     return R
 
 

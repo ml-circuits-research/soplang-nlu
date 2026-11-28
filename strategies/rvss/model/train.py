@@ -1,9 +1,10 @@
 """rvss M2b: train the pilot's decisions under teacher forcing (VSA model or the logistic control).
 
-  python train.py --model vsa|logreg --data d12[,rollin12] --out <dir> [--epochs 2] [--D 1024] [--C 64]
+  python train.py --model vsa|logreg --data d15g[,rollin12] --out <dir> [--epochs 2] [--D 1024] [--C 64]
                   [--batch 96] [--max-words N] [--minutes M]
 Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py; rollin.py gives a train part only). dev-B is the
-spaCy dev-B of --dev (default d12: the targets of the writer at 195075d, view 2).
+dev-B (or --dev-split) of --dev (default: the first set of --data; d15g holds the targets of the spaCy writer at 3f13f69 on
+webmeet and syntactic/general, view 2).
 --init <dir>: start from that model (fine-tuning); parameters indexed by label are copied row by row by the label's
 name, the others where the shapes agree. The move-label list is computed, never stored apart: each prepared set's
 meta.json carries its own list ('labels', which its ex_label indexes); the run's list is the --init or --eval-only
@@ -18,7 +19,7 @@ from net import VSA, LogReg
 
 L = '/home/salboaie/work/sopworlds/soplang-nlu/.local-data/rvss/model/'
 TYPES = ['M', 'nominal', 'relation', 'clause', 'coordination']
-WEIGHT = {0: 1.0, 1: 1.0, 2: 3.0, 3: 3.0, 4: 1.0}      # spacy, agreement, judge, written (DESIGN 9.3), general (spaCy on syntactic/general)
+WEIGHT = {0: 1.0, 1: 1.0, 2: 3.0, 3: 3.0, 4: 1.0, 5: 1.0}      # spacy, agreement, judge, written (DESIGN 9.3), general (spaCy on syntactic/general), plausible
 
 
 def load(name, split, maxw):
@@ -131,6 +132,7 @@ class Data:
         self.cterm_part = t(R['cterm_part']); self.cterm_off = t(R['cterm_off'], torch.int16); self.cterm_tok = t(R['cterm_tok'])
         self.cterm_atom = t(aid(R['cterm_atom']))
         self.nwords = t([len(w) for w in R['words']])
+        mw = R.get('mw'); self.mw = torch.as_tensor(mw if mw is not None else np.ones(self.n, np.float32), dtype=torch.float32, device=dev)
 
     def batch(self, mi):
         M = self.msg[mi]
@@ -151,7 +153,7 @@ class Data:
         b = dict(wid=self.tok[tidx], post=self.post[tidx] if self.post is not None else None, left=left, right=right, NTOK=NTOK,
                  ex=tex, part=self.term_part[trm], atom=self.term_atom[trm], off=self.term_off[trm], tok=ttok,
                  bw=bind(self.ex_bw[eidx], emsg), bt=bind(self.ex_bt[eidx], emsg),
-                 label=self.ex_label[eidx], type=self.ex_type[eidx], w=self.origin[mi][emsg], NE=len(eidx), emsg=emsg)
+                 label=self.ex_label[eidx], type=self.ex_type[eidx], w=self.origin[mi][emsg], mw=self.mw[mi][emsg], NE=len(eidx), emsg=emsg)
         gidx = tranges(M[:, 4], M[:, 5]); gmsg = torch.repeat_interleave(torch.arange(B, device=mi.device), M[:, 5])
         G = self.grp[gidx]
         cidx = tranges(G[:, 4], G[:, 5]); cg = torch.repeat_interleave(torch.arange(len(gidx), device=mi.device), G[:, 5])
@@ -161,7 +163,7 @@ class Data:
         b.update(cidx=cc, cpart=self.cterm_part[ctr], catom=self.cterm_atom[ctr], coff=self.cterm_off[ctr],
                  ctok=torch.where(ct >= 0, base[gmsg[cg[cc]]] + ct, torch.full_like(ct, NTOK)),
                  cgrp=cg, cgold=C[:, 0], ckind=G[cg, 1], cbw=bind(G[cg, 2], gmsg[cg]), cbt=bind(G[cg, 3], gmsg[cg]),
-                 gkind=G[:, 1], NG=len(gidx), NC=len(cidx), gw=self.origin[mi][gmsg])
+                 gkind=G[:, 1], NG=len(gidx), NC=len(cidx), gw=self.origin[mi][gmsg], gmw=self.mw[mi][gmsg])
         return b
 
 
@@ -179,15 +181,15 @@ def group_loss(logits, b):
     pad[g[~gat], pos[~gat]] = logits[~gat]
     gpad = torch.zeros((ng, mx), device=dev); gpad[g, pos] = gold
     sel = b['gkind'] != 3
-    w = torch.tensor([WEIGHT[i] for i in range(5)], device=dev)
+    w = torch.tensor([WEIGHT[i] for i in range(6)], device=dev)
     loss = 0; ptr = (0, 0); gth = (0, 0)
     if sel.any():
         tgt = gpad[sel].argmax(1)
-        lw = w[b['gw'][sel]]
+        lw = w[b['gw'][sel]] * b['gmw'][sel]
         loss = loss + (torch.nn.functional.cross_entropy(pad[sel], tgt, reduction='none') * lw).sum()
         ptr = (int((pad[sel].argmax(1) == tgt).sum().item()), int(sel.sum().item()))
     if gat.any():
-        lw = w[b['gw'][g[gat]]]
+        lw = w[b['gw'][g[gat]]] * b['gmw'][g[gat]]
         loss = loss + (torch.nn.functional.binary_cross_entropy_with_logits(logits[gat], gold[gat], reduction='none') * lw).sum()
         # a gather group is right when every candidate is right
         wrong = torch.zeros(ng, device=dev).index_add_(0, g[gat], ((logits[gat] > 0).float() != gold[gat]).float())
@@ -198,20 +200,21 @@ def group_loss(logits, b):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--model', default='vsa'); ap.add_argument('--data', default='d12'); ap.add_argument('--out', required=True)
+    ap.add_argument('--model', default='vsa'); ap.add_argument('--data', default='d15g'); ap.add_argument('--out', required=True)
     ap.add_argument('--epochs', type=float, default=2); ap.add_argument('--D', type=int, default=1024); ap.add_argument('--C', type=int, default=64)
     ap.add_argument('--P', type=int, default=4)
     ap.add_argument('--batch', type=int, default=96); ap.add_argument('--max-words', type=int, default=0); ap.add_argument('--minutes', type=float, default=1e9)
     ap.add_argument('--lr', type=float, default=0.02); ap.add_argument('--lr-scalar', type=float, default=0.005); ap.add_argument('--seed', type=int, default=1)
     ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0); ap.add_argument('--lex', action='store_true'); ap.add_argument('--dev', default=''); ap.add_argument('--k2', type=int, default=0); ap.add_argument('--eval-train', type=int, default=0); ap.add_argument('--by-decision', action='store_true'); ap.add_argument('--hmm', default='', help='station posteriors (data/stations.mjs output)')
-    ap.add_argument('--init', default=''); ap.add_argument('--data-weight', default=''); ap.add_argument('--dev-split', default='dev-B'); ap.add_argument('--rb', type=int, default=0, help='route book memory slots (DESIGN 7)')
+    ap.add_argument('--init', default=''); ap.add_argument('--data-weight', default=''); ap.add_argument('--dev-split', default='dev-B'); ap.add_argument('--rb', type=int, default=0, help='route book memory slots (DESIGN 7)'); ap.add_argument('--path', type=int, default=0, help='path drawing memory slots (DESIGN 7.2)')
+    ap.add_argument('--focus', default='', help='weights of the weak kinds of message, e.g. len25=2,coord=1.5,reopen=2,rel3=1.5 (multiplied, at most 4)')
     ap.add_argument('--eval-only', action='store_true'); ap.add_argument('--replace', action='store_true'); ap.add_argument('--confusion', action='store_true')
     a = ap.parse_args()
     torch.manual_seed(a.seed); np.random.seed(a.seed)
     os.makedirs(a.out, exist_ok=True)
     dev = torch.device(os.environ.get('RVSS_TRAIN_DEVICE', 'cuda'))   # cpu for a small --eval-only check
     meta = json.load(open(L + a.data.split(',')[0] + '.meta.json')); a.view = meta.get('view', 1)
-    dvname = a.dev or 'd12'
+    dvname = a.dev or a.data.split(',')[0]
     # the move-label list: the checkpoint's (eval-only, or init), then every set's own list (meta.json), in order
     def set_labels(name):
         m = json.load(open(L + name + '.meta.json'))
@@ -222,8 +225,7 @@ def main():
     for name in a.data.split(',') + [dvname]:
         for lab in set_labels(name):
             if lab not in labels:
-                if a.eval_only: raise SystemExit('label %r of %s is not in the model' % (lab, name))
-                labels.append(lab)
+                labels.append(lab)      # a label the model does not know: its rows start empty (eval-only: never chosen)
     def remap(R, name):
         lut = np.array([labels.index(lab) for lab in set_labels(name)], np.int64)
         R['ex_label'] = lut[R['ex_label']]; return R
@@ -247,6 +249,21 @@ def main():
         reps = [int(x) for x in a.data_weight.split(',')]
         parts = [p for p, r in zip(parts, reps) for _ in range(r)]
     tr = concat(parts)
+    if a.focus:
+        # the weak kinds of message (by length and by construct, read from the gold moves; no word is named) weigh more
+        fw = {k: float(v) for k, v in (x.split('=') for x in a.focus.split(','))}
+        li = {lab: i for i, lab in enumerate(labels)}
+        is_coord = np.array([lab.startswith('coord:') for lab in labels]); is_reopen = np.array([lab == 'reopen' for lab in labels])
+        is_rel = np.array([lab.startswith('open:relation') for lab in labels])
+        M_ = tr['msg']; lab_ = tr['ex_label']
+        mid = np.repeat(np.arange(len(M_)), M_[:, 3])
+        ncoord = np.bincount(mid, weights=is_coord[lab_], minlength=len(M_)); nre = np.bincount(mid, weights=is_reopen[lab_], minlength=len(M_))
+        nrel = np.bincount(mid, weights=is_rel[lab_], minlength=len(M_)); nw = np.array([len(w) for w in tr['words']])
+        mw = np.ones(len(M_), np.float32)
+        mw *= np.where(nw >= 25, fw.get('len25', 1), 1); mw *= np.where(ncoord > 0, fw.get('coord', 1), 1)
+        mw *= np.where(nre > 0, fw.get('reopen', 1), 1); mw *= np.where(nrel >= 3, fw.get('rel3', 1), 1)
+        tr['mw'] = np.minimum(mw, 4).astype(np.float32)
+        print('focus', fw, 'mean weight', float(tr['mw'].mean()), 'messages weighted', int((tr['mw'] > 1).sum()), flush=True)
     dv = remap(load(dvname, a.dev_split, a.max_words), dvname)
     dv = _reindex(dv, np.arange(min(len(dv['words']), 10 ** 9)))
     print('loaded', len(tr['words']), 'train messages', len(tr['ex_label']), 'acts;', len(dv['words']), 'dev-B', f'{time.time()-t0:.0f}s', flush=True)
@@ -269,26 +286,34 @@ def main():
     if a.model == 'vsa':
         W = np.stack([S.f(w) for w in vocab]); A = np.stack([seeded('rvss-atom-id:%d' % int(x), a.D) for x in atoms])
         print('stars', W.shape, A.shape, f'{time.time()-t1:.0f}s', flush=True)
-        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0, view=a.view, rb=a.rb).to(dev)
+        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0, view=a.view, rb=a.rb, path=a.path).to(dev)
         opt = torch.optim.Adam([{'params': model.phase_params(), 'lr': a.lr}, {'params': model.scalar_params(), 'lr': a.lr_scalar}])
     else:
         import zlib
         low = np.array([zlib.crc32(w.lower().encode()) & 0x7fffffff for w in vocab]); sf = np.array([zlib.crc32(('suf:' + w.lower()[-3:]).encode()) & 0x7fffffff for w in vocab])
         model = LogReg(len(labels), 21, torch.as_tensor(low), torch.as_tensor(sf), a.triples).to(dev)
         opt = torch.optim.Adam(model.parameters(), lr=a.lr)
-    if a.init:
-        ck = torch.load(a.init + '/model.pt', map_location=dev, weights_only=False)
-        own = model.state_dict(); old_labels = ck['labels']
+    def copy_from(src, unknown_bias=None):
+        """a checkpoint's parameters into the model: as they are where the shapes agree, else row by row by the label's
+        name (Pr, bias: labels first; Grb: labels last); unknown_bias for labels the checkpoint does not know"""
+        ck = torch.load(src + '/model.pt', map_location=dev, weights_only=False)
+        own = model.state_dict(); old_labels = ck['labels']; ix = [labels.index(lab) for lab in old_labels]
         for k, v in ck['state'].items():
             if k not in own: continue
             if own[k].shape == v.shape: own[k].copy_(v)
             elif k in ('Pr', 'bias') and own[k].shape[1:] == v.shape[1:]:
-                for i, lab in enumerate(old_labels): own[k][labels.index(lab)] = v[i]
+                for i, j in enumerate(ix): own[k][j] = v[i]
+            elif k in ('Grb', 'Gp') and own[k].shape[:-1] == v.shape[:-1]:
+                for i, j in enumerate(ix): own[k][..., j] = v[..., i]
             else: print('init: not copied', k, tuple(v.shape), tuple(own[k].shape), flush=True)
-        print('init from', a.init, flush=True)
+        if unknown_bias is not None:
+            for j, lab in enumerate(labels):
+                if lab not in old_labels: own['bias'][j] = unknown_bias
+    if a.init:
+        copy_from(a.init); print('init from', a.init, flush=True)
     T = Data(tr, vocab, aid, dev); Dv = Data(dv, vocab, aid, dev)
     print('on gpu', f'{time.time()-t0:.0f}s', flush=True)
-    w_or = torch.tensor([WEIGHT[i] for i in range(5)], device=dev)
+    w_or = torch.tensor([WEIGHT[i] for i in range(6)], device=dev)
 
     # route book: the receiver below the top, read from the parent part's terms ('opener:<type>' with its token; 'type:M')
     if a.rb:
@@ -309,9 +334,11 @@ def main():
 
     def forward(b):
         if a.model == 'vsa':
-            kap, _ = model.kinds(b['wid'], b['left'], b['right'], b['post'])
+            kap, pi = model.kinds(b['wid'], b['left'], b['right'], b['post'])
             lg = model.act_logits(kap, b['ex'], b['part'], b['atom'], b['off'], b['tok'], b['bw'], b['bt'])
-            if a.rb: lg = lg + model.rb_logits(kap, b['bw'], *receivers(b))
+            if a.rb:
+                rc = receivers(b); lg = lg + model.rb_logits(kap, b['bw'], *rc)
+                if a.path: lg = lg + model.path_logits(pi, b['bw'], *rc)
             cl = model.cand_logits(kap, b['cidx'], b['cpart'], b['catom'], b['coff'], b['ctok'], b['ckind'], b['cbw'], b['cbt']) if b['NC'] else None
         else:
             wid = torch.cat([b['wid'], torch.full((1,), -1, device=dev, dtype=b['wid'].dtype)])
@@ -360,14 +387,14 @@ def main():
     global BYDEC
     BYDEC = {} if a.by_decision else None
     if a.eval_only:
-        ck = torch.load(a.out + '/model.pt', map_location=dev, weights_only=False)
-        model.load_state_dict(ck['state'], strict=False)
+        if a.model == 'vsa': copy_from(a.out, unknown_bias=-1e4)
+        else: model.load_state_dict(torch.load(a.out + '/model.pt', map_location=dev, weights_only=False)['state'], strict=False)
         res = {}
         nw = np.array([len(w) for w in dv['words']])
         if a.by_decision:
             evaluate(Dv, 10 ** 9)
             out = {f'{k[0]} | {k[1]}': {'right': v[0], 'n': v[1], 'acc': round(v[0] / v[1], 4)} for k, v in sorted(BYDEC.items())}
-            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision' + ('-' + a.dev if a.dev and a.dev != 'd12' else '') + ('-' + a.dev_split if a.dev_split != 'dev-B' else '') + '.json', 'w'), indent=1); return
+            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision' + ('-' + dvname if dvname != 'd12' else '') + ('-' + a.dev_split if a.dev_split != 'dev-B' else '') + '.json', 'w'), indent=1); return
         if a.eval_train:
             # teacher forcing on train messages (every 37th, up to N): fitting against generalising
             sel = np.arange(0, len(tr['words']), 37)[:a.eval_train]
@@ -392,7 +419,7 @@ def main():
         mi = perm[pi:pi + a.batch]; pi += a.batch
         b = T.batch(mi)
         lg, cl = forward(b)
-        loss = (torch.nn.functional.cross_entropy(lg, b['label'], reduction='none') * w_or[b['w']]).sum()
+        loss = (torch.nn.functional.cross_entropy(lg, b['label'], reduction='none') * w_or[b['w']] * b['mw']).sum()
         if cl is not None: loss = loss + group_loss(cl, b)[0]
         loss = loss / b['NE']
         opt.zero_grad(); loss.backward(); opt.step(); sched.step()

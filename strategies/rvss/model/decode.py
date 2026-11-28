@@ -68,6 +68,9 @@ class VSAScorer:
             # the route book (net.py rb_logits): pair code of the receiver's opener and the word, read against Qrb
             self.Trb = st['Trb']; self.rperm = st['rperm']; self.Qrbc = np.conj(np.exp(1j * st['Qrb'])).T.astype(np.complex64).copy()
             self.beta_rb = float(st['beta_rb']); self.Grb = st['Grb']
+            self.path = a.get('path', 0)
+            if self.path:
+                self.thP = st['thP']; self.Qpc = np.conj(np.exp(1j * st['Qp'])).T.astype(np.complex64).copy(); self.beta_p = float(st['beta_p']); self.Gp = st['Gp']
             self.rbtype = {'opener:nominal': 1, 'opener:relation': 2, 'opener:clause': 3, 'opener:coordination': 4, 'type:M': 0}
         if self.sit:
             self.Sk = st['Sk']; self.SQc = np.conj(np.exp(1j * st['SQ'])).T.astype(np.complex64).copy(); self.SV = np.exp(1j * st['SV']).astype(np.complex64)
@@ -98,6 +101,8 @@ class VSAScorer:
         sim = (x @ np.conj(self.K).T).real / self.D
         z = self.beta_k * sim; z = np.exp(z - z.max(1, keepdims=True)); pi = z / z.sum(1, keepdims=True)
         kap = (pi.astype(np.complex64) @ self.K)
+        if getattr(self, 'path', 0):
+            self.Spath = np.concatenate([np.zeros((1, self.D), np.float32), np.cumsum(pi.astype(np.float32) @ self.thP, 0)])
         if self.k2:
             x2 = np.zeros((n, self.D), np.complex64)
             for j, d in enumerate(range(-3, 4)):
@@ -131,6 +136,12 @@ class VSAScorer:
             q = self.Trb[t] * kap[o] * ks
             z = self.beta_rb * (q @ self.Qrbc).real / self.sq; z = np.exp(z - z.max()); z = z / z.sum()
             out = out + z @ self.Grb[j]
+            if self.path:
+                # net.py path_logits: the running sum of the kinds' path keys from the opener o to the word bw
+                ph = self.Spath[bw + 1] - self.Spath[o] if (o < NT and bw < NT and o <= bw) else np.zeros(self.D, np.float32)
+                q = self.Trb[t] * np.exp(1j * ph).astype(np.complex64)
+                z = self.beta_p * (q @ self.Qpc).real / self.sq; z = np.exp(z - z.max()); z = z / z.sum()
+                out = out + z @ self.Gp[j]
         return out
 
     def act(self, kap, terms, bw, bt, ok=None):

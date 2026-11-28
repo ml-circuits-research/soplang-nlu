@@ -1,10 +1,11 @@
 // rvss data, step 1: the spaCy strategy over every message of the dataset, in parallel worker processes.
 //
 //   node strategies/rvss/data/run-spacy.mjs [--code <tree>] [--out <folder>] [--workers 10] [--dataset <webmeet-dataset>]
-//        [--stride n] [--limit n] [--dir semantic] [--prefix '']
+//        [--stride n] [--limit n] [--dir semantic] [--prefix ''] [--messages <file.jsonl>]
 //
 // --dir is the dataset folder whose CSV files are read (default semantic; syntactic/general for the general corpora,
 // which have no semantic file); `file` in the output is --prefix + the path inside --dir (e.g. general/sgd/0013.csv).
+// --messages reads the messages from a file of lines {file, row, text} instead (build-labels.mjs --missing writes one).
 // --code is a copy of the soplang-nlu code that holds lib/ and strategies/{spacy,spacy-beam,spacy-direct,
 // neural-dependencies}/ (made with `git archive <commit> ... | tar -x`), so the run reads one commit's code even
 // when the working tree changes while it runs. Default: this repository.
@@ -142,7 +143,7 @@ function require_read(fd, buf, position) { let got = 0; while (got < buf.length)
 async function parent() {
   mkdirSync(out, {recursive: true})
   const runFile = join(out, 'run.jsonl')
-  const all = messagesOf(join(dataset, dir)).map(m => ({...m, file: prefix + m.file})).filter((_, i) => i % stride === 0).slice(0, limit)
+  const all = (opt('messages') ? readFileSync(resolve(opt('messages')), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)) : messagesOf(join(dataset, dir)).map(m => ({...m, file: prefix + m.file}))).filter((_, i) => i % stride === 0).slice(0, limit)
   const done = await readDone(runFile)
   const todo = all.filter(m => !done.has(m.file + '#' + m.row))
   const meta = {started: new Date().toISOString(), code, dataset, dir, prefix, messages: all.length, alreadyDone: done.size, todo: todo.length, workers,

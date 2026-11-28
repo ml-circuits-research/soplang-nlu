@@ -5,7 +5,7 @@ A view is a list of terms (part, atom, offset, token): the model binds the atom'
 smooth position code Z_s^offset and with the learned kind star of the token (or nothing when token = -1),
 and bundles the terms of each part. The control model reads the same terms as symbolic features.
 """
-import hashlib
+import hashlib, os
 import numpy as np
 
 PARTS = ['word', 'cur', 'parent', 'aside', 'last', 'hist', 'stack', 'cand', 'cur-star', 'last-star']
@@ -320,8 +320,15 @@ SINGLE_REF = {'subject', 'ellipsis', 'to'}
 SINGLE_WORD = {'verb', 'head'}
 
 
+# reading-time rules that can be switched off one at a time to measure what each one carries (RVSS_LEGAL_OFF, a comma
+# list): compat (which wire types a reference key takes, keys that hold one wire), close (what a wire needs before it
+# closes), word (keys that hold one word), order (claim / point only right after an open; no reopen twice in a row),
+# since (at most 12 moves without placing a word)
+LEGAL_OFF = set(filter(None, os.environ.get('RVSS_LEGAL_OFF', '').split(',')))
+
+
 def compat(key, t):
-    return key == 'top' or key == 'held' or t in REFT.get(key, {t})
+    return key == 'top' or key == 'held' or 'compat' in LEGAL_OFF or t in REFT.get(key, {t})
 
 
 def ref_filled(S, X):
@@ -329,12 +336,13 @@ def ref_filled(S, X):
 
 
 def can_place(S, X, key):
-    if key not in SINGLE_WORD: return True
+    if key not in SINGLE_WORD or 'word' in LEGAL_OFF: return True
     have = [q for q, k in X.words if k == key]
     return not have or (have[-1] == S.p - 1 and X.words[-1][0] == S.p - 1)
 
 
 def can_close(S, X, lab=''):
+    if 'close' in LEGAL_OFF: return True
     if X.t == 'nominal': return any(k == 'head' for _, k in X.words)
     if X.t == 'relation': return any(S.nodes[c].key == 'to' for c in X.children)
     if X.t == 'coordination':
@@ -351,12 +359,14 @@ def can_take(S, X, key, t, single=True):
     """can constellation X take a wire of type t at key? (a new constellation may take a filled single key:
     under the adopted conventions a conjunct takes the place of its coordination before the coordination opens)"""
     if not compat(key, t): return False
-    if single and key in SINGLE_REF and key in ref_filled(S, X): return False
+    if single and key in SINGLE_REF and key in ref_filled(S, X) and 'compat' not in LEGAL_OFF: return False
     return True
 
 
 def legal(S, vocab, allowed, max_since=12, relax=False):
     """the labels the executor can take now (a boolean mask over vocab.labels)"""
+    if 'since' in LEGAL_OFF: max_since = 10 ** 9
+    order = 'order' not in LEGAL_OFF
     E = S.top(); X = S.node(E.h); t = X.t; p, n = S.p, S.n
     last = S.hist[-1] if S.hist else '^'
     lastop = last.split(':')[0]
@@ -376,9 +386,9 @@ def legal(S, vocab, allowed, max_since=12, relax=False):
             if r and t != 'M':
                 at = arg[-1]; nt = arg[1] if op == 'open' else 'coordination'
                 if at != 'held' and not can_take(S, X, at, nt, single=False): r = False
-        elif op == 'claim': r = lastop in ('open', 'coord', 'claim') and any(can_take(S, X, arg[1], S.nodes[h].t) for h, d, _ in S.held_items() if d > 0)
-        elif op == 'point': r = lastop in ('open', 'coord', 'claim', 'point', 'place') and S.since_place < max_since and any(can_take(S, X, arg[1], S.nodes[h].t) for h, _, _ in S.point_cands())
-        elif op == 'reopen': r = lastop != 'reopen' and S.since_place < max_since and bool(S.closed_reachable())
+        elif op == 'claim': r = (not order or lastop in ('open', 'coord', 'claim')) and any(can_take(S, X, arg[1], S.nodes[h].t) for h, d, _ in S.held_items() if d > 0)
+        elif op == 'point': r = (not order or lastop in ('open', 'coord', 'claim', 'point', 'place')) and S.since_place < max_since and any(can_take(S, X, arg[1], S.nodes[h].t) for h, _, _ in S.point_cands())
+        elif op == 'reopen': r = (not order or lastop != 'reopen') and S.since_place < max_since and bool(S.closed_reachable())
         else: r = False
         ok.append(r)
     return ok
