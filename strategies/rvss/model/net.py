@@ -24,6 +24,7 @@ P_CUR, P_PAR, P_ASIDE, P_CAND = 1, 2, 3, 7
 ACT_PARTS = [0, 1, 2, 3, 4, 5, 6]     # bundled parts of an act view
 BOUND = [1, 2, 3]                     # parts also bound with the incoming word's kind
 NOFF, OFFCLIP = 99, 12
+RB_TYPES = ['M', 'nominal', 'relation', 'clause', 'coordination', 'none']   # route book: the receiver's type ('none': no receiver)
 
 
 def off_index(off):
@@ -32,7 +33,7 @@ def off_index(off):
 
 
 class VSA(nn.Module):
-    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0, view=2):
+    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0, view=2, rb=0):
         super().__init__()
         # view 3 (core.py): two more bundled parts, the condensed stars of the open and of the last closed constellation
         self.nview = 10 if view >= 3 else NPARTS
@@ -70,6 +71,19 @@ class VSA(nn.Module):
             self.lam2 = nn.Parameter(torch.tensor([0.5, 0.7, 1.0, 1.0, 1.0, 0.7, 0.5]))
             self.K2 = nn.Parameter(torch.rand(k2, D) * 2 * math.pi)
             self.beta_k2 = nn.Parameter(torch.tensor(30.0)); self.g2 = nn.Parameter(torch.tensor(0.5))
+        # rb: the route book inside the pilot (DESIGN 7.1, 8.4): for the open constellation X the pilot fills and for the
+        # one below it (the receiver after a close), the pair code of X's opener and the incoming word,
+        # q = T_type(X) (x) kind(opener of X) (x) rho_q(kind(word)), is read against rb learned key stars Q_i (a key-value
+        # memory, attention softmax(beta sim(q, Q_i))); the values stored beside the keys are the gate numbers of every
+        # move, Gamma[X, i, move] (the book's gate number per pair of kinds, read from the pair code). The pair code has
+        # no distance in it: an opener eight words back is read as one next to the word.
+        self.rb = rb
+        if rb:
+            self.register_buffer('Trb', torch.stack([torch.as_tensor(seeded_np('rvss-rb-type:%s' % t, D)) for t in RB_TYPES]))
+            self.register_buffer('rperm', torch.as_tensor(np.random.default_rng(20261128).permutation(D)))
+            self.Qrb = nn.Parameter(torch.rand(rb, D) * 2 * math.pi)
+            self.beta_rb = nn.Parameter(torch.tensor(4.0))
+            self.Grb = nn.Parameter(torch.zeros(2, rb, nlabels))
         nparts = len(self.act_parts) + len(BOUND) + (1 if sit else 0)
         if sit:
             # the situation memory (DESIGN 9.1): the whole view, each part bound with a fixed part star, read
@@ -88,10 +102,10 @@ class VSA(nn.Module):
         self.biasg = nn.Parameter(torch.zeros(4))
 
     def phase_params(self):
-        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else []) + ([self.K2] if self.k2 else [])
+        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else []) + ([self.K2] if self.k2 else []) + ([self.Qrb, self.Grb] if self.rb else [])
 
     def scalar_params(self):
-        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else []) + ([self.gam] if self.lex else []) + ([self.lam2, self.beta_k2, self.g2] if self.k2 else []) + ([self.lamh] if self.hmm else [])
+        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else []) + ([self.gam] if self.lex else []) + ([self.lam2, self.beta_k2, self.g2] if self.k2 else []) + ([self.lamh] if self.hmm else []) + ([self.beta_rb] if self.rb else [])
 
     def situation(self, V):
         """V (N, parts, D) -> (N, 1, D)"""
@@ -156,6 +170,18 @@ class VSA(nn.Module):
         Va = torch.cat([V, Vb], 1)
         if self.sit: Va = torch.cat([Va, self.situation(Va)], 1)
         return self.score_parts(Va, self.Pr, self.u, self.beta) + self.bias
+
+    def rb_logits(self, kap, s, o1, t1, o2, t2):
+        """the route book's gate numbers for every move: s the incoming word's kap row; (o1, t1) the opener row and type of
+        the constellation the pilot fills, (o2, t2) of the one below it -> (N, nlabels)"""
+        Qc = torch.polar(torch.ones_like(self.Qrb), self.Qrb)
+        ks = kap[s][:, self.rperm]
+        out = 0
+        for j, (o, t) in enumerate(((o1, t1), (o2, t2))):
+            q = self.Trb[t] * kap[o] * ks
+            att = torch.softmax(self.beta_rb * (q @ Qc.conj().T).real / math.sqrt(self.D), -1)
+            out = out + att @ self.Grb[j]
+        return out
 
     def cand_logits(self, kap, cidx, part, atom, off, tok, kind, bw, bt):
         """cidx: candidate index of each term; kind/bw/bt per candidate -> (Ncand,)"""

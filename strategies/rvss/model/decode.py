@@ -63,6 +63,12 @@ class VSAScorer:
             self.Hs = np.stack([seeded('rvss-station:%d' % j, D) for j in range(25)]); self.lamh = st['lamh']
         if self.k2:
             self.lam2 = st['lam2']; self.K2 = np.exp(1j * st['K2']).astype(np.complex64); self.beta_k2 = float(st['beta_k2']); self.g2 = float(st['g2'])
+        self.rb = a.get('rb', 0)
+        if self.rb:
+            # the route book (net.py rb_logits): pair code of the receiver's opener and the word, read against Qrb
+            self.Trb = st['Trb']; self.rperm = st['rperm']; self.Qrbc = np.conj(np.exp(1j * st['Qrb'])).T.astype(np.complex64).copy()
+            self.beta_rb = float(st['beta_rb']); self.Grb = st['Grb']
+            self.rbtype = {'opener:nominal': 1, 'opener:relation': 2, 'opener:clause': 3, 'opener:coordination': 4, 'type:M': 0}
         if self.sit:
             self.Sk = st['Sk']; self.SQc = np.conj(np.exp(1j * st['SQ'])).T.astype(np.complex64).copy(); self.SV = np.exp(1j * st['SV']).astype(np.complex64)
             self.beta_s = float(st['beta_s'])
@@ -113,6 +119,20 @@ class VSAScorer:
             V[pt] += v; cnt[pt] += 1
         return V / np.sqrt(np.maximum(cnt, 1))[:, None]
 
+    def rb_scores(self, kap, terms, bw, bt):
+        """(L,) the route book's gate numbers: the top (opener bt, its type) and the receiver below it (from the parent part)"""
+        NT = len(kap) - 1
+        t1 = next((TYPES.index(a[5:]) for pt, a, off, tok in terms if pt == 1 and a.startswith('type:')), 5)
+        t2, o2 = 5, NT
+        for pt, a, off, tok in terms:
+            if pt == 2 and a in self.rbtype: t2 = self.rbtype[a]; o2 = NT if t2 == 0 else tok
+        ks = kap[bw][self.rperm]; out = 0
+        for j, (o, t) in enumerate(((bt, t1), (o2, t2))):
+            q = self.Trb[t] * kap[o] * ks
+            z = self.beta_rb * (q @ self.Qrbc).real / self.sq; z = np.exp(z - z.max()); z = z / z.sum()
+            out = out + z @ self.Grb[j]
+        return out
+
     def act(self, kap, terms, bw, bt, ok=None):
         V = self.bundle(kap, terms)
         kw = kap[bw]
@@ -130,11 +150,13 @@ class VSAScorer:
             s = T.einsum('pd,ipdq->ipq', Xt, self.tPRL[it]) * (self.sq / self.D)
             sc = self.tbias[it] + (self.tu[None, :] * T.logsumexp(self.tbeta[None, :, None] * s, -1) / self.tbeta[None, :]).sum(1)
             out = np.full(self.L, -1e30); out[idx] = sc.cpu().numpy()
+            if self.rb: out[idx] += self.rb_scores(kap, terms, bw, bt)[idx]
             return out
         Xr = X[:, None, :]
         s = np.stack([np.matmul(Xr, self.PRL[i])[:, 0] for i in idx]) * (self.sq / self.D)   # (n, parts, P)
         b = self.beta[None, :, None]
         sc = self.bias[idx] + (self.u[None, :] * lse(b * s) / self.beta[None, :]).sum(1)
+        if self.rb: sc = sc + self.rb_scores(kap, terms, bw, bt)[idx]
         out = np.full(self.L, -1e30); out[idx] = sc
         return out
 

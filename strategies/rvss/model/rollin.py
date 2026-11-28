@@ -105,7 +105,7 @@ def main():
     lines = []
     for i, l in enumerate(open(src)):
         o = json.loads(l)
-        if o['split'] == split and o['origin'] == 'spacy': lines.append(o)
+        if o['split'] == split and o['origin'] in ('spacy', 'general'): lines.append(o)
     lines = lines[::stride]
     import torch
     VIEW['version'] = torch.load(os.path.join(md, 'model.pt'), map_location='cpu', weights_only=False)['args'].get('view', 1)

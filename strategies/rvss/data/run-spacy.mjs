@@ -1,8 +1,10 @@
 // rvss data, step 1: the spaCy strategy over every message of the dataset, in parallel worker processes.
 //
 //   node strategies/rvss/data/run-spacy.mjs [--code <tree>] [--out <folder>] [--workers 10] [--dataset <webmeet-dataset>]
-//        [--stride n] [--limit n]
+//        [--stride n] [--limit n] [--dir semantic] [--prefix '']
 //
+// --dir is the dataset folder whose CSV files are read (default semantic; syntactic/general for the general corpora,
+// which have no semantic file); `file` in the output is --prefix + the path inside --dir (e.g. general/sgd/0013.csv).
 // --code is a copy of the soplang-nlu code that holds lib/ and strategies/{spacy,spacy-beam,spacy-direct,
 // neural-dependencies}/ (made with `git archive <commit> ... | tar -x`), so the run reads one commit's code even
 // when the working tree changes while it runs. Default: this repository.
@@ -30,6 +32,7 @@ const out = resolve(opt('out', join(repo, '.local-data/rvss/spacy-run')))
 const workers = Number(opt('workers', 10))
 const dataset = resolve(opt('dataset', join(repo, '../webmeet-dataset')))
 const limit = Number(opt('limit', Infinity))
+const dir = opt('dir', 'semantic'), prefix = opt('prefix', '')
 const stride = Number(opt('stride', 1))     // every stride-th message only: a sample to check a rewrite against the live strategy
 
 // ---- CSV: the same records as tests/benchmark/syntax/lib.mjs readCsv (checked on every file of the dataset by
@@ -139,10 +142,10 @@ function require_read(fd, buf, position) { let got = 0; while (got < buf.length)
 async function parent() {
   mkdirSync(out, {recursive: true})
   const runFile = join(out, 'run.jsonl')
-  const all = messagesOf(join(dataset, 'semantic')).filter((_, i) => i % stride === 0).slice(0, limit)
+  const all = messagesOf(join(dataset, dir)).map(m => ({...m, file: prefix + m.file})).filter((_, i) => i % stride === 0).slice(0, limit)
   const done = await readDone(runFile)
   const todo = all.filter(m => !done.has(m.file + '#' + m.row))
-  const meta = {started: new Date().toISOString(), code, dataset, messages: all.length, alreadyDone: done.size, todo: todo.length, workers,
+  const meta = {started: new Date().toISOString(), code, dataset, dir, prefix, messages: all.length, alreadyDone: done.size, todo: todo.length, workers,
     python: process.env.SOP_NLU_SYNTAX_PYTHON, model: process.env.SOP_NLU_SYNTAX_MODEL}
   appendFileSync(join(out, 'runs.log'), JSON.stringify(meta) + '\n')
   console.error(JSON.stringify(meta))

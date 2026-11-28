@@ -16,7 +16,7 @@ from net import VSA, LogReg
 
 L = '/home/salboaie/work/sopworlds/soplang-nlu/.local-data/rvss/model/'
 TYPES = ['M', 'nominal', 'relation', 'clause', 'coordination']
-WEIGHT = {0: 1.0, 1: 1.0, 2: 3.0, 3: 3.0}      # spacy, agreement, judge, written (DESIGN 9.3)
+WEIGHT = {0: 1.0, 1: 1.0, 2: 3.0, 3: 3.0, 4: 1.0}      # spacy, agreement, judge, written (DESIGN 9.3), general (spaCy on syntactic/general)
 
 
 def load(name, split, maxw):
@@ -177,7 +177,7 @@ def group_loss(logits, b):
     pad[g[~gat], pos[~gat]] = logits[~gat]
     gpad = torch.zeros((ng, mx), device=dev); gpad[g, pos] = gold
     sel = b['gkind'] != 3
-    w = torch.tensor([WEIGHT[i] for i in range(4)], device=dev)
+    w = torch.tensor([WEIGHT[i] for i in range(5)], device=dev)
     loss = 0; ptr = (0, 0); gth = (0, 0)
     if sel.any():
         tgt = gpad[sel].argmax(1)
@@ -202,7 +202,7 @@ def main():
     ap.add_argument('--batch', type=int, default=96); ap.add_argument('--max-words', type=int, default=0); ap.add_argument('--minutes', type=float, default=1e9)
     ap.add_argument('--lr', type=float, default=0.02); ap.add_argument('--lr-scalar', type=float, default=0.005); ap.add_argument('--seed', type=int, default=1)
     ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0); ap.add_argument('--lex', action='store_true'); ap.add_argument('--dev', default=''); ap.add_argument('--k2', type=int, default=0); ap.add_argument('--eval-train', type=int, default=0); ap.add_argument('--by-decision', action='store_true'); ap.add_argument('--hmm', default='', help='station posteriors (data/stations.mjs output)')
-    ap.add_argument('--init', default=''); ap.add_argument('--data-weight', default='')
+    ap.add_argument('--init', default=''); ap.add_argument('--data-weight', default=''); ap.add_argument('--dev-split', default='dev-B'); ap.add_argument('--rb', type=int, default=0, help='route book memory slots (DESIGN 7)')
     ap.add_argument('--eval-only', action='store_true'); ap.add_argument('--replace', action='store_true'); ap.add_argument('--confusion', action='store_true')
     a = ap.parse_args()
     torch.manual_seed(a.seed); np.random.seed(a.seed)
@@ -231,7 +231,7 @@ def main():
         reps = [int(x) for x in a.data_weight.split(',')]
         parts = [p for p, r in zip(parts, reps) for _ in range(r)]
     tr = concat(parts)
-    dv = load(dvname, 'dev-B', a.max_words)
+    dv = load(dvname, a.dev_split, a.max_words)
     dv = _reindex(dv, np.arange(min(len(dv['words']), 10 ** 9)))
     print('loaded', len(tr['words']), 'train messages', len(tr['ex_label']), 'acts;', len(dv['words']), 'dev-B', f'{time.time()-t0:.0f}s', flush=True)
     # vocabularies of fixed stars
@@ -253,7 +253,7 @@ def main():
     if a.model == 'vsa':
         W = np.stack([S.f(w) for w in vocab]); A = np.stack([seeded('rvss-atom-id:%d' % int(x), a.D) for x in atoms])
         print('stars', W.shape, A.shape, f'{time.time()-t1:.0f}s', flush=True)
-        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0, view=a.view).to(dev)
+        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0, view=a.view, rb=a.rb).to(dev)
         opt = torch.optim.Adam([{'params': model.phase_params(), 'lr': a.lr}, {'params': model.scalar_params(), 'lr': a.lr_scalar}])
     else:
         import zlib
@@ -272,12 +272,30 @@ def main():
         print('init from', a.init, flush=True)
     T = Data(tr, vocab, aid, dev); Dv = Data(dv, vocab, aid, dev)
     print('on gpu', f'{time.time()-t0:.0f}s', flush=True)
-    w_or = torch.tensor([WEIGHT[i] for i in range(4)], device=dev)
+    w_or = torch.tensor([WEIGHT[i] for i in range(5)], device=dev)
+
+    # route book: the receiver below the top, read from the parent part's terms ('opener:<type>' with its token; 'type:M')
+    if a.rb:
+        import zlib as _z
+        RBT = ['M', 'nominal', 'relation', 'clause', 'coordination', 'none']
+        opt_ = torch.full((len(atoms),), -1, dtype=torch.long, device=dev)
+        for ti, tn in enumerate(RBT[:5]):
+            for nm in (('type:M',) if tn == 'M' else ('opener:' + tn,)):
+                r_ = amap.get(_z.crc32(nm.encode()) & ((1 << 20) - 1))
+                if r_ is not None: opt_[r_] = ti
+
+    def receivers(b):
+        NE, NT = b['NE'], b['NTOK']
+        t2 = torch.full((NE,), 5, dtype=torch.long, device=dev); o2 = torch.full((NE,), NT, dtype=torch.long, device=dev)
+        ty = opt_[b['atom']]; m_ = (b['part'] == 2) & (ty >= 0)
+        t2[b['ex'][m_]] = ty[m_]; o2[b['ex'][m_]] = torch.where(ty[m_] == 0, torch.full_like(b['tok'][m_], NT), b['tok'][m_])
+        return b['bt'], b['type'], o2, t2
 
     def forward(b):
         if a.model == 'vsa':
             kap, _ = model.kinds(b['wid'], b['left'], b['right'], b['post'])
             lg = model.act_logits(kap, b['ex'], b['part'], b['atom'], b['off'], b['tok'], b['bw'], b['bt'])
+            if a.rb: lg = lg + model.rb_logits(kap, b['bw'], *receivers(b))
             cl = model.cand_logits(kap, b['cidx'], b['cpart'], b['catom'], b['coff'], b['ctok'], b['ckind'], b['cbw'], b['cbt']) if b['NC'] else None
         else:
             wid = torch.cat([b['wid'], torch.full((1,), -1, device=dev, dtype=b['wid'].dtype)])
@@ -333,7 +351,7 @@ def main():
         if a.by_decision:
             evaluate(Dv, 10 ** 9)
             out = {f'{k[0]} | {k[1]}': {'right': v[0], 'n': v[1], 'acc': round(v[0] / v[1], 4)} for k, v in sorted(BYDEC.items())}
-            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision' + ('-' + a.dev if a.dev and a.dev != 'd12' else '') + '.json', 'w'), indent=1); return
+            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision' + ('-' + a.dev if a.dev and a.dev != 'd12' else '') + ('-' + a.dev_split if a.dev_split != 'dev-B' else '') + '.json', 'w'), indent=1); return
         if a.eval_train:
             # teacher forcing on train messages (every 37th, up to N): fitting against generalising
             sel = np.arange(0, len(tr['words']), 37)[:a.eval_train]

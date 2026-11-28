@@ -1,6 +1,7 @@
 // rvss: inputs for decode.py and circuits from its outputs.
 //   node io.mjs inputs-dev <out.jsonl>         every dev-B message of distill.jsonl.gz (15,104)
 //   node io.mjs inputs-bench <out.jsonl>       the 1,831 benchmark messages (sample.json.gz)
+//   node io.mjs inputs-split <set.jsonl.gz> <split> <out.jsonl>   every message of one split of a set (e.g. dev-G)
 //   node io.mjs write <decoded.jsonl> <outputs.jsonl>   nodes -> circuits ({id, file, row, text, sop, error, ms})
 import {createReadStream, createWriteStream, readFileSync, writeFileSync} from 'node:fs'
 import {createGunzip, gunzipSync} from 'node:zlib'
@@ -8,7 +9,7 @@ import {createInterface} from 'node:readline'
 const root = '/home/salboaie/work/sopworlds/soplang-nlu/'
 const {wordsOf, validateSyntax} = await import(root + 'lib/syntax.mjs')
 const {writeNodes} = await import(root + 'strategies/rvss/writer.mjs')
-const [cmd, a, b] = process.argv.slice(2)
+const [cmd, a, b, c3] = process.argv.slice(2)
 export function input(text) {
   const ws = wordsOf(text); let prev = 0; const gaps = []
   for (const w of ws) { gaps.push(text.slice(prev, w.start).replace(/\s+/gu, '')); prev = w.end }
@@ -19,6 +20,12 @@ if (cmd === 'inputs-dev') {
   const out = createWriteStream(a); let n = 0
   for await (const l of createInterface({input: createReadStream(root + '.local-data/rvss/distill.jsonl.gz').pipe(createGunzip())})) {
     const o = JSON.parse(l); if (o.split !== 'dev-B') continue
+    out.write(JSON.stringify({text: o.text, file: o.file, row: o.row, split: o.split, ...input(o.text)}) + '\n'); n++ }
+  out.end(); console.log(n)
+} else if (cmd === 'inputs-split') {
+  const out = createWriteStream(c3); let n = 0
+  for await (const l of createInterface({input: createReadStream(a).pipe(createGunzip())})) {
+    const o = JSON.parse(l); if (o.split !== b) continue
     out.write(JSON.stringify({text: o.text, file: o.file, row: o.row, split: o.split, ...input(o.text)}) + '\n'); n++ }
   out.end(); console.log(n)
 } else if (cmd === 'inputs-bench') {

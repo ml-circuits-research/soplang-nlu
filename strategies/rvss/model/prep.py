@@ -98,7 +98,7 @@ def pack(msgs, wid, gl):
     R['cand'] = np.array(c_rows, np.int32).reshape(-1, 3)
     R['cterm_part'] = np.array(ct_p, np.int8); R['cterm_atom'] = np.array(ct_a, np.int32)
     R['cterm_off'] = np.array(ct_o, np.int8); R['cterm_tok'] = np.array(ct_k, np.int16)
-    R['origin'] = np.array([{'spacy': 0, 'agreement': 1, 'judge': 2, 'written': 3}[m['origin']] for m in msgs], np.int8)
+    R['origin'] = np.array([{'spacy': 0, 'agreement': 1, 'judge': 2, 'written': 3, 'general': 4}[m['origin']] for m in msgs], np.int8)
     return R
 
 
@@ -115,7 +115,7 @@ def main():
     vocab_path = prefix.rsplit('/', 1)[0] + '/labels.json'
     try: labels = {l: i for i, l in enumerate(json.load(open(vocab_path)))}
     except FileNotFoundError: labels = {}
-    allowed = collections.Counter(); bad = collections.Counter(); packs = {'train': [], 'dev-B': []}; words = {'train': [], 'dev-B': []}
+    allowed = collections.Counter(); bad = collections.Counter(); packs = collections.defaultdict(list); words = collections.defaultdict(list)
     n = 0
     with Pool(workers) as pool:
         for lab, out, b, al in pool.imap(functools.partial(work, view=view), chunks):
@@ -125,7 +125,7 @@ def main():
             for m in out:
                 for j, a in enumerate(m['acts']): m['acts'][j] = (labels[inv[a[0]]],) + a[1:]
             bad.update(b); allowed.update(al); n += len(out)
-            for split in packs:
+            for split in sorted({m['split'] for m in out}):
                 sel = [m for m in out if m['split'] == split and len(m['words']) <= maxw]
                 if not sel: continue
                 R = pack(sel, lambda w: 0, None); R['words'] = [m['words'] for m in sel]
@@ -133,7 +133,7 @@ def main():
     json.dump(sorted(labels, key=labels.get), open(vocab_path, 'w'))
     meta = {'view': view, 'labels': sorted(labels, key=labels.get), 'bad': bad, 'messages': n,
             'allowed': {f'{t}|{l}': c for (t, l), c in allowed.items()}}
-    for split in ('train', 'dev-B'):
+    for split in sorted(packs):
         if not packs[split]: continue
         R = concat(packs[split]); W = R.pop('words')
         R['tok'] = np.array([0], np.int32)
