@@ -61,13 +61,15 @@ export function drawSample(messages, {seed, share, excluded = new Set()}) {
 
 /**
  * The message files among the files of a commit, as [path in the commit, name used in ids].
- * The messages are the CSV files under `semantic/`; an id names a file without that folder. A commit
+ * The messages are the CSV files under `semantic/`, and under `syntactic/general/` (area "general", no semantic file); an id names a file without the first folder. A commit
  * from before the dataset had the folder holds the message files at its root.
  */
 export function messageFiles(paths) {
   const csv = paths.filter(path => path.endsWith('.csv')).sort()
   const semantic = csv.filter(path => path.startsWith('semantic/'))
-  if (semantic.length) return semantic.map(path => [path, path.slice('semantic/'.length)])
+  // the general messages (since 2026-11-28) stand in the syntactic layer only: syntactic/general/<name>/NNNN.csv is the area "general"
+  const general = csv.filter(path => path.startsWith('syntactic/general/')).map(path => [path, path.slice('syntactic/'.length)])
+  if (semantic.length) return [...semantic.map(path => [path, path.slice('semantic/'.length)]), ...general]
   return csv.filter(path => !/^(syntactic|annotations|tools)\//u.test(path)).map(path => [path, path])
 }
 /** The message files of the dataset as committed at a revision: {commit, files: [{file, content}]}. */

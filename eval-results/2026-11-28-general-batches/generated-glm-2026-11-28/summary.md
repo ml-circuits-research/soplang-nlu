@@ -1,0 +1,15 @@
+# General batches: generated-glm-2026-11-28
+
+| What | Count |
+| --- | --- |
+| messages | 2397 |
+| alreadyLabelled | 0 |
+| simple | 791 |
+| advanced | 1606 |
+| simpleParts | 6 |
+| advancedParts | 11 |
+| noCircuit | {"spacy":0,"hmm-rules":0} |
+| wallSeconds | 67 |
+| wallMsPerMessage | 28 |
+| jobs | 4 |
+| meanMsPerMessage | {"spacy":53,"hmm-rules":0.5} |

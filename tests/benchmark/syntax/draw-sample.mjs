@@ -2,7 +2,7 @@
 //   node tests/benchmark/syntax/draw-sample.mjs <out-file> --seed <text> [--share 0.01] [--dataset <folder>] [--revision HEAD] [--dry]
 // A dataset file holds at most 100 messages (the split of 2026-11-28), so a whole file is a small unit: a 1% sample is
 // about 35 files (about 1,900 messages). --dry only prints the files and counts and writes nothing.
-// Per area (the folder of a file under semantic/: calendar, diagram, document, drawing) it picks whole files
+// Per area (the folder of a file under semantic/: calendar, diagram, document, drawing; and "general": syntactic/general/<name>/, no semantic file) it picks whole files
 // at random, smaller files likelier (weight 1/messages, so the sample spreads over many files), until the
 // area holds at least share x (the area's messages). The areas thus count in proportion to their sizes.
 // No message is excluded: judged or worked-on messages stay eligible. Each distinct text is kept once.
