@@ -1,17 +1,30 @@
 {
-  "run": "2026-11-28-syntax-benchmark-fresh-e",
-  "sample": "eval-results/2026-11-28-syntax-benchmark-fresh-e/sample.json.gz",
-  "messages": 2542,
-  "strategies": {
-    "spacy": {
-      "status": "ran",
-      "startupMs": 1891,
-      "restarts": 0,
-      "file": "spacy.jsonl",
-      "messages": 2542,
-      "valid": 2542,
-      "errors": {},
-      "medianMs": 50.11
-    }
+ "run": "2026-11-28-syntax-benchmark-fresh-e",
+ "sample": "eval-results/2026-11-28-syntax-benchmark-fresh-e/sample.json.gz",
+ "messages": 2542,
+ "strategies": {
+  "spacy": {
+   "status": "ran",
+   "startupMs": 1891,
+   "restarts": 0,
+   "file": "spacy.jsonl",
+   "messages": 2542,
+   "valid": 2542,
+   "errors": {},
+   "medianMs": 50.11
+  },
+  "rvss": {
+   "status": "reused",
+   "file": "rvss.jsonl",
+   "reusedFrom": ".local-data/rvss/runs/vsa2k2hmm-a17-fresh-e/outputs.jsonl",
+   "model": ".local-data/rvss/model/vsa2k2hmm-a17 (beam 4, CPU; from g15, 2 epochs on all annotated data d17s, spaCy first, judged targets x3, no weak-spot weights)",
+   "targets": "all annotated data at dataset 7e98ec6 (nothing held out); spaCy writer 3f13f69 where no judged target exists",
+   "messages": 1320,
+   "valid": 1316,
+   "errors": {
+    "invalid circuit: invalid": 4
+   },
+   "medianMs": 44.282
   }
+ }
 }
