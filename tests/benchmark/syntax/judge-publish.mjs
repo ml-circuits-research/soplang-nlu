@@ -66,7 +66,10 @@ const {changes, first, replaced} = labelChanges(labels, accepted)
 const agreed = [...changes.keys()].filter(text => labels.get(text)?.accepted_by === 'agreement').length
 // A circuit settled by agreement that another accepted circuit replaces as the label is still an accepted reading,
 // and no other file holds it once the syntactic cell changes: it goes to the registry, marked as agreement.
-const kept = [...changes.keys()].map(text => labels.get(text)).filter(old => old?.accepted_by === 'agreement' && !lookup(registry, old.text, old.core))
+// One this run's judge rejected is not kept: the rejection is the newer decision.
+const rejectedNow = new Set(rows.filter(row => row.verdict === 'rejected').map(row => row.text + '\u0000' + row.core))
+const kept = [...changes.keys()].map(text => labels.get(text))
+  .filter(old => old?.accepted_by === 'agreement' && !lookup(registry, old.text, old.core) && !rejectedNow.has(old.text + '\u0000' + old.core))
   .map(old => ({text: old.text, sop: old.label, core: old.core, verdict: 'accepted', grade: 'L8', judge: 'agreement', run: named.tag, source: old.source,
     note: 'settled by agreement and written as the label without a judge; replaced as the label by a circuit a judge accepted in ' + named.tag}))
 if (kept.length) {
