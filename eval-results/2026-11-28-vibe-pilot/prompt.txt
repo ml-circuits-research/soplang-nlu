@@ -1,0 +1,6 @@
+You are a judge of syntactic circuits. Work only in the current folder.
+1. Read RULES.md completely, including every settled case at its end.
+2. Read packet-1.jsonl: each line {n, text, sop} is a message and one circuit written for it by a formalizer that saw only the words of that message.
+3. Judge every line by RULES.md and write verdicts-1.jsonl in this folder, one JSON line per packet line: {"n": <number>, "grade": "L8" or "L1".."L6", "note": "<one sentence>"}. L8 accepts. For a rejection the note must quote the words of the message in single quotes and name the wrong statement or the lost information; if you cannot quote one, the circuit is acceptable.
+4. Run: node check.mjs 1   and fix whatever it reports until it passes.
+Work in batch: read the whole packet, then write the whole verdicts file at once (you may write it in a few large parts); do not edit line by line. Judge fairly: a plausible or incomplete reading that the next layer can continue from is acceptable; reject only a wrong statement or lost explicit information. Do not edit any other file.
