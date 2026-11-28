@@ -1,0 +1,816 @@
+n,text,sop,label_state
+2,name the first series Units,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@n2 syntax.nominal head=""Units""",agreement
+3,relabel Series 2 as Margin,"@c1 syntax.clause form=imperative verb=""relabel"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n3
+@n3 syntax.nominal head=""Margin""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+4,change the name of Series 1 to Profit,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""1""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Profit""
+@r3 syntax.relation from=$n2 to=$n3",agreement
+5,Series 1 should say Costs,"@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""say"" subject=$n1 complement=$n3
+@n3 syntax.nominal head=""Costs""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+6,make Series 2 Forecast,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""Series"" dependent=""2"" head=""Forecast""",agreement
+8,swap the name of the second series to Actuals,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Actuals""",agreement
+10,Series 1 needs to be Costs,"@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""be"" complement=$n3
+@n3 syntax.nominal head=""Costs""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+11,please rename Series 1 to Costs,"@c1 syntax.clause form=imperative discourse=""please"" verb=""rename"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Costs""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+15,"rename Series 2 to Forecast, it shouldn't say Series 2 anymore","@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Forecast""
+@n4 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative auxiliary=""should"" negation=""n't"" verb=""say"" modifier=""anymore"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""Series""
+@n6 syntax.nominal head=""2""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n5 to=$n6",agreement
+18,Costs for Series 1,"@n1 syntax.nominal head=""Costs""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""1""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n2 to=$n3",agreement
+19,first series name: Units,"@n1 syntax.nominal dependent=""first"" dependent=""series"" head=""name""
+@n2 syntax.nominal head=""Units""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+20,second series: Forecast,"@n1 syntax.nominal dependent=""second"" head=""series""
+@n2 syntax.nominal head=""Forecast""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+21,renmae Series 1 to Costs,"@c1 syntax.clause form=imperative verb=""renmae"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Costs""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+24,Series 2 should be orange,"@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""orange"" subject=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+25,change the colour of the first series to teal,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""teal""",agreement
+28,I want Series 1 in dark blue,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""1""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""dark"" head=""blue""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+29,turn Series 2 red,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""red"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+30,the second series needs to be crimson,"@n1 syntax.nominal dependent=""the"" dependent=""second"" head=""series""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""be"" modifier=""crimson""",agreement
+31,recolor the first series as brown,"@c1 syntax.clause form=imperative verb=""recolor"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal head=""brown""",agreement
+32,hey — colour Series 2 blue,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""colour"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""2""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+33,make the first series red please,"@c1 syntax.clause form=imperative verb=""make"" modifier=""red"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""",agreement
+34,"for the print version, make the first series red so it stands out","@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""print"" head=""version""
+@c1 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""series""
+@r2 syntax.relation marker=""so"" from=$c1 to=$c2
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""stands"" modifier=""out"" subject=$n3",agreement
+41,make the fisrt series red,"@c1 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""fisrt"" head=""series""",agreement
+59,new numbers for Series 2,"@n1 syntax.nominal dependent=""new"" head=""numbers""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Series""
+@n3 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n2 to=$n3",agreement
+70,the label for the online series has to read Direct orders,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""online"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal dependent=""Direct"" head=""orders""",agreement
+71,try renaming the online series to Direct orders,"@c1 syntax.clause form=imperative verb=""try""
+@c2 syntax.clause form=nonfinite verb=""renaming"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""online"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""Direct"" head=""orders""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+79,the online series should be called Direct orders. show grid lines,"@n1 syntax.nominal dependent=""the"" dependent=""online"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Direct"" head=""orders""
+@c2 syntax.clause form=imperative verb=""show"" complement=$n3
+@n3 syntax.nominal dependent=""grid"" head=""lines""",agreement
+80,the label for the online series has to read Direct orders. flip the x axis,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""online"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal dependent=""Direct"" head=""orders""
+@c3 syntax.clause form=imperative verb=""flip"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""x"" head=""axis""",agreement
+85,make the revenue line navy,"@c1 syntax.clause form=imperative verb=""make"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""",agreement
+92,could you set the revenue line to navy?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""set"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""navy""",agreement
+105,flip the revenue line over to navy,"@c1 syntax.clause form=imperative verb=""flip"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""navy""",agreement
+110,call the rent series Premises,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal head=""Premises""",agreement
+111,the rent series should be called Premises,"@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Premises""",agreement
+112,change the rent series to Premises,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Premises""",agreement
+116,set the label on the rent series to Premises,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Premises""",agreement
+117,the label for the rent series has to read Premises,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal head=""Premises""",agreement
+121,do Premises as the name on the rent series; plus drop the legend on the right,"@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal head=""Premises""
+@r1 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""drop"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""legend""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""right""",agreement
+122,"could you change the name on the rent series to Premises, also show the percentages","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Premises""
+@c2 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""percentages""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+124,could you change the name on the rent series to Premises?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Premises""",agreement
+126,put Premises down as the name of the rent series,"@c1 syntax.clause form=imperative verb=""put"" modifier=""down"" complement=$n1
+@n1 syntax.nominal head=""Premises""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+127,"sorry to nag, but give the rent series the name Premises","@c1 syntax.clause form=fragment discourse=""sorry""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""nag""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Premises""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+130,do Premoses as the name on the rent series,"@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal head=""Premoses""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+131,set the label on the rent series to Primises,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Primises""",agreement
+134,change the rent series to Data,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Data""",agreement
+138,set the label on the rent series to Data,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Data""",agreement
+140,how about Data for the label on the rent series?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Data""
+@r2 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""label""
+@r3 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+143,give the rent series the name Data; plus show the percentages,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Data""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""percentages""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+144,"do Data as the name on the rent series, could you also drop the legend on the right","@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal head=""Data""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c2 syntax.clause form=interrogative auxiliary=""could"" modifier=""also"" verb=""drop"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+145,could you change the name on the rent series to Data; plus make the font a bit bigger,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Data""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n5 complement=$n6
+@n5 syntax.nominal dependent=""the"" head=""font""
+@n6 syntax.nominal dependent=""a"" head=""bit""",agreement
+148,could you change the name on the rent series to Data?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Data""",agreement
+150,put Data down as the name of the rent series,"@c1 syntax.clause form=imperative verb=""put"" modifier=""down"" complement=$n1
+@n1 syntax.nominal head=""Data""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+152,ok — give the rent series the name Data,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Data""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+153,give the rent series the name Date,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Date""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+156,call the rent series Energy,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal head=""Energy""",agreement
+157,the rent series should be called Energy,"@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Energy""",agreement
+158,change the rent series to Energy,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Energy""",agreement
+163,set the label on the rent series to Energy,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Energy""",agreement
+165,how about Energy for the label on the rent series?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Energy""
+@r2 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""label""
+@r3 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+169,"give the rent series the name Energy, also show the percentages","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Energy""
+@c2 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""percentages""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$n2 to=$n3",agreement
+172,the rent series should be called Energy. percentages on,"@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Energy""
+@n3 syntax.nominal head=""percentages""
+@c2 syntax.clause form=fragment modifier=""on"" complement=$n3",agreement
+178,do Enerrgy as the name on the rent series,"@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal head=""Enerrgy""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+179,let's call the rent series Eneergy,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""call"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n3 syntax.nominal head=""Eneergy""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+180,the rent series should be called Data Size,"@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Data"" head=""Size""",agreement
+181,change the rent series to Data Size,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Data"" head=""Size""",agreement
+183,let's call the rent series Data Size,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""call"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n3 syntax.nominal dependent=""Data"" head=""Size""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+185,set the label on the rent series to Data Size,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Data"" head=""Size""",agreement
+186,the label for the rent series has to read Data Size,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal dependent=""Data"" head=""Size""",agreement
+187,try naming the rent series Data Size,"@c1 syntax.clause form=imperative verb=""try""
+@c2 syntax.clause form=nonfinite verb=""naming"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""Data"" head=""Size""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+188,how about Data Size for the label on the rent series?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""Data"" head=""Size""
+@r2 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""label""
+@r3 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+192,"give the rent series the name Data Size, and drop the legend on the right","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal dependent=""Data"" head=""Size""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""drop"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""legend""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""right""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+198,ok — give the rent series the name Data Size,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal dependent=""Data"" head=""Size""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+200,do Data Size Size as the name on the rent series,"@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal dependent=""Data"" dependent=""Size"" head=""Size""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""",agreement
+201,set the label on the rent series to Daata Size,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Daata"" head=""Size""",agreement
+204,call the rent series Power,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal head=""Power""",agreement
+205,the rent series should be called Power,"@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Power""",agreement
+206,change the rent series to Power,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Power""",agreement
+211,the label for the rent series has to read Power,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal head=""Power""",agreement
+215,do Power as the name on the rent series; plus make the font a bit bigger,"@c1 syntax.clause form=imperative verb=""do"" complement=$n1
+@n1 syntax.nominal head=""Power""
+@r1 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" head=""font""
+@n5 syntax.nominal dependent=""a"" head=""bit""",agreement
+216,"could you change the name on the rent series to Power, also drop the legend on the right","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Power""
+@c2 syntax.clause form=imperative modifier=""also"" verb=""drop"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""legend""
+@r3 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+218,the label for the rent series has to read Power. legend on the right,"@n1 syntax.nominal dependent=""the"" head=""label""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""read"" complement=$n3
+@n3 syntax.nominal head=""Power""
+@n4 syntax.nominal head=""legend""
+@r3 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""right""
+@c3 syntax.clause form=fragment complement=$n4",agreement
+222,hey — give the rent series the name Power,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@n3 syntax.nominal head=""Power""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+223,could you change the name on the rent series to Power Power?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""Power"" head=""Power""",agreement
+224,try naming the rent series Poewr,"@c1 syntax.clause form=imperative verb=""try""
+@c2 syntax.clause form=nonfinite verb=""naming"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""rent"" head=""series""
+@n2 syntax.nominal head=""Poewr""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+225,make the Power series red,"@c1 syntax.clause form=imperative verb=""make"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""",agreement
+226,colour the Power series red,"@c1 syntax.clause form=imperative verb=""colour"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""",agreement
+227,set the Power series to red,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""red""",agreement
+228,can you make the Power series red?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""make"" modifier=""red"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""",agreement
+229,I'd like the Power series in red,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""red""",agreement
+230,let's have the Power series in red,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""have"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""red""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+231,we want the Power series red,"@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""red"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""",agreement
+232,try the Power series in red,"@c1 syntax.clause form=imperative verb=""try"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""red""",agreement
+233,how about the Power series in red?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r2 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""red""",agreement
+234,do colour the Power series red,"@c1 syntax.clause form=imperative auxiliary=""do"" verb=""colour"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""",agreement
+239,the Power series should be red. show grid lines,"@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""red"" subject=$n1
+@c2 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""grid"" head=""lines""",agreement
+241,the Power series should be red. y axis on the right,"@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""red"" subject=$n1
+@n2 syntax.nominal dependent=""y"" head=""axis""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c2 syntax.clause form=fragment complement=$n2",agreement
+244,hey — put the Power series in red,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""red""",agreement
+245,put the Power series in rid,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Power"" head=""series""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""rid""",agreement
+248,drop the first series,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""",agreement
+249,take Series 1 out of the chart,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+251,Series 1 should go,"@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""go"" subject=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+252,I don't want the second series anymore,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""do"" negation=""n't"" verb=""want"" modifier=""anymore"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""series""",agreement
+254,scrap the first series,"@c1 syntax.clause form=imperative verb=""scrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""",agreement
+255,"the second series is obsolete, delete it","@n1 syntax.nominal dependent=""the"" dependent=""second"" head=""series""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""obsolete"" subject=$n1
+@c2 syntax.clause form=imperative verb=""delete"" complement=$n2
+@n2 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+256,clear out Series 1,"@c1 syntax.clause form=imperative verb=""clear"" modifier=""out"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+257,take the second series out,"@c1 syntax.clause form=imperative verb=""take"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""second"" head=""series""",agreement
+258,please drop the first series,"@c1 syntax.clause form=imperative discourse=""please"" verb=""drop"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""",agreement
+260,remove Series 1 and keep everything else as it is,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal head=""everything"" dependent=""else""
+@r1 syntax.relation marker=""as"" from=$c2 to=$c3
+@n4 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n4
+@r2 syntax.relation from=$n1 to=$n2",agreement
+261,drop Series 1,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal head=""Series""
+@n2 syntax.nominal head=""1""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+262,first series out,"@n1 syntax.nominal dependent=""first"" head=""series""
+@c1 syntax.clause form=fragment modifier=""out"" complement=$n1",agreement
+263,detete the first series,"@c1 syntax.clause form=imperative verb=""detete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""series""",agreement
+264,"in Revenue, set March to 40","@r1 syntax.relation marker=""in"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revenue""
+@c1 syntax.clause form=imperative verb=""set"" complement=$n2
+@n2 syntax.nominal head=""March""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""",agreement
+266,"for Revenue, make April 33","@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revenue""
+@c1 syntax.clause form=imperative verb=""make"" complement=$n2
+@n2 syntax.nominal head=""April""
+@n3 syntax.nominal head=""33""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+268,set Marketing to 50 in Expenses by department,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""Marketing""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""50""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Expenses""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""department""",agreement
+269,update the March value in Revenue to 40,"@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""March"" head=""value""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Revenue""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""",agreement
+271,"with Expenses by department, put Support at 42","@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Expenses""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""department""
+@c1 syntax.clause form=imperative verb=""put"" complement=$n3
+@n3 syntax.nominal head=""Support""
+@r3 syntax.relation marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""42""",agreement
+272,I want June at 35 in Revenue,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""June""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""35""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n4
+@n4 syntax.nominal head=""Revenue""",agreement
+278,"in Revenue, set March to 40, please","@r1 syntax.relation marker=""in"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revenue""
+@c1 syntax.clause form=imperative verb=""set"" discourse=""please"" complement=$n2
+@n2 syntax.nominal head=""March""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""",agreement
+284,Expenses by department: Ops 36,"@n1 syntax.nominal head=""Expenses""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""department""
+@n3 syntax.nominal head=""Ops""
+@n4 syntax.nominal head=""36""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4",agreement
+286,"in Revnue, set March to 40","@r1 syntax.relation marker=""in"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Revnue""
+@c1 syntax.clause form=imperative verb=""set"" complement=$n2
+@n2 syntax.nominal head=""March""
+@r2 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""40""",agreement
+289,set the second month to 20,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""second"" head=""month""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""20""",agreement
+291,update the fourth value to 33,"@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""fourth"" head=""value""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""33""",agreement
+292,the fifth month should be 29,"@n1 syntax.nominal dependent=""the"" dependent=""fifth"" head=""month""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""29""",agreement
+293,put the sixth month at 44,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""sixth"" head=""month""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""44""",agreement
+294,the last month goes to 48,"@n1 syntax.nominal dependent=""the"" dependent=""last"" head=""month""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""48""",agreement
+295,I want the seventh month at 52,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""seventh"" head=""month""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""52""",agreement
+296,raise the ninth month to 66,"@c1 syntax.clause form=imperative verb=""raise"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""ninth"" head=""month""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""66""",agreement
+297,revise the eleventh month to 74,"@c1 syntax.clause form=imperative verb=""revise"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""eleventh"" head=""month""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""74""",agreement
+298,the final month should say 40,"@n1 syntax.nominal dependent=""the"" dependent=""final"" head=""month""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""say"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""40""",agreement
+299,hey — change the first month to 10,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""month""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""",agreement
+303,second month: 20,"@n1 syntax.nominal dependent=""second"" head=""month""
+@n2 syntax.nominal head=""20""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+304,set the secnod month to 20,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""secnod"" head=""month""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""20""",agreement
+305,chagne the first month to 10,"@c1 syntax.clause form=imperative verb=""chagne"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""month""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""10""",agreement
+318,hey — add a series called Costs,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""series""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Costs""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+322,add a series named Budget with values 40 and 41,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""series""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n2
+@n2 syntax.nominal head=""Budget""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal head=""values""
+@n4 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""41""
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n3 to=$k1",agreement
+324,new series: Costs,"@n1 syntax.nominal dependent=""new"" head=""series""
+@n2 syntax.nominal head=""Costs""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+325,add a Forecast series,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""Forecast"" head=""series""",agreement
+326,add a serise called Costs,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""serise""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Costs""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+328,add a box called Deliver,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""box""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Deliver""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+329,put in a step labelled Deploy,"@c1 syntax.clause form=imperative verb=""put"" modifier=""in"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""step""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Deploy""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+333,we still need a box for Deliver,"@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative modifier=""still"" verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""box""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Deliver""",agreement
+335,create a box with the word Deliver on it,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""box""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""word""
+@n3 syntax.nominal head=""Deliver""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""it""
+@r3 syntax.relation from=$n2 to=$n3",agreement
+338,the process is missing a Deliver step,"@n1 syntax.nominal dependent=""the"" head=""process""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""missing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""Deliver"" head=""step""",agreement
+339,"go on, stick in a box marked Review","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""stick""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n1
+@n1 syntax.nominal dependent=""a"" head=""box""
+@c3 syntax.clause form=nonfinite verb=""marked"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$c3",agreement
+342,add a box called Deliver under Bake,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""box""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Deliver""
+@r1 syntax.relation marker=""under"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Bake""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+343,add a diamond node called Review next to Plan,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""diamond"" head=""node""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""next to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Plan""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+344,"we need one more step before Bake, call it Deliver","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""one"" dependent=""more"" head=""step""
+@r1 syntax.relation attachment=ambiguous marker=""before"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Bake""
+@c2 syntax.clause form=imperative verb=""call"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""Deliver""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+345,put a blue box with the label Deploy right after Plan,"@c1 syntax.clause form=imperative verb=""put"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""blue"" head=""box""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""label""
+@n3 syntax.nominal head=""Deploy""
+@r2 syntax.relation attachment=ambiguous marker=""after"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Plan""
+@r3 syntax.relation from=$n2 to=$n3",agreement
+346,add a rounded box called Wrap and give it a green outline,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""rounded"" head=""box""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Wrap""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""give"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal dependent=""a"" dependent=""green"" head=""outline""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+348,add three more steps,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""three"" dependent=""more"" head=""steps""",agreement
+349,I need three boxes for the process,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""three"" head=""boxes""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""process""",agreement

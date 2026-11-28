@@ -1,0 +1,667 @@
+n,text,sop,alt,label_state
+961,"rotate the frist picture 30 degrees, however the second picture turns 80","@c1 syntax.clause form=imperative verb=""rotate"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""frist"" head=""picture""
+@n2 syntax.nominal dependent=""30"" head=""degrees""
+@c2 syntax.clause form=declarative modifier=""however"" verb=""turns"" subject=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""picture""
+@n4 syntax.nominal head=""80""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""rotate"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""frist"" head=""picture""
+@n2 syntax.nominal dependent=""30"" head=""degrees""
+@c2 syntax.clause form=imperative verb=""however"" complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""picture""
+@n4 syntax.nominal head=""turns"" dependent=""80""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+964,"the first image turns through 60 degrees, the first two images then go 10 wide","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""turns"" subject=$n1
+@r1 syntax.relation marker=""through"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative modifier=""then"" verb=""go"" modifier=""wide"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""10""
+@r2 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""turns"" subject=$n1
+@r1 syntax.relation marker=""through"" from=$c1 to=$k2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""go"" complement=$n4
+@n4 syntax.nominal dependent=""10"" head=""wide""
+@k2 syntax.coordination conjunct=$n2 conjunct=$n3",
+965,let's angle the lead image to 75 and give the first two images a width of 8,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""angle"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""75""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""give"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@n5 syntax.nominal dependent=""a"" head=""width""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal head=""8""
+@r3 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""angle"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""75""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""give"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@n5 syntax.nominal dependent=""a"" head=""width""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal head=""8""
+@r3 syntax.relation from=$c1 to=$c2",
+967,"one turn and one stretch: the first image at 75 degrees, the first two images at 8 across","@n1 syntax.nominal dependent=""one"" head=""turn""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""one"" head=""stretch""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@r1 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""75"" head=""degrees""
+@n5 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""at"" from=$n5 to=$n6
+@n6 syntax.nominal head=""8"" dependent=""across""
+@r3 syntax.relation from=$n1 to=$n3
+@c1 syntax.clause form=fragment complement=$k1
+@r4 syntax.relation from=$n3 to=$n5","@n1 syntax.nominal head=""one""
+@c1 syntax.clause form=declarative verb=""turn"" discourse=""and"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""one"" head=""stretch""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""75"" head=""degrees""
+@n5 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""at"" from=$n5 to=$n6
+@n6 syntax.nominal head=""8"" dependent=""across""
+@r3 syntax.relation from=$n2 to=$k1
+@k1 syntax.coordination conjunct=$n3 conjunct=$n5",
+968,"I'd set the opening image at 60 degrees, then bring the first two images to 10 wide","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""set"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""opening"" head=""image""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""bring"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""10"" dependent=""wide""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""set"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""opening"" head=""image""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""bring"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""10"" head=""wide""",
+969,"I'd set the opening image at 60 degrees, then bring the first two images to 10 wide, please","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""set"" discourse=""please"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""opening"" head=""image""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""bring"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""10"" dependent=""wide""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""set"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""opening"" head=""image""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""bring"" discourse=""please"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""10"" head=""wide""",
+970,"right, 75 degrees on the lead image, and 8 width for the first two images","@c1 syntax.clause form=fragment discourse=""right"" complement=$k1
+@n1 syntax.nominal dependent=""75"" head=""degrees""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""8"" head=""width""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""","@c1 syntax.clause form=fragment modifier=""right"" complement=$k1
+@n1 syntax.nominal dependent=""75"" head=""degrees""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""8"" head=""width""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""",
+971,"how about a 60-degree turn for the first image, and 10 across the first two images?","@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$k1
+@n1 syntax.nominal dependent=""a"" dependent=""60"" dependent=""degree"" head=""turn""
+@r2 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""10""
+@r3 syntax.relation marker=""across"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""","@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""a"" head=""60-degree""
+@c2 syntax.clause form=interrogative verb=""turn""
+@r2 syntax.relation marker=""for"" from=$c2 to=$k1
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""10""
+@r3 syntax.relation marker=""across"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""",
+972,"spin the leading image to 75; after, the first two images open out to 8","@c1 syntax.clause form=imperative verb=""spin"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""leading"" head=""image""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""75""
+@c2 syntax.clause form=declarative modifier=""after"" verb=""open"" modifier=""out"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""8""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""spin"" modifier=""after"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""leading"" head=""image""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""75""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative verb=""open"" modifier=""out"" subject=$n3
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""8""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+973,"the first image takes 60 degrees, the first two images take 10 for width","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""takes"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative verb=""take"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""10""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""width""
+@r2 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""takes"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative verb=""take"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""10""
+@r1 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal head=""width""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+974,"first image, 75 degrees askew; first two images, 8 askew width — sorted","@n1 syntax.nominal dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""75"" head=""degrees"" dependent=""askew""
+@n3 syntax.nominal dependent=""first"" dependent=""two"" head=""images""
+@n4 syntax.nominal dependent=""8"" dependent=""askew"" head=""width""
+@c1 syntax.clause form=fragment modifier=""sorted"" complement=$k2
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1
+@r1 syntax.relation from=$n1 to=$n2
+@k2 syntax.coordination conjunct=$n3 conjunct=$n4","@n1 syntax.nominal dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""75"" head=""degrees"" dependent=""askew""
+@n3 syntax.nominal dependent=""first"" dependent=""two"" head=""images""
+@n4 syntax.nominal dependent=""8"" dependent=""askew"" head=""width""
+@c1 syntax.clause form=nonfinite verb=""sorted""
+@c2 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3 conjunct=$n4
+@r1 syntax.relation from=$c2 to=$c1
+@r2 syntax.relation from=$n1 to=$n2",
+975,please to rotate the first image 60 degrees and change the width of the first two images to 10,"@c1 syntax.clause form=fragment discourse=""please""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@c2 syntax.clause form=nonfinite verb=""rotate"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""change"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""width""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""10""","@c1 syntax.clause form=nonfinite discourse=""please"" verb=""rotate"" complement=$n1 complement=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@c2 syntax.clause form=imperative discourse=""and"" verb=""change"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""width""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r3 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""10""",
+976,"rotate the first image 75 degrees for the feature look, and let the first two images run 8 wide","@c1 syntax.clause form=imperative verb=""rotate"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""75"" head=""degrees""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""feature"" head=""look""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""let""
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c3 syntax.clause form=nonfinite verb=""run"" modifier=""wide"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""8""
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""rotate"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@n2 syntax.nominal dependent=""75"" head=""degrees""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""feature"" head=""look""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""let"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c3 syntax.clause form=nonfinite verb=""run"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""8"" head=""wide""
+@r2 syntax.relation from=$c2 to=$c3",
+977,"the lead image swings 60 degrees clockwise, and the first two images widen to 10, frames intact","@n1 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@c1 syntax.clause form=declarative verb=""swings"" modifier=""clockwise"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative verb=""widen"" subject=$n3
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""10"" head=""frames"" dependent=""intact""","@n1 syntax.nominal dependent=""the"" dependent=""lead"" head=""image""
+@n2 syntax.nominal head=""swings""
+@n3 syntax.nominal dependent=""60"" head=""degrees"" dependent=""clockwise""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c1 syntax.clause form=declarative verb=""widen"" subject=$n4
+@r1 syntax.relation marker=""to"" from=$c1 to=$k2
+@n5 syntax.nominal head=""10""
+@n6 syntax.nominal dependent=""frames"" head=""intact""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2 complement=$n3
+@k2 syntax.coordination conjunct=$n5 conjunct=$n6",
+978,"first the 75-degree turn on image one, then a shared 8 width for the first two images","@c1 syntax.clause form=fragment modifier=""first"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""75"" dependent=""degree"" head=""turn""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""image""
+@n3 syntax.nominal head=""one""
+@k1 syntax.coordination conjunction=""then"" conjunct=$n1 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""shared"" dependent=""8"" head=""width""
+@r2 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@r3 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""first"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""75"" dependent=""degree"" head=""turn""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""image"" head=""one""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""a"" dependent=""shared"" dependent=""8"" head=""width""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=fragment complement=$n3",
+979,"the first image lands at 60 degrees, then the first two images get 10 a side and settle","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""lands"" subject=$n1
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@c2 syntax.clause form=declarative modifier=""then"" verb=""get"" subject=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@n4 syntax.nominal head=""10""
+@n5 syntax.nominal dependent=""a"" head=""side""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=declarative verb=""settle""
+@r2 syntax.relation from=$c2 to=$c1
+@r3 syntax.relation from=$n4 to=$n5","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""lands"" subject=$n1
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""60"" head=""degrees""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c2 syntax.clause form=declarative verb=""get"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""10""
+@n5 syntax.nominal dependent=""a"" head=""side""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""settle""",
+980,"one sweep: the first image 75 degrees over, the first two images held at 8 across","@n1 syntax.nominal dependent=""one"" head=""sweep""
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""image"" dependent=""75"" dependent=""degrees"" dependent=""over""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c1 syntax.clause form=nonfinite verb=""held""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""8"" dependent=""across""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n2 to=$n3
+@r4 syntax.relation from=$n3 to=$c1","@n1 syntax.nominal dependent=""one"" head=""sweep""
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@n3 syntax.nominal dependent=""75"" head=""degrees"" dependent=""over""
+@n4 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""images""
+@c1 syntax.clause form=declarative verb=""held"" subject=$n4
+@r1 syntax.relation marker=""at"" from=$c1 to=$n5
+@n5 syntax.nominal head=""8"" dependent=""across""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n3
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$c1 to=$c2",
+981,"the first image wants tilting, the first two could stretch wider too","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""wants"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""tilting""
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@c2 syntax.clause form=declarative auxiliary=""could"" verb=""stretch"" modifier=""wider"" modifier=""too"" subject=$n3
+@r1 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""image""
+@c1 syntax.clause form=declarative verb=""wants"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""tilting""
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@c3 syntax.clause form=declarative auxiliary=""could"" verb=""stretch"" modifier=""too"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""wider""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r1 syntax.relation from=$c1 to=$c2",
+983,"the images need their two fixes, angles and widths","@n1 syntax.nominal dependent=""the"" head=""images""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""their"" dependent=""two"" head=""fixes""
+@n3 syntax.nominal head=""angles""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""widths""
+@r1 syntax.relation from=$n2 to=$k1","@n1 syntax.nominal dependent=""the"" head=""images""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""their"" dependent=""two"" head=""fixes""
+@n3 syntax.nominal head=""angles""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""widths""",
+986,set the height of the picture to 10 and the page title to Relevant Information from the Ward,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""height""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""the"" dependent=""page"" head=""title""
+@r3 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""Relevant"" head=""Information""
+@r4 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@c2 syntax.clause form=fragment complement=$n4 ellipsis=$c1","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""height""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""the"" dependent=""page"" head=""title""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Relevant Information""
+@r4 syntax.relation marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@c2 syntax.clause form=fragment complement=$n4 ellipsis=$c1",
+987,the picture stands 9 tall; the page goes by Notes from the Lane Crew,"@n1 syntax.nominal dependent=""the"" head=""picture""
+@c1 syntax.clause form=declarative verb=""stands"" modifier=""tall"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""9""
+@n3 syntax.nominal dependent=""the"" head=""page""
+@c2 syntax.clause form=declarative verb=""goes"" subject=$n3
+@r1 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Notes""
+@r2 syntax.relation marker=""from"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""Lane"" head=""Crew""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""the"" head=""picture""
+@n2 syntax.nominal head=""stands"" dependent=""9"" dependent=""tall""
+@n3 syntax.nominal dependent=""the"" head=""page""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n3
+@r1 syntax.relation marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Notes""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Lane Crew""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r3 syntax.relation from=$c1 to=$c2",
+988,let's make the picture 10 high and title the page Relevant Information from the Ward,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" modifier=""high"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@n3 syntax.nominal head=""10""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=nonfinite verb=""title"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" head=""page""
+@n5 syntax.nominal dependent=""Relevant"" head=""Information""
+@r1 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r2 syntax.relation from=$c1 to=$k1","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@n3 syntax.nominal dependent=""10"" head=""high""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""title"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" head=""page""
+@n5 syntax.nominal head=""Relevant Information""
+@r1 syntax.relation marker=""from"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r2 syntax.relation from=$c1 to=$c2",
+989,"could you give the picture a height of 9, and the page the name Notes from the Lane Crew?","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""give"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@n3 syntax.nominal dependent=""a"" head=""height""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""9""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""the"" head=""page""
+@n6 syntax.nominal dependent=""the"" head=""name""
+@n7 syntax.nominal head=""Notes""
+@r2 syntax.relation marker=""from"" from=$n7 to=$n8
+@n8 syntax.nominal dependent=""the"" dependent=""Lane"" head=""Crew""
+@c2 syntax.clause form=fragment complement=$n5 complement=$n6 ellipsis=$c1
+@r3 syntax.relation from=$n6 to=$n7","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""give"" subject=$n1 complement=$n3 complement=$k1 complement=$n6
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@n3 syntax.nominal dependent=""a"" head=""height""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""9""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" head=""page""
+@n6 syntax.nominal dependent=""the"" head=""name"" dependent=""Notes""
+@r2 syntax.relation marker=""from"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""Lane Crew""",
+990,"one picture grows to 10, one page takes the name Relevant Information from the Ward","@n1 syntax.nominal dependent=""one"" head=""picture""
+@c1 syntax.clause form=declarative verb=""grows"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@n3 syntax.nominal dependent=""one"" head=""page""
+@c2 syntax.clause form=declarative verb=""takes"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""name""
+@n5 syntax.nominal dependent=""Relevant"" head=""Information""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r3 syntax.relation from=$c2 to=$c1
+@r4 syntax.relation from=$n4 to=$n5","@n1 syntax.nominal dependent=""one"" head=""picture""
+@c1 syntax.clause form=declarative verb=""grows"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@n3 syntax.nominal dependent=""one"" head=""page""
+@c2 syntax.clause form=declarative verb=""takes"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""name"" dependent=""Relevant"" dependent=""Information""
+@r2 syntax.relation marker=""from"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Ward""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+991,I'd have the picture at 9 tall and call this page Notes from the Lane Crew,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""have"" modifier=""tall"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal head=""9""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative verb=""call"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""this"" head=""page""
+@n5 syntax.nominal head=""Notes""
+@r2 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""Lane"" head=""Crew""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""have"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""9"" head=""tall""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""call"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""this"" head=""page""
+@n5 syntax.nominal head=""Notes""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Lane Crew""",
+992,"right, the picture goes to 10 in height, the page to Relevant Information from the Ward in name","@c1 syntax.clause form=fragment modifier=""right"" complement=$n4
+@n1 syntax.nominal dependent=""the"" head=""picture""
+@c2 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal head=""10""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""height""
+@n4 syntax.nominal dependent=""the"" head=""page""
+@r3 syntax.relation marker=""to"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""Relevant"" head=""Information""
+@r4 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r5 syntax.relation marker=""in"" from=$n5 to=$n7
+@n7 syntax.nominal head=""name""
+@r6 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=declarative modifier=""right"" verb=""goes"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""picture""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@r2 syntax.relation marker=""in"" from=$n1 to=$k1
+@n3 syntax.nominal head=""height""
+@n4 syntax.nominal dependent=""the"" head=""page""
+@r3 syntax.relation marker=""to"" from=$c1 to=$n5
+@n5 syntax.nominal head=""Relevant Information""
+@r4 syntax.relation marker=""from"" from=$c1 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r5 syntax.relation marker=""in"" from=$n1 to=$n7
+@n7 syntax.nominal head=""name""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+994,"the screen picture climbs to 10; meanwhile the page is Relevant Information from the Ward, its title","@n1 syntax.nominal dependent=""the"" dependent=""screen"" head=""picture""
+@c1 syntax.clause form=declarative verb=""climbs"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@c2 syntax.clause form=declarative modifier=""meanwhile"" verb=""is"" subject=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" head=""page""
+@n4 syntax.nominal dependent=""Relevant"" head=""Information""
+@r2 syntax.relation marker=""from"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Ward""
+@n6 syntax.nominal dependent=""its"" head=""title""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r3 syntax.relation from=$n4 to=$n6","@n1 syntax.nominal dependent=""the"" dependent=""screen"" head=""picture""
+@c1 syntax.clause form=declarative verb=""climbs"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@c2 syntax.clause form=declarative modifier=""meanwhile"" verb=""is"" subject=$n3 complement=$k2
+@n3 syntax.nominal dependent=""the"" head=""page""
+@n4 syntax.nominal head=""Relevant Information""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Ward""
+@n6 syntax.nominal dependent=""its"" head=""title""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@k2 syntax.coordination conjunct=$n4 conjunct=$n6",
+996,"a 10-high picture and a page called Relevant Information from the Ward — both, please","@n1 syntax.nominal dependent=""a"" dependent=""10"" dependent=""high"" head=""picture""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""a"" head=""page""
+@c1 syntax.clause form=nonfinite verb=""called"" complement=$n3
+@n3 syntax.nominal dependent=""Relevant"" head=""Information""
+@r1 syntax.relation marker=""from"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""Ward""
+@n5 syntax.nominal head=""both""
+@c2 syntax.clause form=fragment discourse=""please"" complement=$k1
+@r2 syntax.relation from=$n1 to=$n5
+@r3 syntax.relation from=$n2 to=$c1","@n1 syntax.nominal dependent=""a"" dependent=""10"" dependent=""high"" head=""picture""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n2 syntax.nominal dependent=""a"" head=""page""
+@c1 syntax.clause form=nonfinite verb=""called"" discourse=""please"" complement=$n3
+@n3 syntax.nominal head=""Relevant Information""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""Ward""
+@n5 syntax.nominal head=""both""
+@c2 syntax.clause form=fragment complement=$n1
+@c3 syntax.clause form=fragment complement=$n2
+@r2 syntax.relation from=$n2 to=$c1
+@r3 syntax.relation from=$n3 to=$n5",
+997,"the picture height goes to 10 sharp, and the page title settles at Relevant Information from the Ward so both read clean","@n1 syntax.nominal dependent=""the"" dependent=""picture"" head=""height""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10"" dependent=""sharp""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" dependent=""page"" head=""title""
+@c2 syntax.clause form=declarative verb=""settles"" subject=$n3
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""Relevant"" head=""Information""
+@r3 syntax.relation marker=""from"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Ward""
+@r4 syntax.relation marker=""so"" from=$c2 to=$c3
+@n6 syntax.nominal head=""both""
+@c3 syntax.clause form=declarative verb=""read"" modifier=""clean"" subject=$n6","@n1 syntax.nominal dependent=""the"" dependent=""picture"" head=""height""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""10"" head=""sharp""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""the"" dependent=""page"" head=""title""
+@c2 syntax.clause form=declarative verb=""settles"" subject=$n3
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Relevant Information""
+@r3 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Ward""
+@k2 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@n6 syntax.nominal dependent=""both"" dependent=""read"" head=""clean""
+@c3 syntax.clause form=fragment complement=$n6",
+998,"put 9 of height under the picture, then the title Notes from the Lane Crew over the page, and check the pair","@c1 syntax.clause form=imperative verb=""put"" modifier=""then"" complement=$n1 complement=$n4
+@n1 syntax.nominal head=""9""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""height""
+@r2 syntax.relation marker=""under"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""picture""
+@n4 syntax.nominal dependent=""the"" head=""title""
+@n5 syntax.nominal head=""Notes""
+@r3 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""Lane"" head=""Crew""
+@r4 syntax.relation attachment=ambiguous marker=""over"" from=$c1 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""page""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""check"" complement=$n8
+@n8 syntax.nominal dependent=""the"" head=""pair""
+@r5 syntax.relation from=$n4 to=$n5","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""9""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""height""
+@r2 syntax.relation marker=""under"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""picture""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal dependent=""the"" head=""title"" dependent=""Notes""
+@r3 syntax.relation marker=""from"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""Lane Crew""
+@r4 syntax.relation marker=""over"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""page""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""check"" complement=$n7
+@n7 syntax.nominal dependent=""the"" head=""pair""
+@c3 syntax.clause form=fragment complement=$n4",
+999,"the screen picture rises to 10, its frame kept, while the page answers to Relevant Information from the Ward","@n1 syntax.nominal dependent=""the"" dependent=""screen"" head=""picture""
+@c1 syntax.clause form=declarative verb=""rises"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@n3 syntax.nominal dependent=""its"" head=""frame""
+@c2 syntax.clause form=nonfinite verb=""kept"" subject=$n3
+@r2 syntax.relation marker=""while"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""page""
+@c3 syntax.clause form=declarative verb=""answers"" subject=$n4
+@r3 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""Relevant"" head=""Information""
+@r4 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@r5 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal dependent=""the"" dependent=""screen"" head=""picture""
+@c1 syntax.clause form=declarative verb=""rises"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""
+@n3 syntax.nominal dependent=""its"" head=""frame""
+@c2 syntax.clause form=declarative verb=""kept"" subject=$n3 complement=$n4
+@r2 syntax.relation marker=""while"" from=$c1 to=$c2
+@n4 syntax.nominal dependent=""the"" dependent=""page"" head=""answers""
+@r3 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Relevant Information""
+@r4 syntax.relation attachment=ambiguous marker=""from"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Ward""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+1000,"height 9 for the picture before noon, and the page named Notes from the Lane Crew when that's done","@n1 syntax.nominal head=""height""
+@n2 syntax.nominal head=""9""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""picture""
+@r2 syntax.relation attachment=ambiguous marker=""before"" from=$c3 to=$n4
+@n4 syntax.nominal head=""noon""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" head=""page""
+@c1 syntax.clause form=nonfinite verb=""named"" complement=$n6
+@n6 syntax.nominal head=""Notes""
+@r3 syntax.relation marker=""from"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""Lane"" head=""Crew""
+@r4 syntax.relation marker=""when"" from=$c1 to=$c2
+@n8 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative auxiliary=""'s"" verb=""done"" subject=$n8
+@r5 syntax.relation from=$n1 to=$n2
+@c3 syntax.clause form=fragment complement=$k1
+@r6 syntax.relation from=$n5 to=$c1","@n1 syntax.nominal head=""height"" dependent=""9""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@r2 syntax.relation marker=""before"" from=$n1 to=$n3
+@n3 syntax.nominal head=""noon""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c1
+@n4 syntax.nominal dependent=""the"" head=""page""
+@c1 syntax.clause form=nonfinite verb=""named"" complement=$n5
+@n5 syntax.nominal head=""Notes""
+@r3 syntax.relation marker=""from"" from=$c1 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""Lane Crew""
+@r4 syntax.relation marker=""when"" from=$c1 to=$c2
+@n7 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative auxiliary=""'s"" verb=""done"" subject=$n7
+@c3 syntax.clause form=fragment complement=$n1
+@c4 syntax.clause form=fragment complement=$n4
+@r5 syntax.relation from=$n4 to=$c1",

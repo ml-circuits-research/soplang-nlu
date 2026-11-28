@@ -17,7 +17,7 @@ if (!model || !files.length) { console.error('Usage: node run.mjs --model <alias
 const logDir = resolve(named.log ?? join(dirname(files[0]), '.vibe-logs'))
 
 function promptFor(csv, report) {
-  const kind = /-advanced\.csv$/u.test(csv) ? 'advanced' : 'simple'
+  const kind = /-advanced(\.p\d+)?\.csv$/u.test(csv) ? 'advanced' : 'simple'
   const text = readFileSync(join(here, `prompt-${kind}.txt`), 'utf8').replaceAll('{CSV}', basename(csv)).replaceAll('{VERDICTS}', basename(verdictsFileOf(csv))).trim()
   return report ? text + `\n\nYour previous ${basename(verdictsFileOf(csv))} failed the checker:\n${report}\nWrite the whole verdicts file again, with every row judged and these problems corrected.` : text
 }

@@ -1,0 +1,785 @@
+n,text,sop,label_state
+1,please add a rectangle labelled Review,"@c1 syntax.clause form=imperative discourse=""please"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+2,I want a rectangle labelled Review,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Review""
+@r1 syntax.relation from=$n2 to=$c2",agreement
+3,could you put a rectangle on the diagram labelled Review?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""put"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""diagram""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Review""
+@r2 syntax.relation from=$n3 to=$c2",agreement
+4,"um, make a rectangle called Review","@c1 syntax.clause form=imperative discourse=""um"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+5,"create a rectangle, label Review","@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=imperative verb=""label"" complement=$n2
+@n2 syntax.nominal head=""Review""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+6,I need a rectangle that says Review,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""says"" complement=$n3
+@n3 syntax.nominal head=""Review""",agreement
+8,would you place a rectangle labelled Review on the canvas?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""place"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""rectangle""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Review""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""canvas""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+11,"to complete the process, I need you to add a rectangle labelled Review","@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c1 syntax.clause form=nonfinite verb=""complete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""process""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n2
+@n3 syntax.nominal head=""you""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""add"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""rectangle""
+@c4 syntax.clause form=nonfinite verb=""labelled"" complement=$n5
+@n5 syntax.nominal head=""Review""
+@r3 syntax.relation from=$n4 to=$c4",agreement
+12,"while we're extending the diagram, sketch a rectangle with the label Review on it","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative auxiliary=""'re"" verb=""extending"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""diagram""
+@c2 syntax.clause form=imperative verb=""sketch"" complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@r2 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""label""
+@n5 syntax.nominal head=""Review""
+@r3 syntax.relation attachment=ambiguous marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal head=""it""
+@r4 syntax.relation from=$n4 to=$n5",agreement
+13,"draw a rectangle, please","@c1 syntax.clause form=imperative verb=""draw"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""",agreement
+14,a rectangle too,"@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@c1 syntax.clause form=fragment modifier=""too"" complement=$n1",agreement
+15,add another rectangle,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""rectangle""",agreement
+16,put a rectangle here,"@c1 syntax.clause form=imperative verb=""put"" modifier=""here"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""",agreement
+17,create one rectangle,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""one"" head=""rectangle""",agreement
+18,I want a rectangle somewhere,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""somewhere"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""rectangle""",agreement
+29,"actually, could you make r1 blue and large, and also label it Approval with value 12?","@c1 syntax.clause form=interrogative modifier=""actually"" auxiliary=""could"" verb=""make"" modifier=""blue"" discourse=""and"" modifier=""large"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""also"" verb=""label"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal head=""Approval""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal head=""value""
+@n6 syntax.nominal head=""12""
+@r2 syntax.relation from=$n5 to=$n6",agreement
+31,make r1 bluish and biggish,"@c1 syntax.clause form=imperative verb=""make"" modifier=""bluish"" discourse=""and"" modifier=""biggish"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+33,"make r1 blue, a bit bigger, label Approval","@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" modifier=""bigger"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""r1""
+@n2 syntax.nominal dependent=""a"" head=""bit""
+@c2 syntax.clause form=imperative verb=""label"" complement=$n3
+@n3 syntax.nominal head=""Approval""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+34,set r1 to value 12,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""value""
+@n3 syntax.nominal head=""12""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+35,make r1 bigger and blue,"@c1 syntax.clause form=imperative verb=""make"" modifier=""bigger"" discourse=""and"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+37,can you select r1?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""select"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+39,could you pick r1?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""pick"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+40,"um, select r1","@c1 syntax.clause form=imperative discourse=""um"" verb=""select"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+41,choose r1,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+43,"highlight r1, please","@c1 syntax.clause form=imperative verb=""highlight"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+44,would you select r1?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""select"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+45,"ok, I want to change something, so select r1","@c1 syntax.clause form=declarative discourse=""ok"" verb=""want"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""change"" complement=$n2
+@n2 syntax.nominal head=""something""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""select"" complement=$n3
+@n3 syntax.nominal head=""r1""",agreement
+48,"before I edit it, I need you to select r1","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""edit"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n3
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""select"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""r1""",agreement
+50,select r1 now,"@c1 syntax.clause form=imperative verb=""select"" modifier=""now"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+52,highlight r1,"@c1 syntax.clause form=imperative verb=""highlight"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+53,choose r1 please,"@c1 syntax.clause form=imperative verb=""choose"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+54,grab r1,"@c1 syntax.clause form=imperative verb=""grab"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+55,click r1,"@c1 syntax.clause form=imperative verb=""click"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+70,select r1 and r2,"@c1 syntax.clause form=imperative verb=""select"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""",agreement
+72,pick r1 and r2 too,"@c1 syntax.clause form=imperative verb=""pick"" modifier=""too"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""",agreement
+73,select r2 and r1,"@c1 syntax.clause form=imperative verb=""select"" complement=$k1
+@n1 syntax.nominal head=""r2""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r1""",agreement
+74,choose r1 with r2,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""r2""",agreement
+75,"highlight r1 and r2, please","@c1 syntax.clause form=imperative verb=""highlight"" discourse=""please"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""",agreement
+77,please pick both boxes and their connecting arrow,"@c1 syntax.clause form=imperative discourse=""please"" verb=""pick"" complement=$k1
+@n1 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""",agreement
+78,can you select both boxes and the arrow connecting them?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""select"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" head=""arrow""
+@c2 syntax.clause form=nonfinite verb=""connecting"" complement=$n4
+@n4 syntax.nominal head=""them""
+@r1 syntax.relation from=$n3 to=$c2",agreement
+80,could you highlight both boxes and their connecting arrow?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""highlight"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""",agreement
+81,"um, select the two boxes and the arrow between them","@c1 syntax.clause form=imperative discourse=""um"" verb=""select"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n2 to=$n3
+@n3 syntax.nominal head=""them""",agreement
+83,"grab both boxes and their connecting arrow, please","@c1 syntax.clause form=imperative verb=""grab"" discourse=""please"" complement=$k1
+@n1 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""",agreement
+85,"ok, I want to move the pair, so pick both boxes and their connecting arrow","@c1 syntax.clause form=declarative discourse=""ok"" verb=""want"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""move"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""pair""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""pick"" complement=$k2
+@n3 syntax.nominal dependent=""both"" head=""boxes""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""",agreement
+87,"hmm, they should travel together, let's pick both boxes and their connecting arrow","@c1 syntax.clause form=imperative discourse=""hmm"" verb=""let"" complement=$n2
+@n1 syntax.nominal head=""they""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""travel"" modifier=""together"" subject=$n1
+@n2 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""pick"" complement=$k1
+@n3 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$c1 to=$c3",agreement
+88,"before I group them, pick both boxes and their connecting arrow for me","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""group"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""them""
+@c2 syntax.clause form=imperative verb=""pick"" complement=$k1
+@n3 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""their"" dependent=""connecting"" head=""arrow""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""me""",agreement
+89,pick both boxes and the arrow,"@c1 syntax.clause form=imperative verb=""pick"" complement=$k1
+@n1 syntax.nominal dependent=""both"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""",agreement
+90,select the two boxes and the arrow,"@c1 syntax.clause form=imperative verb=""select"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""",agreement
+91,select both boxes with the arrow,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""both"" head=""boxes""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""",agreement
+92,choose the pair and their arrow,"@c1 syntax.clause form=imperative verb=""choose"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""pair""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""their"" head=""arrow""",agreement
+93,grab the boxes and the arrow between,"@c1 syntax.clause form=imperative verb=""grab"" modifier=""between"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""",agreement
+95,select the boxes and their link,"@c1 syntax.clause form=imperative verb=""select"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""their"" head=""link""",agreement
+96,please delete r1,"@c1 syntax.clause form=imperative discourse=""please"" verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+97,can you delete r1?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+99,could you remove r1?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""remove"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+100,"um, delete r1","@c1 syntax.clause form=imperative discourse=""um"" verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+103,let's delete r1,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""delete"" complement=$n2
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+104,"ok, that box isn't needed any more, so delete r1","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""is"" negation=""n't"" verb=""needed"" modifier=""any"" modifier=""more"" subject=$n1
+@n1 syntax.nominal dependent=""that"" head=""box""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""delete"" complement=$n2
+@n2 syntax.nominal head=""r1""",agreement
+105,"hmm, it just clutters the diagram, let's remove r1","@c1 syntax.clause form=imperative discourse=""hmm"" verb=""let"" complement=$n3
+@n1 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""clutters"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""diagram""
+@n3 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""remove"" complement=$n4
+@n4 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$c1 to=$c3",agreement
+106,"to tidy up, I need you to delete r1","@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c1 syntax.clause form=nonfinite verb=""tidy"" modifier=""up""
+@n1 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""delete"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""r1""",agreement
+107,"I added it by mistake, so delete r1","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""added"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""mistake""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""delete"" complement=$n4
+@n4 syntax.nominal head=""r1""",agreement
+108,delete r1 now,"@c1 syntax.clause form=imperative verb=""delete"" modifier=""now"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+109,remove r1,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+111,kill r1,"@c1 syntax.clause form=imperative verb=""kill"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+112,drop r1,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+114,"please move r1 to 200,150","@c1 syntax.clause form=imperative discourse=""please"" verb=""move"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""200,150""",agreement
+116,"I want r1 at 200,150","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""200,150""",agreement
+117,"could you put r1 at 200,150?","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""put"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal head=""200,150""",agreement
+119,"shift r1 to 200,150","@c1 syntax.clause form=imperative verb=""shift"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""200,150""",agreement
+121,"let's move r1 to 200,150","@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""move"" complement=$n2
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""200,150""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+123,"actually, could you move r1 over to 200,150?","@c1 syntax.clause form=interrogative modifier=""actually"" auxiliary=""could"" verb=""move"" modifier=""over"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""200,150""",agreement
+124,"hmm, it overlaps the other box, let's move r1 to 200,150","@c1 syntax.clause form=imperative discourse=""hmm"" verb=""let"" complement=$n3
+@n1 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""overlaps"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""other"" head=""box""
+@n3 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""move"" complement=$n4
+@n4 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""200,150""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",agreement
+125,"to make room for the arrow, I need you to move r1 to 200,150","@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c1 syntax.clause form=nonfinite verb=""make"" complement=$n1
+@n1 syntax.nominal head=""room""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n3
+@n4 syntax.nominal head=""you""
+@r3 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""move"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""r1""
+@r4 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal head=""200,150""",agreement
+126,"while I'm rearranging the flow, move r1 to 200,150 please","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'m"" verb=""rearranging"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""flow""
+@c2 syntax.clause form=imperative verb=""move"" discourse=""please"" complement=$n3
+@n3 syntax.nominal head=""r1""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""200,150""",agreement
+127,"move r1 200,150","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""r1"" head=""200,150""",agreement
+128,put r1 at 200 150,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""200"" head=""150""",agreement
+130,shift r1 to x200 y150,"@c1 syntax.clause form=imperative verb=""shift"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""x200"" head=""y150""",agreement
+134,"drag r1 to 200,150","@c1 syntax.clause form=imperative verb=""drag"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""200,150""",agreement
+139,set r1 to 180 by 90,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""180""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""90""",agreement
+149,resize r1 180x90,"@c1 syntax.clause form=imperative verb=""resize"" complement=$n1
+@n1 syntax.nominal dependent=""r1"" head=""180x90""",agreement
+155,stretch r1 to 180 by 90,"@c1 syntax.clause form=imperative verb=""stretch"" complement=$n1
+@n1 syntax.nominal head=""r1""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""180""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""90""",agreement
+156,please arrange r1 and r2 in a row,"@c1 syntax.clause form=imperative discourse=""please"" verb=""arrange"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""row""",agreement
+157,can you arrange r1 and r2 in a row?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""arrange"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""row""",agreement
+158,I want r1 and r2 in a row,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""row""",agreement
+161,put r1 and r2 next to each other,"@c1 syntax.clause form=imperative verb=""put"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""next to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""other""",agreement
+163,let's arrange r1 and r2 horizontally,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""arrange"" modifier=""horizontally"" complement=$k1
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""r2""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+164,"lay out r1 and r2 in a row, please","@c1 syntax.clause form=imperative verb=""lay"" modifier=""out"" discourse=""please"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""row""",agreement
+166,"to make the flow easier to follow, I need you to arrange r1 and r2 in a row","@r1 syntax.relation marker=""to"" from=$c3 to=$c1
+@c1 syntax.clause form=nonfinite verb=""make"" modifier=""easier"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""follow""
+@n2 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""need"" subject=$n2
+@n3 syntax.nominal head=""you""
+@r3 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""arrange"" subject=$n3 complement=$k1
+@n4 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""r2""
+@r4 syntax.relation marker=""in"" from=$c4 to=$n6
+@n6 syntax.nominal dependent=""a"" head=""row""",
+168,arrange r1 and r2 in a line,"@c1 syntax.clause form=imperative verb=""arrange"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""line""",agreement
+170,put r1 and r2 in a row,"@c1 syntax.clause form=imperative verb=""put"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""row""",agreement
+171,align r1 and r2 horizontally,"@c1 syntax.clause form=imperative verb=""align"" modifier=""horizontally"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""",agreement
+172,arrange r2 and r1 in a row,"@c1 syntax.clause form=imperative verb=""arrange"" complement=$k1
+@n1 syntax.nominal head=""r2""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""row""",agreement
+174,set r1 and r2 in a row,"@c1 syntax.clause form=imperative verb=""set"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""row""",agreement
+178,could you place the two boxes next to each other?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""place"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@r1 syntax.relation marker=""next to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""other""",agreement
+179,"um, put the two boxes in a row","@c1 syntax.clause form=imperative discourse=""um"" verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""row""",agreement
+181,I need the two boxes next to each other,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""other""",agreement
+189,place both boxes in a row,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""both"" head=""boxes""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""row""",agreement
+191,set the boxes next to each other,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""next to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""each"" head=""other""",agreement
+194,can you draw an arrow from r2 to r1?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""r2""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+195,I want an arrow from r2 to r1,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""r2""
+@r2 syntax.relation marker=""to"" from=$n2 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+196,could you add an arrow from r2 to r1?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""r2""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+198,connect r2 to r1 with an arrow,"@c1 syntax.clause form=imperative verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""r1""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""an"" head=""arrow""",agreement
+200,"put an arrow from r2 to r1, please","@c1 syntax.clause form=imperative verb=""put"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""r2""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""r1""",agreement
+201,would you make an arrow from r2 to r1?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""r2""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+205,"since the result feeds back, sketch an arrow from r2 to r1","@r1 syntax.relation marker=""since"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" head=""result""
+@c1 syntax.clause form=declarative verb=""feeds"" modifier=""back"" subject=$n1
+@c2 syntax.clause form=imperative verb=""sketch"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r2 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""r2""
+@r3 syntax.relation marker=""to"" from=$n2 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+206,draw an arrow r2 to r1,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@n2 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n3
+@n3 syntax.nominal head=""r1""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+207,connect r2 r1,"@c1 syntax.clause form=imperative verb=""connect"" complement=$n1
+@n1 syntax.nominal dependent=""r2"" head=""r1""",agreement
+209,draw r2 to r1,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""r1""",agreement
+211,make an arrow r2 r1,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@n2 syntax.nominal dependent=""r2"" head=""r1""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+212,please connect Finish back to Start,"@c1 syntax.clause form=imperative discourse=""please"" verb=""connect"" modifier=""back"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+213,can you connect Finish back to Start?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""connect"" modifier=""back"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+215,could you link Finish back to Start?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""link"" modifier=""back"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+216,"um, connect Finish back to Start","@c1 syntax.clause form=imperative discourse=""um"" verb=""connect"" modifier=""back"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+217,draw an arrow from Finish back to Start,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Finish""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+218,I need a connection from Finish back to Start,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" modifier=""back"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""connection""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Finish""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Start""",agreement
+219,let's connect Finish back to Start,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""connect"" modifier=""back"" complement=$n2
+@n2 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Start""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+220,"join Finish back to Start, please","@c1 syntax.clause form=imperative verb=""join"" modifier=""back"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+221,would you connect Finish back to Start?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""connect"" modifier=""back"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+225,"to close the loop, I need you to connect Finish back to Start","@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c1 syntax.clause form=nonfinite verb=""close"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""loop""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n2
+@n3 syntax.nominal head=""you""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""connect"" modifier=""back"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""Finish""
+@r3 syntax.relation marker=""to"" from=$c3 to=$n5
+@n5 syntax.nominal head=""Start""",agreement
+226,"since the flow is cyclic, link Finish back to Start","@r1 syntax.relation marker=""since"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""cyclic"" subject=$n1
+@c2 syntax.clause form=imperative verb=""link"" modifier=""back"" complement=$n2
+@n2 syntax.nominal head=""Finish""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+227,connect Finish to Start,"@c1 syntax.clause form=imperative verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+228,link Finish back to Start,"@c1 syntax.clause form=imperative verb=""link"" modifier=""back"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+229,"Finish back to Start, connect","@c1 syntax.clause form=imperative verb=""Finish"" modifier=""back""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Start""
+@c2 syntax.clause form=imperative verb=""connect""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+230,connect the Finish box back to the Start box,"@c1 syntax.clause form=imperative verb=""connect"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Finish"" head=""box""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Start"" head=""box""",agreement
+231,loop Finish back to Start,"@c1 syntax.clause form=imperative verb=""loop"" modifier=""back"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+232,connect Finish with Start,"@c1 syntax.clause form=imperative verb=""connect"" complement=$n1
+@n1 syntax.nominal head=""Finish""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Start""",agreement
+238,"um, select the arrow a1","@c1 syntax.clause form=imperative discourse=""um"" verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@n2 syntax.nominal head=""a1""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+248,select a1,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal head=""a1""",agreement
+249,pick a1,"@c1 syntax.clause form=imperative verb=""pick"" complement=$n1
+@n1 syntax.nominal head=""a1""",agreement
+250,choose the arrow a1,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@n2 syntax.nominal head=""a1""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+251,grab a1,"@c1 syntax.clause form=imperative verb=""grab"" complement=$n1
+@n1 syntax.nominal head=""a1""",agreement
+254,please pick the arrow between Start and Finish,"@c1 syntax.clause form=imperative discourse=""please"" verb=""pick"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+255,can you select the arrow between Start and Finish?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""select"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n2 to=$k1
+@n3 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""Finish""",agreement
+257,could you pick the arrow connecting Start and Finish?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""pick"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@c2 syntax.clause form=nonfinite verb=""connecting"" complement=$k1
+@n3 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""Finish""
+@r1 syntax.relation from=$n2 to=$c2",agreement
+258,"um, select the arrow between Start and Finish","@c1 syntax.clause form=imperative discourse=""um"" verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+259,choose the arrow that links Start and Finish,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""links"" complement=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+262,"highlight the arrow between Start and Finish, please","@c1 syntax.clause form=imperative verb=""highlight"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+263,would you select the arrow running between Start and Finish?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""select"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@c2 syntax.clause form=nonfinite verb=""running""
+@r1 syntax.relation marker=""between"" from=$c2 to=$k1
+@n3 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""Finish""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+264,"ok, I want to restyle that link, so pick the arrow between Start and Finish","@c1 syntax.clause form=declarative discourse=""ok"" verb=""want"" subject=$n1
+@n1 syntax.nominal head=""I""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""restyle"" complement=$n2
+@n2 syntax.nominal dependent=""that"" head=""link""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""pick"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""arrow""
+@r2 syntax.relation marker=""between"" from=$n3 to=$k2
+@n4 syntax.nominal head=""Start""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""Finish""",agreement
+267,pick the arrow between Start and Finish now,"@c1 syntax.clause form=imperative verb=""pick"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+270,highlight the arrow joining Start and Finish,"@c1 syntax.clause form=imperative verb=""highlight"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@c2 syntax.clause form=nonfinite verb=""joining"" complement=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+272,click the arrow between Start and Finish,"@c1 syntax.clause form=imperative verb=""click"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation marker=""between"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Start""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Finish""",agreement
+284,make a1 a blue dashed arrow,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""a1""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" dependent=""dashed"" head=""arrow""",agreement
+286,label a1 next and make it blue,"@c1 syntax.clause form=imperative verb=""label"" modifier=""next"" complement=$n1
+@n1 syntax.nominal head=""a1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n2
+@n2 syntax.nominal head=""it""",agreement
+287,make a1 bluish and dashed,"@c1 syntax.clause form=imperative verb=""make"" modifier=""bluish"" discourse=""and"" modifier=""dashed"" complement=$n1
+@n1 syntax.nominal head=""a1""",agreement
+288,make a1 a thin dashed arrow,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""a1""
+@n2 syntax.nominal dependent=""a"" dependent=""thin"" dependent=""dashed"" head=""arrow""",agreement
+289,make a1 a blue arrow with arrows at both ends,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""a1""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""arrow""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""arrows""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""both"" head=""ends""",agreement
+290,make a1 a cool colour with label next,"@c1 syntax.clause form=imperative verb=""make"" modifier=""next"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""a1""
+@n2 syntax.nominal dependent=""a"" dependent=""cool"" head=""colour""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""label""",agreement
+308,use bluish dashes and a thin stroke for the arrow,"@c1 syntax.clause form=imperative verb=""use"" complement=$k1
+@n1 syntax.nominal dependent=""bluish"" head=""dashes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thin"" head=""stroke""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""arrow""",agreement
+309,use arrows on both ends of the connecting arrow,"@c1 syntax.clause form=imperative verb=""use"" complement=$n1
+@n1 syntax.nominal head=""arrows""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""both"" head=""ends""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""connecting"" head=""arrow""",agreement

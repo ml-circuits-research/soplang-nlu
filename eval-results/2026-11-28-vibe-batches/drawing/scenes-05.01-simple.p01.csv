@@ -1,0 +1,722 @@
+n,text,sop,label_state
+3,the roof should be thatch,"@n1 syntax.nominal dependent=""the"" head=""roof""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""thatch"" subject=$n1",agreement
+5,swap the flat roof for a thatched one,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""flat"" head=""roof""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thatched"" head=""one""",agreement
+6,turn the roof into wood shingles,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""roof""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""wood"" head=""shingles""",agreement
+7,tile the roof,"@c1 syntax.clause form=imperative verb=""tile"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""roof""",agreement
+12,the roof could be more rustic,"@n1 syntax.nominal dependent=""the"" head=""roof""
+@c1 syntax.clause form=declarative auxiliary=""could"" verb=""be"" modifier=""more"" modifier=""rustic"" subject=$n1",agreement
+13,a thatched feel for the roof,"@n1 syntax.nominal dependent=""a"" dependent=""thatched"" head=""feel""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""roof""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+16,build the walls out of stone,"@c1 syntax.clause form=imperative verb=""build"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""walls""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n2
+@n2 syntax.nominal head=""stone""",agreement
+17,brick for the cottage walls,"@n1 syntax.nominal head=""brick""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""cottage"" head=""walls""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+18,turn the wooden walls into brick,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""wooden"" head=""walls""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal head=""brick""",agreement
+19,"stone walls would look sturdier, let's do that","@n1 syntax.nominal dependent=""stone"" head=""walls""
+@c1 syntax.clause form=declarative auxiliary=""would"" verb=""look"" modifier=""sturdier"" subject=$n1
+@c2 syntax.clause form=imperative verb=""let"" complement=$n2
+@n2 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""do"" complement=$n3
+@n3 syntax.nominal head=""that""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$c2 to=$c3",agreement
+23,the walls could be stonier,"@n1 syntax.nominal dependent=""the"" head=""walls""
+@c1 syntax.clause form=declarative auxiliary=""could"" verb=""be"" modifier=""stonier"" subject=$n1",agreement
+27,the scene could do with a stream,"@n1 syntax.nominal dependent=""the"" head=""scene""
+@c1 syntax.clause form=declarative auxiliary=""could"" verb=""do"" subject=$n1
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""stream""",agreement
+30,give the tree a shadow,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""tree""
+@n2 syntax.nominal dependent=""a"" head=""shadow""",agreement
+31,the house needs a shadow,"@n1 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""shadow""",agreement
+32,add a shadow under the boat,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""shadow""
+@r1 syntax.relation attachment=ambiguous marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""",agreement
+34,"a long shadow for the tree, late in the day","@n1 syntax.nominal dependent=""a"" dependent=""long"" head=""shadow""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@c1 syntax.clause form=fragment modifier=""late"" complement=$n1
+@r2 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""day""",agreement
+37,"hey, give the tree a shadow","@c1 syntax.clause form=imperative discourse=""hey"" verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""tree""
+@n2 syntax.nominal dependent=""a"" head=""shadow""",agreement
+42,give the tre a shadow,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""tre""
+@n2 syntax.nominal dependent=""a"" head=""shadow""",agreement
+43,the house needs a shdaow,"@n1 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""shdaow""",agreement
+44,the lake needs houses,"@n1 syntax.nominal dependent=""the"" head=""lake""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""houses""",agreement
+46,what if the lake had something swimming on top?,"@n1 syntax.nominal head=""what""
+@r1 syntax.relation marker=""if"" from=$c3 to=$c1
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@c1 syntax.clause form=declarative verb=""had"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""something""
+@c2 syntax.clause form=nonfinite verb=""swimming""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""top""
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n3 to=$c2",agreement
+50,just draw me a farm with the works,"@c1 syntax.clause form=imperative modifier=""just"" verb=""draw"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""farm""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""works""",agreement
+53,and add a dog too,"@c1 syntax.clause form=imperative discourse=""and"" verb=""add"" modifier=""too"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""",agreement
+54,how about a duckling to go with it?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""a"" head=""duckling""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r3 syntax.relation marker=""with"" from=$c2 to=$n2
+@n2 syntax.nominal head=""it""",agreement
+57,"and another cat, thanks","@c1 syntax.clause form=fragment discourse=""and"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""cat""",agreement
+59,a bird as well,"@n1 syntax.nominal dependent=""a"" head=""bird""
+@c1 syntax.clause form=fragment modifier=""as"" modifier=""well"" complement=$n1",agreement
+61,another animal of some kind perhaps,"@n1 syntax.nominal dependent=""another"" head=""animal""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""some"" head=""kind""
+@c1 syntax.clause form=fragment modifier=""perhaps"" complement=$n1",agreement
+63,and a dgo too,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""too"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dgo""",agreement
+64,plsu a cat,"@c1 syntax.clause form=imperative verb=""plsu"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cat""",agreement
+70,extra boats will do,"@n1 syntax.nominal dependent=""extra"" head=""boats""
+@c1 syntax.clause form=declarative auxiliary=""will"" verb=""do"" subject=$n1",agreement
+71,put a kite,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""kite""",agreement
+72,put a boy,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boy""",agreement
+76,there should be a cloud an inch from the left side,"@n1 syntax.nominal head=""there""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""a"" head=""cloud""
+@n3 syntax.nominal dependent=""an"" head=""inch""
+@r1 syntax.relation marker=""from"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""left"" head=""side""",agreement
+84,i awnt a cloud an inch from the left side in the picture,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""awnt"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""a"" head=""cloud""
+@n3 syntax.nominal dependent=""an"" head=""inch""
+@r1 syntax.relation marker=""from"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""left"" head=""side""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""picture""",agreement
+86,put a cloud,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""",agreement
+93,put a boy somewhere in the scene,"@c1 syntax.clause form=imperative verb=""put"" modifier=""somewhere"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+94,put a boy for me,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+95,put a man,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""",agreement
+96,put a boy out there,"@c1 syntax.clause form=imperative verb=""put"" modifier=""out"" modifier=""there"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boy""",agreement
+97,put a girl somewhere in the scene,"@c1 syntax.clause form=imperative verb=""put"" modifier=""somewhere"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""girl""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+99,put a girl for me,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""girl""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+100,put a girl out there,"@c1 syntax.clause form=imperative verb=""put"" modifier=""out"" modifier=""there"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""girl""",agreement
+101,put a cloud somewhere in the scene,"@c1 syntax.clause form=imperative verb=""put"" modifier=""somewhere"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+102,put a boy nice and simple,"@c1 syntax.clause form=imperative verb=""put"" modifier=""nice"" discourse=""and"" modifier=""simple"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boy""",agreement
+104,put a bench,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bench""",agreement
+105,put a dog,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""",agreement
+106,add a boy and a girl to the scene,"@c1 syntax.clause form=imperative verb=""add"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""a"" head=""girl""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""scene""",agreement
+108,a boy and a girl,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""a"" head=""girl""
+@c1 syntax.clause form=fragment complement=$k1",agreement
+109,put a dog somewhere in the scene,"@c1 syntax.clause form=imperative verb=""put"" modifier=""somewhere"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+110,put a bird,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bird""",agreement
+111,put a bird somewhere in the scene,"@c1 syntax.clause form=imperative verb=""put"" modifier=""somewhere"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+112,put a tree to the scene,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+114,put a bird for me,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bird""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+145,send a man in a plain red shirt in from the left,"@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""send"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""plain"" dependent=""red"" head=""shirt""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+153,bring a man in a plain red shirt in from the left,"@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""bring"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""plain"" dependent=""red"" head=""shirt""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+157,a man in a plain red shirt enters from the left,"@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""plain"" dependent=""red"" head=""shirt""
+@c1 syntax.clause form=declarative verb=""enters"" subject=$n1
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+158,"just a man in a plain red shirt, in from the left","@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=fragment modifier=""just"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""plain"" dependent=""red"" head=""shirt""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+160,send a man in a plain red shrit in from the left,"@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""send"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""plain"" dependent=""red"" head=""shrit""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+164,send a boy in a bright red jacket in from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""send"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""red"" head=""jacket""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+169,a boy in a red jacket enters from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""jacket""
+@c1 syntax.clause form=declarative verb=""enters"" subject=$n1
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+171,i need a boy in a red jacket coming in from the left,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""red"" head=""jacket""
+@c2 syntax.clause form=nonfinite verb=""coming"" modifier=""in""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation from=$n2 to=$c2",agreement
+172,bring a boy in a bright red jacket in from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""bring"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""red"" head=""jacket""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+175,a boy in a bright red jacket enters from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""red"" head=""jacket""
+@c1 syntax.clause form=declarative verb=""enters"" subject=$n1
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+176,send a boy in a red jacket in from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""send"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""red"" head=""jacket""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+177,"just a boy in a bright red jacket, in from the left","@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=fragment modifier=""just"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""red"" head=""jacket""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+179,send a boy in a bright red jaket in from the left,"@n1 syntax.nominal dependent=""a"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@c1 syntax.clause form=imperative verb=""send"" modifier=""in"" complement=$n1
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""red"" head=""jaket""
+@r2 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+189,draw a girl two hand-widths from the right edge,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""girl""
+@n2 syntax.nominal dependent=""two"" head=""hand-widths""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""right"" head=""edge""",agreement
+190,place a girl two hand-widths from the right edge,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""girl""
+@n2 syntax.nominal dependent=""two"" head=""hand-widths""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""right"" head=""edge""",agreement
+194,draw a boat two finger-widths in from the left edge,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""in"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""boat""
+@n2 syntax.nominal dependent=""two"" head=""finger-widths""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""left"" head=""edge""",agreement
+196,draw a tent three hand-widths in from the left edge,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""in"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""tent""
+@n2 syntax.nominal dependent=""three"" head=""hand-widths""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""left"" head=""edge""",agreement
+198,draw a dog covering the boy's left leg,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""
+@c2 syntax.clause form=nonfinite verb=""covering"" complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal dependent=""left"" head=""leg""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+200,draw a sun overlapping the cloud,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""sun""
+@c2 syntax.clause form=nonfinite verb=""overlapping"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""cloud""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+201,and another tree as well,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""as"" modifier=""well"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""tree""",agreement
+202,and another bench as well,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""as"" modifier=""well"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""bench""",agreement
+203,and another cloud as well,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""as"" modifier=""well"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""cloud""",agreement
+204,and another cat as well,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""as"" modifier=""well"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""cat""",agreement
+208,draw a sun touching the left edge,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""sun""
+@c2 syntax.clause form=nonfinite verb=""touching"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""left"" head=""edge""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+209,place a large sun touching the left edge,"@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""large"" head=""sun""
+@c2 syntax.clause form=nonfinite verb=""touching"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""left"" head=""edge""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+224,draw a cloud far away in the background,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""far"" modifier=""away"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""background""",agreement
+227,draw a boat in the middle distance,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boat""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""middle"" head=""distance""",agreement
+228,boat in the middle distance,"@n1 syntax.nominal head=""boat""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""middle"" head=""distance""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+229,draw a tree far off in the distance,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""far"" modifier=""off"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""distance""",agreement
+230,draw a kid right up close to the viewer,"@c1 syntax.clause form=imperative verb=""draw"" modifier=""right"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""kid""
+@r1 syntax.relation attachment=ambiguous marker=""close to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""viewer""",agreement
+231,kid right up close to the viewer,"@n1 syntax.nominal head=""kid""
+@c1 syntax.clause form=fragment modifier=""right"" modifier=""up"" complement=$n1
+@r1 syntax.relation marker=""close to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""viewer""",agreement
+232,draw a house behind everything else in the background,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation attachment=ambiguous marker=""behind"" from=$c1 to=$n2
+@n2 syntax.nominal head=""everything"" dependent=""else""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""background""",agreement
+234,"i want a horse, a farmer, and a trough","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""horse""
+@n3 syntax.nominal dependent=""a"" head=""farmer""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""trough""",agreement
+235,"show me a horse, a trough, and a farmer","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""horse""
+@n3 syntax.nominal dependent=""a"" head=""trough""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""farmer""",agreement
+236,"a farm with a horse, a farmer, and a trough","@n1 syntax.nominal dependent=""a"" head=""farm""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""horse""
+@n3 syntax.nominal dependent=""a"" head=""farmer""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""trough""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+237,"draw a shed, a goat, a boulder, and a kid","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""shed""
+@n2 syntax.nominal dependent=""a"" head=""goat""
+@n3 syntax.nominal dependent=""a"" head=""boulder""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""kid""",agreement
+238,"i want a shed, a goat, a kid, and a boulder","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""shed""
+@n3 syntax.nominal dependent=""a"" head=""goat""
+@n4 syntax.nominal dependent=""a"" head=""kid""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""boulder""",agreement
+239,"show me a shed, a boulder, a goat, and a kid","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""shed""
+@n3 syntax.nominal dependent=""a"" head=""boulder""
+@n4 syntax.nominal dependent=""a"" head=""goat""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""kid""",agreement
+240,"next, draw a cart, a rooster, and a girl","@c1 syntax.clause form=imperative modifier=""next"" verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""cart""
+@n2 syntax.nominal dependent=""a"" head=""rooster""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""girl""",agreement
+241,"now i want a cart, a girl, and a rooster","@c1 syntax.clause form=declarative modifier=""now"" verb=""want"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" head=""cart""
+@n3 syntax.nominal dependent=""a"" head=""girl""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""rooster""",agreement
+242,"also show me a girl, a cart, and a rooster","@c1 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""girl""
+@n3 syntax.nominal dependent=""a"" head=""cart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""rooster""",agreement
+243,"draw a rock pool, a crab, a bucket, and a boy","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" dependent=""rock"" head=""pool""
+@n2 syntax.nominal dependent=""a"" head=""crab""
+@n3 syntax.nominal dependent=""a"" head=""bucket""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""",agreement
+244,"i want a rock pool, a crab, a boy, and a bucket","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" dependent=""rock"" head=""pool""
+@n3 syntax.nominal dependent=""a"" head=""crab""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""bucket""",agreement
+245,"a beach with a rock pool, a bucket, a boy, and a crab","@n1 syntax.nominal dependent=""a"" head=""beach""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" dependent=""rock"" head=""pool""
+@n3 syntax.nominal dependent=""a"" head=""bucket""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""crab""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+246,"draw a kiosk, an umbrella, a flag, and a boy","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""kiosk""
+@n2 syntax.nominal dependent=""an"" head=""umbrella""
+@n3 syntax.nominal dependent=""a"" head=""flag""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""",agreement
+247,"i want a kiosk, an umbrella, a boy, and a flag","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""kiosk""
+@n3 syntax.nominal dependent=""an"" head=""umbrella""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""flag""",agreement
+248,"show me a kiosk, a boy, an umbrella, and a flag","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""kiosk""
+@n3 syntax.nominal dependent=""a"" head=""boy""
+@n4 syntax.nominal dependent=""an"" head=""umbrella""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""flag""",agreement
+251,"a beach with a flag, a wave, a surfboard, and a surfer","@n1 syntax.nominal dependent=""a"" head=""beach""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""flag""
+@n3 syntax.nominal dependent=""a"" head=""wave""
+@n4 syntax.nominal dependent=""a"" head=""surfboard""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""surfer""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+252,"draw a tent, a campfire, an owl, and a boy","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""tent""
+@n2 syntax.nominal dependent=""a"" head=""campfire""
+@n3 syntax.nominal dependent=""an"" head=""owl""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""",agreement
+253,"i want a tent, a campfire, a boy, and an owl","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""tent""
+@n3 syntax.nominal dependent=""a"" head=""campfire""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""an"" head=""owl""",agreement
+254,"show me a tent, an owl, a campfire, and a boy","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""tent""
+@n3 syntax.nominal dependent=""an"" head=""owl""
+@n4 syntax.nominal dependent=""a"" head=""campfire""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""boy""",agreement
+255,"draw a tent, a tree, a bear, and a girl","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""tent""
+@n2 syntax.nominal dependent=""a"" head=""tree""
+@n3 syntax.nominal dependent=""a"" head=""bear""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""girl""",agreement
+256,"i want a tent, a tree, a girl, and a bear","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""tent""
+@n3 syntax.nominal dependent=""a"" head=""tree""
+@n4 syntax.nominal dependent=""a"" head=""girl""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""bear""",agreement
+257,"show me a tent, a girl, a tree, and a bear","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""tent""
+@n3 syntax.nominal dependent=""a"" head=""girl""
+@n4 syntax.nominal dependent=""a"" head=""tree""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""bear""",agreement
+258,"a camp with a girl, a tent, a tree, and a bear","@n1 syntax.nominal dependent=""a"" head=""camp""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""girl""
+@n3 syntax.nominal dependent=""a"" head=""tent""
+@n4 syntax.nominal dependent=""a"" head=""tree""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""bear""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+259,"i want a lake, a tent, a canoe, and a boy","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""lake""
+@n3 syntax.nominal dependent=""a"" head=""tent""
+@n4 syntax.nominal dependent=""a"" head=""canoe""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""boy""",agreement
+260,"show me a lake, a tent, a boy, and a canoe","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""lake""
+@n3 syntax.nominal dependent=""a"" head=""tent""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""canoe""",agreement
+261,"a camp with a lake, a canoe, a tent, and a boy","@n1 syntax.nominal dependent=""a"" head=""camp""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""lake""
+@n3 syntax.nominal dependent=""a"" head=""canoe""
+@n4 syntax.nominal dependent=""a"" head=""tent""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""boy""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+262,"draw a hut, a flag, a dog, and a ranger","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""hut""
+@n2 syntax.nominal dependent=""a"" head=""flag""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""ranger""",agreement
+263,"i want a hut, a flag, a ranger, and a dog","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""hut""
+@n3 syntax.nominal dependent=""a"" head=""flag""
+@n4 syntax.nominal dependent=""a"" head=""ranger""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""dog""",agreement
+264,"show me a hut, a dog, a flag, and a ranger","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""hut""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@n4 syntax.nominal dependent=""a"" head=""flag""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""a"" head=""ranger""",agreement
+266,"next, draw a table, a basket, and a squirrel","@c1 syntax.clause form=imperative modifier=""next"" verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""table""
+@n2 syntax.nominal dependent=""a"" head=""basket""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""squirrel""",agreement
+267,"now i want a table, a squirrel, and a basket","@c1 syntax.clause form=declarative modifier=""now"" verb=""want"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" head=""table""
+@n3 syntax.nominal dependent=""a"" head=""squirrel""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""basket""",agreement
+268,"also show me a table, a basket, and a squirrel","@c1 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""table""
+@n3 syntax.nominal dependent=""a"" head=""basket""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""squirrel""",agreement
+269,"next, a camp with a table, a squirrel, and a basket","@c1 syntax.clause form=fragment modifier=""next"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""camp""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""table""
+@n3 syntax.nominal dependent=""a"" head=""squirrel""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""basket""",agreement
+270,"next, draw a lantern, a bench, and a girl","@c1 syntax.clause form=imperative modifier=""next"" verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""lantern""
+@n2 syntax.nominal dependent=""a"" head=""bench""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""girl""",agreement
+271,"now i want a lantern, a bench, and a girl","@c1 syntax.clause form=declarative modifier=""now"" verb=""want"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" head=""lantern""
+@n3 syntax.nominal dependent=""a"" head=""bench""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""girl""",agreement
+272,"also show me a lantern, a bench, and a girl","@c1 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""lantern""
+@n3 syntax.nominal dependent=""a"" head=""bench""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""girl""",agreement
+273,"next, a camp with a lantern, a bench, and a girl","@c1 syntax.clause form=fragment modifier=""next"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""camp""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""lantern""
+@n3 syntax.nominal dependent=""a"" head=""bench""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""girl""",agreement
+277,"next, draw a bicycle, a boy, and a dog","@c1 syntax.clause form=imperative modifier=""next"" verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""bicycle""
+@n2 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""dog""",agreement
+278,"also show me a bicycle, a boy, and a dog","@c1 syntax.clause form=imperative modifier=""also"" verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""bicycle""
+@n3 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""dog""",agreement
+279,"next, a street with a bicycle, a boy, and a dog","@c1 syntax.clause form=fragment modifier=""next"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""street""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""bicycle""
+@n3 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""dog""",agreement
+280,"draw a bench, a dog, and a boy","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""bench""
+@n2 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""boy""",agreement
+281,"i want a bench, a dog, and a boy","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""bench""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""",agreement
+282,"show me a bench, a dog, and a boy","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""bench""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""",agreement
+283,"a park with a bench, a dog, and a boy","@n1 syntax.nominal dependent=""a"" head=""park""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""bench""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+284,"draw a kite, a boy, and a dog","@c1 syntax.clause form=imperative verb=""draw"" complement=$k1
+@n1 syntax.nominal dependent=""a"" head=""kite""
+@n2 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""dog""",agreement
+285,"i want a boy, a kite, and a dog","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" head=""boy""
+@n3 syntax.nominal dependent=""a"" head=""kite""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""dog""",agreement
+286,"show me a boy, a dog, and a kite","@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$k1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""boy""
+@n3 syntax.nominal dependent=""a"" head=""dog""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""kite""",agreement
+287,"a park with a kite, a boy, and a dog","@n1 syntax.nominal dependent=""a"" head=""park""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""a"" head=""kite""
+@n3 syntax.nominal dependent=""a"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""a"" head=""dog""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+289,turn the scene into a glowing evening,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""scene""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""glowing"" head=""evening""",agreement
+291,sunrise colours would lift the whole page,"@n1 syntax.nominal dependent=""sunrise"" head=""colours""
+@c1 syntax.clause form=declarative auxiliary=""would"" verb=""lift"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""whole"" head=""page""",agreement
+294,how about dusk over the lake?,"@c1 syntax.clause form=fragment modifier=""how""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n1
+@n1 syntax.nominal head=""dusk""
+@r2 syntax.relation marker=""over"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""",agreement
+295,warm evening tones would suit this landscape,"@n1 syntax.nominal dependent=""warm"" dependent=""evening"" head=""tones""
+@c1 syntax.clause form=declarative auxiliary=""would"" verb=""suit"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""this"" head=""landscape""",agreement
+297,one more thing — how about dusk over the lake?,"@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@c1 syntax.clause form=fragment modifier=""how"" complement=$n1
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal head=""dusk""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lake""",agreement
+303,trun the scene into a glowing evening,"@c1 syntax.clause form=imperative verb=""trun"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""scene""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""glowing"" head=""evening""",agreement
+304,make the colours softer,"@c1 syntax.clause form=imperative verb=""make"" modifier=""softer"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colours""",agreement
+305,a pastel feel for the whole scene,"@n1 syntax.nominal dependent=""a"" dependent=""pastel"" head=""feel""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""whole"" head=""scene""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+306,calm the colours down,"@c1 syntax.clause form=imperative verb=""calm"" modifier=""down"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colours""",agreement
+309,pastel wash over everything,"@n1 syntax.nominal dependent=""pastel"" head=""wash""
+@r1 syntax.relation marker=""over"" from=$n1 to=$n2
+@n2 syntax.nominal head=""everything""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+310,"warmer colours, if it's not too much trouble","@n1 syntax.nominal dependent=""warmer"" head=""colours""
+@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n2 syntax.nominal head=""it""
+@c1 syntax.clause form=declarative verb=""'s"" negation=""not"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""too"" dependent=""much"" head=""trouble""
+@c2 syntax.clause form=fragment complement=$n1",agreement
+311,soften the whole picture up,"@c1 syntax.clause form=imperative verb=""soften"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""whole"" head=""picture""",agreement
+312,a softer palette is what this needs,"@n1 syntax.nominal dependent=""a"" dependent=""softer"" head=""palette""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n1
+@n2 syntax.nominal head=""what""
+@n3 syntax.nominal head=""this""
+@c2 syntax.clause form=declarative verb=""needs"" subject=$n3 complement=$n2
+@r1 syntax.relation from=$c1 to=$c2",agreement
+314,"hey, make the colours softer","@c1 syntax.clause form=imperative discourse=""hey"" verb=""make"" modifier=""softer"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colours""",agreement
+317,"friendlier colours, somehow","@n1 syntax.nominal dependent=""friendlier"" head=""colours""
+@c1 syntax.clause form=fragment modifier=""somehow"" complement=$n1",agreement
+318,the page could be easier on the eye,"@n1 syntax.nominal dependent=""the"" head=""page""
+@c1 syntax.clause form=declarative auxiliary=""could"" verb=""be"" modifier=""easier"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""eye""",agreement
+320,make the colurs softer,"@c1 syntax.clause form=imperative verb=""make"" modifier=""softer"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colurs""",agreement

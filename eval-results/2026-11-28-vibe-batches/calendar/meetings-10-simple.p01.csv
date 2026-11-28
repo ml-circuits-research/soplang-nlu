@@ -1,0 +1,92 @@
+n,text,sop,label_state
+6,change Work,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""Work""",agreement
+7,change it,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""it""",agreement
+9,set its label to Review,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""label""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Review""",agreement
+10,set the colour of Work to teal,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Work""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""teal""",agreement
+11,set its colour to teal,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""colour""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""teal""",agreement
+13,delete Work,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""Work""",agreement
+14,delete it,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""it""",agreement
+15,add a person with label Review,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""person""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""label""
+@n3 syntax.nominal head=""Review""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+19,delete Ana,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""Ana""",agreement
+26,change Cedar room,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""Cedar"" head=""room""",agreement
+29,set its capacity to 8,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""capacity""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""8""",agreement
+56,select Weekly review,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""Weekly"" head=""review""",agreement
+57,select it,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal head=""it""",agreement
+64,set its title to Quarterly plan,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""title""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Quarterly"" head=""plan""",agreement
+73,set its calendar to Work,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""calendar""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Work""",agreement
+74,set the notes of Weekly review to bring the slides,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""notes""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""Weekly"" head=""review""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""bring"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""slides""",agreement
+75,set its notes to bring the slides,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""its"" head=""notes""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""bring"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""slides""",agreement
+100,move it on Monday at 10:00,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Monday""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""10:00""",agreement
+101,delete all the meetings,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""meetings""",agreement
+102,describe the calendar,"@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""calendar""",agreement
+114,change the selection,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""selection""",agreement
+115,move the selection,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""selection""",agreement
+124,delete Weekly review,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""Weekly"" head=""review""",agreement
+125,delete the selection,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""selection""",agreement
+133,"add a room with label Review, then set the label of Work to Review","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""label""
+@n3 syntax.nominal head=""Review""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""label""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Work""
+@r3 syntax.relation marker=""to"" from=$n5 to=$n6
+@n6 syntax.nominal head=""Review""
+@r4 syntax.relation from=$n2 to=$n3",agreement

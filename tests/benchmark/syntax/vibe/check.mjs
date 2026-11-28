@@ -12,7 +12,7 @@ export const verdictsFileOf = csv => csv.replace(/\.csv$/u, '.verdicts.jsonl')
 
 /** @returns {rows, judged, accepted, rejected, missing, problems} */
 export function checkBatch(csv) {
-  const advanced = /-advanced\.csv$/u.test(csv)
+  const advanced = /-advanced(\.p\d+)?\.csv$/u.test(csv)
   const [, ...rows] = readCsv(readFileSync(csv, 'utf8'))
   const byNumber = new Map(rows.map(([n, text]) => [Number(n), text]))
   const file = verdictsFileOf(csv), problems = [], seen = new Set()

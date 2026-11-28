@@ -1,0 +1,503 @@
+n,text,sop,label_state
+2,ids: temporary page,"@n1 syntax.nominal head=""ids""
+@n2 syntax.nominal dependent=""temporary"" head=""page""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+5,always on: the page ids,"@c1 syntax.clause form=fragment modifier=""always"" modifier=""on"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""page"" head=""ids""",agreement
+6,"page ids, always","@n1 syntax.nominal dependent=""page"" head=""ids""
+@c1 syntax.clause form=fragment modifier=""always"" complement=$n1",agreement
+8,hold page ids always,"@c1 syntax.clause form=imperative verb=""hold"" modifier=""always"" complement=$n1
+@n1 syntax.nominal dependent=""page"" head=""ids""",agreement
+10,page ids: off now,"@n1 syntax.nominal dependent=""page"" head=""ids""
+@c1 syntax.clause form=fragment modifier=""off"" modifier=""now"" complement=$n1",agreement
+12,I'd like a temporary,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""temporary""",agreement
+13,can I get a temporary?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""get"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""a"" head=""temporary""",agreement
+15,make it an always,"@c1 syntax.clause form=imperative verb=""make"" modifier=""an"" modifier=""always"" complement=$n1
+@n1 syntax.nominal head=""it""",agreement
+22,hang the ids on the temporary page if you will,"@c1 syntax.clause form=imperative verb=""hang"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""ids""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""temporary"" head=""page""
+@r2 syntax.relation marker=""if"" from=$c1 to=$c2
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""will"" subject=$n3",agreement
+23,add a temporary,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""temporary""",agreement
+50,"Hmm, is there a motorized carriage parked in the drawing anywhere?","@c1 syntax.clause form=interrogative discourse=""Hmm"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" dependent=""motorized"" head=""carriage""
+@c2 syntax.clause form=nonfinite verb=""parked"" modifier=""anywhere""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""drawing""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+57,"Also, is there a circle hiding behind the sunburst?","@c1 syntax.clause form=interrogative modifier=""Also"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""circle""
+@c2 syntax.clause form=nonfinite verb=""hiding""
+@r1 syntax.relation marker=""behind"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""sunburst""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+85,"For the little doodle village, how many cottages did it get?","@r1 syntax.relation marker=""For"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" dependent=""doodle"" head=""village""
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""cottages""
+@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""get"" subject=$n3 complement=$n2
+@n3 syntax.nominal head=""it""",agreement
+92,"Erm, is therre a huose in the drawing at all?","@c1 syntax.clause form=interrogative discourse=""Erm"" verb=""is"" modifier=""at"" modifier=""all"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""therre""
+@n2 syntax.nominal dependent=""a"" head=""huose""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""drawing""",agreement
+95,"Number of pen-stroke thingies criss-crossing the page, please.","@n1 syntax.nominal head=""Number""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""pen"" dependent=""stroke"" head=""thingies""
+@c1 syntax.clause form=nonfinite verb=""criss-crossing"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""page""
+@c2 syntax.clause form=fragment discourse=""please"" complement=$n1
+@r2 syntax.relation from=$n2 to=$c1",agreement
+100,"Straight up, is there a single stroke anywhere on this canvas?","@c1 syntax.clause form=interrogative modifier=""Straight"" modifier=""up"" verb=""is"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" dependent=""single"" head=""stroke""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""this"" head=""canvas""",agreement
+106,"In the scene now, how many little human figures?","@r1 syntax.relation marker=""In"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""scene""
+@c1 syntax.clause form=fragment modifier=""now"" complement=$n2
+@n2 syntax.nominal dependent=""how"" dependent=""many"" dependent=""little"" dependent=""human"" head=""figures""",
+107,What's the head-count on the peoples in the drawing?,"@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""head-count""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""peoples""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""drawing""",agreement
+108,Is there a person standing under the clock tower?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""person""
+@c2 syntax.clause form=nonfinite verb=""standing""
+@r1 syntax.relation marker=""under"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""clock"" head=""tower""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+121,"Finally, is there a spaceship parked somewhere in the scene?","@c1 syntax.clause form=interrogative modifier=""Finally"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""spaceship""
+@c2 syntax.clause form=nonfinite verb=""parked"" modifier=""somewhere""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""scene""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+126,"object, please","@n1 syntax.nominal head=""object""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+127,give me an object,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""an"" head=""object""",agreement
+128,can you ask an object?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""ask"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""an"" head=""object""",agreement
+129,ask an obejct,"@c1 syntax.clause form=imperative verb=""ask"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obejct""",agreement
+130,ask an obect,"@c1 syntax.clause form=imperative verb=""ask"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""obect""",agreement
+131,ask an objject,"@c1 syntax.clause form=imperative verb=""ask"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""objject""",agreement
+132,ask an object,"@c1 syntax.clause form=imperative verb=""ask"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""object""",agreement
+133,How many hearts are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""hearts""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+134,Count the hearts for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""hearts""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+135,"Of the things on display, how many are hearts?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""hearts""",agreement
+136,Do we have a heart anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""heart""",agreement
+137,What hearts are there?,"@n1 syntax.nominal dependent=""What"" head=""hearts""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+138,Which hearts do we have?,"@n1 syntax.nominal dependent=""Which"" head=""hearts""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+139,List the hearts.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""hearts""",agreement
+140,Show me every heart.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""heart""",agreement
+141,What colour is the heart?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""heart""",agreement
+142,What colour are the hearts?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""hearts""",agreement
+144,Tell me the number of lines.,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""lines""",agreement
+145,Count the lines for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lines""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+146,"Of the things on display, how many are lines?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""lines""",agreement
+147,Is there a line?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""line""",agreement
+148,Any line at all?,"@n1 syntax.nominal dependent=""Any"" head=""line""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+149,Does a line exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""line""",agreement
+150,What lines are there?,"@n1 syntax.nominal dependent=""What"" head=""lines""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+151,Which lines do we have?,"@n1 syntax.nominal dependent=""Which"" head=""lines""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+152,List the lines.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lines""",agreement
+153,Show me every line.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""line""",agreement
+154,What colour is the line?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""line""",agreement
+155,What colour are the lines?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""lines""",agreement
+157,"Colour of the line, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""line""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+158,How many arrows are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""arrows""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+160,Count the arrows for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrows""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+161,"Of the things on display, how many are arrows?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""arrows""",agreement
+162,Is there an arrow?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""an"" head=""arrow""",agreement
+163,Do we have an arrow anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""an"" head=""arrow""",agreement
+164,Any arrow at all?,"@n1 syntax.nominal dependent=""Any"" head=""arrow""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+165,Does an arrow exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""",agreement
+166,What arrows are there?,"@n1 syntax.nominal dependent=""What"" head=""arrows""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+167,Which arrows do we have?,"@n1 syntax.nominal dependent=""Which"" head=""arrows""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+168,List the arrows.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrows""",agreement
+169,Show me every arrow.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""arrow""",agreement
+170,What colour is the arrow?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""arrow""",agreement
+172,"Colour of the arrow, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrow""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+173,How many lakes are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""lakes""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+174,Count the lakes for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lakes""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+175,Is there a lake?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""lake""",agreement
+176,Do we have a lake anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""lake""",agreement
+177,Any lake at all?,"@n1 syntax.nominal dependent=""Any"" head=""lake""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+178,Does a lake exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""lake""",agreement
+179,What lakes are there?,"@n1 syntax.nominal dependent=""What"" head=""lakes""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+180,Which lakes do we have?,"@n1 syntax.nominal dependent=""Which"" head=""lakes""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+181,Show me every lake.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""lake""",agreement
+182,What colour is the lake?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""lake""",agreement
+183,What colour are the lakes?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""lakes""",agreement
+185,"Colour of the lake, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+186,How many houses are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""houses""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+187,Count the houses for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""houses""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+188,"Of the things on display, how many are houses?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""houses""",agreement
+189,Is there a house?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""house""",agreement
+190,Do we have a house anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""house""",agreement
+191,Any house at all?,"@n1 syntax.nominal dependent=""Any"" head=""house""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+192,Does a house exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""",agreement
+193,What houses are there?,"@n1 syntax.nominal dependent=""What"" head=""houses""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+194,Which houses do we have?,"@n1 syntax.nominal dependent=""Which"" head=""houses""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+195,List the houses.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""houses""",agreement
+196,Show me every house.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""house""",agreement
+197,What colour is the house?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+198,What colour are the houses?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""houses""",agreement
+199,"Colour of the house, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+200,Tell me the number of trees.,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""trees""",agreement
+201,Count the trees for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""trees""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+202,"Of the things on display, how many are trees?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""trees""",agreement
+203,Is there a tree?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""tree""",agreement
+204,Do we have a tree anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""tree""",agreement
+205,Any tree at all?,"@n1 syntax.nominal dependent=""Any"" head=""tree""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+206,Does a tree exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""",agreement
+207,What trees are there?,"@n1 syntax.nominal dependent=""What"" head=""trees""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+208,Show me every tree.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""tree""",agreement
+209,What colour is the tree?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tree""",agreement
+210,What colour are the trees?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""trees""",agreement
+212,Tell me the number of suns.,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""suns""",agreement
+213,Count the suns for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""suns""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+214,"Of the things on display, how many are suns?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""suns""",agreement
+215,Is there a sun?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""sun""",agreement
+216,Do we have a sun anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""sun""",agreement
+217,Any sun at all?,"@n1 syntax.nominal dependent=""Any"" head=""sun""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+218,Does a sun exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""sun""",agreement
+220,Which suns do we have?,"@n1 syntax.nominal dependent=""Which"" head=""suns""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+221,List the suns.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""suns""",agreement
+222,Show me every sun.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""sun""",agreement
+223,What colour is the sun?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""sun""",agreement
+224,What colour are the suns?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""suns""",agreement
+226,"Colour of the sun, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+227,How many clouds are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""clouds""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+228,"Of the things on display, how many are clouds?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""clouds""",agreement
+229,Is there a cloud?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""cloud""",agreement
+230,Do we have a cloud anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""cloud""",agreement
+231,Any cloud at all?,"@n1 syntax.nominal dependent=""Any"" head=""cloud""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+232,Does a cloud exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""",agreement
+233,What clouds are there?,"@n1 syntax.nominal dependent=""What"" head=""clouds""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+234,Which clouds do we have?,"@n1 syntax.nominal dependent=""Which"" head=""clouds""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+235,List the clouds.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""clouds""",agreement
+236,Show me every cloud.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""cloud""",agreement
+237,What colour is the cloud?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""cloud""",agreement
+239,"Colour of the cloud, please.","@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""cloud""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+240,How many cars are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""cars""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+241,Tell me the number of cars.,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""cars""",agreement
+242,Count the cars for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cars""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+243,"Of the things on display, how many are cars?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""cars""",agreement
+244,Is there a car?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""car""",agreement
+245,Do we have a car anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""car""",agreement
+246,Any car at all?,"@n1 syntax.nominal dependent=""Any"" head=""car""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+248,What cars are there?,"@n1 syntax.nominal dependent=""What"" head=""cars""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+249,Which cars do we have?,"@n1 syntax.nominal dependent=""Which"" head=""cars""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+250,List the cars.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cars""",agreement
+251,What colour is the car?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""car""",agreement
+252,What colour are the cars?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""cars""",agreement
+255,How many flowers are there?,"@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""flowers""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""",agreement
+256,Tell me the number of flowers.,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""flowers""",agreement
+257,Count the flowers for me.,"@c1 syntax.clause form=imperative verb=""Count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+258,"Of the things on display, how many are flowers?","@r1 syntax.relation marker=""Of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""things""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""display""
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""flowers""",agreement
+259,Is there a flower?,"@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""flower""",agreement
+260,Do we have a flower anywhere?,"@c1 syntax.clause form=interrogative auxiliary=""Do"" verb=""have"" modifier=""anywhere"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""we""
+@n2 syntax.nominal dependent=""a"" head=""flower""",agreement
+261,Any flower at all?,"@n1 syntax.nominal dependent=""Any"" head=""flower""
+@c1 syntax.clause form=fragment modifier=""at"" modifier=""all"" complement=$n1",agreement
+262,Does a flower exist?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""exist"" subject=$n1
+@n1 syntax.nominal dependent=""a"" head=""flower""",agreement
+263,Which flowers do we have?,"@n1 syntax.nominal dependent=""Which"" head=""flowers""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+264,List the flowers.,"@c1 syntax.clause form=imperative verb=""List"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""",agreement
+265,Show me every flower.,"@c1 syntax.clause form=imperative verb=""Show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""every"" head=""flower""",agreement
+266,What colour is the flower?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""flower""",agreement
+267,What colour are the flowers?,"@n1 syntax.nominal dependent=""What"" head=""colour""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""flowers""",agreement

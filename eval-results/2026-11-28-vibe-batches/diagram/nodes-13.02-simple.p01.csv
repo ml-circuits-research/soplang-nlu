@@ -1,0 +1,197 @@
+n,text,sop,label_state
+1,"actually, could you delete r1 and leave everything else?","@c1 syntax.clause form=interrogative modifier=""actually"" auxiliary=""could"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""leave"" complement=$n3
+@n3 syntax.nominal head=""everything"" dependent=""else""",agreement
+2,would you delete the connection joining the two boxes?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""connection""
+@c2 syntax.clause form=nonfinite verb=""joining"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@r1 syntax.relation from=$n2 to=$c2",agreement
+3,"actually, could you delete the connection between the two boxes and keep the boxes?","@c1 syntax.clause form=interrogative modifier=""actually"" auxiliary=""could"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""connection""
+@r1 syntax.relation marker=""between"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""keep"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""boxes""",agreement
+4,"hmm, that part is redundant, let's delete the Start box and its arrow","@c1 syntax.clause form=imperative discourse=""hmm"" verb=""let"" complement=$n2
+@n1 syntax.nominal dependent=""that"" head=""part""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""redundant"" subject=$n1
+@n2 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""delete"" complement=$k1
+@n3 syntax.nominal dependent=""the"" dependent=""Start"" head=""box""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""its"" head=""arrow""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$c1 to=$c3",agreement
+10,can you put the Finish box below Start?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""put"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""Finish"" head=""box""
+@r1 syntax.relation marker=""below"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+15,"ok, the flow needs a checking step, so add a rectangle labelled Review","@c1 syntax.clause form=declarative discourse=""ok"" verb=""needs"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@n2 syntax.nominal dependent=""a"" dependent=""checking"" head=""step""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""rectangle""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Review""
+@r1 syntax.relation from=$n3 to=$c3",agreement
+18,"ok, it's too close to the edge, so move r1 to 200,150","@c1 syntax.clause form=declarative discourse=""ok"" verb=""'s"" modifier=""too"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""close to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""edge""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n3
+@n3 syntax.nominal head=""r1""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""200,150""",agreement
+19,"hmm, the steps are scattered, let's arrange r1 and r2 in a row","@c1 syntax.clause form=imperative discourse=""hmm"" verb=""let"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""steps""
+@c2 syntax.clause form=declarative auxiliary=""are"" verb=""scattered"" subject=$n1
+@n2 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""arrange"" complement=$k1
+@n3 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""row""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",agreement
+23,please reverse a1 so it goes from r2 to r1,"@c1 syntax.clause form=imperative discourse=""please"" verb=""reverse"" complement=$n1
+@n1 syntax.nominal head=""a1""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""goes"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal head=""r2""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+28,"Start box with its arrow, remove them","@c1 syntax.clause form=imperative verb=""Start"" complement=$n1
+@n1 syntax.nominal head=""box""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""its"" head=""arrow""
+@c2 syntax.clause form=imperative verb=""remove"" complement=$n3
+@n3 syntax.nominal head=""them""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+31,"um, undo the last diagram change","@c1 syntax.clause form=imperative discourse=""um"" verb=""undo"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""last"" dependent=""diagram"" head=""change""",agreement
+32,I need to undo my last diagram change,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""undo"" complement=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""last"" dependent=""diagram"" head=""change""",agreement
+41,shift the Finish box down,"@c1 syntax.clause form=imperative verb=""shift"" modifier=""down"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Finish"" head=""box""",agreement
+42,let's make the Process group a pie chart,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""make"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""Process"" head=""group""
+@n3 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+47,let's select r1,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""select"" complement=$n2
+@n2 syntax.nominal head=""r1""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+48,would you delete r1?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""",agreement
+49,would you arrange r1 and r2 in a row?,"@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""arrange"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""r2""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""row""",agreement
+50,please draw an arrow from r2 to r1,"@c1 syntax.clause form=imperative discourse=""please"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""r2""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""r1""",agreement
+51,I need an arrow that goes from r2 to r1,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""goes""
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal head=""r2""
+@r3 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""r1""",agreement
+52,link r2 to r1,"@c1 syntax.clause form=imperative verb=""link"" complement=$n1
+@n1 syntax.nominal head=""r2""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""r1""",agreement
+54,set the arrow from Finish to Start,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Finish""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Start""",agreement
+55,the Process group should be ungrouped,"@n1 syntax.nominal dependent=""the"" dependent=""Process"" head=""group""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""ungrouped"" subject=$n1",agreement
+63,"ok, it's a tangle, so spread the boxes out so the arrows are easy to follow","@c1 syntax.clause form=declarative discourse=""ok"" verb=""'s"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal dependent=""a"" head=""tangle""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""spread"" modifier=""out"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""so"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""arrows""
+@c3 syntax.clause form=declarative verb=""are"" modifier=""easy"" subject=$n4
+@r2 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""follow""",agreement
+64,"um, Process group as a pie chart please","@c1 syntax.clause form=fragment discourse=""um"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""Process"" head=""group""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""",agreement
+67,"to untangle the flow, I need you to delete the connection between the two boxes","@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c1 syntax.clause form=nonfinite verb=""untangle"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""need"" subject=$n2
+@n3 syntax.nominal head=""you""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c3
+@c3 syntax.clause form=nonfinite verb=""delete"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""connection""
+@r3 syntax.relation marker=""between"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""two"" head=""boxes""",agreement
+70,take back the last diagram change,"@c1 syntax.clause form=imperative verb=""take"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""last"" dependent=""diagram"" head=""change""",agreement
+71,can you redo that diagram change?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""redo"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""that"" dependent=""diagram"" head=""change""",agreement
+74,lay out the Process group vertically,"@c1 syntax.clause form=imperative verb=""lay"" modifier=""out"" modifier=""vertically"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Process"" head=""group""",agreement
+76,could you lay out the Process group like a pie chart?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""lay"" modifier=""out"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""Process"" head=""group""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""",agreement
+77,break chart:1 into editable shapes in a group,"@c1 syntax.clause form=imperative verb=""break"" complement=$n1
+@n1 syntax.nominal head=""chart:1""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""editable"" head=""shapes""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""group""",agreement
+78,make r1 large,"@c1 syntax.clause form=imperative verb=""make"" modifier=""large"" complement=$n1
+@n1 syntax.nominal head=""r1""",agreement
+79,grab r1 and r2,"@c1 syntax.clause form=imperative verb=""grab"" complement=$k1
+@n1 syntax.nominal head=""r1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""r2""",agreement
+83,"make a1 a bluish arrow, thin","@c1 syntax.clause form=imperative verb=""make"" modifier=""thin"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""a1""
+@n2 syntax.nominal dependent=""a"" dependent=""bluish"" head=""arrow""",agreement
+84,remove the arrow called a1,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""arrow""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""a1""
+@r1 syntax.relation from=$n1 to=$c2",agreement

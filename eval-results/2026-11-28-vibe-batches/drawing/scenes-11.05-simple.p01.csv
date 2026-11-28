@@ -1,0 +1,850 @@
+n,text,sop,label_state
+1,"please cut the girl in the purple cbbot off the far left end, next cut a boy in a red cap in at the far right end","@c1 syntax.clause form=imperative discourse=""please"" verb=""cut"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""purple"" head=""cbbot""
+@r2 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""far"" dependent=""left"" head=""end""
+@n4 syntax.nominal dependent=""a"" head=""boy""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@c2 syntax.clause form=imperative modifier=""next"" verb=""cut"" modifier=""in"" complement=$n4
+@n5 syntax.nominal dependent=""a"" dependent=""red"" head=""cap""
+@r4 syntax.relation marker=""at"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""far"" dependent=""right"" head=""end""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+2,"hey — please pull the man in the blue shirt away from the far left, then pull a woman in an orange hat at the far right","@c1 syntax.clause form=imperative discourse=""hey"" discourse=""please"" verb=""pull"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""blue"" head=""shirt""
+@r2 syntax.relation attachment=ambiguous marker=""away from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""far"" head=""left""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""pull"" complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""woman""
+@r3 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""an"" dependent=""orange"" head=""hat""
+@r4 syntax.relation marker=""at"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""far"" head=""right""",agreement
+8,"remove every block that is not red, then leave the red blocks and the layout as they are","@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""block""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""is"" negation=""not"" modifier=""red""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" complement=$k2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" head=""layout""
+@r2 syntax.relation marker=""as"" from=$c3 to=$c4
+@n4 syntax.nominal head=""they""
+@c4 syntax.clause form=declarative verb=""are"" subject=$n4",agreement
+9,"take the non-red blocks away, then keep the red blocks exactly as they are","@c1 syntax.clause form=imperative verb=""take"" modifier=""away"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""non"" dependent=""red"" head=""blocks""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""keep"" modifier=""exactly"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@r1 syntax.relation marker=""as"" from=$c2 to=$c3
+@n3 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n3",agreement
+11,"maybe you could pull every block without red, then leave the red blocks and the layout as they are","@c1 syntax.clause form=declarative modifier=""maybe"" auxiliary=""could"" verb=""pull"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""every"" head=""block""
+@r1 syntax.relation marker=""without"" from=$n2 to=$n3
+@n3 syntax.nominal head=""red""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" complement=$k2
+@n4 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" head=""layout""
+@r2 syntax.relation marker=""as"" from=$c2 to=$c3
+@n6 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n6",agreement
+14,"can you dismiss every block without red, then leave the red blocks and the layout as they are","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""dismiss"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""every"" head=""block""
+@r1 syntax.relation attachment=ambiguous marker=""without"" from=$c1 to=$n3
+@n3 syntax.nominal head=""red""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" complement=$k2
+@n4 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" head=""layout""
+@r2 syntax.relation marker=""as"" from=$c2 to=$c3
+@n6 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n6",agreement
+15,"can you eject away with the blocks that are not red, then keep the red blocks where they stand","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""eject"" modifier=""away"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""blocks""
+@r2 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""are"" negation=""not"" modifier=""red""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@r3 syntax.relation marker=""where"" from=$n3 to=$c4
+@n4 syntax.nominal head=""they""
+@c4 syntax.clause form=declarative verb=""stand"" subject=$n4",agreement
+16,"take every block that is not red, then leave the red blocks as they are","@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""block""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""is"" negation=""not"" modifier=""red""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""leave"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@r2 syntax.relation marker=""as"" from=$c3 to=$c4
+@n3 syntax.nominal head=""they""
+@c4 syntax.clause form=declarative verb=""are"" subject=$n3",agreement
+20,"now — please cut the non-red blocks away, next keep the red blocks exactly as they are","@c1 syntax.clause form=imperative modifier=""now"" discourse=""please"" verb=""cut"" modifier=""away"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""non"" dependent=""red"" head=""blocks""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""keep"" modifier=""exactly"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""blocks""
+@r1 syntax.relation marker=""as"" from=$c2 to=$c3
+@n3 syntax.nominal head=""they""
+@c3 syntax.clause form=declarative verb=""are"" subject=$n3
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+26,"please cut three blocks from the middle of the wall, next keep the wall up on both sides","@c1 syntax.clause form=imperative discourse=""please"" verb=""cut"" complement=$n1
+@n1 syntax.nominal dependent=""three"" head=""blocks""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""middle""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""wall""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""keep"" modifier=""up"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""wall""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""both"" head=""sides""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+30,"no, can you retire three blocks from the middle of the wall, next keep the wall up on both sides","@c1 syntax.clause form=interrogative discourse=""no"" auxiliary=""can"" verb=""retire"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""three"" head=""blocks""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""wall""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""keep"" modifier=""up"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""wall""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""both"" head=""sides""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+38,"take the two middle blocks, then leave a doorway for the avatar","@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" dependent=""middle"" head=""blocks""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""doorway""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""avatar""",agreement
+44,"no, can you retire the two middle blocks, next leave a doorway for the avatar","@c1 syntax.clause form=interrogative discourse=""no"" auxiliary=""can"" verb=""retire"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""two"" dependent=""middle"" head=""blocks""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""leave"" complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""doorway""
+@r1 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""avatar""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+49,"please cut the two middle blacks, next leave a doorway for the avatar","@c1 syntax.clause form=imperative discourse=""please"" verb=""cut"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""two"" dependent=""middle"" head=""blacks""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""leave"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""doorway""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""avatar""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+52,"take the centre blocks of the wall, then leave a door-like opening, centred exactly","@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""centre"" head=""blocks""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""wall""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""door"" dependent=""like"" head=""opening""
+@c3 syntax.clause form=nonfinite verb=""centred"" modifier=""exactly""
+@r2 syntax.relation from=$n3 to=$c3",agreement
+54,"remove the middle of the wall by three blocks, then leave the opening door-like and centred","@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""middle""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""wall""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""three"" head=""blocks""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" modifier=""door"" modifier=""like"" discourse=""and"" modifier=""centred"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""opening""",agreement
+58,"no, can you retire the centre blocks of the wall, next leave a door-like opening, centred exactly","@c1 syntax.clause form=interrogative discourse=""no"" auxiliary=""can"" verb=""retire"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""centre"" head=""blocks""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""wall""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""leave"" complement=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""door"" dependent=""like"" head=""opening""
+@c3 syntax.clause form=nonfinite verb=""centred"" modifier=""exactly""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n4 to=$c3",agreement
+64,"please goap three blocks in the centre of the wall, next leave a door-like opening in the middle","@c1 syntax.clause form=imperative discourse=""please"" verb=""goap"" complement=$n1
+@n1 syntax.nominal dependent=""three"" head=""blocks""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""centre""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""wall""
+@c2 syntax.clause form=imperative modifier=""next"" verb=""leave"" complement=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""door"" dependent=""like"" head=""opening""
+@r3 syntax.relation attachment=ambiguous marker=""in"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""middle""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+65,"please cut the centre blocks of the wll, then leave a door-like opening, centred exactly","@c1 syntax.clause form=imperative discourse=""please"" verb=""cut"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""centre"" head=""blocks""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""wll""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""leave"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""door"" dependent=""like"" head=""opening""
+@c3 syntax.clause form=nonfinite verb=""centred"" modifier=""exactly""
+@r2 syntax.relation from=$n3 to=$c3",agreement
+67,cover the roof with a thick layer of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""roof""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thick"" head=""layer""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+68,cap the tiled roof in a heavy cap of snow,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tiled"" head=""roof""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""heavy"" head=""cap""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+70,crust the old roof with a deep drift of snow,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""old"" head=""roof""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""deep"" head=""drift""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+71,freeze a deep drift of snow onto the old roof,"@c1 syntax.clause form=imperative verb=""freeze"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""deep"" head=""drift""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation marker=""onto"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""old"" head=""roof""",agreement
+72,cover the roof in a thick layer of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""roof""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thick"" head=""layer""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+73,a heavy cap of snow across the tiled roof,"@n1 syntax.nominal dependent=""a"" dependent=""heavy"" head=""cap""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation marker=""across"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""tiled"" head=""roof""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+74,top the old roof with a deep drift of snow,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""old"" head=""roof""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""deep"" head=""drift""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+75,ovea the roof with a thick layer of snow,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""roof""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thick"" head=""layer""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+76,cover the tree branches with a clear coat of ice,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tree"" head=""branches""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clear"" head=""coat""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+77,cap the bare branches in shiny ice,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bare"" head=""branches""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""shiny"" head=""ice""",agreement
+78,cover the tree branches in a clear coat of ice,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tree"" head=""branches""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clear"" head=""coat""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+80,ovea the tree branches with a clear coat of ice,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tree"" head=""branches""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clear"" head=""coat""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+81,cp the bare branches in shiny ice,"@c1 syntax.clause form=imperative verb=""cp"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bare"" head=""branches""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""shiny"" head=""ice""",agreement
+83,crust the front window with thick frost,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""window""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""thick"" head=""frost""",agreement
+84,dress the kitchen window in feathery frost,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""kitchen"" head=""window""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""feathery"" head=""frost""",agreement
+85,freeze thick frost onto the front window,"@c1 syntax.clause form=imperative verb=""freeze"" complement=$n1
+@n1 syntax.nominal dependent=""thick"" head=""frost""
+@r1 syntax.relation marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""window""",agreement
+87,cover the window in a fern of frost,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""window""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""fern""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""frost""",agreement
+88,top the front window with thick frost,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""window""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""thick"" head=""frost""",agreement
+89,ovea the window with a fern of frost,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""window""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""fern""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""frost""",agreement
+91,cover the eaves with a fringe of icicles,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""eaves""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""fringe""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""icicles""",agreement
+92,cap the roof eaves in long icicles,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""roof"" head=""eaves""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""long"" head=""icicles""",agreement
+94,crust the wide eaves with sharp icicles,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""wide"" head=""eaves""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""sharp"" head=""icicles""",agreement
+95,freeze sharp icicles onto the wide eaves,"@c1 syntax.clause form=imperative verb=""freeze"" complement=$n1
+@n1 syntax.nominal dependent=""sharp"" head=""icicles""
+@r1 syntax.relation marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""wide"" head=""eaves""",agreement
+96,cover the eaves in a fringe of icicles,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""eaves""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""fringe""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""icicles""",agreement
+97,long icicles across the roof eaves,"@n1 syntax.nominal dependent=""long"" head=""icicles""
+@r1 syntax.relation marker=""across"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""roof"" head=""eaves""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+98,top the wide eaves with sharp icicles,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""wide"" head=""eaves""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""sharp"" head=""icicles""",agreement
+99,ovr the eaves with a fringe of icicles,"@c1 syntax.clause form=imperative verb=""ovr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""eaves""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""fringe""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""icicles""",agreement
+100,cp the roof eaves in long icicles,"@c1 syntax.clause form=imperative verb=""cp"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""roof"" head=""eaves""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""long"" head=""icicles""",agreement
+101,cover the car with a dusting of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""car""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""dusting""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+102,cap the parked car in a slab of snow,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""parked"" head=""car""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""slab""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+104,dress the car by the kerb in a thin layer of snow,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""car""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""kerb""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""thin"" head=""layer""
+@r3 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""snow""",agreement
+105,freeze wet snow onto the old car,"@c1 syntax.clause form=imperative verb=""freeze"" complement=$n1
+@n1 syntax.nominal dependent=""wet"" head=""snow""
+@r1 syntax.relation marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""old"" head=""car""",agreement
+106,pile a thin layer of snow on the car by the kerb,"@c1 syntax.clause form=imperative verb=""pile"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""thin"" head=""layer""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""car""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""kerb""",agreement
+107,cover the car in a dusting of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""car""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""dusting""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+108,a slab of snow across the parked car,"@n1 syntax.nominal dependent=""a"" head=""slab""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation marker=""across"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""parked"" head=""car""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+109,top the old car with wet snow,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""old"" head=""car""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""wet"" head=""snow""",agreement
+111,cp the parked car in a slab of snow,"@c1 syntax.clause form=imperative verb=""cp"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""parked"" head=""car""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""slab""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+113,cover the bench with rain-slick,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bench""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""rain-slick""",agreement
+116,crust the park bench with wet with rain,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""park"" head=""bench""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""wet""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""rain""",agreement
+118,cover the bench in rain-slick,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bench""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""rain-slick""",agreement
+119,top the park bench with wet with rain,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""park"" head=""bench""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""wet""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""rain""",agreement
+120,ovea the bench with rain-slick,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bench""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""rain-slick""",agreement
+123,cover the garden path with a clean sheet of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""path""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clean"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+124,cap the path in ankle-deep snow,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""path""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""ankle"" dependent=""deep"" head=""snow""",agreement
+125,crust the stone path with packed snow,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""stone"" head=""path""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""packed"" head=""snow""",agreement
+126,freeze packed snow onto the stone path,"@c1 syntax.clause form=imperative verb=""freeze"" complement=$n1
+@n1 syntax.nominal dependent=""packed"" head=""snow""
+@r1 syntax.relation marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""stone"" head=""path""",agreement
+127,pile a smooth layer of snow on the path to the door,"@c1 syntax.clause form=imperative verb=""pile"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""smooth"" head=""layer""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""path""
+@r3 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""door""",agreement
+128,cover the garden path in a clean sheet of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""path""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clean"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+129,ankle-deep snow across the path,"@n1 syntax.nominal dependent=""ankle"" dependent=""deep"" head=""snow""
+@r1 syntax.relation marker=""across"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""path""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+130,top the stone path with packed snow,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""stone"" head=""path""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""packed"" head=""snow""",agreement
+131,ovea the garden path with a clean sheet of snow,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""path""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""clean"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+133,cover the pond with a solid sheet of ice,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pond""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""solid"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+135,crust the small pond with cracked ice,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""pond""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""cracked"" head=""ice""",agreement
+136,dress the pond by the path in a wide plate of ice,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pond""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""path""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""wide"" head=""plate""
+@r3 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""ice""",agreement
+138,pile a wide plate of ice on the pond by the path,"@c1 syntax.clause form=imperative verb=""pile"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""wide"" head=""plate""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""ice""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""pond""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""path""",agreement
+139,cover the pond in a solid sheet of ice,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pond""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""solid"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+140,a thin skin of ice across the garden pond,"@n1 syntax.nominal dependent=""a"" dependent=""thin"" head=""skin""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""ice""
+@r2 syntax.relation marker=""across"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""garden"" head=""pond""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+141,top the small pond with cracked ice,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""pond""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""cracked"" head=""ice""",agreement
+142,ovea the pond with a solid sheet of ice,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pond""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""solid"" head=""sheet""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+143,cp the garden pond in a thin skin of ice,"@c1 syntax.clause form=imperative verb=""cp"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""pond""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thin"" head=""skin""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""ice""",agreement
+144,hey — leave a wide plate of ice sitting on the pond by the path,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""leave"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""wide"" head=""plate""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""ice""
+@c2 syntax.clause form=nonfinite verb=""sitting""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""pond""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""path""
+@r4 syntax.relation from=$n1 to=$c2",agreement
+145,cover the lawn with a blanket of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lawn""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""blanket""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+146,dress the lawn by the fence in a fresh cover of snow,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lawn""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""fresh"" head=""cover""
+@r3 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""snow""",agreement
+147,pile a fresh cover of snow on the lawn by the fence,"@c1 syntax.clause form=imperative verb=""pile"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""fresh"" head=""cover""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""snow""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lawn""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""fence""",agreement
+148,cover the lawn in a blanket of snow,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lawn""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""blanket""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+149,soft snow across the front lawn,"@n1 syntax.nominal dependent=""soft"" head=""snow""
+@r1 syntax.relation marker=""across"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""front"" head=""lawn""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+150,ovr the lawn with a blanket of snow,"@c1 syntax.clause form=imperative verb=""ovr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""lawn""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""blanket""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""snow""",agreement
+151,cp the front lawn in soft snow,"@c1 syntax.clause form=imperative verb=""cp"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""front"" head=""lawn""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""soft"" head=""snow""",agreement
+153,cover the pavement with shallow puddles,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pavement""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""shallow"" head=""puddles""",agreement
+154,cap the wet pavement in standing puddles,"@c1 syntax.clause form=imperative verb=""cap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""wet"" head=""pavement""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""standing"" head=""puddles""",agreement
+156,crust the street pavement with a wide puddle,"@c1 syntax.clause form=imperative verb=""crust"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""street"" head=""pavement""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""wide"" head=""puddle""",agreement
+157,dress the pavement by the kerb in rain puddles,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pavement""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""kerb""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""rain"" head=""puddles""",agreement
+159,cover the pavement in shallow puddles,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""pavement""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""shallow"" head=""puddles""",agreement
+160,standing puddles across the wet pavement,"@c1 syntax.clause form=nonfinite verb=""standing"" complement=$n1
+@n1 syntax.nominal head=""puddles""
+@r1 syntax.relation attachment=ambiguous marker=""across"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""wet"" head=""pavement""",agreement
+161,top the street pavement with a wide puddle,"@c1 syntax.clause form=imperative verb=""top"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""street"" head=""pavement""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""wide"" head=""puddle""",agreement
+163,hold the umbrella steady in gusty wind,"@c1 syntax.clause form=imperative verb=""hold"" modifier=""steady"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""gusty"" head=""wind""",agreement
+164,keep the umbrella up in a windy squall,"@c1 syntax.clause form=imperative verb=""keep"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""windy"" head=""squall""",agreement
+168,fight a raw wind with the umbrella,"@c1 syntax.clause form=imperative verb=""fight"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""raw"" head=""wind""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""umbrella""",agreement
+169,hold the umbrella in gusty wind,"@c1 syntax.clause form=imperative verb=""hold"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""gusty"" head=""wind""",agreement
+171,brace the umbrella in a windy squall,"@c1 syntax.clause form=imperative verb=""brace"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""windy"" head=""squall""",agreement
+173,hey — keep the umbrella up in a raw wind,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""keep"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""raw"" head=""wind""",agreement
+174,"tilt the umbrella into gusty wind, thanks","@c1 syntax.clause form=imperative verb=""tilt"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""umbrella""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""gusty"" head=""wind""",agreement
+175,cover the sofa in zebra print,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""print""",agreement
+176,upholster the long sofa in zebra pattern,"@c1 syntax.clause form=imperative verb=""upholster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""sofa""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""pattern""",agreement
+177,give the sofa a zebra print finish,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@n2 syntax.nominal dependent=""a"" dependent=""zebra"" dependent=""print"" head=""finish""",agreement
+178,run zebra pattern across the long sofa,"@c1 syntax.clause form=imperative verb=""run"" complement=$n1
+@n1 syntax.nominal dependent=""zebra"" head=""pattern""
+@r1 syntax.relation marker=""across"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""long"" head=""sofa""",agreement
+179,build the sofa by the window bold zebra pattern,"@c1 syntax.clause form=imperative verb=""build"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""window""
+@n3 syntax.nominal dependent=""bold"" dependent=""zebra"" head=""pattern""",agreement
+180,line the sofa by the window with bold zebra pattern,"@c1 syntax.clause form=imperative verb=""line"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""window""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""bold"" dependent=""zebra"" head=""pattern""",agreement
+182,recover the long sofa in zebra pattern,"@c1 syntax.clause form=imperative verb=""recover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""sofa""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""pattern""",agreement
+183,ovea the sofa in zebra print,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""print""",agreement
+184,upaolster the long sofa in zebra pattern,"@c1 syntax.clause form=imperative verb=""upaolster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""sofa""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""pattern""",agreement
+186,"wrap the sofa in zebra print, thanks","@c1 syntax.clause form=imperative verb=""wrap"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""sofa""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""zebra"" head=""print""",agreement
+187,upholster the long curtains in striped pattern,"@c1 syntax.clause form=imperative verb=""upholster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""curtains""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""striped"" head=""pattern""",agreement
+188,wrap the heavy curtains in two-tone stripe pattern,"@c1 syntax.clause form=imperative verb=""wrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""heavy"" head=""curtains""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" dependent=""tone"" dependent=""stripe"" head=""pattern""",agreement
+190,set the window curtains in broad vertical stripes,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""window"" head=""curtains""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""broad"" dependent=""vertical"" head=""stripes""",agreement
+192,let's finish the window curtains in broad vertical stripes,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""finish"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""window"" head=""curtains""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""broad"" dependent=""vertical"" head=""stripes""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+193,line the heavy curtains with two-tone stripe pattern,"@c1 syntax.clause form=imperative verb=""line"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""heavy"" head=""curtains""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" dependent=""tone"" dependent=""stripe"" head=""pattern""",agreement
+194,recover the long curtains in striped pattern,"@c1 syntax.clause form=imperative verb=""recover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""curtains""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""striped"" head=""pattern""",agreement
+195,the heavy curtains in two-tone stripe pattern,"@n1 syntax.nominal dependent=""the"" dependent=""heavy"" head=""curtains""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""two"" dependent=""tone"" dependent=""stripe"" head=""pattern""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+196,uphholster the long curtains in striped pattern,"@c1 syntax.clause form=imperative verb=""uphholster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""long"" head=""curtains""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""striped"" head=""pattern""",agreement
+197,hey — dress the heavy curtains in two-tone stripe pattern,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""heavy"" head=""curtains""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" dependent=""tone"" dependent=""stripe"" head=""pattern""",agreement
+198,upholster the floor rug in floral pattern,"@c1 syntax.clause form=imperative verb=""upholster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""floor"" head=""rug""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""floral"" head=""pattern""",agreement
+199,give the rug a floral print finish,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""rug""
+@n2 syntax.nominal dependent=""a"" dependent=""floral"" dependent=""print"" head=""finish""",agreement
+200,run floral pattern across the floor rug,"@c1 syntax.clause form=imperative verb=""run"" complement=$n1
+@n1 syntax.nominal dependent=""floral"" head=""pattern""
+@r1 syntax.relation attachment=ambiguous marker=""across"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""floor"" head=""rug""",agreement
+201,recover the floor rug in floral pattern,"@c1 syntax.clause form=imperative verb=""recover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""floor"" head=""rug""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""floral"" head=""pattern""",agreement
+202,ovea the rug in floral print,"@c1 syntax.clause form=imperative verb=""ovea"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""rug""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""floral"" head=""print""",agreement
+203,upaolster the floor rug in floral pattern,"@c1 syntax.clause form=imperative verb=""upaolster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""floor"" head=""rug""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""floral"" head=""pattern""",agreement
+204,"wrap the rug in floral print, thanks","@c1 syntax.clause form=imperative verb=""wrap"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""rug""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""floral"" head=""print""",agreement
+205,dress the dining tablecloth in checked weave,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""dining"" head=""tablecloth""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""checked"" head=""weave""",agreement
+206,wrap the tablecloth on the table in bold check pattern,"@c1 syntax.clause form=imperative verb=""wrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""tablecloth""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""table""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""bold"" dependent=""check"" head=""pattern""",agreement
+207,build the tablecloth on the table bold check pattern,"@c1 syntax.clause form=imperative verb=""build"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""tablecloth""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""table""
+@n3 syntax.nominal dependent=""bold"" dependent=""check"" head=""pattern""",agreement
+208,let's finish the dining tablecloth in checked weave,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""finish"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""dining"" head=""tablecloth""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""checked"" head=""weave""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+209,line the tablecloth on the table with bold check pattern,"@c1 syntax.clause form=imperative verb=""line"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""tablecloth""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""table""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""bold"" dependent=""check"" head=""pattern""",agreement
+211,hey — dress the tablecloth on the table in bold check pattern,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""tablecloth""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""table""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""bold"" dependent=""check"" head=""pattern""",agreement
+212,cover the cushion in polka dots,"@c1 syntax.clause form=imperative verb=""cover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""polka"" head=""dots""",agreement
+213,upholster the seat cushion in polka dot pattern,"@c1 syntax.clause form=imperative verb=""upholster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""seat"" head=""cushion""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""polka"" dependent=""dot"" head=""pattern""",agreement
+214,dress the small cushion in small dots,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cushion""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""small"" head=""dots""",agreement
+215,wrap the cushion on the sofa in dotted pattern,"@c1 syntax.clause form=imperative verb=""wrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sofa""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""dotted"" head=""pattern""",agreement
+217,run polka dot pattern across the seat cushion,"@c1 syntax.clause form=imperative verb=""run"" complement=$n1
+@n1 syntax.nominal dependent=""polka"" dependent=""dot"" head=""pattern""
+@r1 syntax.relation attachment=ambiguous marker=""across"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""seat"" head=""cushion""",agreement
+218,set the small cushion in small dots,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""small"" head=""dots""",agreement
+219,build the cushion on the sofa dotted pattern,"@c1 syntax.clause form=imperative verb=""build"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sofa""
+@n3 syntax.nominal dependent=""dotted"" head=""pattern""",agreement
+220,recover the cushion with polka dots,"@c1 syntax.clause form=imperative verb=""recover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""polka"" head=""dots""",agreement
+221,let's finish the small cushion in small dots,"@c1 syntax.clause form=imperative verb=""let"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@c2 syntax.clause form=nonfinite verb=""finish"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""small"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""small"" head=""dots""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+222,line the cushion on the sofa with dotted pattern,"@c1 syntax.clause form=imperative verb=""line"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sofa""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""dotted"" head=""pattern""",agreement
+223,stamp polka dots onto the cushion,"@c1 syntax.clause form=imperative verb=""stamp"" complement=$n1
+@n1 syntax.nominal dependent=""polka"" head=""dots""
+@r1 syntax.relation attachment=ambiguous marker=""onto"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""cushion""",agreement
+224,recover the seat cushion in polka dot pattern,"@c1 syntax.clause form=imperative verb=""recover"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""seat"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""polka"" dependent=""dot"" head=""pattern""",agreement
+227,upaolster the seat cushion in polka dot pattern,"@c1 syntax.clause form=imperative verb=""upaolster"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""seat"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""polka"" dependent=""dot"" head=""pattern""",agreement
+228,hey — dress the cushion on the sofa in dotted pattern,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sofa""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""dotted"" head=""pattern""",agreement
+229,"wrap the cushion in polka dots, thanks","@c1 syntax.clause form=imperative verb=""wrap"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cushion""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""polka"" head=""dots""",agreement
+230,dress the reading armchair in zigzag chevron,"@c1 syntax.clause form=imperative verb=""dress"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""reading"" head=""armchair""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""zigzag"" head=""chevron""",agreement
+231,wrap the armchair by the lamp in bold chevron pattern,"@c1 syntax.clause form=imperative verb=""wrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""armchair""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lamp""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""bold"" dependent=""chevron"" head=""pattern""",agreement

@@ -1,0 +1,1055 @@
+n,text,sop,alt,label_state
+626,"September should be 24, not 22","@n1 syntax.nominal head=""September""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""24""
+@r1 syntax.relation negation=""not"" from=$n2 to=$n3
+@n3 syntax.nominal head=""22""","@n1 syntax.nominal head=""September""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""24""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n3 ellipsis=$c1
+@n3 syntax.nominal head=""22""",
+628,August changes to 27 from 29,"@n1 syntax.nominal dependent=""August"" head=""changes""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""27""
+@r2 syntax.relation marker=""from"" from=$n1 to=$n3
+@n3 syntax.nominal head=""29""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""August""
+@c1 syntax.clause form=declarative verb=""changes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""27""
+@r2 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""29""",
+629,"November moves to 30, previously 26","@n1 syntax.nominal head=""November""
+@c1 syntax.clause form=declarative verb=""moves"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""30""
+@n3 syntax.nominal dependent=""previously"" head=""26""
+@r2 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal head=""November""
+@c1 syntax.clause form=declarative verb=""moves"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""30""
+@n3 syntax.nominal dependent=""previously"" head=""26""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+630,correct May to 33 — the old note said 30,"@c1 syntax.clause form=imperative verb=""correct"" complement=$n1
+@n1 syntax.nominal head=""May""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""33""
+@n3 syntax.nominal dependent=""the"" dependent=""old"" head=""note""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""30""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""correct""
+@c1 syntax.clause form=declarative verb=""May"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""33""
+@n3 syntax.nominal dependent=""the"" dependent=""old"" head=""note""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""30""
+@r2 syntax.relation from=$c1 to=$c2",
+631,"October: 8 now, was 9","@n1 syntax.nominal head=""October""
+@n2 syntax.nominal head=""8""
+@c1 syntax.clause form=fragment modifier=""now"" complement=$n1
+@c2 syntax.clause form=declarative verb=""was"" complement=$n3
+@n3 syntax.nominal head=""9""
+@r1 syntax.relation from=$n1 to=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""October""
+@n1 syntax.nominal head=""8"" dependent=""now""
+@c2 syntax.clause form=interrogative verb=""was"" subject=$n2
+@n2 syntax.nominal head=""9""
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$c1 to=$c2
+@c3 syntax.clause form=fragment complement=$n1",
+633,"quick one — change February from 20 to 25, thanks","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=imperative verb=""change"" discourse=""thanks"" complement=$n1 complement=$n2
+@n2 syntax.nominal head=""February""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""20""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""25""","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=imperative verb=""change"" complement=$n2
+@n2 syntax.nominal head=""February""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""20""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""25""
+@c2 syntax.clause form=fragment discourse=""thanks"" complement=$n1
+@r3 syntax.relation from=$c1 to=$c2",
+634,"take the March figure from 30 to 40, please — the forecast changed","@c1 syntax.clause form=imperative verb=""take"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""March"" head=""figure""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""30""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""
+@n4 syntax.nominal dependent=""the"" head=""forecast""
+@c2 syntax.clause form=nonfinite verb=""changed"" subject=$n4
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""take"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""March"" head=""figure""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""30""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""
+@n4 syntax.nominal dependent=""the"" head=""forecast""
+@c2 syntax.clause form=declarative verb=""changed"" subject=$n4
+@r3 syntax.relation from=$c1 to=$c2",
+635,I rechecked the numbers: February should go from 20 up to 25,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""rechecked"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""numbers""
+@n3 syntax.nominal head=""February""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""go"" modifier=""up"" subject=$n3
+@r1 syntax.relation marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""25""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""rechecked"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""numbers""
+@n3 syntax.nominal head=""February""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""go"" subject=$n3
+@r1 syntax.relation marker=""from"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@r2 syntax.relation marker=""up to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""25""
+@r3 syntax.relation from=$c1 to=$c2",
+636,"correct June to 18 instead of 15, the draft is out of date","@c1 syntax.clause form=imperative verb=""correct"" complement=$n1
+@n1 syntax.nominal head=""June""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""18""
+@k1 syntax.coordination conjunction=""instead of"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""15""
+@n4 syntax.nominal dependent=""the"" head=""draft""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n4
+@r2 syntax.relation marker=""out of"" from=$c2 to=$n5
+@n5 syntax.nominal head=""date""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""correct"" complement=$n1
+@n1 syntax.nominal head=""June""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""18""
+@r2 syntax.relation marker=""instead of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""15""
+@n4 syntax.nominal dependent=""the"" head=""draft""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n4
+@r3 syntax.relation marker=""out of"" from=$c2 to=$n5
+@n5 syntax.nominal head=""date""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+637,"both the print and the chart say 30 for March, make the chart read 40","@k1 syntax.coordination conjunction=""both"" conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n1 syntax.nominal dependent=""the"" head=""print""
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=declarative verb=""say"" subject=$k1 complement=$n3
+@n3 syntax.nominal head=""30""
+@r1 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal head=""March""
+@c2 syntax.clause form=imperative verb=""make""
+@n5 syntax.nominal dependent=""the"" head=""chart""
+@c3 syntax.clause form=nonfinite verb=""read"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""40""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal dependent=""both"" dependent=""the"" head=""print""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c1 syntax.clause form=declarative verb=""say"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""30""
+@r1 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal head=""March""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""chart""
+@c3 syntax.clause form=nonfinite verb=""read"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""40""
+@c4 syntax.clause form=fragment complement=$n1
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c2 to=$c3",
+638,March's value changed — update it,"@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""value""
+@c1 syntax.clause form=nonfinite verb=""changed"" subject=$n2
+@c2 syntax.clause form=imperative verb=""update"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=imperative verb=""March"" modifier=""'s"" complement=$n1
+@n1 syntax.nominal head=""value""
+@c2 syntax.clause form=nonfinite verb=""changed""
+@c3 syntax.clause form=imperative verb=""update"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$c2",
+639,May needs a new number,"@n1 syntax.nominal head=""May""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""new"" head=""number""","@c1 syntax.clause form=imperative auxiliary=""May"" verb=""needs"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""new"" head=""number""",
+643,raise the May value by 6,"@c1 syntax.clause form=imperative verb=""raise"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""May"" head=""value""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""6""","@c1 syntax.clause form=imperative verb=""raise"" modifier=""the""
+@c2 syntax.clause form=declarative verb=""May"" complement=$n1
+@n1 syntax.nominal head=""value""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""6""
+@r2 syntax.relation from=$c1 to=$c2",
+644,add 7 to February,"@n1 syntax.nominal head=""add""
+@n2 syntax.nominal head=""7""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""February""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""7""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""February""",
+646,step up June by 2,"@c1 syntax.clause form=imperative verb=""step"" modifier=""up"" complement=$n1
+@n1 syntax.nominal head=""June""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""2""","@n1 syntax.nominal head=""step""
+@r1 syntax.relation marker=""up"" from=$n1 to=$n2
+@n2 syntax.nominal head=""June""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""2""
+@c1 syntax.clause form=fragment complement=$n1",
+651,give December an extra 6,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""December""
+@n2 syntax.nominal dependent=""an"" dependent=""extra"" head=""6""","@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""December""
+@n2 syntax.nominal dependent=""an"" head=""extra"" dependent=""6""",
+655,"quick one — add 7 to February, thanks","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""thanks"" complement=$n2
+@n2 syntax.nominal head=""7""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""February""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=imperative verb=""add"" complement=$n2
+@n2 syntax.nominal head=""7""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""February""
+@c2 syntax.clause form=fragment discourse=""thanks"" complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+656,"the forecast moved, so raise the June value by 6","@n1 syntax.nominal dependent=""the"" head=""forecast""
+@c1 syntax.clause form=declarative verb=""moved"" subject=$n1
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative verb=""raise"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""6""","@n1 syntax.nominal dependent=""the"" head=""forecast""
+@c1 syntax.clause form=declarative verb=""moved"" subject=$n1
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""raise"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""6""",
+658,"while you're fixing the chart, take October up by 5 as well","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative auxiliary=""'re"" verb=""fixing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=imperative verb=""take"" modifier=""up"" modifier=""as"" modifier=""well"" complement=$n3
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""5""","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative auxiliary=""'re"" verb=""fixing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=imperative verb=""take"" modifier=""up"" complement=$n3
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""5"" dependent=""as"" dependent=""well""",
+659,March: 4 more,"@n1 syntax.nominal head=""March""
+@n2 syntax.nominal head=""4""
+@c1 syntax.clause form=fragment modifier=""more"" complement=$n2
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@c1 syntax.clause form=imperative verb=""March""
+@n1 syntax.nominal head=""4"" dependent=""more""
+@r1 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1",
+660,May plus 6,"@n1 syntax.nominal head=""May""
+@k1 syntax.coordination conjunction=""plus"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""6""
+@c1 syntax.clause form=fragment complement=$k1","@c1 syntax.clause form=declarative verb=""May"" discourse=""plus"" complement=$n1
+@n1 syntax.nominal head=""6""",
+664,cut May by 6,"@c1 syntax.clause form=imperative verb=""cut"" complement=$n1
+@n1 syntax.nominal head=""May""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""6""","@n1 syntax.nominal head=""cut""
+@c1 syntax.clause form=declarative verb=""May"" subject=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""6""",
+666,subtract 8 from March,"@n1 syntax.nominal head=""subtract""
+@n2 syntax.nominal head=""8""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal head=""March""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""subtract"" complement=$n1
+@n1 syntax.nominal head=""8""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""March""",
+668,knock 3 off October,"@c1 syntax.clause form=imperative verb=""knock"" modifier=""off"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""3""
+@n2 syntax.nominal head=""October""","@c1 syntax.clause form=imperative verb=""knock"" complement=$n1
+@n1 syntax.nominal head=""3""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal head=""October""",
+675,"the returns came in, so lower the June value by 6","@n1 syntax.nominal dependent=""the"" head=""returns""
+@c1 syntax.clause form=declarative verb=""came"" modifier=""in"" subject=$n1
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative verb=""lower"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""6""","@n1 syntax.nominal dependent=""the"" head=""returns""
+@c1 syntax.clause form=declarative verb=""came"" modifier=""in"" subject=$n1
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""lower"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""6""",
+676,we overestimated — take 5 off October before the board sees it,"@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""overestimated"" subject=$n1
+@c2 syntax.clause form=imperative verb=""take"" complement=$n2
+@n2 syntax.nominal head=""5""
+@r1 syntax.relation marker=""off"" from=$c2 to=$n3
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation marker=""before"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""board""
+@c3 syntax.clause form=declarative verb=""sees"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""overestimated"" subject=$n1
+@c2 syntax.clause form=imperative verb=""take"" complement=$n2
+@n2 syntax.nominal head=""5""
+@r1 syntax.relation marker=""off"" from=$c2 to=$n3
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation marker=""before"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""board""
+@c3 syntax.clause form=declarative verb=""sees"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation from=$c1 to=$c2",
+677,"marketing pulled back, so cut the May value by 6","@n1 syntax.nominal head=""marketing""
+@c1 syntax.clause form=declarative verb=""pulled"" modifier=""back"" subject=$n1
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative verb=""cut"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""May"" head=""value""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""6""","@c1 syntax.clause form=nonfinite modifier=""marketing"" verb=""pulled"" modifier=""back""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""cut"" modifier=""the""
+@c3 syntax.clause form=declarative verb=""May"" complement=$n1
+@n1 syntax.nominal head=""value""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""6""
+@r2 syntax.relation from=$c2 to=$c3",
+678,"I double-checked with finance: March should drop by 4, not 8","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""double-checked"" subject=$n1
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""finance""
+@n3 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""drop"" subject=$n3
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""4""
+@r3 syntax.relation negation=""not"" from=$n4 to=$n5
+@n5 syntax.nominal head=""8""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""double-checked"" subject=$n1
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""finance""
+@n3 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""drop"" subject=$n3
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""4""
+@c3 syntax.clause form=fragment negation=""not"" complement=$n5 ellipsis=$c2
+@n5 syntax.nominal head=""8""
+@r3 syntax.relation from=$c1 to=$c2",
+679,"while you're in the chart, bring August down by 3 as well","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=imperative verb=""bring"" modifier=""down"" modifier=""as"" modifier=""well"" complement=$n3
+@n3 syntax.nominal head=""August""
+@r3 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""3""","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=imperative verb=""bring"" modifier=""down"" complement=$n3
+@n3 syntax.nominal head=""August""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""3"" dependent=""as"" dependent=""well""",
+680,February down by 10,"@n1 syntax.nominal head=""February""
+@c1 syntax.clause form=fragment modifier=""down"" complement=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""10""","@c1 syntax.clause form=imperative verb=""February"" modifier=""down""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""10""",
+681,May: 6 less,"@n1 syntax.nominal head=""May""
+@n2 syntax.nominal head=""6"" dependent=""less""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=declarative verb=""May""
+@n1 syntax.nominal head=""6"" dependent=""less""
+@r1 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1",
+682,April minus 3,"@n1 syntax.nominal head=""April""
+@c1 syntax.clause form=fragment modifier=""minus"" complement=$n1
+@n2 syntax.nominal head=""3""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""April"" complement=$n1
+@n1 syntax.nominal head=""minus"" dependent=""3""",
+684,lowr the May value by 6,"@c1 syntax.clause form=imperative verb=""lowr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""May"" head=""value""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""6""","@c1 syntax.clause form=imperative verb=""lowr"" modifier=""the""
+@c2 syntax.clause form=declarative verb=""May"" complement=$n1
+@n1 syntax.nominal head=""value""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""6""
+@r2 syntax.relation from=$c1 to=$c2",
+685,set January to 12 and February to 20,"@c1 syntax.clause form=imperative verb=""set"" complement=$k1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""20""","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+686,change March to 40 and April to 32,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""32""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""32""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+687,make May 21 and June 18,"@c1 syntax.clause form=imperative verb=""make"" complement=$k1
+@n1 syntax.nominal head=""May""
+@n2 syntax.nominal head=""21""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""June""
+@n4 syntax.nominal head=""18""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""make""
+@c2 syntax.clause form=declarative verb=""May"" complement=$k1
+@n1 syntax.nominal head=""21""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""June 18""
+@r1 syntax.relation from=$c1 to=$c2",
+688,"update July to 27, and August to 29","@c1 syntax.clause form=imperative verb=""update"" complement=$k1
+@n1 syntax.nominal head=""July""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""27""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""August""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""29""","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal head=""July""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""27""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""August""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""29""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+689,September goes to 24 and October to 8,"@n1 syntax.nominal head=""September""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""24""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""8""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1","@n1 syntax.nominal head=""September""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""24""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""October""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""8""",
+690,"put January at 12, and February at 20","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""20""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+691,"March should be 40; April, 32","@n1 syntax.nominal head=""March""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""40""
+@n3 syntax.nominal head=""April""
+@n4 syntax.nominal head=""32""
+@r1 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""March""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""40""
+@n3 syntax.nominal head=""April""
+@n4 syntax.nominal head=""32""
+@r1 syntax.relation from=$c1 to=$n3
+@k1 syntax.coordination conjunct=$n2 conjunct=$n4",
+693,I want May at 33 and June at 38,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$k1
+@n2 syntax.nominal head=""May""
+@r1 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""33""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""June""
+@r2 syntax.relation marker=""at"" from=$n4 to=$n5
+@n5 syntax.nominal head=""38""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@c2 syntax.clause form=declarative verb=""May""
+@r1 syntax.relation marker=""at"" from=$c2 to=$k1
+@n2 syntax.nominal head=""33""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""June""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""38""
+@r3 syntax.relation from=$c1 to=$c2",
+694,"change the June value to 40, then July to 44","@c1 syntax.clause form=imperative verb=""change"" modifier=""then"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@n3 syntax.nominal head=""July""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""44""","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""June"" head=""value""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""July""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""44""
+@c2 syntax.clause form=fragment complement=$n3",
+696,"set March to 40, and bring May down by 6","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""bring"" modifier=""down"" complement=$n3
+@n3 syntax.nominal head=""May""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""6""","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""bring""
+@c2 syntax.clause form=declarative verb=""May"" modifier=""down"" subject=$n3
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""6""",
+697,"hey, set January to 12 and February to 20","@c1 syntax.clause form=imperative discourse=""hey"" verb=""set"" complement=$k1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""20""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""set"" complement=$n1
+@n1 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""12""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""20""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+698,"change March to 40 and April to 32, please","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""32""
+@c2 syntax.clause form=fragment discourse=""please"" complement=$n3 ellipsis=$c1","@c1 syntax.clause form=imperative verb=""change"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""32""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+699,"while you're in there, put May at 33 and June at 38","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""in"" modifier=""there"" subject=$n1
+@c2 syntax.clause form=imperative verb=""put"" complement=$k1
+@n2 syntax.nominal head=""May""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""33""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""June""
+@r3 syntax.relation marker=""at"" from=$n4 to=$n5
+@n5 syntax.nominal head=""38""","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""in"" modifier=""there"" subject=$n1
+@n2 syntax.nominal head=""put""
+@c2 syntax.clause form=declarative verb=""May"" subject=$n2
+@r2 syntax.relation marker=""at"" from=$c2 to=$k1
+@n3 syntax.nominal head=""33""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""June""
+@r3 syntax.relation marker=""at"" from=$c2 to=$n5
+@n5 syntax.nominal head=""38""",
+700,"the Q1 numbers landed: January to 25, February to 27, March to 29","@n1 syntax.nominal dependent=""the"" dependent=""Q1"" head=""numbers""
+@c1 syntax.clause form=nonfinite verb=""landed""
+@n2 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""25""
+@n4 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""27""
+@n6 syntax.nominal head=""March""
+@r3 syntax.relation marker=""to"" from=$n6 to=$n7
+@n7 syntax.nominal head=""29""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$c1
+@r5 syntax.relation from=$n1 to=$n2
+@r6 syntax.relation from=$n2 to=$n6
+@r7 syntax.relation from=$n2 to=$n4","@n1 syntax.nominal dependent=""the"" dependent=""Q1"" head=""numbers""
+@c1 syntax.clause form=declarative verb=""landed"" subject=$n1
+@n2 syntax.nominal head=""January""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""25""
+@n4 syntax.nominal head=""February""
+@r2 syntax.relation marker=""to"" from=$n4 to=$n5
+@n5 syntax.nominal head=""27""
+@n6 syntax.nominal head=""March""
+@r3 syntax.relation marker=""to"" from=$n6 to=$n7
+@n7 syntax.nominal head=""29""
+@r4 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n2 conjunct=$n4 conjunct=$n6",
+701,correct June to 40 — April should be 32 as well,"@c1 syntax.clause form=imperative verb=""correct"" complement=$n1
+@n1 syntax.nominal head=""June""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""40""
+@n3 syntax.nominal head=""April""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""as"" modifier=""well"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""32""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""correct"" complement=$n1
+@n1 syntax.nominal head=""June""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@n3 syntax.nominal head=""April""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""32"" dependent=""as"" dependent=""well""
+@r2 syntax.relation from=$c1 to=$c2",
+702,set March to 40 and raise May by 3,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""raise"" complement=$n3
+@n3 syntax.nominal head=""May""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""3""","@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""raise""
+@c2 syntax.clause form=declarative verb=""May"" subject=$n3
+@r2 syntax.relation marker=""by"" from=$c2 to=$n4
+@n4 syntax.nominal head=""3""",
+703,March 40 and April 32,"@n1 syntax.nominal head=""March""
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""April""
+@n4 syntax.nominal head=""32""
+@r1 syntax.relation from=$n1 to=$n2
+@c1 syntax.clause form=fragment complement=$k1
+@r2 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""March"" complement=$k1
+@n1 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""April 32""",
+704,"May 21, June 18","@n1 syntax.nominal head=""May""
+@n2 syntax.nominal head=""21""
+@n3 syntax.nominal head=""June""
+@n4 syntax.nominal head=""18""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=interrogative verb=""May"" complement=$n1
+@n1 syntax.nominal head=""21""
+@n2 syntax.nominal head=""June 18""
+@r1 syntax.relation from=$c1 to=$n2",
+705,chagne March to 40 and April to 32,"@c1 syntax.clause form=imperative verb=""chagne"" complement=$k1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$n3 to=$n4
+@n4 syntax.nominal head=""32""","@c1 syntax.clause form=imperative verb=""chagne"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""32""
+@c2 syntax.clause form=fragment complement=$n3 ellipsis=$c1",
+708,"wait, make March 40, not 30","@c1 syntax.clause form=imperative discourse=""wait"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""March""
+@n2 syntax.nominal head=""40""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n3 ellipsis=$c1
+@n3 syntax.nominal head=""30""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative modifier=""wait"" verb=""make"" complement=$n1
+@n1 syntax.nominal head=""March 40""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n2 ellipsis=$c1
+@n2 syntax.nominal head=""30""",
+711,correction: March goes to 40,"@n1 syntax.nominal head=""correction""
+@n2 syntax.nominal head=""March""
+@c1 syntax.clause form=declarative verb=""goes"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""40""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal head=""correction""
+@n2 syntax.nominal head=""March goes""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal head=""40""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2",
+715,"that's wrong, March was 40","@n1 syntax.nominal head=""that""
+@c1 syntax.clause form=declarative verb=""'s"" modifier=""wrong"" subject=$n1
+@n2 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative verb=""was"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""40""
+@r1 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal head=""that""
+@c1 syntax.clause form=declarative verb=""'s"" modifier=""wrong"" subject=$n1
+@n2 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative verb=""was"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""40""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+716,"hold on, March: 40","@c1 syntax.clause form=imperative verb=""hold"" modifier=""on"" complement=$n1
+@n1 syntax.nominal head=""March""
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n2","@c1 syntax.clause form=imperative verb=""hold"" modifier=""on""
+@n1 syntax.nominal head=""March""
+@n2 syntax.nominal head=""40""
+@r1 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2",
+717,"hey, no — change March to 40 instead","@c1 syntax.clause form=imperative discourse=""hey"" discourse=""no"" verb=""change"" modifier=""instead"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""","@c1 syntax.clause form=imperative discourse=""hey"" discourse=""no"" verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40"" dependent=""instead""",
+719,"my mistake — I wanted March at 40, not the number I just gave","@n1 syntax.nominal dependent=""my"" head=""mistake""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""wanted"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""March""
+@r1 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""40""
+@r2 syntax.relation negation=""not"" from=$n3 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""number""
+@n6 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""gave"" subject=$n6
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1
+@r3 syntax.relation from=$n5 to=$c2","@n1 syntax.nominal dependent=""my"" head=""mistake""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""wanted"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""March""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""40""
+@c2 syntax.clause form=fragment negation=""not"" complement=$n5 ellipsis=$c1
+@n5 syntax.nominal dependent=""the"" head=""number""
+@n6 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative modifier=""just"" verb=""gave"" subject=$n6
+@c4 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c4
+@r3 syntax.relation from=$n5 to=$c3",
+721,"actually the client just confirmed: March should be 40, so use that","@c1 syntax.clause form=declarative modifier=""actually"" modifier=""just"" verb=""confirmed"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""client""
+@n2 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=declarative verb=""use"" complement=$n4
+@n4 syntax.nominal head=""that""","@c1 syntax.clause form=declarative modifier=""actually"" modifier=""just"" verb=""confirmed"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""client""
+@n2 syntax.nominal head=""March""
+@c2 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""use"" complement=$n4
+@n4 syntax.nominal head=""that""
+@r1 syntax.relation from=$c1 to=$c2",
+722,no — change March to 40 instead of the 30 I just said,"@c1 syntax.clause form=imperative discourse=""no"" verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""40""
+@k1 syntax.coordination conjunction=""instead of"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" head=""30""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""said"" subject=$n4
+@r2 syntax.relation from=$n3 to=$c2","@c1 syntax.clause form=imperative discourse=""no"" verb=""change"" complement=$n1
+@n1 syntax.nominal head=""March""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""40""
+@r2 syntax.relation marker=""instead of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""30""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""said"" subject=$n4
+@r3 syntax.relation from=$n3 to=$c2",
+729,call the Ops column Operations,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Ops"" head=""column""
+@n2 syntax.nominal head=""Operations""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""Ops"" head=""column""
+@n2 syntax.nominal head=""Operations""",
+730,Marketing should say Mktg,"@n1 syntax.nominal head=""Marketing""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""say"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Mktg""","@c1 syntax.clause form=imperative modifier=""Marketing"" auxiliary=""should"" verb=""say"" complement=$n1
+@n1 syntax.nominal head=""Mktg""",
+733,the Ops category should read Operations,"@n1 syntax.nominal dependent=""the"" dependent=""Ops"" head=""category""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""read"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Operations""","@n1 syntax.nominal dependent=""the"" head=""Ops"" dependent=""category""
+@c1 syntax.clause form=imperative auxiliary=""should"" verb=""read"" complement=$n2
+@n2 syntax.nominal head=""Operations""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+734,"Marketing, call it Mktg","@n1 syntax.nominal head=""Marketing""
+@c1 syntax.clause form=imperative verb=""call"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal head=""Mktg""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@c1 syntax.clause form=imperative modifier=""Marketing"" verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal head=""Mktg""",
+737,I want Marketing renamed to Mktg,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""Marketing""
+@c2 syntax.clause form=nonfinite verb=""renamed"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Mktg""
+@r2 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Marketing""
+@c2 syntax.clause form=nonfinite verb=""renamed""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Mktg""
+@r2 syntax.relation from=$n2 to=$c2",
+742,"the department merged, so rename Ops to Operations","@n1 syntax.nominal dependent=""the"" head=""department""
+@c1 syntax.clause form=declarative verb=""merged"" subject=$n1
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@c2 syntax.clause form=imperative verb=""rename"" complement=$n2
+@n2 syntax.nominal head=""Ops""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Operations""","@n1 syntax.nominal dependent=""the"" head=""department""
+@c1 syntax.clause form=declarative verb=""merged"" subject=$n1
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""rename"" complement=$n2
+@n2 syntax.nominal head=""Ops""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Operations""",
+743,relabel Support as Helpdesk — that's what the system calls it now,"@c1 syntax.clause form=imperative verb=""relabel"" complement=$n1
+@n1 syntax.nominal head=""Support""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Helpdesk""
+@n3 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n3
+@n4 syntax.nominal head=""what""
+@n5 syntax.nominal dependent=""the"" head=""system""
+@c3 syntax.clause form=declarative verb=""calls"" modifier=""now"" subject=$n5 complement=$n4 complement=$n6
+@n6 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""relabel"" complement=$n1
+@n1 syntax.nominal head=""Support""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Helpdesk""
+@n3 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n3
+@n4 syntax.nominal dependent=""what"" dependent=""the"" head=""system""
+@c3 syntax.clause form=declarative verb=""calls"" modifier=""now"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$c2 to=$c3",
+746,Ops should read Operations in the chart too,"@n1 syntax.nominal head=""Ops""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""read"" modifier=""too"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Operations""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""","@c1 syntax.clause form=imperative modifier=""Ops"" auxiliary=""should"" verb=""read"" modifier=""too"" complement=$n1
+@n1 syntax.nominal head=""Operations""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""chart""",
+749,Helpdesk for Support,"@n1 syntax.nominal head=""Helpdesk""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Support""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Helpdesk""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Support""",
+751,call the Ops colunm Operations,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Ops"" dependent=""colunm"" head=""Operations""","@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""Ops"" head=""colunm""
+@n2 syntax.nominal head=""Operations""",
+753,add a May column with 34,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""May"" head=""column""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""34""","@c1 syntax.clause form=imperative verb=""add"" modifier=""a""
+@c2 syntax.clause form=declarative verb=""May"" modifier=""column""
+@r1 syntax.relation marker=""with"" from=$c2 to=$n1
+@n1 syntax.nominal head=""34""
+@r2 syntax.relation from=$c1 to=$c2",
+761,"new month April, value 55","@n1 syntax.nominal dependent=""new"" head=""month""
+@n2 syntax.nominal head=""April""
+@n3 syntax.nominal head=""value""
+@n4 syntax.nominal head=""55""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$n3
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""new"" head=""month"" dependent=""April""
+@n2 syntax.nominal head=""value"" dependent=""55""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+763,tack on April at 55,"@n1 syntax.nominal head=""tack""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""April""
+@r2 syntax.relation marker=""at"" from=$n1 to=$n3
+@n3 syntax.nominal head=""55""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""tack""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n1
+@n1 syntax.nominal head=""April""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""55""",
+765,hey — add a May column with 34,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""May"" head=""column""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""34""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""add"" modifier=""a""
+@c2 syntax.clause form=declarative verb=""May"" modifier=""column""
+@r1 syntax.relation marker=""with"" from=$c2 to=$n1
+@n1 syntax.nominal head=""34""
+@r2 syntax.relation from=$c1 to=$c2",
+766,the list of months isn't complete — add April with a value of 55,"@n1 syntax.nominal dependent=""the"" head=""list""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""months""
+@c1 syntax.clause form=declarative verb=""is"" negation=""n't"" modifier=""complete"" subject=$n1
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""value""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal head=""55""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""the"" head=""list""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""months""
+@c1 syntax.clause form=declarative auxiliary=""is"" negation=""n't"" verb=""complete"" subject=$n1
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal head=""April""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""value""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal head=""55""
+@r4 syntax.relation from=$c1 to=$c2",
+767,add May right after April with 34,"@c1 syntax.clause form=imperative verb=""add"" modifier=""right"" complement=$n1
+@n1 syntax.nominal head=""May""
+@r1 syntax.relation marker=""after"" from=$n1 to=$n2
+@n2 syntax.nominal head=""April""
+@r2 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""34""","@n1 syntax.nominal head=""add""
+@c1 syntax.clause form=declarative verb=""May"" modifier=""right"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal head=""April""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""34""",
+768,add an April category with 55 and make sure it lands after March,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""April"" head=""category""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""55""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""sure""
+@n3 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""lands"" subject=$n3
+@r2 syntax.relation marker=""after"" from=$c3 to=$n4
+@n4 syntax.nominal head=""March""
+@r3 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""April"" head=""category""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""55""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make sure"" complement=$n3
+@n3 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""lands"" subject=$n3
+@r2 syntax.relation marker=""after"" from=$c3 to=$n4
+@n4 syntax.nominal head=""March""
+@r3 syntax.relation from=$c2 to=$c3",
+769,I imported the final figures — add September with 58,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""imported"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""final"" head=""figures""
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal head=""September""
+@r1 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal head=""58""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""imported"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""final"" head=""figures""
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal head=""September""
+@r1 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal head=""58""
+@r2 syntax.relation from=$c1 to=$c2",
+772,add May wiht 34,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""May""
+@n2 syntax.nominal dependent=""wiht"" head=""34""","@n1 syntax.nominal head=""add""
+@c1 syntax.clause form=declarative auxiliary=""May"" verb=""wiht"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""34""",
+775,get rid of Support,"@c1 syntax.clause form=imperative auxiliary=""get"" verb=""rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Support""","@c1 syntax.clause form=imperative verb=""get rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Support""",
+780,I don't want Engineering in there anymore,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""do"" negation=""n't"" verb=""want"" modifier=""in"" modifier=""there"" modifier=""anymore"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Engineering""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""do"" negation=""n't"" verb=""want"" modifier=""anymore"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Engineering""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""there""",
+781,no more Marketing,"@n1 syntax.nominal dependent=""no"" dependent=""more"" head=""Marketing""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment discourse=""no"" modifier=""more"" complement=$n1
+@n1 syntax.nominal head=""Marketing""",
+788,Ops is closing down — take the Ops category out entirely,"@n1 syntax.nominal head=""Ops""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""closing"" modifier=""down"" subject=$n1
+@c2 syntax.clause form=imperative verb=""take"" modifier=""out"" modifier=""entirely"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Ops"" head=""category""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative modifier=""Ops"" auxiliary=""is"" verb=""closing"" modifier=""down""
+@c2 syntax.clause form=imperative verb=""take"" modifier=""out"" modifier=""entirely"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Ops"" head=""category""
+@r1 syntax.relation from=$c1 to=$c2",
+791,the department list changed — get rid of Ops in the chart too,"@n1 syntax.nominal dependent=""the"" dependent=""department"" head=""list""
+@c1 syntax.clause form=declarative verb=""changed"" subject=$n1
+@c2 syntax.clause form=imperative verb=""get""
+@c3 syntax.clause form=nonfinite verb=""rid"" modifier=""too""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n2
+@n2 syntax.nominal head=""Ops""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r3 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal dependent=""the"" dependent=""department"" head=""list""
+@c1 syntax.clause form=declarative verb=""changed"" subject=$n1
+@c2 syntax.clause form=imperative verb=""get rid"" modifier=""too""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal head=""Ops""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@r3 syntax.relation from=$c1 to=$c2",

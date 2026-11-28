@@ -1,0 +1,2289 @@
+n,text,sop,alt,label_state
+222,Chart total sales grouped by quarter of the order date,"@n1 syntax.nominal dependent=""Chart"" dependent=""total"" head=""sales""
+@c1 syntax.clause form=nonfinite verb=""grouped""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""quarter""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""order"" head=""date""
+@c2 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1","@c1 syntax.clause form=imperative verb=""Chart"" complement=$n1
+@n1 syntax.nominal dependent=""total"" head=""sales""
+@c2 syntax.clause form=nonfinite verb=""grouped""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n2
+@n2 syntax.nominal head=""quarter""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""order"" head=""date""
+@r3 syntax.relation from=$n1 to=$c2",
+224,Revenue per employee by department,"@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""employee""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""department""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Revenue""
+@r1 syntax.relation marker=""per"" from=$c1 to=$n1
+@n1 syntax.nominal head=""employee""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""department""",
+225,"Chart per-order sales, by region","@n1 syntax.nominal dependent=""Chart"" dependent=""per"" dependent=""order"" head=""sales""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Chart"" dependent=""per"" dependent=""order"" dependent=""sales""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1",
+226,Sales per order by region,"@n1 syntax.nominal head=""Sales""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""order""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Sales""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""order""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n3
+@n3 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+227,Sales divided by order count by region,"@n1 syntax.nominal head=""Sales""
+@c1 syntax.clause form=nonfinite verb=""divided""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""order"" head=""count""
+@r2 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal head=""region""
+@c2 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal head=""Sales""
+@c1 syntax.clause form=declarative verb=""divided"" subject=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""order"" head=""count""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""region""",
+229,Profit per unit by category,"@n1 syntax.nominal head=""Profit""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""unit""
+@r2 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""category""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Profit""
+@r1 syntax.relation marker=""per"" from=$c1 to=$n1
+@n1 syntax.nominal head=""unit""
+@r2 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""",
+230,Profit divided by units sold by category,"@n1 syntax.nominal head=""Profit""
+@c1 syntax.clause form=nonfinite verb=""divided""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""units""
+@c2 syntax.clause form=nonfinite verb=""sold""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""category""
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1
+@r4 syntax.relation from=$n2 to=$c2","@n1 syntax.nominal head=""Profit""
+@c1 syntax.clause form=declarative verb=""divided"" subject=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""units"" head=""sold""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""category""",
+231,Units divided by transaction count by state,"@n1 syntax.nominal head=""Units""
+@c1 syntax.clause form=nonfinite verb=""divided""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""transaction""
+@n3 syntax.nominal head=""count""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""state""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n3
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal head=""Units""
+@c1 syntax.clause form=declarative verb=""divided"" subject=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""transaction"" head=""count""
+@r2 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""state""",
+232,Colour by region,"@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Colour""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""region""",
+233,Size by revenue,"@n1 syntax.nominal head=""Size""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Size""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""revenue""",
+234,Colour by category,"@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Colour""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""category""",
+235,Colour by shipping mode,"@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""shipping"" head=""mode""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Colour""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""shipping"" head=""mode""",
+236,Colour by segment,"@n1 syntax.nominal head=""Colour""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""segment""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Colour""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""segment""",
+237,"Revenue by month of the order date, top five regions only","@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""month""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""order"" head=""date""
+@c1 syntax.clause form=imperative verb=""top"" modifier=""only"" complement=$n4
+@n4 syntax.nominal dependent=""five"" head=""regions""
+@c2 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1","@c1 syntax.clause form=fragment modifier=""Revenue"" modifier=""by"" modifier=""top"" complement=$n2
+@r1 syntax.relation marker=""month of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""order"" head=""date""
+@n2 syntax.nominal dependent=""five"" head=""regions"" dependent=""only""",
+238,"Monthly revenue by region, five biggest regions","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@n3 syntax.nominal dependent=""five"" dependent=""biggest"" head=""regions""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""region""
+@n3 syntax.nominal dependent=""five"" dependent=""biggest"" head=""regions""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+239,"Departmental revenue per employee, sorted high to low","@n1 syntax.nominal dependent=""Departmental"" head=""revenue""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""employee""
+@c1 syntax.clause form=nonfinite verb=""sorted"" modifier=""high"" modifier=""to"" modifier=""low""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""Departmental"" head=""revenue""
+@r1 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""employee""
+@c1 syntax.clause form=fragment modifier=""sorted"" modifier=""high"" complement=$n1
+@r2 syntax.relation marker=""to"" from=$n1 to=$n3
+@n3 syntax.nominal head=""low""",
+240,"Revenue over time, one line per segment coloured by segment","@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""over"" from=$n1 to=$n2
+@n2 syntax.nominal head=""time""
+@n3 syntax.nominal dependent=""one"" head=""line""
+@r2 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""segment""
+@c1 syntax.clause form=nonfinite verb=""coloured""
+@r3 syntax.relation marker=""by"" from=$c1 to=$n5
+@n5 syntax.nominal head=""segment""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$n3
+@r5 syntax.relation from=$n3 to=$c1","@c1 syntax.clause form=fragment modifier=""Revenue""
+@r1 syntax.relation marker=""over"" from=$c1 to=$k1
+@n1 syntax.nominal head=""time""
+@n2 syntax.nominal dependent=""one"" head=""line""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""segment"" head=""coloured""
+@r3 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""segment""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+242,"Monthly revenue, peak annotated with its value","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@n2 syntax.nominal head=""peak""
+@c1 syntax.clause form=nonfinite verb=""annotated""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""its"" head=""value""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@n2 syntax.nominal head=""peak""
+@c1 syntax.clause form=declarative verb=""annotated"" subject=$n2
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""its"" head=""value""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+243,"Monthly revenue, peak marked and labelled","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@c1 syntax.clause form=nonfinite modifier=""peak"" verb=""marked""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=nonfinite verb=""labelled""
+@c3 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""Monthly"" head=""revenue""
+@n2 syntax.nominal head=""peak""
+@c1 syntax.clause form=declarative verb=""marked"" subject=$n2
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=nonfinite verb=""labelled""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3",
+244,"Profit margin by category, only categories above 10%, top five, highest first","@n1 syntax.nominal dependent=""Profit"" head=""margin""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""
+@n3 syntax.nominal dependent=""only"" head=""categories"" dependent=""first""
+@r2 syntax.relation marker=""above"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""10"" head=""%""
+@n5 syntax.nominal dependent=""top"" head=""five"" dependent=""highest""
+@c1 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$n3
+@r4 syntax.relation from=$n3 to=$n5","@n1 syntax.nominal dependent=""Profit"" head=""margin""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""
+@c1 syntax.clause form=fragment modifier=""only"" modifier=""top"" modifier=""highest"" modifier=""first"" complement=$n1 complement=$n3 complement=$n5
+@n3 syntax.nominal head=""categories""
+@r2 syntax.relation marker=""above"" from=$n3 to=$n4
+@n4 syntax.nominal head=""10"" dependent=""%""
+@n5 syntax.nominal head=""five""",
+245,"Category profit margin, top five above 10%, highest first","@n1 syntax.nominal dependent=""Category"" dependent=""profit"" head=""margin""
+@n2 syntax.nominal head=""top""
+@n3 syntax.nominal head=""five""
+@r1 syntax.relation marker=""above"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""10"" head=""%""
+@n5 syntax.nominal dependent=""highest"" head=""first""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n1 to=$n5
+@r4 syntax.relation from=$n2 to=$n3","@n1 syntax.nominal dependent=""Category"" dependent=""profit"" head=""margin""
+@c1 syntax.clause form=fragment modifier=""top"" complement=$n1 complement=$n2
+@n2 syntax.nominal head=""five""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""10"" dependent=""%""
+@n4 syntax.nominal head=""highest"" dependent=""first""
+@r2 syntax.relation from=$n2 to=$n4",
+247,Revenue by quarter of the order date,"@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""quarter""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""order"" head=""date""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""quarter""
+@r2 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""date""",
+249,Profit as a line over sales bars by region,"@n1 syntax.nominal head=""Profit""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""sales"" head=""bars""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Profit""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""sales"" head=""bars""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""region""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+251,Average order value as a line over order count columns by month,"@n1 syntax.nominal dependent=""Average"" dependent=""order"" head=""value""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""order"" dependent=""count"" head=""columns""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""month""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""Average"" dependent=""order"" head=""value""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""order"" dependent=""count"" head=""columns""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""month""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+253,Bars for claims and a line for approval rate by channel,"@n1 syntax.nominal head=""Bars""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""claims""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""approval"" head=""rate""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""channel""
+@c1 syntax.clause form=fragment complement=$k1","@n1 syntax.nominal head=""Bars""
+@r1 syntax.relation marker=""for"" from=$n1 to=$k1
+@n2 syntax.nominal head=""claims""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""approval"" head=""rate""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""channel""
+@c1 syntax.clause form=fragment complement=$n1",
+254,Approval rate as a line over claims bars by channel,"@n1 syntax.nominal dependent=""Approval"" head=""rate""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""claims"" head=""bars""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""channel""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""Approval"" head=""rate""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""claims"" head=""bars""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""channel""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+255,Columns for units sold and a line for return rate by week,"@n1 syntax.nominal head=""Columns""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""units""
+@c1 syntax.clause form=nonfinite verb=""sold""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""return"" head=""rate""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n5
+@n5 syntax.nominal head=""week""
+@r4 syntax.relation from=$n2 to=$c1
+@c2 syntax.clause form=fragment complement=$k1","@n1 syntax.nominal head=""Columns""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""units"" head=""sold""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""return"" head=""rate""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""week""
+@c1 syntax.clause form=fragment complement=$k1",
+256,Return rate as a line over units sold columns by week,"@n1 syntax.nominal dependent=""Return"" head=""rate""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal head=""units""
+@c1 syntax.clause form=nonfinite verb=""sold"" complement=$n4
+@n4 syntax.nominal head=""columns""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n5
+@n5 syntax.nominal head=""week""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n3 to=$c1","@c1 syntax.clause form=imperative verb=""Return"" complement=$n1
+@n1 syntax.nominal head=""rate""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""units"" dependent=""sold"" head=""columns""
+@r3 syntax.relation marker=""by"" from=$n1 to=$n4
+@n4 syntax.nominal head=""week""",
+262,Conversions as a line over spend bars by campaign,"@n1 syntax.nominal head=""Conversions""
+@r1 syntax.relation marker=""as"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""spend"" head=""bars""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""campaign""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""Conversions""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""a"" head=""line""
+@r2 syntax.relation marker=""over"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""spend"" head=""bars""
+@r3 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""campaign""",
+263,"Profit by ship mode per region, as a share of the region total","@n1 syntax.nominal head=""Profit""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""ship"" head=""mode""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n3
+@n3 syntax.nominal head=""region""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""region"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Profit""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""ship"" head=""mode""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n3
+@n3 syntax.nominal head=""region""
+@r3 syntax.relation marker=""as"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""region"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+264,"Claims by claim type per channel, as a share of the channel total","@n1 syntax.nominal head=""Claims""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""claim"" head=""type""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n3
+@n3 syntax.nominal head=""channel""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""channel"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Claims""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""claim"" head=""type""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""channel""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""channel"" head=""total""",
+265,"Orders by status per month, as a share of the month total","@n1 syntax.nominal head=""Orders""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""status""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""month""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""month"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Orders""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""status""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""month""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""month"" head=""total""",
+266,"Cost by category per quarter, as a share of the quarter total","@n1 syntax.nominal head=""Cost""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n3
+@n3 syntax.nominal head=""quarter""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""quarter"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Cost""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""category""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n3
+@n3 syntax.nominal head=""quarter""
+@r3 syntax.relation marker=""as"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""quarter"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1",
+267,"Revenue by product per segment, as a share of the segment total","@n1 syntax.nominal head=""Revenue""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""product""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n3
+@n3 syntax.nominal head=""segment""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""segment"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""Revenue""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""product""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n2
+@n2 syntax.nominal head=""segment""
+@r3 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""segment"" head=""total""",
+268,"Headcount by department per site, as a share of the site total","@n1 syntax.nominal head=""Headcount""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""department""
+@r2 syntax.relation attachment=ambiguous marker=""per"" from=$c1 to=$n3
+@n3 syntax.nominal head=""site""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""site"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""Headcount""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal head=""department""
+@r2 syntax.relation marker=""per"" from=$n1 to=$n3
+@n3 syntax.nominal head=""site""
+@r3 syntax.relation marker=""as"" from=$n1 to=$n4
+@n4 syntax.nominal dependent=""a"" head=""share""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""site"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+269,So what's the median profit in every region?,"@c1 syntax.clause form=interrogative modifier=""So"" verb=""'s"" subject=$n2 complement=$n1
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""every"" head=""region""","@c1 syntax.clause form=interrogative discourse=""So"" verb=""'s"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""every"" head=""region""",
+270,"Looking at the bars, what's the median profit by region?","@c1 syntax.clause form=nonfinite verb=""Looking""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""bars""
+@n2 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@r3 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=nonfinite verb=""Looking""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""bars""
+@n2 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""by"" from=$n3 to=$n4
+@n4 syntax.nominal head=""region""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+273,(quick check) the median profit in each region?,"@n1 syntax.nominal dependent=""quick"" head=""check""
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""region""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n2","@c1 syntax.clause form=interrogative verb=""quick"" complement=$n1
+@n1 syntax.nominal head=""check""
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""region""
+@r2 syntax.relation from=$n1 to=$n2",
+281,"What's the median profit for each region, ready for the big screen, as the closing chart for the review, for the client deck?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""ready"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""region""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""big"" head=""screen""
+@r3 syntax.relation marker=""as"" from=$n2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""closing"" head=""chart""
+@r4 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""review""
+@r5 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""region""
+@c2 syntax.clause form=interrogative verb=""ready""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""big"" head=""screen""
+@r3 syntax.relation marker=""as"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""closing"" head=""chart""
+@r4 syntax.relation marker=""for"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""review""
+@r5 syntax.relation marker=""for"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+283,"What does the median profit come to in each region, this time for the client deck?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2 complement=$n4
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""each"" head=""region""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r3 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r1 syntax.relation marker=""to in"" from=$c1 to=$k1
+@n3 syntax.nominal dependent=""each"" head=""region""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@k1 syntax.coordination conjunct=$n3 conjunct=$n4",
+284,"put the same on page two: On the chart, how does the median profit split by region?","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""page""
+@n3 syntax.nominal head=""two""
+@r2 syntax.relation marker=""On"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=interrogative modifier=""how"" auxiliary=""does"" verb=""split"" subject=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r3 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal head=""region""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r4 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""page"" dependent=""two""
+@r2 syntax.relation marker=""On"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=interrogative modifier=""how"" verb=""does"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""median"" dependent=""profit"" head=""split""
+@r3 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+285,"Which region sits closest to the median profit, again on a third page?","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""sits"" modifier=""closest"" modifier=""again"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""third"" head=""page""","@n1 syntax.nominal dependent=""Which"" dependent=""region"" head=""sits""
+@c1 syntax.clause form=interrogative verb=""closest"" modifier=""again"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""third"" head=""page""",
+286,the same one for the second slide: Read me the median profit per region from the chart,"@n1 syntax.nominal dependent=""the"" dependent=""same"" head=""one""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""slide""
+@c1 syntax.clause form=imperative verb=""Read"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@r3 syntax.relation marker=""from"" from=$n4 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""the"" dependent=""same"" head=""one""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""slide""
+@c1 syntax.clause form=imperative verb=""Read"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""the"" dependent=""median"" head=""profit""
+@r2 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""region""
+@r3 syntax.relation marker=""from"" from=$c1 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""chart""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$c1 to=$c2",
+287,"quick one: What does the middle profit look like by region, thanks?","@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" discourse=""thanks"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""middle"" head=""profit""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n2
+@r2 syntax.relation marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""region""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""like"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""middle"" dependent=""profit"" head=""look""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n4
+@n4 syntax.nominal head=""region""
+@c2 syntax.clause form=fragment discourse=""thanks"" complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+294,Is the sales line rising or falling?,"@c1 syntax.clause form=interrogative auxiliary=""Is"" verb=""rising"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""sales"" head=""line""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""falling""","@c1 syntax.clause form=interrogative verb=""Is"" subject=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""sales"" dependent=""line"" head=""rising""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""falling""",
+296,Can you tell me whether sales is trending up?,"@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n3 syntax.nominal head=""sales""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""trending"" modifier=""up"" subject=$n3","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" modifier=""sales"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c1
+@c2 syntax.clause form=interrogative auxiliary=""is"" verb=""trending"" modifier=""up""",
+298,Is the overall direction of sales positive?,"@c1 syntax.clause form=interrogative verb=""Is"" modifier=""positive"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""overall"" head=""direction""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""sales""","@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""overall"" head=""direction""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""sales""
+@c2 syntax.clause form=interrogative verb=""positive""
+@r2 syntax.relation from=$c1 to=$c2",
+300,"Can you tell me whether sales is trending up, for the quarterly reporting pack, ready for the big screen, as the closing chart for the review?","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n3 syntax.nominal head=""sales""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""trending"" modifier=""up"" modifier=""ready"" subject=$n3
+@r2 syntax.relation marker=""for"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""quarterly"" dependent=""reporting"" head=""pack""
+@r3 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""big"" head=""screen""
+@r4 syntax.relation marker=""as"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""closing"" head=""chart""
+@r5 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" head=""review""","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" modifier=""sales"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c1
+@c2 syntax.clause form=imperative auxiliary=""is"" verb=""trending"" modifier=""up""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""quarterly"" dependent=""reporting"" head=""pack""
+@c3 syntax.clause form=interrogative verb=""ready""
+@r3 syntax.relation marker=""for"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""big"" head=""screen""
+@r4 syntax.relation marker=""as"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""closing"" head=""chart""
+@r5 syntax.relation marker=""for"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""review""
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3",
+301,"same session, next ask: Are the sales numbers going up or coming down?","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@c1 syntax.clause form=interrogative auxiliary=""Are"" verb=""going"" modifier=""up"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""sales"" head=""numbers""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c3 conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative verb=""coming"" modifier=""down""
+@c3 syntax.clause form=fragment complement=$n1 complement=$n2","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@c1 syntax.clause form=interrogative auxiliary=""Are"" verb=""going"" modifier=""up"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""sales"" head=""numbers""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=nonfinite verb=""coming"" modifier=""down""
+@c3 syntax.clause form=fragment complement=$k2
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2
+@r1 syntax.relation from=$c1 to=$c3",
+303,while you're there: Can you tell me whether sales is trending up?,"@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""there"" subject=$n1
+@c2 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal head=""me""
+@r2 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n4 syntax.nominal head=""sales""
+@c3 syntax.clause form=declarative auxiliary=""is"" verb=""trending"" modifier=""up"" subject=$n4","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""there""
+@c2 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" modifier=""sales"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal head=""me""
+@r2 syntax.relation marker=""whether"" from=$c3 to=$c2
+@c3 syntax.clause form=interrogative auxiliary=""is"" verb=""trending"" modifier=""up""",
+304,"um, So is sales trending upward or not — go on?","@c1 syntax.clause form=interrogative discourse=""um"" modifier=""So"" auxiliary=""is"" verb=""trending"" modifier=""upward"" subject=$n1
+@n1 syntax.nominal head=""sales""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=fragment discourse=""not"" ellipsis=$c1
+@c3 syntax.clause form=interrogative verb=""go"" modifier=""on""","@c1 syntax.clause form=fragment discourse=""um""
+@r1 syntax.relation marker=""So"" from=$c1 to=$c2
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n1
+@n1 syntax.nominal head=""sales""
+@c3 syntax.clause form=nonfinite verb=""trending"" modifier=""upward"" discourse=""or"" negation=""not""
+@c4 syntax.clause form=interrogative verb=""go"" modifier=""on""
+@r2 syntax.relation from=$c2 to=$c4
+@r3 syntax.relation from=$n1 to=$c3",
+305,So is sales trendding upward or not?,"@c1 syntax.clause form=interrogative modifier=""So"" auxiliary=""is"" verb=""trendding"" modifier=""upward"" subject=$n1
+@n1 syntax.nominal head=""sales""
+@k1 syntax.coordination conjunction=""or"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment discourse=""not"" ellipsis=$c1","@c1 syntax.clause form=interrogative discourse=""So"" verb=""is"" modifier=""upward"" discourse=""or"" negation=""not"" subject=$n1
+@n1 syntax.nominal dependent=""sales"" head=""trendding""",
+307,Tell me how much the weekly orders total moved,"@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""how"" modifier=""much"" verb=""moved"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" dependent=""orders"" head=""total""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""how"" dependent=""much"" dependent=""the"" dependent=""weekly"" dependent=""orders"" head=""total""
+@c2 syntax.clause form=nonfinite verb=""moved""
+@r1 syntax.relation from=$n2 to=$c2",
+309,How big was the jump in weekly orders?,"@c1 syntax.clause form=interrogative modifier=""How"" modifier=""big"" verb=""was"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""jump""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""weekly"" head=""orders""","@c1 syntax.clause form=interrogative modifier=""How"" discourse=""big"" verb=""was"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""jump""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""weekly"" head=""orders""",
+310,What did the weekly orders total gain over the period?,"@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""gain"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" dependent=""orders"" head=""total""
+@r1 syntax.relation marker=""over"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""period""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""did"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" dependent=""orders"" dependent=""total"" head=""gain""
+@r1 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""period""",
+316,So how much did weekly orders grow overall?,"@c1 syntax.clause form=interrogative modifier=""So"" modifier=""how"" modifier=""much"" auxiliary=""did"" verb=""grow"" modifier=""overall"" subject=$n1
+@n1 syntax.nominal dependent=""weekly"" head=""orders""","@c1 syntax.clause form=interrogative discourse=""So"" modifier=""how"" modifier=""much"" auxiliary=""did"" verb=""grow"" modifier=""overall"" subject=$n1
+@n1 syntax.nominal dependent=""weekly"" head=""orders""",
+318,"and while you're at it, Does the weekly orders total keep growing?","@c1 syntax.clause form=interrogative discourse=""and"" auxiliary=""Does"" verb=""keep"" subject=$n3
+@r1 syntax.relation marker=""while"" from=$c1 to=$c2
+@n1 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""at"" from=$c2 to=$n2
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal dependent=""the"" dependent=""weekly"" dependent=""orders"" head=""total""
+@c3 syntax.clause form=nonfinite verb=""growing""
+@r3 syntax.relation from=$c1 to=$c3","@c1 syntax.clause form=fragment discourse=""and""
+@r1 syntax.relation marker=""while"" from=$c1 to=$c2
+@n1 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""at"" from=$c2 to=$n2
+@n2 syntax.nominal head=""it""
+@c3 syntax.clause form=interrogative auxiliary=""Does"" verb=""keep"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""weekly"" dependent=""orders"" head=""total""
+@c4 syntax.clause form=nonfinite verb=""growing""
+@r3 syntax.relation from=$c2 to=$c3
+@r4 syntax.relation from=$c3 to=$c4",
+320,"excuse me, How much did the weekly total of orders grow, please?","@c1 syntax.clause form=imperative verb=""excuse"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=interrogative modifier=""How"" modifier=""much"" auxiliary=""did"" verb=""grow"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""total""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""orders""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""excuse"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=interrogative modifier=""How"" modifier=""much"" verb=""did"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""total""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""orders""
+@c3 syntax.clause form=interrogative verb=""grow"" discourse=""please""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",
+321,"quick one: How much did orders grow week over week, thanks?","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=interrogative modifier=""How"" modifier=""much"" auxiliary=""did"" verb=""grow"" discourse=""thanks"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""orders""
+@n3 syntax.nominal head=""week""
+@r1 syntax.relation marker=""over"" from=$n3 to=$n4
+@n4 syntax.nominal head=""week""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=interrogative modifier=""How"" modifier=""much"" verb=""did"" modifier=""orders""
+@c2 syntax.clause form=interrogative verb=""grow"" complement=$n2
+@n2 syntax.nominal head=""week""
+@r1 syntax.relation marker=""over"" from=$c2 to=$n3
+@n3 syntax.nominal head=""week""
+@c3 syntax.clause form=fragment discourse=""thanks"" complement=$n1
+@r2 syntax.relation from=$c1 to=$c3
+@r3 syntax.relation from=$c1 to=$c2",
+322,How much did orders grow wuek over week?,"@c1 syntax.clause form=interrogative modifier=""How"" modifier=""much"" auxiliary=""did"" verb=""grow"" modifier=""wuek"" subject=$n1
+@n1 syntax.nominal head=""orders""
+@r1 syntax.relation marker=""over"" from=$c1 to=$n2
+@n2 syntax.nominal head=""week""","@c1 syntax.clause form=interrogative modifier=""How"" modifier=""much"" verb=""did"" modifier=""orders""
+@c2 syntax.clause form=interrogative verb=""grow"" modifier=""wuek""
+@r1 syntax.relation marker=""over"" from=$c2 to=$n1
+@n1 syntax.nominal head=""week""
+@r2 syntax.relation from=$c1 to=$c2",
+325,Where does revenue rise fastest?,"@c1 syntax.clause form=interrogative modifier=""Where"" auxiliary=""does"" verb=""rise"" modifier=""fastest"" subject=$n1
+@n1 syntax.nominal head=""revenue""","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""does"" modifier=""fastest"" complement=$n1
+@n1 syntax.nominal dependent=""revenue"" head=""rise""",
+326,"What was the sharpest revenue increase, and when?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""was"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""sharpest"" dependent=""revenue"" head=""increase""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment discourse=""when"" ellipsis=$c1","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""was"" verb=""increase"" discourse=""and"" modifier=""when"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""sharpest"" head=""revenue""",
+328,So which month climbed fastest on revenue?,"@c1 syntax.clause form=interrogative modifier=""So"" verb=""climbed"" modifier=""fastest"" complement=$n1
+@n1 syntax.nominal dependent=""which"" head=""month""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""","@c1 syntax.clause form=fragment discourse=""So"" complement=$n1
+@n1 syntax.nominal dependent=""which"" dependent=""month"" dependent=""climbed"" head=""fastest""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""",
+329,Look at the revenue line: which month rises most?,"@c1 syntax.clause form=imperative verb=""Look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@n2 syntax.nominal dependent=""which"" head=""month""
+@c2 syntax.clause form=interrogative verb=""rises"" modifier=""most"" subject=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=interrogative verb=""Look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@n2 syntax.nominal dependent=""which"" dependent=""month"" head=""rises"" dependent=""most""
+@r2 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n2",
+330,Which month climbed the fastest in revenue?,"@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""climbed"" modifier=""the"" modifier=""fastest"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=nonfinite verb=""climbed"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""fastest""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1",
+332,while you're there: So which month climbed fastest on revenue?,"@c1 syntax.clause form=interrogative discourse=""while"" verb=""'re"" modifier=""there"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""So"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""which"" head=""month""
+@c2 syntax.clause form=declarative verb=""climbed"" modifier=""fastest"" complement=$n2
+@r2 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""","@c1 syntax.clause form=interrogative modifier=""while"" verb=""'re"" modifier=""So"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""there""
+@n3 syntax.nominal dependent=""which"" dependent=""month"" dependent=""climbed"" head=""fastest""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""revenue""",
+333,Look at the revenue line: which month rises most — same thing once more?,"@c1 syntax.clause form=imperative verb=""Look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@n2 syntax.nominal dependent=""which"" head=""month""
+@c2 syntax.clause form=interrogative verb=""rises"" modifier=""most"" subject=$n2
+@n3 syntax.nominal dependent=""same"" head=""thing""
+@c3 syntax.clause form=fragment modifier=""once"" modifier=""more"" complement=$n3
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3","@c1 syntax.clause form=interrogative verb=""Look""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""revenue"" head=""line""
+@n2 syntax.nominal dependent=""which"" dependent=""month"" head=""rises"" dependent=""most""
+@n3 syntax.nominal dependent=""same"" head=""thing""
+@c2 syntax.clause form=fragment modifier=""once"" modifier=""more"" complement=$n2
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3",
+334,"same session, next ask: Pick out the fastest-rising month in revenue","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@c1 syntax.clause form=imperative verb=""Pick"" modifier=""out"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""fastest"" dependent=""rising"" head=""month""
+@r1 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal head=""revenue""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@n3 syntax.nominal head=""Pick""
+@r1 syntax.relation marker=""out"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""fastest"" dependent=""rising"" head=""month""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n5
+@n5 syntax.nominal head=""revenue""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2
+@r3 syntax.relation from=$n1 to=$n3",
+335,"one more thing: Tell me the month with the steepest revenue increase, if you can","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@c1 syntax.clause form=imperative verb=""Tell"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""steepest"" dependent=""revenue"" head=""increase""
+@r2 syntax.relation marker=""if"" from=$c1 to=$c2
+@n5 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""can"" subject=$n5
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@n2 syntax.nominal head=""Tell""
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""the"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""steepest"" head=""revenue""
+@c1 syntax.clause form=imperative verb=""increase""
+@r2 syntax.relation marker=""if"" from=$c1 to=$c2
+@n6 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""can"" subject=$n6
+@c3 syntax.clause form=fragment complement=$n1 complement=$n3 complement=$n4
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$c1 to=$c3",
+339,(quick check) the average monthly revenue total?,"@n1 syntax.nominal dependent=""quick"" dependent=""check"" dependent=""the"" dependent=""average"" dependent=""monthly"" dependent=""revenue"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=interrogative verb=""quick"" complement=$n1
+@n1 syntax.nominal head=""check""
+@n2 syntax.nominal dependent=""the"" dependent=""average"" dependent=""monthly"" dependent=""revenue"" head=""total""
+@r1 syntax.relation from=$n1 to=$n2",
+342,What does the average monthly total come to?,"@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""average"" dependent=""monthly"" head=""total""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" modifier=""to"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""average"" dependent=""monthly"" head=""total""",
+351,"On average, how much revenue per month, for the client deck, for the printed handout, since the leadership meeting asks for it?","@r1 syntax.relation marker=""On"" from=$c2 to=$n1
+@n1 syntax.nominal head=""average""
+@n2 syntax.nominal dependent=""how"" dependent=""much"" head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""month""
+@r3 syntax.relation marker=""for"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@r4 syntax.relation marker=""for"" from=$n2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""printed"" head=""handout""
+@r5 syntax.relation marker=""since"" from=$c2 to=$c1
+@n6 syntax.nominal dependent=""the"" dependent=""leadership"" head=""meeting""
+@c1 syntax.clause form=declarative verb=""asks"" subject=$n6
+@r6 syntax.relation marker=""for"" from=$c1 to=$n7
+@n7 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n2","@r1 syntax.relation marker=""On"" from=$c2 to=$n1
+@n1 syntax.nominal head=""average""
+@n2 syntax.nominal dependent=""how"" dependent=""much"" head=""revenue""
+@r2 syntax.relation marker=""per"" from=$n2 to=$n3
+@n3 syntax.nominal head=""month""
+@r3 syntax.relation marker=""for"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@r4 syntax.relation marker=""for"" from=$n2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""printed"" head=""handout""
+@r5 syntax.relation marker=""since"" from=$c2 to=$c1
+@n6 syntax.nominal dependent=""the"" dependent=""leadership"" head=""meeting""
+@c1 syntax.clause form=interrogative verb=""asks"" subject=$n6
+@r6 syntax.relation marker=""for"" from=$c1 to=$n7
+@n7 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n2",
+353,"What's the mean of the monthly revenue totals, one more for the appendix page?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""monthly"" dependent=""revenue"" head=""totals""
+@n4 syntax.nominal head=""one"" dependent=""more""
+@r2 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""appendix"" head=""page""
+@r3 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""more"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""monthly"" dependent=""revenue"" head=""totals""
+@n4 syntax.nominal head=""one""
+@r2 syntax.relation marker=""for"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""appendix"" head=""page""
+@r3 syntax.relation from=$c1 to=$n4",
+354,"and while you're at it, On average, how much revenue per month?","@c1 syntax.clause form=fragment discourse=""and"" modifier=""On"" complement=$n3
+@r1 syntax.relation marker=""while"" from=$c1 to=$c2
+@n1 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""at"" from=$c2 to=$n2
+@n2 syntax.nominal head=""it""
+@n3 syntax.nominal dependent=""average"" dependent=""how"" dependent=""much"" head=""revenue""
+@r3 syntax.relation marker=""per"" from=$n3 to=$n4
+@n4 syntax.nominal head=""month""","@c1 syntax.clause form=fragment discourse=""and""
+@r1 syntax.relation marker=""while"" from=$c1 to=$c2
+@n1 syntax.nominal head=""you""
+@c2 syntax.clause form=interrogative verb=""'re"" subject=$n1 complement=$n4
+@r2 syntax.relation marker=""at"" from=$c2 to=$n2
+@n2 syntax.nominal head=""it""
+@r3 syntax.relation marker=""On"" from=$c2 to=$n3
+@n3 syntax.nominal head=""average""
+@n4 syntax.nominal dependent=""how"" dependent=""much"" head=""revenue""
+@r4 syntax.relation marker=""per"" from=$n4 to=$n5
+@n5 syntax.nominal head=""month""",
+355,"excuse me, What's the mean monthly revenue across the months, please?","@c1 syntax.clause form=interrogative verb=""excuse"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""What""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""monthly"" head=""revenue""
+@r1 syntax.relation marker=""across"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""months""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""excuse"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""What""
+@c2 syntax.clause form=interrogative verb=""'s"" discourse=""please"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""monthly"" head=""revenue""
+@r1 syntax.relation marker=""across"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""months""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+356,(quick check) the average monthly renenue total?,"@n1 syntax.nominal dependent=""quick"" dependent=""check"" dependent=""the"" dependent=""average"" dependent=""monthly"" dependent=""renenue"" head=""total""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=interrogative verb=""quick"" complement=$n1
+@n1 syntax.nominal head=""check""
+@n2 syntax.nominal dependent=""the"" dependent=""average"" dependent=""monthly"" dependent=""renenue"" head=""total""
+@r1 syntax.relation from=$n1 to=$n2",
+359,"Which months came in above target, and how many?","@n1 syntax.nominal dependent=""Which"" head=""months""
+@c1 syntax.clause form=interrogative verb=""came"" modifier=""in"" subject=$n1
+@r1 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment modifier=""how"" modifier=""many""","@n1 syntax.nominal dependent=""Which"" head=""months""
+@c1 syntax.clause form=nonfinite verb=""came"" modifier=""in"" discourse=""and"" modifier=""how"" modifier=""many""
+@r1 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1",
+364,So how many months finished above target?,"@c1 syntax.clause form=nonfinite modifier=""So"" verb=""finished"" subject=$n1
+@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""months""
+@r1 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""","@r1 syntax.relation marker=""So"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""months""
+@c1 syntax.clause form=nonfinite verb=""finished""
+@r2 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""
+@c2 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1",
+365,How many of the months went past target?,"@n1 syntax.nominal dependent=""How"" head=""many""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""months""
+@c1 syntax.clause form=interrogative verb=""went"" subject=$n1
+@r2 syntax.relation marker=""past"" from=$c1 to=$n3
+@n3 syntax.nominal head=""target""","@c1 syntax.clause form=fragment modifier=""How"" modifier=""many""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""months""
+@c2 syntax.clause form=nonfinite verb=""went""
+@r2 syntax.relation marker=""past"" from=$c2 to=$n2
+@n2 syntax.nominal head=""target""
+@r3 syntax.relation from=$n1 to=$c2",
+368,"So how many months finished above target, to go on the summary slide of the deck, for the board appendix?","@c1 syntax.clause form=nonfinite modifier=""So"" verb=""finished"" subject=$n1
+@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""months""
+@r1 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r3 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""summary"" head=""slide""
+@r4 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""deck""
+@r5 syntax.relation attachment=ambiguous marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""board"" head=""appendix""","@r1 syntax.relation marker=""So"" from=$c2 to=$c3
+@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""months""
+@c1 syntax.clause form=nonfinite verb=""finished""
+@r2 syntax.relation marker=""above"" from=$c1 to=$n2
+@n2 syntax.nominal head=""target""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""summary"" head=""slide""
+@r5 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""deck""
+@r6 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""board"" head=""appendix""
+@c3 syntax.clause form=fragment complement=$n1
+@r7 syntax.relation from=$n1 to=$c1",
+369,"same session, next ask: What count of months sits above target?","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@n3 syntax.nominal dependent=""What"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""months""
+@c1 syntax.clause form=interrogative verb=""sits"" subject=$n3
+@r2 syntax.relation marker=""above"" from=$c1 to=$n5
+@n5 syntax.nominal head=""target""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r3 syntax.relation from=$n2 to=$c1","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@n3 syntax.nominal dependent=""What"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal head=""months""
+@c1 syntax.clause form=interrogative verb=""sits"" subject=$n3
+@r2 syntax.relation marker=""above"" from=$c1 to=$n5
+@n5 syntax.nominal head=""target""
+@c2 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2
+@r3 syntax.relation from=$c1 to=$c2",
+370,while you're there: So how many months finished above target?,"@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""there"" subject=$n1
+@n2 syntax.nominal dependent=""So"" dependent=""how"" dependent=""many"" head=""months""
+@c2 syntax.clause form=nonfinite verb=""finished"" subject=$n2
+@r2 syntax.relation marker=""above"" from=$c2 to=$n3
+@n3 syntax.nominal head=""target""","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""So"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""there""
+@n3 syntax.nominal dependent=""how"" dependent=""many"" head=""months""
+@c2 syntax.clause form=nonfinite verb=""finished""
+@r2 syntax.relation marker=""above"" from=$c2 to=$n4
+@n4 syntax.nominal head=""target""
+@r3 syntax.relation from=$n3 to=$c2",
+371,quick one: Tally the months above target for me — go on,"@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal dependent=""Tally"" dependent=""the"" head=""months""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""target""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal head=""me""
+@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@c1 syntax.clause form=imperative verb=""Tally"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""months""
+@r1 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal head=""target""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal head=""me""
+@c2 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$c1 to=$c3
+@r4 syntax.relation from=$c1 to=$c2",
+372,"one more thing: How many months came in above target, if you can?","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@n2 syntax.nominal dependent=""How"" dependent=""many"" head=""months""
+@c1 syntax.clause form=declarative verb=""came"" modifier=""in"" subject=$n2
+@r1 syntax.relation marker=""above"" from=$c1 to=$n3
+@n3 syntax.nominal head=""target""
+@r2 syntax.relation marker=""if"" from=$c1 to=$c2
+@n4 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""can"" subject=$n4
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@n2 syntax.nominal dependent=""How"" dependent=""many"" head=""months""
+@c1 syntax.clause form=nonfinite verb=""came"" modifier=""in""
+@r1 syntax.relation marker=""above"" from=$c1 to=$n3
+@n3 syntax.nominal head=""target""
+@r2 syntax.relation marker=""if"" from=$c3 to=$c2
+@n4 syntax.nominal head=""you""
+@c2 syntax.clause form=interrogative verb=""can"" subject=$n4
+@c3 syntax.clause form=fragment complement=$n1 complement=$n2
+@r3 syntax.relation from=$n2 to=$c1",
+376,Can you tell me which region improved most?,"@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=declarative verb=""improved"" modifier=""most"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""tell"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=nonfinite verb=""improved"" modifier=""most""
+@r1 syntax.relation from=$n3 to=$c2",
+377,Which region moved up the most since last year?,"@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""moved"" modifier=""up"" modifier=""the"" modifier=""most"" subject=$n1
+@r1 syntax.relation marker=""since"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""last"" head=""year""","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=nonfinite verb=""moved"" modifier=""up"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""most""
+@r1 syntax.relation marker=""since"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""last"" head=""year""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1",
+379,So which region improved most over the year?,"@c1 syntax.clause form=interrogative modifier=""So"" verb=""improved"" modifier=""most"" subject=$n1
+@n1 syntax.nominal dependent=""which"" head=""region""
+@r1 syntax.relation marker=""over"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""year""","@c1 syntax.clause form=interrogative discourse=""So"" verb=""improved"" modifier=""most"" subject=$n1
+@n1 syntax.nominal dependent=""which"" head=""region""
+@r1 syntax.relation marker=""over"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""year""",
+380,"Looking at the change, which region gained most?","@c1 syntax.clause form=nonfinite verb=""Looking""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""change""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=interrogative verb=""gained"" modifier=""most"" subject=$n2
+@r2 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=nonfinite verb=""Looking"" complement=$n2
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""change""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=nonfinite verb=""gained"" modifier=""most""
+@r2 syntax.relation from=$n2 to=$c2",
+381,Pick out the region with the best year-on-year gain,"@c1 syntax.clause form=imperative verb=""Pick"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""","@c1 syntax.clause form=imperative verb=""Pick""
+@r1 syntax.relation marker=""out"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""",
+383,Which region gained the most revenue over last year?,"@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""gained"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@r1 syntax.relation marker=""over"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""last"" head=""year""","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=nonfinite verb=""gained"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@r1 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""last"" head=""year""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1",
+385,"Pick out the region with the best year-on-year gain, for the Monday standup slide, for the board appendix, to go with the monthly readout","@c1 syntax.clause form=imperative verb=""Pick"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monday"" dependent=""standup"" head=""slide""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""board"" head=""appendix""
+@r4 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r5 syntax.relation marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""monthly"" head=""readout""","@c1 syntax.clause form=imperative verb=""Pick""
+@r1 syntax.relation marker=""out"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""
+@r3 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Monday"" dependent=""standup"" head=""slide""
+@r4 syntax.relation marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""board"" head=""appendix""
+@r5 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r6 syntax.relation marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""monthly"" head=""readout""",
+386,"Looking at the change, which region gained most too, for the second slide?","@c1 syntax.clause form=nonfinite verb=""Looking""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""change""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=interrogative verb=""gained"" modifier=""most"" modifier=""too"" subject=$n2
+@r2 syntax.relation marker=""for"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""slide""
+@r3 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=nonfinite verb=""Looking"" complement=$n2
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""change""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=nonfinite verb=""gained"" modifier=""most"" modifier=""too""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" head=""slide""
+@r3 syntax.relation from=$n2 to=$c2",
+387,"and meanwhile, Pick out the region with the best year-on-year gain","@c1 syntax.clause form=imperative discourse=""and"" modifier=""meanwhile"" verb=""Pick"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""","@c1 syntax.clause form=fragment discourse=""and"" modifier=""meanwhile"" complement=$n1
+@n1 syntax.nominal head=""Pick""
+@r1 syntax.relation marker=""out"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""region""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""best"" dependent=""year"" dependent=""on"" dependent=""year"" head=""gain""",
+388,"um, Which region made the biggest leap in revenue, please?","@c1 syntax.clause form=interrogative discourse=""um"" verb=""made"" discourse=""please"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""Which"" head=""region""
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""leap""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""revenue""","@c1 syntax.clause form=fragment discourse=""um"" complement=$n1
+@n1 syntax.nominal dependent=""Which"" head=""region""
+@c2 syntax.clause form=nonfinite verb=""made"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""leap""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation from=$n1 to=$c2",
+389,"hey — Tell me which region is most improved, thanks","@c1 syntax.clause form=imperative discourse=""hey"" verb=""Tell"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=declarative auxiliary=""is"" modifier=""most"" verb=""improved"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""Tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" head=""region""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""most"" modifier=""improved"" discourse=""thanks"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+391,Which of the regions caame out best year on year?,"@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""regions""
+@c1 syntax.clause form=interrogative verb=""caame"" modifier=""out"" modifier=""best"" subject=$n1 complement=$n3
+@n3 syntax.nominal head=""year""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""year""","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""regions"" head=""caame""
+@r2 syntax.relation marker=""out"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""best"" head=""year""
+@r3 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""year""
+@c1 syntax.clause form=fragment complement=$n1",
+392,Does the median claim cost top the mean on the chart?,"@c1 syntax.clause form=interrogative auxiliary=""Does"" verb=""top"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""median"" dependent=""claim"" head=""cost""
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""","@c1 syntax.clause form=interrogative verb=""Does"" modifier=""top"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""median"" dependent=""claim"" head=""cost""
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""",
+393,Is the median claim cost the larger of the two averages?,"@c1 syntax.clause form=interrogative verb=""Is"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""median"" dependent=""claim"" head=""cost""
+@n2 syntax.nominal dependent=""the"" head=""larger""
+@r1 syntax.relation attachment=ambiguous marker=""of"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""averages""","@c1 syntax.clause form=interrogative verb=""Is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""median"" dependent=""claim"" head=""cost""
+@n2 syntax.nominal dependent=""the"" head=""larger""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""two"" head=""averages""",
+397,"Which is bigger, the median or the mean claim cost?","@n1 syntax.nominal head=""Which""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""bigger"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""
+@r1 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal head=""Which""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""bigger"" subject=$k1 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""",
+398,How do the median and the mean claim cost compare?,"@c1 syntax.clause form=interrogative modifier=""How"" auxiliary=""do"" verb=""compare"" subject=$k1
+@n1 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""","@c1 syntax.clause form=interrogative modifier=""How"" verb=""do"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""
+@c2 syntax.clause form=interrogative verb=""compare"" subject=$n2",
+404,"while you're there: Which is bigger, the median or the mean claim cost?","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" modifier=""there"" subject=$n1
+@n2 syntax.nominal head=""Which""
+@c2 syntax.clause form=interrogative verb=""is"" modifier=""bigger"" subject=$n2
+@n3 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""
+@r2 syntax.relation from=$n2 to=$k1","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""there""
+@n3 syntax.nominal head=""Which""
+@c2 syntax.clause form=interrogative verb=""is"" modifier=""bigger"" subject=$k1 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""",
+405,How do the median and the mean claim cost compare — same thing once more?,"@c1 syntax.clause form=interrogative modifier=""How"" auxiliary=""do"" verb=""compare"" subject=$k1
+@n1 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""
+@n3 syntax.nominal dependent=""same"" head=""thing""
+@c2 syntax.clause form=fragment modifier=""once"" modifier=""more"" complement=$n3
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=interrogative modifier=""How"" verb=""do"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""median""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""mean"" dependent=""claim"" head=""cost""
+@c2 syntax.clause form=interrogative verb=""compare"" subject=$n2
+@n3 syntax.nominal dependent=""same"" head=""thing""
+@c3 syntax.clause form=fragment modifier=""once"" modifier=""more"" complement=$n3
+@r1 syntax.relation from=$c1 to=$c3",
+406,"same session, next ask: Is the typical claim cost above the average?","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@c1 syntax.clause form=declarative verb=""Is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""typical"" dependent=""claim"" head=""cost""
+@r1 syntax.relation marker=""above"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r2 syntax.relation from=$n2 to=$c1","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@c1 syntax.clause form=interrogative verb=""Is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""typical"" dependent=""claim"" head=""cost""
+@r1 syntax.relation marker=""above"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2
+@r2 syntax.relation from=$c1 to=$c2",
+408,quick one: I want to know if the median leads the mean — go on,"@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know""
+@r2 syntax.relation marker=""if"" from=$c2 to=$c3
+@n3 syntax.nominal dependent=""the"" head=""median""
+@c3 syntax.clause form=declarative verb=""leads"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""mean""
+@c4 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c5 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c5 conjunct=$c4
+@r3 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""know"" modifier=""if"" complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""median"" head=""leads""
+@n4 syntax.nominal dependent=""the"" head=""mean""
+@c3 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c4 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c3 to=$c4",
+409,Where dooes the median beat the mean in claim cost?,"@c1 syntax.clause form=interrogative modifier=""Where"" auxiliary=""dooes"" verb=""beat"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""median""
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""claim"" head=""cost""","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""dooes"" modifier=""beat"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""median""
+@n2 syntax.nominal dependent=""the"" head=""mean""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""claim"" head=""cost""",
+410,"Which rnus higher here, median or mean?","@n1 syntax.nominal head=""Which""
+@n2 syntax.nominal head=""rnus""
+@c1 syntax.clause form=fragment modifier=""higher"" modifier=""here"" modifier=""median"" discourse=""or"" modifier=""mean"" complement=$n1 complement=$n2","@n1 syntax.nominal dependent=""Which"" dependent=""rnus"" head=""higher""
+@c1 syntax.clause form=fragment modifier=""here"" modifier=""median"" discourse=""or"" modifier=""mean"" complement=$n1",
+411,"Which region comes out on top for revenue, and how much of the overall revenue does it carry?","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" head=""much""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" subject=$n6 complement=$n4
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" discourse=""and"" modifier=""how"" modifier=""much"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r4 syntax.relation from=$c1 to=$c2",
+412,"What's the biggest region on the chart, and what percentage of the whole does it take?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""region""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""what"" head=""percentage""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""whole""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""take"" subject=$n6 complement=$n4
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" discourse=""and"" modifier=""what"" subject=$n2 complement=$n1 complement=$n4
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""region""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@n4 syntax.nominal head=""percentage""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""whole""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""take"" subject=$n6
+@n6 syntax.nominal head=""it""
+@r3 syntax.relation from=$c1 to=$c2",
+413,"Where is the revenue highest, and what share of the total?","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@n2 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""what"" head=""share""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=fragment complement=$n3","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""is"" modifier=""highest"" discourse=""and"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@n2 syntax.nominal dependent=""what"" head=""share""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""total""",
+414,"Name the region with the most revenue, and how much of the revenue pie is that?","@c1 syntax.clause form=imperative verb=""Name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""is"" subject=$n4
+@r2 syntax.relation marker=""of"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@n4 syntax.nominal head=""that""","@c1 syntax.clause form=imperative verb=""Name"" discourse=""and"" modifier=""how"" modifier=""much"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""that""
+@r3 syntax.relation from=$c1 to=$c2",
+415,"Which of the regions is ahead on revenue, and what part of the total does that make up?","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""regions""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""ahead"" subject=$n1
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""what"" head=""part""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""make"" modifier=""up"" subject=$n6 complement=$n4
+@n6 syntax.nominal head=""that""","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""regions""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""ahead"" discourse=""and"" subject=$n4
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@n4 syntax.nominal dependent=""what"" head=""part""
+@r3 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""make"" modifier=""up"" subject=$n6
+@n6 syntax.nominal head=""that""
+@c3 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$c1 to=$c2",
+416,"Can you point at the region with the highest revenue, and how large a share is it?","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""point"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""region""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" dependent=""large"" dependent=""a"" head=""share""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5 complement=$n4
+@n5 syntax.nominal head=""it""","@c1 syntax.clause form=interrogative auxiliary=""Can"" verb=""point"" discourse=""and"" modifier=""how"" modifier=""large"" subject=$n1 complement=$n4
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""region""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@n4 syntax.nominal dependent=""a"" head=""share""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation from=$c1 to=$c2",
+418,"Which region tops the revenue chart, and what share does it hold?","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""tops"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""what"" head=""share""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""hold"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""Which"" dependent=""region"" head=""tops""
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n3 syntax.nominal dependent=""what"" head=""share""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""hold"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2",
+421,"The region with the highest revenue, and how much of the overall revenue does it carry?","@n1 syntax.nominal dependent=""The"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n3 syntax.nominal dependent=""how"" head=""much""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" subject=$n5 complement=$n3
+@n5 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""The"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@c1 syntax.clause form=fragment discourse=""and"" modifier=""how"" modifier=""much"" complement=$n1
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r3 syntax.relation from=$c2 to=$c1",
+423,"What's the biggest region on the chart, and how much of the revenue pie is that?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""region""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""is"" subject=$n5
+@r2 syntax.relation marker=""of"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@n5 syntax.nominal head=""that""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" discourse=""and"" modifier=""how"" modifier=""much"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""biggest"" head=""region""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""chart""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""that""
+@r3 syntax.relation from=$c1 to=$c2",
+424,"Name the region with the most revenue, and how large a share is it, again on a third page?","@c1 syntax.clause form=imperative verb=""Name"" modifier=""again"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" dependent=""large"" dependent=""a"" head=""share""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""third"" head=""page""","@c1 syntax.clause form=imperative verb=""Name"" discourse=""and"" modifier=""how"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""region""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@n3 syntax.nominal head=""large""
+@n4 syntax.nominal dependent=""a"" head=""share""
+@c2 syntax.clause form=interrogative verb=""is"" modifier=""again"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""a"" dependent=""third"" head=""page""
+@r3 syntax.relation from=$n3 to=$c2",
+425,"same again for the client: Can you point at the region with the highest revenue, and what share does it hold?","@c1 syntax.clause form=interrogative modifier=""same"" modifier=""again"" auxiliary=""Can"" verb=""point"" subject=$n2
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""client""
+@n2 syntax.nominal head=""you""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""region""
+@r3 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""what"" head=""share""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""hold"" subject=$n6 complement=$n5
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""same""
+@c1 syntax.clause form=fragment modifier=""again"" complement=$n1
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""client""
+@c2 syntax.clause form=interrogative auxiliary=""Can"" verb=""point"" subject=$n3
+@n3 syntax.nominal head=""you""
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""region""
+@r3 syntax.relation marker=""with"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@n6 syntax.nominal dependent=""what"" head=""share""
+@c3 syntax.clause form=interrogative auxiliary=""does"" verb=""hold"" subject=$n7 complement=$n6
+@n7 syntax.nominal head=""it""
+@r4 syntax.relation from=$c2 to=$c1",
+426,"Which region tops the revenue chart, and what cut of the total is that, this time for the client deck?","@n1 syntax.nominal dependent=""Which"" head=""region""
+@c1 syntax.clause form=interrogative verb=""tops"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""what"" head=""cut""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5 complement=$n3 complement=$n6
+@n5 syntax.nominal head=""that""
+@n6 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""","@n1 syntax.nominal dependent=""Which"" dependent=""region"" head=""tops""
+@n2 syntax.nominal dependent=""the"" dependent=""revenue"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n3 syntax.nominal dependent=""what"" head=""cut""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""total""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n5 complement=$n3
+@n5 syntax.nominal head=""that""
+@n6 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r3 syntax.relation from=$n5 to=$n6",
+427,"a repeat for the appendix: What region has the greatest revenue, and how much of the total sits there?","@n1 syntax.nominal dependent=""a"" head=""repeat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""appendix""
+@n3 syntax.nominal dependent=""What"" head=""region""
+@c1 syntax.clause form=declarative verb=""has"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""greatest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""how"" head=""much""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=declarative verb=""sits"" modifier=""there"" subject=$n5
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal dependent=""a"" head=""repeat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""appendix""
+@n3 syntax.nominal dependent=""What"" head=""region""
+@c1 syntax.clause form=interrogative verb=""has"" discourse=""and"" modifier=""how"" modifier=""much"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""greatest"" head=""revenue""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=interrogative verb=""sits"" modifier=""there""
+@c3 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$c1 to=$c3
+@r4 syntax.relation from=$c1 to=$c2",
+429,"excuse me, Tell me the leading region on revenue, and how much of the overall revenue does it carry, thanks?","@c1 syntax.clause form=imperative verb=""excuse"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=imperative verb=""Tell"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" dependent=""leading"" head=""region""
+@r1 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@n5 syntax.nominal dependent=""how"" head=""much""
+@r2 syntax.relation marker=""of"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c3 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" discourse=""thanks"" subject=$n7 complement=$n5
+@n7 syntax.nominal head=""it""","@c1 syntax.clause form=imperative verb=""excuse"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=imperative verb=""Tell"" discourse=""and"" modifier=""how"" modifier=""much"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" dependent=""leading"" head=""region""
+@r1 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""overall"" head=""revenue""
+@c3 syntax.clause form=interrogative auxiliary=""does"" verb=""carry"" discourse=""thanks"" subject=$n6
+@n6 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r3 syntax.relation from=$c1 to=$c3",
+430,"Which of the regions is ahead on revenue, and how lrge a share is it?","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""regions""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""ahead"" subject=$n1
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" dependent=""lrge"" dependent=""a"" head=""share""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5 complement=$n4
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$c4 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""regions""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""ahead""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" verb=""lrge""
+@n4 syntax.nominal dependent=""a"" head=""share""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""it""
+@c4 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$c1 to=$c3",
+431,"Where is the revenue highest, and how muuch of the revenue pie is that?","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@n2 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""muuch"" verb=""is"" subject=$n4
+@r1 syntax.relation marker=""of"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@n4 syntax.nominal head=""that""","@r1 syntax.relation marker=""Where"" from=$c2 to=$c1
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""highest"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" verb=""is"" subject=$n4 complement=$n2
+@n2 syntax.nominal head=""muuch""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""revenue"" head=""pie""
+@n4 syntax.nominal head=""that""",
+432,"Read off the best region for revenue, and how much of the total dooes it account for?","@c1 syntax.clause form=imperative verb=""Read"" modifier=""off"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""best"" head=""region""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" head=""much""
+@r2 syntax.relation attachment=ambiguous marker=""of"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""total""
+@n5 syntax.nominal head=""dooes""
+@n6 syntax.nominal head=""it""
+@c2 syntax.clause form=interrogative verb=""account"" subject=$n6
+@r3 syntax.relation marker=""for"" from=$c2 to=$n3
+@r4 syntax.relation from=$n3 to=$n5","@c1 syntax.clause form=imperative verb=""Read"" discourse=""and"" modifier=""how"" modifier=""much""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""best"" head=""region""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@r3 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""total""
+@c2 syntax.clause form=interrogative verb=""dooes"" modifier=""for"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""account""
+@r4 syntax.relation from=$c1 to=$c2",
+433,"Which month earned the most revenue, and how far above the average is it?","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""earned"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""far"" verb=""is"" subject=$n4
+@r1 syntax.relation marker=""above"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@n4 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=nonfinite verb=""earned"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""most"" head=""revenue""
+@c2 syntax.clause form=fragment discourse=""and"" modifier=""how"" modifier=""far"" complement=$n1
+@r1 syntax.relation marker=""above"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation from=$n1 to=$c1
+@r3 syntax.relation from=$c3 to=$c2",
+434,"Which month comes out on top for revenue, and how much above the mean does it sit?","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" auxiliary=""does"" verb=""sit"" subject=$n5
+@r3 syntax.relation marker=""above"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""mean""
+@n5 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" discourse=""and"" modifier=""how"" modifier=""much"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r3 syntax.relation attachment=ambiguous marker=""above"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""mean""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""sit"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r4 syntax.relation from=$c1 to=$c2",
+435,"Who leads on revenue, and how much does it beat the average by?","@n1 syntax.nominal head=""Who""
+@c1 syntax.clause form=interrogative verb=""leads"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""how"" head=""much""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""beat"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""the"" head=""average""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n3","@n1 syntax.nominal dependent=""Who"" head=""leads""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""much"" auxiliary=""does"" verb=""beat"" modifier=""by"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=fragment complement=$n1",
+437,"Where is the revenue highest, and how far over the average is that?","@c1 syntax.clause form=interrogative modifier=""Where"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@n2 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment modifier=""how"" modifier=""far"" ellipsis=$c1
+@r1 syntax.relation marker=""over"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""that""
+@r2 syntax.relation from=$c1 to=$c3","@r1 syntax.relation marker=""Where"" from=$c2 to=$c1
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""highest"" discourse=""and"" modifier=""how"" modifier=""far"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""revenue""
+@r2 syntax.relation marker=""over"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal head=""that""",
+438,"Which of the months is ahead on revenue, and what's the distance from the average?","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""months""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""ahead"" subject=$n1
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n5 complement=$n4
+@n5 syntax.nominal dependent=""the"" head=""distance""
+@r3 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""average""","@n1 syntax.nominal head=""Which""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""months""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""ahead""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n5 complement=$n4
+@n5 syntax.nominal dependent=""the"" head=""distance""
+@r3 syntax.relation marker=""from"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=fragment complement=$n1",
+440,"Give me the month with the largest revenue, and how much above the typical value is that?","@c1 syntax.clause form=imperative verb=""Give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""largest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""is"" subject=$n5
+@r2 syntax.relation marker=""above"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""typical"" head=""value""
+@n5 syntax.nominal head=""that""","@c1 syntax.clause form=imperative verb=""Give"" discourse=""and"" modifier=""how"" modifier=""much"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""largest"" head=""revenue""
+@r2 syntax.relation attachment=ambiguous marker=""above"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""typical"" head=""value""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""that""
+@r3 syntax.relation from=$c1 to=$c2",
+441,"Read off the best month for revenue, and what's the margin over the mean?","@c1 syntax.clause form=imperative verb=""Read"" modifier=""off"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""best"" head=""month""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""margin""
+@r2 syntax.relation marker=""over"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""mean""","@c1 syntax.clause form=imperative verb=""Read""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""best"" head=""month""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""margin""
+@r3 syntax.relation marker=""over"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""mean""",
+442,"What month has the greatest revenue, and how far off the average is it?","@n1 syntax.nominal dependent=""What"" head=""month""
+@c1 syntax.clause form=interrogative verb=""has"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""greatest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""far"" verb=""is"" subject=$n4
+@r1 syntax.relation marker=""off"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@n4 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""What"" head=""month""
+@c1 syntax.clause form=interrogative verb=""has"" discourse=""and"" modifier=""how"" modifier=""far"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""greatest"" head=""revenue""
+@r1 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation from=$c1 to=$c2",
+443,"Tell me the leading month on revenue, and how far above the average is it?","@c1 syntax.clause form=imperative verb=""Tell"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""leading"" head=""month""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""far"" verb=""is"" subject=$n5
+@r2 syntax.relation marker=""above"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@n5 syntax.nominal head=""it""","@c1 syntax.clause form=imperative verb=""Tell"" discourse=""and"" modifier=""how"" modifier=""far"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""leading"" head=""month""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation attachment=ambiguous marker=""above"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation from=$c1 to=$c2",
+444,"The month with the highest revenue, and how much above the mean does it sit?","@n1 syntax.nominal dependent=""The"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""much"" auxiliary=""does"" verb=""sit"" subject=$n4
+@r2 syntax.relation marker=""above"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""mean""
+@n4 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""The"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@c1 syntax.clause form=fragment discourse=""and"" modifier=""how"" modifier=""much"" complement=$n1
+@r2 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""mean""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""sit"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r3 syntax.relation from=$c2 to=$c1",
+445,"The month with the highest revenue, and how far above the average is it, for the printed handout, for the quarterly reporting pack?","@n1 syntax.nominal dependent=""The"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""far"" verb=""is"" subject=$n4
+@r2 syntax.relation marker=""above"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@n4 syntax.nominal head=""it""
+@r3 syntax.relation marker=""for"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""printed"" head=""handout""
+@r4 syntax.relation marker=""for"" from=$c1 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""quarterly"" dependent=""reporting"" head=""pack""
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""The"" head=""month""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""highest"" head=""revenue""
+@c1 syntax.clause form=fragment discourse=""and"" modifier=""how"" modifier=""far"" complement=$n1
+@r2 syntax.relation marker=""above"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r3 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""printed"" head=""handout""
+@r4 syntax.relation marker=""for"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""quarterly"" dependent=""reporting"" head=""pack""
+@r5 syntax.relation from=$c2 to=$c1",
+446,"same session, next ask: Where is the revenue highest, and how does it compare with the average?","@n1 syntax.nominal dependent=""same"" head=""session""
+@c1 syntax.clause form=imperative modifier=""next"" verb=""ask""
+@c2 syntax.clause form=interrogative modifier=""Where"" verb=""is"" subject=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""revenue""
+@n3 syntax.nominal head=""highest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=interrogative modifier=""how"" auxiliary=""does"" verb=""compare"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r1 syntax.relation marker=""with"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""average""
+@c4 syntax.clause form=fragment complement=$n1
+@k2 syntax.coordination conjunct=$c4 conjunct=$c1
+@r2 syntax.relation from=$c1 to=$k1","@n1 syntax.nominal dependent=""same"" head=""session""
+@n2 syntax.nominal dependent=""next"" head=""ask""
+@r1 syntax.relation marker=""Where"" from=$c2 to=$c1
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""highest"" subject=$n3
+@n3 syntax.nominal dependent=""the"" head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" auxiliary=""does"" verb=""compare"" subject=$n4
+@n4 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""average""
+@c3 syntax.clause form=fragment complement=$k2
+@k2 syntax.coordination conjunct=$n1 conjunct=$n2
+@r3 syntax.relation from=$c1 to=$c3",
+447,"quick one: Which month stands out on revenue, and how far above the average is it, if you can?","@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=declarative verb=""stands"" modifier=""out"" subject=$n2
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=declarative modifier=""how"" modifier=""far"" verb=""is"" subject=$n5
+@r2 syntax.relation marker=""above"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""if"" from=$c2 to=$c3
+@n6 syntax.nominal head=""you""
+@c3 syntax.clause form=declarative verb=""can"" subject=$n6
+@c4 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$k1","@n1 syntax.nominal dependent=""quick"" head=""one""
+@n2 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""stands"" modifier=""out"" discourse=""and"" modifier=""how"" modifier=""far"" subject=$n2
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@r2 syntax.relation attachment=ambiguous marker=""above"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""average""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""if"" from=$c2 to=$c3
+@n6 syntax.nominal head=""you""
+@c3 syntax.clause form=interrogative verb=""can"" subject=$n6
+@c4 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$c1 to=$c4
+@r5 syntax.relation from=$c1 to=$c2",
+448,"one more thing: Tell me the leading month on revenue, and how much above the mean does it sit — go on?","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@c1 syntax.clause form=imperative verb=""Tell"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" dependent=""leading"" head=""month""
+@r1 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c4 conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" auxiliary=""does"" verb=""sit"" subject=$n6
+@r2 syntax.relation marker=""above"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""mean""
+@n6 syntax.nominal head=""it""
+@c3 syntax.clause form=interrogative verb=""go"" modifier=""on""
+@c4 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""thing""
+@c1 syntax.clause form=imperative verb=""Tell"" discourse=""and"" modifier=""how"" modifier=""much"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" dependent=""leading"" head=""month""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""revenue""
+@r2 syntax.relation marker=""above"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""mean""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""sit"" subject=$n6
+@n6 syntax.nominal head=""it""
+@c3 syntax.clause form=interrogative verb=""go"" modifier=""on""
+@c4 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$c1 to=$c4
+@r4 syntax.relation from=$c1 to=$c2
+@r5 syntax.relation from=$c1 to=$c3",
+449,"Which month comes out on top for revenue, and how mcuh does it beat the average by?","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""mcuh"" auxiliary=""does"" verb=""beat"" modifier=""by"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""the"" head=""average""","@n1 syntax.nominal dependent=""Which"" head=""month""
+@c1 syntax.clause form=interrogative verb=""comes"" modifier=""out"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""top""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""revenue""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" auxiliary=""does"" verb=""beat"" modifier=""by"" subject=$n5 complement=$n4 complement=$n6
+@n4 syntax.nominal head=""mcuh""
+@n5 syntax.nominal head=""it""
+@n6 syntax.nominal dependent=""the"" head=""average""",
+451,"What's the order count, and how big is the average order value?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""big"" verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" discourse=""and"" modifier=""how"" modifier=""big"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r1 syntax.relation from=$c1 to=$c2",
+453,"How many orders does the chart show, and what does the average order value come to?","@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""show"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3","@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""show"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""chart""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2",
+456,"Tally the orders, and what's the average level of order value?","@c1 syntax.clause form=fragment modifier=""Tally"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""orders""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""average"" head=""level""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""","@c1 syntax.clause form=imperative verb=""Tally"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""orders""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n2
+@n3 syntax.nominal dependent=""the"" dependent=""average"" head=""level""
+@r1 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""",
+457,"How many orders in total, and how much does order value average out to?","@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n3 syntax.nominal dependent=""how"" head=""much""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""average"" modifier=""out"" subject=$n4
+@n4 syntax.nominal dependent=""order"" head=""value""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@c2 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@c1 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""does"" modifier=""out"" complement=$n3
+@n3 syntax.nominal dependent=""order"" dependent=""value"" head=""average""
+@r2 syntax.relation marker=""to"" from=$c2 to=$c1
+@c2 syntax.clause form=fragment complement=$n1",
+458,"What's the number of orders placed, and what does a typical order value look like?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""orders""
+@c2 syntax.clause form=nonfinite verb=""placed""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal head=""what""
+@c3 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" subject=$n5
+@n5 syntax.nominal dependent=""a"" dependent=""typical"" dependent=""order"" head=""value""
+@r2 syntax.relation marker=""like"" from=$c3 to=$n4
+@r3 syntax.relation from=$n3 to=$c2","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""orders""
+@c2 syntax.clause form=nonfinite verb=""placed""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal head=""what""
+@c3 syntax.clause form=interrogative auxiliary=""does"" verb=""like"" subject=$n5 complement=$n4
+@n5 syntax.nominal dependent=""a"" dependent=""typical"" dependent=""order"" dependent=""value"" head=""look""
+@r2 syntax.relation from=$n3 to=$c2",
+462,"What does the order count come to, and how big is the average order value?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""big"" verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" discourse=""and"" modifier=""how"" modifier=""big"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""",
+463,"What does the order count come to, and what's the average order value, since the leadership meeting asks for it?","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r2 syntax.relation marker=""since"" from=$c2 to=$c3
+@n5 syntax.nominal dependent=""the"" dependent=""leadership"" head=""meeting""
+@c3 syntax.clause form=declarative verb=""asks"" subject=$n5
+@r3 syntax.relation marker=""for"" from=$c3 to=$n6
+@n6 syntax.nominal head=""it""","@n1 syntax.nominal head=""What""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@r1 syntax.relation marker=""to"" from=$c2 to=$c1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r2 syntax.relation marker=""since"" from=$c2 to=$c3
+@n5 syntax.nominal dependent=""the"" dependent=""leadership"" head=""meeting""
+@c3 syntax.clause form=interrogative verb=""asks"" subject=$n5
+@r3 syntax.relation marker=""for"" from=$c3 to=$n6
+@n6 syntax.nominal head=""it""",
+465,"What count of orders is there, and how much does order value average out to, this time for the client deck?","@n1 syntax.nominal dependent=""What"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""orders""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n1
+@n3 syntax.nominal head=""there""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" head=""much""
+@c2 syntax.clause form=interrogative auxiliary=""does"" verb=""average"" modifier=""out"" subject=$n5 complement=$n6
+@n5 syntax.nominal dependent=""order"" head=""value""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n6 syntax.nominal dependent=""this"" head=""time""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c2 to=$n7
+@n7 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""","@n1 syntax.nominal dependent=""What"" head=""count""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""orders""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n1
+@n3 syntax.nominal head=""there""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""much"" verb=""does"" modifier=""out"" modifier=""to"" complement=$k2
+@n4 syntax.nominal dependent=""order"" dependent=""value"" head=""average""
+@n5 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""client"" head=""deck""
+@k2 syntax.coordination conjunct=$n4 conjunct=$n5",
+466,"a repeat for the appendix: How many orders in total, and what's the average figure for order value?","@n1 syntax.nominal dependent=""a"" head=""repeat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""appendix""
+@n3 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n5 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n6 complement=$n5
+@n6 syntax.nominal dependent=""the"" dependent=""average"" head=""figure""
+@r3 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""order"" head=""value""
+@c2 syntax.clause form=fragment complement=$n1
+@r4 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""repeat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""appendix""
+@n3 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal head=""total""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n5 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n6 complement=$n5
+@n6 syntax.nominal dependent=""the"" dependent=""average"" head=""figure""
+@r3 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""order"" head=""value""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n3",
+468,"one more copy: Give me one number: the order count, and what's the typical figure for order value?","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""copy""
+@c1 syntax.clause form=imperative verb=""Give"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""one"" head=""number""
+@n4 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n6 complement=$n5
+@n6 syntax.nominal dependent=""the"" dependent=""typical"" head=""figure""
+@r1 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""order"" head=""value""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n3 to=$n4","@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""copy""
+@c1 syntax.clause form=imperative verb=""Give"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""one"" head=""number""
+@n4 syntax.nominal dependent=""the"" dependent=""order"" head=""count""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n6 complement=$n5
+@n6 syntax.nominal dependent=""the"" dependent=""typical"" head=""figure""
+@r1 syntax.relation marker=""for"" from=$n6 to=$n7
+@n7 syntax.nominal dependent=""order"" head=""value""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c1 to=$c3
+@r3 syntax.relation from=$n3 to=$n4",
+469,"hey — How many orders did we take, and how big is the average order value, please?","@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""did"" verb=""take"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@n2 syntax.nominal head=""we""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""big"" verb=""is"" discourse=""please"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""","@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""did"" verb=""take"" discourse=""and"" modifier=""how"" modifier=""big"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""How"" dependent=""many"" head=""orders""
+@n2 syntax.nominal head=""we""
+@c2 syntax.clause form=interrogative verb=""is"" discourse=""please"" subject=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""average"" dependent=""order"" head=""value""
+@r1 syntax.relation from=$c1 to=$c2",
+472,"Which store came in worst for profit, and how far short of target is it?","@n1 syntax.nominal dependent=""Which"" head=""store""
+@c1 syntax.clause form=interrogative verb=""came"" modifier=""in"" modifier=""worst"" subject=$n1
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""profit""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""far"" modifier=""short"" verb=""is"" subject=$n4
+@r2 syntax.relation marker=""of"" from=$c2 to=$n3
+@n3 syntax.nominal head=""target""
+@n4 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""Which"" head=""store""
+@c1 syntax.clause form=nonfinite verb=""came""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""worst""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""profit""
+@c2 syntax.clause form=fragment discourse=""and"" modifier=""how"" modifier=""far"" modifier=""short"" complement=$n1
+@r3 syntax.relation marker=""of"" from=$n1 to=$n4
+@n4 syntax.nominal head=""target""
+@c3 syntax.clause form=interrogative verb=""is"" subject=$n5
+@n5 syntax.nominal head=""it""
+@r4 syntax.relation from=$n1 to=$c1
+@r5 syntax.relation from=$c3 to=$c2",

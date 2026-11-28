@@ -1,0 +1,812 @@
+n,text,sop,label_state
+2,how many actions have been recorded?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""actions""
+@c1 syntax.clause form=interrogative auxiliary=""have"" auxiliary=""been"" verb=""recorded"" subject=$n1",agreement
+5,steps so far?,"@n1 syntax.nominal head=""steps""
+@c1 syntax.clause form=fragment modifier=""so"" modifier=""far"" complement=$n1",agreement
+7,give me the step count,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""step"" head=""count""",agreement
+10,count the step so far,"@c1 syntax.clause form=imperative verb=""count"" modifier=""so"" modifier=""far"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""step""",agreement
+11,how many so far?,"@c1 syntax.clause form=fragment modifier=""how"" modifier=""many"" modifier=""so"" modifier=""far""",agreement
+17,what number was the swap of the first two?,"@n1 syntax.nominal dependent=""what"" head=""number""
+@c1 syntax.clause form=interrogative verb=""was"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""swap""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""two""",agreement
+18,which recorded step put the third figure at the end?,"@n1 syntax.nominal dependent=""which"" dependent=""recorded"" head=""step""
+@c1 syntax.clause form=interrogative verb=""put"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@r1 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""end""",agreement
+19,could you find the step that moved the middle pair,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""find"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""step""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""moved"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""middle"" head=""pair""",agreement
+20,which step was the swap?,"@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""was"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""swap""",agreement
+22,give me the step number for the last trade,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""step"" head=""number""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""last"" head=""trade""",agreement
+24,locate the move that reversed the first two figures and tell me its step number so i can undo it,"@c1 syntax.clause form=imperative verb=""locate"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""move""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""reversed"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""figures""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""tell"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""its"" dependent=""step"" head=""number""
+@r2 syntax.relation marker=""so"" from=$c3 to=$c4
+@n5 syntax.nominal head=""i""
+@c4 syntax.clause form=declarative auxiliary=""can"" verb=""undo"" subject=$n5 complement=$n6
+@n6 syntax.nominal head=""it""",agreement
+28,which step?,"@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+30,find the last swap and tell me its number,"@c1 syntax.clause form=imperative verb=""find"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""last"" head=""swap""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n2 complement=$n3
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""its"" head=""number""",agreement
+34,count the remaining steps when you get a chance,"@c1 syntax.clause form=imperative verb=""count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""remaining"" head=""steps""
+@r1 syntax.relation marker=""when"" from=$c1 to=$c2
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""get"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""chance""",agreement
+37,how many more swaps do we need?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" dependent=""more"" head=""swaps""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""need"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""we""",agreement
+39,moves left?,"@c1 syntax.clause form=interrogative verb=""moves"" modifier=""left""",agreement
+44,how many moves are lefft?,"@n1 syntax.nominal dependent=""how"" dependent=""many"" head=""moves""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""lefft""",agreement
+45,count the remaning steps,"@c1 syntax.clause form=imperative verb=""count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""remaning"" head=""steps""",agreement
+47,count the remaining steps and list them,"@c1 syntax.clause form=imperative verb=""count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""remaining"" head=""steps""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""list"" complement=$n2
+@n2 syntax.nominal head=""them""",agreement
+51,does the first pair match the last pair in spacing?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""match"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""pair""
+@n2 syntax.nominal dependent=""the"" dependent=""last"" head=""pair""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""spacing""",agreement
+56,is the gap between the first two bigger than the gap between the last two?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""bigger"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""gap""
+@r1 syntax.relation marker=""between"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""two""
+@r2 syntax.relation marker=""than"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gap""
+@r3 syntax.relation marker=""between"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""last"" head=""two""",agreement
+60,does that pair match the other one?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""match"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""that"" head=""pair""
+@n2 syntax.nominal dependent=""the"" dependent=""other"" head=""one""",agreement
+64,"are the first two figures swapped, and is the last pair swapped the same way?","@c1 syntax.clause form=interrogative auxiliary=""are"" verb=""swapped"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""two"" head=""figures""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""is"" verb=""swapped"" subject=$n2 complement=$n3
+@n2 syntax.nominal dependent=""the"" dependent=""last"" head=""pair""
+@n3 syntax.nominal dependent=""the"" dependent=""same"" head=""way""",agreement
+71,"did you swap the first and the last, or the first two?","@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""swap"" subject=$n1 complement=$k1
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""first""
+@k1 syntax.coordination conjunction=""and"" conjunction=""or"" conjunct=$n2 conjunct=$n3 conjunct=$n4
+@n3 syntax.nominal dependent=""the"" head=""last""
+@n4 syntax.nominal dependent=""the"" dependent=""first"" head=""two""",agreement
+100,"before every pair has swapped, how many swaps remain?","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""every"" head=""pair""
+@c1 syntax.clause form=declarative auxiliary=""has"" verb=""swapped"" subject=$n1
+@n2 syntax.nominal dependent=""how"" dependent=""many"" head=""swaps""
+@c2 syntax.clause form=interrogative verb=""remain"" subject=$n2",agreement
+104,"how far are we from finishing the swaps, in steps?","@c1 syntax.clause form=interrogative modifier=""how"" modifier=""far"" verb=""are"" subject=$n1
+@n1 syntax.nominal head=""we""
+@r1 syntax.relation marker=""from"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""finishing"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""swaps""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""steps""",agreement
+127,give me the step distance to the removal of the second box,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""step"" head=""distance""
+@r1 syntax.relation marker=""to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""removal""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""second"" head=""box""",agreement
+152,name the step that removed the third figure and count the steps back to it,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""step""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""removed"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""third"" head=""figure""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""count"" modifier=""back"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""steps""
+@r2 syntax.relation marker=""to"" from=$c3 to=$n4
+@n4 syntax.nominal head=""it""",agreement
+168,check my diagram for missing arrows,"@c1 syntax.clause form=imperative verb=""check"" complement=$n1
+@n1 syntax.nominal dependent=""my"" head=""diagram""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""missing"" head=""arrows""",agreement
+169,review it and list the problems,"@c1 syntax.clause form=imperative verb=""review"" complement=$n1
+@n1 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""list"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""problems""",agreement
+171,find the broken link in this diagram,"@c1 syntax.clause form=imperative verb=""find"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""broken"" head=""link""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""diagram""",agreement
+173,which step has no arrow out of it?,"@n1 syntax.nominal dependent=""which"" head=""step""
+@c1 syntax.clause form=interrogative verb=""has"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""no"" head=""arrow""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n3
+@n3 syntax.nominal head=""it""",agreement
+174,does every box have a label?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""have"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""every"" head=""box""
+@n2 syntax.nominal dependent=""a"" head=""label""",agreement
+176,i need you to check whether the arrows go the right way,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""check"" subject=$n2
+@r2 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n3 syntax.nominal dependent=""the"" head=""arrows""
+@c3 syntax.clause form=declarative verb=""go"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""right"" head=""way""",agreement
+178,count the boxes that have no incoming arrow,"@c1 syntax.clause form=imperative verb=""count"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""have"" complement=$n2
+@n2 syntax.nominal dependent=""no"" dependent=""incoming"" head=""arrow""",agreement
+179,tell me if the numbers on the steps are still right,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""if"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" head=""numbers""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""steps""
+@c2 syntax.clause form=declarative verb=""are"" modifier=""still"" modifier=""right"" subject=$n2",agreement
+181,and check the second half too,"@c1 syntax.clause form=imperative discourse=""and"" verb=""check"" modifier=""too"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""second"" head=""half""",agreement
+182,does this digram make sense?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""this"" head=""digram""
+@n2 syntax.nominal head=""sense""",agreement
+185,check the flow for dead ends and list them with the box names,"@c1 syntax.clause form=imperative verb=""check"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flow""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""dead"" head=""ends""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""list"" complement=$n3
+@n3 syntax.nominal head=""them""
+@r2 syntax.relation marker=""with"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""box"" head=""names""",agreement
+199,what number of moves until the row is back in the original arrangement?,"@n1 syntax.nominal dependent=""what"" head=""number""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""moves""
+@r2 syntax.relation attachment=ambiguous marker=""until"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""row""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""back"" subject=$n1
+@r3 syntax.relation marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""original"" head=""arrangement""",agreement
+235,does the row look exactly the arrangement from my last turn?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" modifier=""exactly"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""",agreement
+236,check whether the row is unchanged since my last turn when you get a chance,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n1
+@r2 syntax.relation marker=""since"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""
+@r3 syntax.relation attachment=ambiguous marker=""when"" from=$c2 to=$c3
+@n3 syntax.nominal head=""you""
+@c3 syntax.clause form=declarative verb=""get"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""chance""",agreement
+242,check whether the row is the same as it was at the end of my last turn,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r2 syntax.relation marker=""as"" from=$c2 to=$c3
+@n3 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""was"" subject=$n3
+@r3 syntax.relation marker=""at"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""end""
+@r4 syntax.relation marker=""of"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""",agreement
+246,is the row exactly the arrangement from my last turn?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""exactly"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""",agreement
+252,chack whether the row is unchanged since my last turn,"@c1 syntax.clause form=imperative verb=""chack""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n1
+@r2 syntax.relation marker=""since"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""last"" head=""turn""",agreement
+255,is the top row the same as the other row?,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+257,can you check whether the top row is a match for the other row,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""check"" subject=$n1
+@n1 syntax.nominal head=""you""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""match""
+@r2 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+260,check whether the top row is identical to the other row,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""identical"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+262,is the top row the same arrangement as the other row?,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+263,check whether the top row is the same as the other row,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r2 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+267,are the boxes in the top row the same as the other row?,"@c1 syntax.clause form=interrogative verb=""are"" subject=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@n3 syntax.nominal dependent=""the"" head=""same""
+@r2 syntax.relation marker=""as"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+268,is the top row identical to the other row?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""identical"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""top"" head=""row""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""other"" head=""row""",agreement
+277,does the row end up back to the same arrangement after two swaps?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""end"" modifier=""up"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""two"" head=""swaps""",agreement
+279,check whether the row is back to the same arrangement after two swaps,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""back"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r3 syntax.relation marker=""after"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""two"" head=""swaps""",agreement
+282,are the boxes back to the same arrangement after two swaps?,"@c1 syntax.clause form=interrogative verb=""are"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""two"" head=""swaps""",agreement
+292,are the boxes the same arrangement after another sort?,"@c1 syntax.clause form=interrogative verb=""are"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r1 syntax.relation marker=""after"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""another"" head=""sort""",agreement
+296,is the row the same arrangement after another sort?,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r1 syntax.relation marker=""after"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""another"" head=""sort""",agreement
+299,does the row stay the same arrangement after another sort?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""stay"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r1 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""another"" head=""sort""",agreement
+301,is the row unchanged by a second sort?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""unchanged"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""second"" head=""sort""",agreement
+303,check whether the row is the same arrangement after another sort,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r2 syntax.relation marker=""after"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""another"" head=""sort""",agreement
+307,aer the boxes the same arrangement after another sort?,"@c1 syntax.clause form=interrogative verb=""aer"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""arrangement""
+@r1 syntax.relation marker=""after"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""another"" head=""sort""",agreement
+309,is the row identical after two reversals?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""identical"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" head=""reversals""",agreement
+311,check whether the row is unchanged by reversing it again when you get a chance,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n1
+@r2 syntax.relation marker=""by"" from=$c1 to=$c3
+@c3 syntax.clause form=nonfinite verb=""reversing"" modifier=""again"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r3 syntax.relation marker=""when"" from=$c3 to=$c4
+@n3 syntax.nominal head=""you""
+@c4 syntax.clause form=declarative verb=""get"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""chance""",agreement
+312,are the boxes back to the same order after a double reversal?,"@c1 syntax.clause form=interrogative verb=""are"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""double"" head=""reversal""",agreement
+313,does the row come back identical after two reversals?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" modifier=""back"" modifier=""identical"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" head=""reversals""",agreement
+316,is the row back to the same order after a double reversal?,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""double"" head=""reversal""",agreement
+317,check whether the row is identical after two reversals,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""identical"" subject=$n1
+@r2 syntax.relation marker=""after"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""two"" head=""reversals""",agreement
+320,does the row come back back to the same order after a double reversal?,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" modifier=""back"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""double"" head=""reversal""",agreement
+321,are the boxes identical after two reversals?,"@c1 syntax.clause form=interrogative verb=""are"" modifier=""identical"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""two"" head=""reversals""",agreement
+324,check whether the row is back to the same order after a double reversal,"@c1 syntax.clause form=imperative verb=""check""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""back"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r3 syntax.relation marker=""after"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""double"" head=""reversal""",agreement
+328,aer the boxes back to the same order after a double reversal?,"@c1 syntax.clause form=interrogative verb=""aer"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boxes""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""same"" head=""order""
+@r2 syntax.relation marker=""after"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""double"" head=""reversal""",agreement
+339,what is different in the row since the second recorded step?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""different"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""row""
+@r2 syntax.relation marker=""since"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" dependent=""recorded"" head=""step""",agreement
+343,what changed in the row since the second recorded step?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""changed"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""row""
+@r2 syntax.relation marker=""since"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""second"" dependent=""recorded"" head=""step""",agreement
+349,what changed?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""changed"" subject=$n1",agreement
+350,what does the colour key mean,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""mean"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""colour"" head=""key""",agreement
+352,is there a key that explains the shapes,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""there""
+@n2 syntax.nominal dependent=""a"" head=""key""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""explains"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""shapes""",agreement
+354,could you read me the legend please,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""read"" discourse=""please"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" head=""legend""",agreement
+357,what does the key call the last stage,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""call"" subject=$n2 complement=$n1 complement=$n3
+@n2 syntax.nominal dependent=""the"" head=""key""
+@n3 syntax.nominal dependent=""the"" dependent=""last"" head=""stage""",agreement
+358,is the colour key the same on both pages,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""colour"" head=""key""
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""both"" head=""pages""",agreement
+359,what's the meaning of the grey box in the key,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""meaning""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""grey"" head=""box""
+@r2 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""key""",agreement
+365,and the green one?,"@c1 syntax.clause form=fragment discourse=""and"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""green"" head=""one""",agreement
+366,what does the legend say about the retry arrow,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""say"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""legend""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""retry"" head=""arrow""",agreement
+368,how do i draw that in the tool,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""draw"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal head=""that""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""tool""",agreement
+369,how do i draw one?,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""draw"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal head=""one""",agreement
+370,how do i show a step that goes back to the start,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""show"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" head=""step""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""goes"" modifier=""back""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""start""",agreement
+371,what's the usual way to draw a retry loop,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""usual"" head=""way""
+@r1 syntax.relation marker=""to"" from=$n2 to=$c2
+@c2 syntax.clause form=nonfinite verb=""draw"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""retry"" head=""loop""",agreement
+372,tell me how do you draw an arrow that loops back to review,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""draw"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""that"" from=$n3 to=$c3
+@c3 syntax.clause form=declarative verb=""loops"" modifier=""back""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""review""
+@r3 syntax.relation from=$c1 to=$c2",agreement
+373,how do i show a loop from fix back to test,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""show"" modifier=""back"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" head=""loop""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""fix""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""test""",agreement
+374,what symbol do i use for a step that repeats,"@n1 syntax.nominal dependent=""what"" head=""symbol""
+@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""use"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""i""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""step""
+@r2 syntax.relation marker=""that"" from=$n3 to=$c2
+@c2 syntax.clause form=declarative verb=""repeats""",agreement
+375,where should the loop arrow go on a flowchart,"@c1 syntax.clause form=interrogative modifier=""where"" auxiliary=""should"" verb=""go"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""loop"" head=""arrow""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""flowchart""",agreement
+377,how do you indicate a cycle in a process diagram,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""indicate"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""cycle""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""process"" head=""diagram""",agreement
+378,do i draw the return arrow above or below the boxes,"@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""draw"" modifier=""above"" discourse=""or"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""the"" dependent=""return"" head=""arrow""
+@r1 syntax.relation marker=""below"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boxes""",agreement
+382,what's the convention for a loop-back arrow in a uml activity diagram,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""convention""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""loop"" dependent=""back"" head=""arrow""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""uml"" dependent=""activity"" head=""diagram""",agreement
+387,how do i show a rety loop,"@c1 syntax.clause form=interrogative modifier=""how"" auxiliary=""do"" verb=""show"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""a"" dependent=""rety"" head=""loop""",agreement
+388,and how do i show the second attempt,"@c1 syntax.clause form=interrogative discourse=""and"" modifier=""how"" auxiliary=""do"" verb=""show"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""i""
+@n2 syntax.nominal dependent=""the"" dependent=""second"" head=""attempt""",agreement
+389,same loop but from review,"@n1 syntax.nominal dependent=""same"" head=""loop""
+@c1 syntax.clause form=fragment discourse=""but"" complement=$n1
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal head=""review""",agreement
+392,is this better than the earlier version,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""better"" subject=$n1
+@n1 syntax.nominal head=""this""
+@r1 syntax.relation marker=""than"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""earlier"" head=""version""",agreement
+393,does the new one read better than the old one,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""read"" modifier=""better"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""new"" head=""one""
+@r1 syntax.relation marker=""than"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""old"" head=""one""",agreement
+395,is the earlier version easier to follow,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""easier"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""earlier"" head=""version""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""follow""",agreement
+399,compare them and say which is right,"@c1 syntax.clause form=imperative verb=""compare"" complement=$n1
+@n1 syntax.nominal head=""them""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""say""
+@n2 syntax.nominal head=""which""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""right"" subject=$n2
+@r1 syntax.relation from=$c2 to=$c3",agreement
+402,does the retake beat the original,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""beat"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""retake""
+@n2 syntax.nominal dependent=""the"" head=""original""",agreement
+405,compare the first draft with this one and pick the better,"@c1 syntax.clause form=imperative verb=""compare"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""draft""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""one""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""pick"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""better""",agreement
+409,which one?,"@n1 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+411,"is the new version better, and should i keep the old one instead","@c1 syntax.clause form=interrogative verb=""is"" modifier=""better"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""new"" head=""version""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""should"" verb=""keep"" modifier=""instead"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""i""
+@n3 syntax.nominal dependent=""the"" dependent=""old"" head=""one""",agreement
+412,is the row the same as it was at step 2,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""row""
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""as"" from=$c1 to=$c2
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""was"" subject=$n3
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal head=""step""
+@n5 syntax.nominal head=""2""
+@r3 syntax.relation from=$n4 to=$n5",agreement
+413,are we back to the arrangement from step 2,"@c1 syntax.clause form=interrogative verb=""are"" modifier=""back"" subject=$n1
+@n1 syntax.nominal head=""we""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@r2 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@r3 syntax.relation from=$n3 to=$n4",agreement
+414,has the row changed since step 2,"@c1 syntax.clause form=interrogative auxiliary=""has"" verb=""changed"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""since"" from=$c1 to=$n2
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""2""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+415,does the row look like step 4 now,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" modifier=""now"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n2
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""4""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+418,does it match step 4 exactly,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""match"" modifier=""exactly"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""4""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+419,tell me whether the row is unchanged from step 2,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" head=""row""
+@c2 syntax.clause form=declarative verb=""is"" modifier=""unchanged"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@r3 syntax.relation from=$n3 to=$n4",agreement
+422,does it macth step 2,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""macth"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""2""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+423,and is it the same as step 2 on the other row,"@c1 syntax.clause form=interrogative discourse=""and"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal dependent=""the"" head=""same""
+@r1 syntax.relation marker=""as"" from=$n2 to=$n3
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""other"" head=""row""
+@r3 syntax.relation from=$n3 to=$n4",agreement
+424,"compare it with step 3, then tell me if we are back there","@c1 syntax.clause form=imperative verb=""compare"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""3""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n4
+@n4 syntax.nominal head=""me""
+@r2 syntax.relation marker=""if"" from=$c2 to=$c3
+@n5 syntax.nominal head=""we""
+@c3 syntax.clause form=declarative verb=""are"" modifier=""back"" modifier=""there"" subject=$n5
+@r3 syntax.relation from=$n2 to=$n3",agreement
+426,is this arrangement step 2 or step 4,"@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$k1
+@n1 syntax.nominal dependent=""this"" head=""arrangement""
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""step""
+@n5 syntax.nominal head=""4""
+@r1 syntax.relation from=$n2 to=$n3
+@r2 syntax.relation from=$n4 to=$n5",agreement
+428,tell me whether this is step 2 or step 3,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""whether"" from=$c1 to=$c2
+@n2 syntax.nominal head=""this""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n2 complement=$k1
+@n3 syntax.nominal head=""step""
+@n4 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n3 conjunct=$n5
+@n5 syntax.nominal head=""step""
+@n6 syntax.nominal head=""3""
+@r2 syntax.relation from=$n3 to=$n4
+@r3 syntax.relation from=$n5 to=$n6",agreement
+436,does the row come from step 1 or step 2,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""come"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""from"" from=$c1 to=$k1
+@n2 syntax.nominal head=""step""
+@n3 syntax.nominal head=""1""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""step""
+@n5 syntax.nominal head=""2""
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n4 to=$n5",agreement
+444,is the row back to the original order,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""original"" head=""order""",agreement
+446,is every figure back in its first slot,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""every"" head=""figure""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""its"" dependent=""first"" head=""slot""",agreement
+447,have we returned to the initial order,"@c1 syntax.clause form=interrogative auxiliary=""have"" verb=""returned"" subject=$n1
+@n1 syntax.nominal head=""we""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""initial"" head=""order""",agreement
+449,are the figures back in their starting slots,"@c1 syntax.clause form=interrogative verb=""are"" modifier=""back"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""figures""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""their"" dependent=""starting"" head=""slots""",agreement
+452,has it gone back to the first layout,"@c1 syntax.clause form=interrogative auxiliary=""has"" verb=""gone"" modifier=""back"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""layout""",agreement
+454,does the order still match the original one,"@c1 syntax.clause form=interrogative auxiliary=""does"" modifier=""still"" verb=""match"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""order""
+@n2 syntax.nominal dependent=""the"" dependent=""original"" head=""one""",agreement
+459,back to the start?,"@c1 syntax.clause form=fragment modifier=""back""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""start""",agreement
+463,what should the next step be,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""should"" verb=""be"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""next"" head=""step""",agreement
+466,what is the next swap in the sequence,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""next"" head=""swap""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""sequence""",agreement
+467,could you tell me the next move in the pattern,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""tell"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""the"" dependent=""next"" head=""move""
+@r1 syntax.relation marker=""in"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""pattern""",agreement
+468,does the first pair move again next,"@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""move"" modifier=""again"" modifier=""next"" subject=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""pair""",agreement
+469,what comes after the block we just did,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""comes"" subject=$n1
+@r1 syntax.relation marker=""after"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""block""
+@n3 syntax.nominal head=""we""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""did"" subject=$n3
+@r2 syntax.relation from=$n2 to=$c2",agreement
+473,what would the next block do,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""do"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""next"" head=""block""",agreement
+475,which figures does the pattern touch next,"@n1 syntax.nominal dependent=""which"" head=""figures""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""touch"" modifier=""next"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""pattern""",agreement
+476,what is the next step after the middle block,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""next"" head=""step""
+@r1 syntax.relation marker=""after"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""middle"" head=""block""",agreement
+479,and next?,"@c1 syntax.clause form=fragment discourse=""and"" modifier=""next""",agreement
+481,"which pair moves next, then say whether the pattern repeats","@n1 syntax.nominal dependent=""which"" head=""pair""
+@c1 syntax.clause form=interrogative verb=""moves"" modifier=""next"" subject=$n1
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""say""
+@r1 syntax.relation marker=""whether"" from=$c2 to=$c3
+@n2 syntax.nominal dependent=""the"" head=""pattern""
+@c3 syntax.clause form=declarative verb=""repeats"" subject=$n2",agreement
+484,compare the row with the order it had at the start,"@c1 syntax.clause form=imperative verb=""compare"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""row""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""order""
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""had"" subject=$n3
+@r2 syntax.relation marker=""at"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""start""
+@r3 syntax.relation from=$n2 to=$c2",agreement
+487,tell me if the arrangement drifted from the first one,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""if"" from=$c1 to=$c2
+@n2 syntax.nominal dependent=""the"" head=""arrangement""
+@c2 syntax.clause form=declarative verb=""drifted"" subject=$n2
+@r2 syntax.relation marker=""from"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""one""",agreement
+488,is this still the order from the beginning,"@c1 syntax.clause form=interrogative verb=""is"" modifier=""still"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""this""
+@n2 syntax.nominal dependent=""the"" head=""order""
+@r1 syntax.relation marker=""from"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""beginning""",agreement
+489,order check against the start,"@n1 syntax.nominal dependent=""order"" head=""check""
+@r1 syntax.relation marker=""against"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""start""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+491,does it still match the origional order,"@c1 syntax.clause form=interrogative auxiliary=""does"" modifier=""still"" verb=""match"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal dependent=""the"" dependent=""origional"" head=""order""",agreement
+498,what changed position since the first row,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""changed"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""position""
+@r1 syntax.relation marker=""since"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""row""",agreement
+499,name the figure that is not where it was when you get a chance,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""is"" negation=""not""
+@r2 syntax.relation marker=""where"" from=$c2 to=$c3
+@n2 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""was"" subject=$n2
+@r3 syntax.relation marker=""when"" from=$c3 to=$c4
+@n3 syntax.nominal head=""you""
+@c4 syntax.clause form=declarative verb=""get"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""a"" head=""chance""",agreement
+501,identify the moved figure,"@c1 syntax.clause form=imperative verb=""identify"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""moved"" head=""figure""",agreement
+503,point at the one that changed spot,"@c1 syntax.clause form=imperative verb=""point""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""one""
+@r2 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""changed"" complement=$n2
+@n2 syntax.nominal head=""spot""",agreement
+504,what is in a different slot now,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""now"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""different"" head=""slot""",agreement
+508,what changed posistion since the first row,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""changed"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""posistion""
+@r1 syntax.relation marker=""since"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""row""",agreement
+510,find the displaced figure,"@c1 syntax.clause form=imperative verb=""find"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""displaced"" head=""figure""",agreement
+511,show me the figure that is in the wrong place,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""figure""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""is""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""wrong"" head=""place""",agreement
+516,name the one figure that changed place and list its old neighbours,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""one"" head=""figure""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""changed"" complement=$n2
+@n2 syntax.nominal head=""place""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""list"" complement=$n3
+@n3 syntax.nominal dependent=""its"" dependent=""old"" head=""neighbours""",agreement
+518,give me the figures that moved,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@r1 syntax.relation marker=""that"" from=$n2 to=$c2
+@c2 syntax.clause form=declarative verb=""moved""",agreement
+520,list the swapped figures,"@c1 syntax.clause form=imperative verb=""list"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""swapped"" head=""figures""",agreement
+521,name every figure that is not in its original position,"@c1 syntax.clause form=imperative verb=""name"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""figure""
+@r1 syntax.relation marker=""that"" from=$n1 to=$c2
+@c2 syntax.clause form=declarative verb=""is"" negation=""not""
+@r2 syntax.relation marker=""in"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""its"" dependent=""original"" head=""position""",agreement

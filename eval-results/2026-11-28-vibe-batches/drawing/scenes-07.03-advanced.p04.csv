@@ -1,0 +1,741 @@
+n,text,sop,alt,label_state
+901,paint the shirt he is wearing warm green,"@c1 syntax.clause form=imperative verb=""paint"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@n3 syntax.nominal dependent=""warm"" head=""green""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""paint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""warm"" modifier=""green"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+903,give just the boy's shirt a proper green finish,"@c1 syntax.clause form=imperative verb=""give"" complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""'s"" from=$c1 to=$n1
+@n2 syntax.nominal head=""shirt""
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""green"" head=""finish""","@c1 syntax.clause form=imperative verb=""give"" modifier=""just"" complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""green"" head=""finish""",
+904,switch the shirt he is wearing over to warm green,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""green""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""switch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""over"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""green""
+@r2 syntax.relation from=$n1 to=$c2",
+905,touch up the boy's shirt in green,"@c1 syntax.clause form=imperative verb=""touch"" modifier=""up"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""green""","@c1 syntax.clause form=imperative verb=""touch""
+@r1 syntax.relation marker=""up"" from=$c1 to=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r2 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""
+@r3 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""green""",
+906,recast just the boy's shirt in proper green,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""shirt""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""green""","@c1 syntax.clause form=imperative verb=""recast"" modifier=""just"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""green""",
+907,have the shirt he is wearing come out warm green,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""come"" modifier=""out"" modifier=""warm"" modifier=""green"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""come"" subject=$n2
+@r1 syntax.relation marker=""out"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""green""
+@r2 syntax.relation from=$n1 to=$c2",
+909,"deep green for the shirt on the boy, nothing else","@n1 syntax.nominal dependent=""deep"" head=""green""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shirt""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boy""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@c1 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$n4","@c1 syntax.clause form=fragment modifier=""deep"" modifier=""green""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@r2 syntax.relation marker=""on"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@n3 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+910,just make just the boy's shirt proper green,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""proper"" modifier=""green"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""","@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""just"" modifier=""proper"" modifier=""green"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""",
+911,"the shirt he is wearing to warm green, that's all","@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2 complement=$n3
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""warm""
+@n3 syntax.nominal head=""green""
+@n4 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c4 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c4 conjunct=$c3
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""green""
+@n4 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+913,hey — turn just the boy's shirt proper green,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""proper"" modifier=""green"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""green"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shirt""",
+914,"paint the shirt he is wearing warm green, thanks","@c1 syntax.clause form=imperative verb=""paint"" modifier=""warm"" modifier=""green"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""paint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shirt""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""warm"" modifier=""green"" discourse=""thanks"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+917,turn just the boy's cap proper red,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""proper"" modifier=""red"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""cap""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""red"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""",
+920,give just the boy's cap a proper red finish,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""just"" head=""cap""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""'s"" from=$c1 to=$n2
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""red"" head=""finish""","@c1 syntax.clause form=imperative verb=""give"" modifier=""just"" complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""red"" head=""finish""",
+921,touch up the boy's cap in red,"@c1 syntax.clause form=imperative verb=""touch"" modifier=""up"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""red""","@c1 syntax.clause form=imperative verb=""touch""
+@r1 syntax.relation marker=""up"" from=$c1 to=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r2 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""
+@r3 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""red""",
+922,I want just the cap on the boy bright red,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""bright"" modifier=""red"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""just"" dependent=""the"" head=""cap""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boy""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""just"" modifier=""bright"" modifier=""red"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""cap""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boy""",
+923,recast just the boy's cap in proper red,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""cap""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""red""","@c1 syntax.clause form=imperative verb=""recast"" modifier=""just"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""red""",
+924,have the cap he is wearing come out warm red,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""cap""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""come"" modifier=""out"" modifier=""warm"" modifier=""red"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cap""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""come"" subject=$n2
+@r1 syntax.relation marker=""out"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""red""
+@r2 syntax.relation from=$n1 to=$c2",
+925,"bright red for the cap on the boy, nothing else","@n1 syntax.nominal dependent=""bright"" head=""red""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""cap""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boy""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@c1 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$n4","@c1 syntax.clause form=fragment modifier=""bright"" modifier=""red""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""cap""
+@r2 syntax.relation marker=""on"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@n3 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+926,just make just the boy's cap proper red,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""proper"" modifier=""red"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""","@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""just"" modifier=""proper"" modifier=""red"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""",
+927,"the cap he is wearing to warm red, that's all","@n1 syntax.nominal dependent=""the"" head=""cap""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2 complement=$n3
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""warm""
+@n3 syntax.nominal head=""red""
+@n4 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c4 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c4 conjunct=$c3
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""the"" head=""cap""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""red""
+@n4 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+930,hey — turn just the boy's cap proper red,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""proper"" modifier=""red"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""red"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""cap""",
+931,change the colour of the shoes on the girl to clean white,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=fragment modifier=""clean"" modifier=""white""","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""
+@r3 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""clean"" head=""white""",
+932,turn just the girl's shoes proper white,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""proper"" modifier=""white"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""","@c1 syntax.clause form=imperative verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""white"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""",
+933,paint the shoes she is wearing warm white,"@c1 syntax.clause form=imperative verb=""paint"" modifier=""warm"" modifier=""white"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""paint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""warm"" modifier=""white"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+935,give just the girl's shoes a proper white finish,"@c1 syntax.clause form=imperative verb=""give"" complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""girl""
+@r1 syntax.relation attachment=ambiguous marker=""'s"" from=$c1 to=$n1
+@n2 syntax.nominal head=""shoes""
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""white"" head=""finish""","@c1 syntax.clause form=imperative verb=""give"" modifier=""just"" complement=$n2 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""
+@n3 syntax.nominal dependent=""a"" dependent=""proper"" dependent=""white"" head=""finish""",
+936,switch the shoes she is wearing over to warm white,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""white""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""switch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""over"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""white""
+@r2 syntax.relation from=$n1 to=$c2",
+937,touch up the girl's shoes in white,"@c1 syntax.clause form=imperative verb=""touch"" modifier=""up"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""white""","@c1 syntax.clause form=imperative verb=""touch""
+@r1 syntax.relation marker=""up"" from=$c1 to=$n2
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r2 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""
+@r3 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""white""",
+938,I want just the shoes on the girl clean white,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""clean"" modifier=""white"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""just"" dependent=""the"" head=""shoes""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""just"" modifier=""clean"" modifier=""white"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""",
+939,have the shoes she is wearing come out warm white,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""come"" modifier=""out"" modifier=""warm"" modifier=""white"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""come"" subject=$n2
+@r1 syntax.relation marker=""out"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""white""
+@r2 syntax.relation from=$n1 to=$c2",
+941,"clean white for the shoes on the girl, nothing else","@n1 syntax.nominal dependent=""clean"" head=""white""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@c1 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$n4","@c1 syntax.clause form=imperative verb=""clean"" modifier=""white""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""the"" head=""girl""
+@n3 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+942,"the shoes she is wearing to warm white, that's all","@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""warm""
+@c3 syntax.clause form=declarative modifier=""white"" verb=""'s"" subject=$n3 complement=$n1 complement=$n4
+@n3 syntax.nominal head=""that""
+@n4 syntax.nominal head=""all""
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""warm"" head=""white""
+@n4 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+943,change the colour of the shoes on the girl to lcean white,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""
+@r3 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""lcean"" dependent=""white""","@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""shoes""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""girl""
+@r3 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""lcean"" head=""white""",
+944,hey — turn just the girl's shoes proper white,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""proper"" modifier=""white"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""white"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""shoes""",
+945,"paint the shoes she is wearing warm white, thanks","@c1 syntax.clause form=imperative verb=""paint"" modifier=""warm"" modifier=""white"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""paint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""shoes""
+@n2 syntax.nominal head=""she""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""warm"" modifier=""white"" discourse=""thanks"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+947,turn just the boy's jacket proper blue,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""proper"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""jacket""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""blue"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""",
+948,paint the jacket he is wearing cool blue,"@c1 syntax.clause form=imperative verb=""paint"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@n3 syntax.nominal dependent=""cool"" head=""blue""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""paint"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""cool"" modifier=""blue"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+951,switch the jacket he is wearing over to cool blue,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""cool"" head=""blue""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""switch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""over"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""cool"" head=""blue""
+@r2 syntax.relation from=$n1 to=$c2",
+952,touch up the boy's jacket in blue,"@c1 syntax.clause form=imperative verb=""touch"" modifier=""up"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""blue""","@c1 syntax.clause form=imperative verb=""touch""
+@r1 syntax.relation marker=""up"" from=$c1 to=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r2 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""
+@r3 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal head=""blue""",
+953,recast just the boy's jacket in proper blue,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""jacket""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2
+@r2 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""blue""","@c1 syntax.clause form=imperative verb=""recast"" modifier=""just"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""
+@r2 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""proper"" head=""blue""",
+954,have the jacket he is wearing come out cool blue,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@c3 syntax.clause form=nonfinite verb=""come"" modifier=""out"" modifier=""cool"" modifier=""blue"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c2 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" modifier=""come"" subject=$n2
+@r1 syntax.relation marker=""out"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""cool"" head=""blue""
+@r2 syntax.relation from=$n1 to=$c2",
+956,"deep blue for the jacket on the boy, nothing else","@n1 syntax.nominal dependent=""deep"" head=""blue""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""jacket""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""boy""
+@n4 syntax.nominal head=""nothing"" dependent=""else""
+@c1 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n1 to=$n4","@c1 syntax.clause form=fragment modifier=""deep"" modifier=""blue""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""jacket""
+@r2 syntax.relation marker=""on"" from=$n1 to=$k1
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@n3 syntax.nominal head=""nothing"" dependent=""else""
+@k1 syntax.coordination conjunct=$n2 conjunct=$n3",
+957,just make just the boy's jacket proper blue,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""proper"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""just"" head=""jacket""
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n1 to=$n2","@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""just"" modifier=""proper"" modifier=""blue"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""",
+958,"the jacket he is wearing to cool blue, that's all","@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""cool"" modifier=""blue""
+@n3 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""all""
+@c4 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c4 conjunct=$c3
+@r2 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""the"" head=""jacket""
+@n2 syntax.nominal head=""he""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""wearing"" subject=$n2
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""cool"" head=""blue""
+@n4 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""all""
+@c3 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$c1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+961,hey — turn just the boy's jacket proper blue,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""proper"" modifier=""blue"" complement=$n2
+@n1 syntax.nominal dependent=""just"" dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" modifier=""just"" modifier=""proper"" modifier=""blue"" complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""jacket""",
+964,clear every flower off the page — the ones next to the gate stay,"@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""off"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=imperative verb=""stay""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3 conjunct=$c2
+@c3 syntax.clause form=fragment complement=$n3","@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative verb=""stay"" subject=$n3
+@r3 syntax.relation from=$c1 to=$c2",
+968,get rid of all the flowers — the ones next to the gate stay,"@c1 syntax.clause form=imperative auxiliary=""get"" verb=""rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=imperative verb=""stay""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r3 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""get rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative verb=""stay"" subject=$n2
+@r3 syntax.relation from=$c1 to=$c2",
+970,I want every flower gone but keep the ones by the gate,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""every"" head=""flower""
+@c2 syntax.clause form=nonfinite verb=""gone"" subject=$n2
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""by"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@r2 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""every"" head=""flower""
+@c2 syntax.clause form=nonfinite verb=""gone""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""by"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@r2 syntax.relation from=$n2 to=$c2",
+972,have the flowers disappear — the ones next to the gate stay,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@c2 syntax.clause form=nonfinite verb=""disappear"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c3 syntax.clause form=declarative verb=""stay"" subject=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@c2 syntax.clause form=nonfinite verb=""disappear"" subject=$n1
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c3 syntax.clause form=declarative verb=""stay"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c3
+@r3 syntax.relation from=$c1 to=$c2",
+974,erase only every flower except the ones beside the gate,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""only"" dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""except"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""beside"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""","@c1 syntax.clause form=imperative verb=""erase"" modifier=""only"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""except"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""beside"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""",
+975,remove all the flowers — the ones next to the gate stay,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=imperative verb=""stay""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""next to"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative verb=""stay"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2",
+976,out with the flowers but the ones around the gate can stay,"@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""flowers""
+@n1 syntax.nominal dependent=""out"" dependent=""but"" dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""around"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c1 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" subject=$n1","@c1 syntax.clause form=fragment modifier=""out""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""around"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" subject=$n2",
+979,hey — clear the flowers off the page — the ones next to the gate stay,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative verb=""stay"" subject=$n3
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""next to"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative verb=""stay"" subject=$n3
+@r3 syntax.relation from=$c1 to=$c2",
+980,"erase every flower but the ones around the gate can stay, thanks","@c1 syntax.clause form=declarative discourse=""erase"" auxiliary=""can"" verb=""stay"" discourse=""thanks"" subject=$n1
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""but"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r2 syntax.relation marker=""around"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""","@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" head=""ones""
+@r1 syntax.relation marker=""around"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""gate""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" discourse=""thanks"" subject=$n2",
+982,clear every stone off the page — the big one stays put,"@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""stone""
+@r1 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative verb=""stays"" modifier=""put"" subject=$n3
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""stone""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" dependent=""big"" dependent=""one"" head=""stays""
+@c2 syntax.clause form=declarative verb=""put"" subject=$n3
+@r2 syntax.relation from=$c1 to=$c2",
+985,get rid of all the stones — the big one stays put,"@c1 syntax.clause form=imperative auxiliary=""get"" verb=""rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""stones""
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative verb=""stays"" modifier=""put"" subject=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""get rid""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""stones""
+@n2 syntax.nominal dependent=""the"" dependent=""big"" dependent=""one"" head=""stays""
+@c2 syntax.clause form=declarative verb=""put"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2",
+987,I want every stone gone but keep the big one,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal dependent=""every"" head=""stone""
+@c2 syntax.clause form=nonfinite verb=""gone"" subject=$n2
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""every"" head=""stone""
+@c2 syntax.clause form=nonfinite verb=""gone""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""keep"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@r1 syntax.relation from=$n2 to=$c2",
+989,have the stones disappear — the big one stays put,"@c1 syntax.clause form=imperative verb=""have""
+@n1 syntax.nominal dependent=""the"" head=""stones""
+@c2 syntax.clause form=nonfinite verb=""disappear"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c3 syntax.clause form=declarative verb=""stays"" modifier=""put"" subject=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""have"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""stones""
+@c2 syntax.clause form=nonfinite verb=""disappear"" subject=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""big"" dependent=""one"" head=""stays""
+@c3 syntax.clause form=declarative verb=""put"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2
+@r2 syntax.relation from=$c1 to=$c3",
+992,erase only every stone except the big one,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""only"" dependent=""every"" head=""stone""
+@r1 syntax.relation marker=""except"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""","@c1 syntax.clause form=imperative verb=""erase"" modifier=""only"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""stone""
+@r1 syntax.relation marker=""except"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""",
+993,remove all the stones — the big one stays put,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""stones""
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative verb=""stays"" modifier=""put"" subject=$n2
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""stones""
+@n2 syntax.nominal dependent=""the"" dependent=""big"" dependent=""one"" head=""stays""
+@c2 syntax.clause form=declarative verb=""put"" subject=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+994,out with the stones but the big one can stay,"@c1 syntax.clause form=declarative modifier=""out"" discourse=""but"" auxiliary=""can"" verb=""stay"" subject=$n2
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""stones""
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""","@c1 syntax.clause form=fragment modifier=""out""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""stones""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" subject=$n2",
+997,"erase every stone but the big one can stay, thanks","@c1 syntax.clause form=fragment modifier=""erase"" discourse=""thanks""
+@n1 syntax.nominal dependent=""every"" head=""stone""
+@r1 syntax.relation marker=""but"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" subject=$n1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""stone""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""one""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""stay"" discourse=""thanks"" subject=$n2",
+1000,clear every house off the page — the blue one stays,"@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""house""
+@r1 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" dependent=""blue"" head=""one""
+@c2 syntax.clause form=declarative verb=""stays"" subject=$n3","@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""every"" head=""house""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""page""
+@n3 syntax.nominal dependent=""the"" dependent=""blue"" head=""one""
+@c2 syntax.clause form=declarative verb=""stays"" subject=$n3
+@r2 syntax.relation from=$c1 to=$c2",

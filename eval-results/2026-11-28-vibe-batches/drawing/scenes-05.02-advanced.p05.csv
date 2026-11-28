@@ -1,0 +1,540 @@
+n,text,sop,alt,label_state
+925,"describe the boat for me, and tell me what colour the house is","@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boat""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal dependent=""what"" head=""colour""
+@n5 syntax.nominal dependent=""the"" head=""house""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n4
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boat""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@n4 syntax.nominal head=""what""
+@c3 syntax.clause form=declarative verb=""colour"" subject=$n4 complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""house""
+@c4 syntax.clause form=declarative verb=""is"" subject=$n5
+@r2 syntax.relation from=$c2 to=$c3
+@r3 syntax.relation from=$c3 to=$c4",
+926,"I want a full description of the house, colour and all","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""full"" head=""description""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@n4 syntax.nominal head=""colour""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n4 conjunct=$n5
+@n5 syntax.nominal head=""all""
+@r2 syntax.relation from=$n2 to=$k1","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""colour"" subject=$n1 complement=$k1
+@n2 syntax.nominal dependent=""a"" dependent=""full"" head=""description""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""all""",
+927,"what's the sun like, and what about the tree colour-wise?","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@r2 syntax.relation marker=""about"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree"" dependent=""colour"" dependent=""wise""
+@c2 syntax.clause form=fragment complement=$n3","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""like"" discourse=""and"" modifier=""what"" modifier=""colour"" modifier=""wise"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""sun""
+@r1 syntax.relation marker=""about"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""tree""",
+928,"describe the drawing for me, quick summary","@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""drawing""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""quick"" head=""summary""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n3","@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""drawing""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""
+@c2 syntax.clause form=imperative verb=""quick"" modifier=""summary""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+929,what does everything look like?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" subject=$n2
+@n2 syntax.nominal head=""everything""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""look"" modifier=""like"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""everything""",
+930,tell me roughly what the house looks like,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""roughly"" verb=""looks"" subject=$n3
+@n2 syntax.nominal head=""what""
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""like"" from=$c2 to=$n2
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@c2 syntax.clause form=declarative modifier=""roughly"" verb=""like"" subject=$n2
+@n2 syntax.nominal dependent=""what"" dependent=""the"" dependent=""house"" head=""looks""
+@r1 syntax.relation from=$c1 to=$c2",
+931,what colour would you say the huose is?,"@n1 syntax.nominal dependent=""what"" head=""colour""
+@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""say"" subject=$n2
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""the"" head=""huose""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n3 complement=$n1
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""what"" head=""colour""
+@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""say"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""the"" head=""huose""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2",
+932,hey — what colour would you say the house is?,"@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""would"" verb=""say"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""what"" head=""colour""
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=declarative verb=""is"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=interrogative discourse=""hey"" auxiliary=""would"" verb=""say"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""what"" head=""colour""
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@r1 syntax.relation from=$c1 to=$c2",
+934,which tree is the tallest?,"@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""tallest""","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tallest""",
+935,which of the three trees is the biggest?,"@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""three"" head=""trees""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""biggest""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""three"" head=""trees""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" head=""biggest""
+@c2 syntax.clause form=fragment complement=$n1",
+940,the tallest tree — which one is it?,"@n1 syntax.nominal dependent=""the"" dependent=""tallest"" head=""tree""
+@n2 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n1 complement=$n2
+@n3 syntax.nominal head=""it""","@n1 syntax.nominal dependent=""the"" dependent=""tallest"" head=""tree""
+@n2 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n2
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+941,which tree among them rises the highest?,"@n1 syntax.nominal dependent=""which"" head=""tree""
+@r1 syntax.relation marker=""among"" from=$n1 to=$n2
+@n2 syntax.nominal head=""them""
+@c1 syntax.clause form=interrogative verb=""rises"" modifier=""the"" modifier=""highest"" subject=$n1","@n1 syntax.nominal dependent=""which"" head=""tree""
+@r1 syntax.relation marker=""among"" from=$n1 to=$n2
+@n2 syntax.nominal head=""them""
+@n3 syntax.nominal head=""rises""
+@n4 syntax.nominal dependent=""the"" head=""highest""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3 complement=$n4",
+942,I've three trees — which is the biggest?,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""'ve"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""three"" head=""trees""
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""biggest""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""'ve"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""three"" head=""trees""
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""biggest""
+@r1 syntax.relation from=$c1 to=$c2",
+943,"which tree is the tallest, and which is the smallest?","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""smallest""","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""smallest""",
+944,"which tree is the tallest, and which one is the widest?","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""one""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""widest""","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""one""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""widest""",
+945,which of my three trees towers over the other two?,"@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""three"" head=""trees""
+@c1 syntax.clause form=interrogative verb=""towers"" subject=$n1
+@r2 syntax.relation marker=""over"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""other"" head=""two""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""three"" dependent=""trees"" head=""towers""
+@r2 syntax.relation marker=""over"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""other"" head=""two""
+@c1 syntax.clause form=fragment complement=$n1",
+946,"which tree is the tallest of the three, counting the one by the house too?","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""three""
+@c2 syntax.clause form=nonfinite verb=""counting"" modifier=""too"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""one""
+@r2 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""house""
+@r3 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal dependent=""which"" head=""tree""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tallest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""three""
+@c2 syntax.clause form=nonfinite verb=""counting"" modifier=""too"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""one""
+@r2 syntax.relation marker=""by"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""house""
+@r3 syntax.relation from=$n2 to=$c2",
+947,which one's tallest?,"@n1 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""tallest"" subject=$n1","@n1 syntax.nominal head=""which""
+@n2 syntax.nominal head=""one""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""tallest""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n3",
+948,tallest of the lot — which is it?,"@c1 syntax.clause form=interrogative modifier=""tallest"" verb=""is"" subject=$n3 complement=$n2
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""lot""
+@n2 syntax.nominal head=""which""
+@n3 syntax.nominal head=""it""","@r1 syntax.relation marker=""tallest of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""lot""
+@n2 syntax.nominal head=""which""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n2
+@n3 syntax.nominal head=""it""",
+949,"which of them is tallest, would you say?","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""them""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""tallest"" subject=$n1
+@c2 syntax.clause form=interrogative auxiliary=""would"" verb=""say"" subject=$n3
+@n3 syntax.nominal head=""you""
+@r2 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c3 to=$n2
+@n2 syntax.nominal head=""them""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""tallest""
+@c2 syntax.clause form=interrogative auxiliary=""would"" verb=""say"" subject=$n3
+@n3 syntax.nominal head=""you""
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+950,which tere is the tallest?,"@n1 syntax.nominal dependent=""which"" head=""tere""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""tallest""","@n1 syntax.nominal dependent=""which"" head=""tere""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""tallest""",
+951,waht's the tallest tree in the scene?,"@n1 syntax.nominal head=""waht""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""tallest"" head=""tree""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""scene""","@c1 syntax.clause form=interrogative verb=""waht"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""'s""
+@n2 syntax.nominal dependent=""the"" dependent=""tallest"" head=""tree""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""scene""",
+952,"hey, which tree is the tallest?","@c1 syntax.clause form=interrogative discourse=""hey"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""which"" head=""tree""
+@n2 syntax.nominal dependent=""the"" head=""tallest""","@c1 syntax.clause form=interrogative discourse=""hey"" verb=""is"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""which"" head=""tree""
+@n2 syntax.nominal dependent=""the"" head=""tallest""",
+953,"which of the three trees is the biggest, thanks","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""three"" head=""trees""
+@c1 syntax.clause form=interrogative verb=""is"" discourse=""thanks"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""biggest""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""three"" head=""trees""
+@c1 syntax.clause form=declarative verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" head=""biggest""
+@c2 syntax.clause form=fragment discourse=""thanks"" complement=$n1",
+954,which boat is the smallest?,"@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smallest""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smallest""",
+955,which of the boats is the tiniest?,"@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boats""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""tiniest""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boats""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal dependent=""the"" head=""tiniest""
+@c2 syntax.clause form=fragment complement=$n1",
+956,which of my three boats counts as the smallest?,"@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""three"" head=""boats""
+@c1 syntax.clause form=interrogative verb=""counts"" subject=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""smallest""","@n1 syntax.nominal head=""which""
+@r1 syntax.relation marker=""of"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""three"" head=""boats""
+@c1 syntax.clause form=interrogative verb=""counts""
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""smallest""
+@c2 syntax.clause form=fragment complement=$n1",
+958,which boat is the shortest one?,"@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""shortest"" head=""one""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""shortest"" head=""one""",
+959,the smallest boat — point it out?,"@n1 syntax.nominal dependent=""the"" dependent=""smallest"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""point"" modifier=""out"" complement=$n2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""the"" dependent=""smallest"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""point"" modifier=""out"" complement=$n2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+960,"which boat is smallest, overall?","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""smallest"" modifier=""overall"" subject=$n1","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""smallest"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""overall""",
+961,which boat is the least imposing?,"@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""least"" head=""imposing""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""least"" head=""imposing""",
+962,pick out the smallest boat for me,"@c1 syntax.clause form=imperative verb=""pick"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""smallest"" head=""boat""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""","@c1 syntax.clause form=imperative verb=""pick""
+@r1 syntax.relation marker=""out"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""smallest"" head=""boat""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",
+963,"of all the boats you drew, which is the smallest?","@r1 syntax.relation marker=""of"" from=$c2 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""boats""
+@n2 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""drew"" subject=$n2
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""smallest""
+@r2 syntax.relation from=$n1 to=$c1","@r1 syntax.relation marker=""of"" from=$c3 to=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""boats""
+@n2 syntax.nominal head=""you""
+@c1 syntax.clause form=nonfinite verb=""drew""
+@n3 syntax.nominal head=""which""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""smallest""
+@c3 syntax.clause form=fragment complement=$n2
+@r2 syntax.relation from=$n2 to=$c1
+@r3 syntax.relation from=$c2 to=$c3",
+965,"which boat is the smallest, and which one's the largest?","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""one""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""largest""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""one""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""largest""",
+966,"which boat is the smallest of the three, and how many boats are there anyway?","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""three""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" dependent=""many"" head=""boats""
+@c2 syntax.clause form=interrogative verb=""are"" modifier=""anyway"" subject=$n5 complement=$n4
+@n5 syntax.nominal head=""there""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""three""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n4 syntax.nominal dependent=""how"" dependent=""many"" head=""boats""
+@c2 syntax.clause form=interrogative verb=""are"" modifier=""there"" modifier=""anyway"" subject=$n4",
+967,"which boat is the smallest, and which boat is the biggest?","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""boat""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""biggest""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smallest""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal dependent=""which"" head=""boat""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n4 complement=$n3
+@n4 syntax.nominal dependent=""the"" head=""biggest""",
+968,which one's the smallest?,"@n1 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smallest""","@n1 syntax.nominal dependent=""which"" head=""one""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smallest""",
+969,"which is smallest, roughly speaking?","@n1 syntax.nominal head=""which""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""smallest"" subject=$n1
+@c2 syntax.clause form=nonfinite modifier=""roughly"" verb=""speaking""
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""which""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""smallest"" modifier=""roughly"" modifier=""speaking"" subject=$n1",
+970,which boat is the smalest?,"@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" complement=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""smalest""","@n1 syntax.nominal dependent=""which"" head=""boat""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""smalest""",
+971,wich of the boats is the tiniest?,"@n1 syntax.nominal head=""wich""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boats""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1 complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""tiniest""","@c1 syntax.clause form=imperative verb=""wich""
+@r1 syntax.relation marker=""of"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""boats""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n2
+@n2 syntax.nominal dependent=""the"" head=""tiniest""
+@r2 syntax.relation from=$c1 to=$c2",
+972,hey — which boat is the smallest?,"@c1 syntax.clause form=interrogative discourse=""hey"" verb=""is"" subject=$n1 complement=$n2
+@n1 syntax.nominal dependent=""which"" head=""boat""
+@n2 syntax.nominal dependent=""the"" head=""smallest""","@c1 syntax.clause form=interrogative discourse=""hey"" verb=""is"" subject=$n2 complement=$n1
+@n1 syntax.nominal dependent=""which"" head=""boat""
+@n2 syntax.nominal dependent=""the"" head=""smallest""",
+977,what's floating on the lake?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""'s"" verb=""floating"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""floating""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lake""",
+978,what does the sun shine on?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""shine"" subject=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n1","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""does"" modifier=""on"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""sun"" head=""shine""",
+980,what stands behind the tree?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""stands"" subject=$n1
+@r1 syntax.relation marker=""behind"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""","@n1 syntax.nominal dependent=""what"" head=""stands""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@c1 syntax.clause form=fragment complement=$n1",
+986,what did I draw in front of the house — a tree or what?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""draw"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""I""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal head=""front""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@n5 syntax.nominal dependent=""a"" head=""tree""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""what""
+@k2 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$k1","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative auxiliary=""did"" verb=""draw"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""I""
+@r1 syntax.relation marker=""in front of"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@n4 syntax.nominal dependent=""a"" head=""tree""
+@c2 syntax.clause form=fragment discourse=""or"" complement=$n4 complement=$n5
+@n5 syntax.nominal head=""what""
+@r2 syntax.relation from=$c1 to=$c2",
+987,"what's the boy near, and what's floating on the lake?","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""near"" from=$c1 to=$n1
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative auxiliary=""'s"" verb=""floating"" subject=$n3
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""near"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""boy""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n4 complement=$n3
+@n4 syntax.nominal head=""floating""
+@r1 syntax.relation marker=""on"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""lake""",
+989,what else is near the sun?,"@n1 syntax.nominal head=""what"" dependent=""else""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n1
+@r1 syntax.relation marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative modifier=""else"" verb=""is"" subject=$n1
+@r1 syntax.relation marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sun""",agreement
+990,what's there to see around the lake?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see""
+@r2 syntax.relation marker=""around"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lake""","@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""there""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" subject=$n2
+@r2 syntax.relation marker=""around"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""lake""",
+992,waht's in the lake?,"@n1 syntax.nominal head=""waht""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""","@c1 syntax.clause form=interrogative verb=""waht"" complement=$n1
+@n1 syntax.nominal head=""'s""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""",
+995,and what about the birds — how many are there?,"@c1 syntax.clause form=interrogative discourse=""and"" modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n1 syntax.nominal head=""what""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""birds""
+@n3 syntax.nominal head=""there""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment discourse=""and"" complement=$n1
+@n1 syntax.nominal head=""what""
+@r1 syntax.relation marker=""about"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""birds""
+@c2 syntax.clause form=interrogative modifier=""how"" modifier=""many"" verb=""are"" subject=$n3
+@n3 syntax.nominal head=""there""",
+996,"also, where does the bird perch?","@c1 syntax.clause form=interrogative modifier=""also"" modifier=""where"" auxiliary=""does"" verb=""perch"" subject=$n1
+@n1 syntax.nominal dependent=""the"" head=""bird""","@c1 syntax.clause form=fragment modifier=""also""
+@r1 syntax.relation marker=""where"" from=$c1 to=$c2
+@c2 syntax.clause form=interrogative verb=""does"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bird"" head=""perch""",
+997,"while you're at it, tell me where the bird is too","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=imperative verb=""tell"" modifier=""too"" complement=$n3
+@n3 syntax.nominal head=""me""
+@c3 syntax.clause form=declarative modifier=""where"" verb=""is"" subject=$n4
+@n4 syntax.nominal dependent=""the"" head=""bird""
+@r3 syntax.relation from=$c2 to=$c3","@r1 syntax.relation marker=""while"" from=$c2 to=$c1
+@n1 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative verb=""'re"" subject=$n1
+@r2 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=imperative verb=""tell"" complement=$n3
+@n3 syntax.nominal head=""me""
+@r3 syntax.relation marker=""where"" from=$c2 to=$c3
+@n4 syntax.nominal dependent=""the"" head=""bird""
+@c3 syntax.clause form=declarative verb=""is"" modifier=""too"" subject=$n4",
+1000,same question for the house: how many?,"@n1 syntax.nominal dependent=""same"" head=""question""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@n3 syntax.nominal dependent=""how"" head=""many""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""same"" head=""question""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=fragment modifier=""how"" modifier=""many"" complement=$n1",

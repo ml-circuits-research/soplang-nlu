@@ -1,0 +1,586 @@
+n,text,sop,label_state
+1,add a house,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""",agreement
+2,draw a house,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""",agreement
+5,draw a man,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""",agreement
+6,add a man to the drawing,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""drawing""",agreement
+7,put a man on the scene,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""scene""",agreement
+8,draw me a chair,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" head=""chair""",agreement
+9,put a chair in the picture,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chair""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+10,make the house blue,"@c1 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+11,colour the house blue,"@c1 syntax.clause form=imperative verb=""colour"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+12,change the house to blue,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""blue""",agreement
+14,select the house,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+15,pick the house,"@c1 syntax.clause form=imperative verb=""pick"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+17,select the house and the circle,"@c1 syntax.clause form=imperative verb=""select"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""circle""",agreement
+18,select o1 and o2 together,"@c1 syntax.clause form=imperative verb=""select"" modifier=""together"" complement=$k1
+@n1 syntax.nominal head=""o1""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""o2""",agreement
+19,put o1 at x 260 and y 180,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""o1""
+@r1 syntax.relation marker=""at"" from=$c1 to=$k1
+@n2 syntax.nominal head=""x""
+@n3 syntax.nominal head=""260""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""y""
+@n5 syntax.nominal head=""180""
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n4 to=$n5",agreement
+20,"place the house at 260,180","@c1 syntax.clause form=imperative verb=""place"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""260,180""",agreement
+22,start with an empty canvas,"@c1 syntax.clause form=imperative verb=""start""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""an"" dependent=""empty"" head=""canvas""",agreement
+23,delete everything in this drawing,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""everything""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""drawing""",agreement
+24,delete the circle,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""circle""",agreement
+25,remove o2,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""o2""",agreement
+30,turn off the IDs,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""off"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""IDs""",agreement
+31,what's in my drawing?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""drawing""",agreement
+32,show me the current scene,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""the"" dependent=""current"" head=""scene""",agreement
+33,redo that drawing edit,"@c1 syntax.clause form=imperative verb=""redo"" complement=$n1
+@n1 syntax.nominal dependent=""that"" dependent=""drawing"" head=""edit""",agreement
+34,bring back the change I undid,"@c1 syntax.clause form=imperative verb=""bring"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""change""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""undid"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",agreement
+35,show the parts of the house,"@c1 syntax.clause form=imperative verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""parts""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+37,select part 0 of the house,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal head=""part""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+38,pick the first part of o1,"@c1 syntax.clause form=imperative verb=""pick"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""part""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""o1""",agreement
+39,edit the first component of the house,"@c1 syntax.clause form=imperative verb=""edit"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""component""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+42,"put the first house component at 140,120","@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""house"" head=""component""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n2
+@n2 syntax.nominal head=""140,120""",agreement
+43,delete part 0 of the house,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""part""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+44,remove the first component from o1,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""component""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""o1""",agreement
+45,take part 0 out of the house as its own object,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal head=""part""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""its"" dependent=""own"" head=""object""
+@r3 syntax.relation from=$n1 to=$n2",agreement
+46,separate the first house component so I can move it independently,"@c1 syntax.clause form=imperative verb=""separate"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""house"" head=""component""
+@r1 syntax.relation marker=""so"" from=$c1 to=$c2
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""move"" modifier=""independently"" subject=$n2 complement=$n3
+@n3 syntax.nominal head=""it""",agreement
+48,keep the house and circle together in a group called Scene with the label Village,"@c1 syntax.clause form=imperative verb=""keep"" modifier=""together"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""circle""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""group""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n4
+@n4 syntax.nominal head=""Scene""
+@r2 syntax.relation marker=""with"" from=$n4 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""label""
+@n6 syntax.nominal head=""Village""
+@r3 syntax.relation from=$n3 to=$c2
+@r4 syntax.relation from=$n5 to=$n6",
+49,ungroup o4,"@c1 syntax.clause form=imperative verb=""ungroup"" complement=$n1
+@n1 syntax.nominal head=""o4""",agreement
+50,split the group back into separate objects,"@c1 syntax.clause form=imperative verb=""split"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""group""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""separate"" head=""objects""",agreement
+52,draw a circle,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""",agreement
+53,add a circle to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""circle""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+54,draw an oval,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""oval""",agreement
+55,add an oval to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""oval""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+56,draw a square,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""square""",agreement
+58,add a rectangle to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+59,draw a triangle,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""",agreement
+60,add a triangle to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""triangle""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+62,add a heart to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""heart""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+63,draw a line,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""line""",agreement
+64,add a line to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""line""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+65,draw an arrow,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""",agreement
+66,add an arrow to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""arrow""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+67,draw a lake,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""lake""",agreement
+68,add a lake to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""lake""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+69,draw a river,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""river""",agreement
+70,add a river to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""river""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+72,add a road to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""road""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+73,draw a field,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""field""",agreement
+74,add a field to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""field""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+75,draw a patch,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""patch""",agreement
+76,add a patch to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""patch""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+77,add a hill to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hill""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+78,draw a tree,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""",agreement
+79,add a tree to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+80,draw a sun,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""sun""",agreement
+81,add a sun to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""sun""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+82,add a cloud to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+83,draw a car,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""car""",agreement
+84,add a car to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""car""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+85,draw a flower,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""flower""",agreement
+86,add a flower to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""flower""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+87,draw a cat,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cat""",agreement
+88,add a cat to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cat""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+89,draw a dog,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""",agreement
+90,add a dog to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""dog""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+91,draw a fish,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""fish""",agreement
+92,add a fish to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""fish""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+93,draw a bird,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bird""",agreement
+95,draw a boat,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boat""",agreement
+96,add a boat to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""boat""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+97,draw a mountain,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""mountain""",agreement
+98,add a mountain to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""mountain""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+99,draw a rainbow,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rainbow""",agreement
+100,add a rainbow to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rainbow""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+101,draw a person,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""person""",agreement
+102,add a person to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""person""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+103,draw a rocket,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rocket""",agreement
+104,add a rocket to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rocket""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+105,draw a moon,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""moon""",agreement
+106,add a moon to the picture,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""moon""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+107,"move the house to 260,180, then make the house blue","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""260,180""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""make"" modifier=""blue"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""",agreement
+108,"select the house, then show the parts of the house","@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""show"" complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""parts""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""",agreement
+109,draw a small house in the top left,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""small"" head=""house""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""top"" head=""left""",agreement
+110,put a tree beside the house,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tree""
+@r1 syntax.relation marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+111,add three little fish beside the house,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""three"" dependent=""little"" head=""fish""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+112,move the red shapes a little to the right,"@c1 syntax.clause form=imperative verb=""move"" modifier=""a"" modifier=""little"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""red"" head=""shapes""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""right""",agreement
+113,put a new house in the picture,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""new"" head=""house""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+114,I would like a house on the canvas,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""would"" verb=""like"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""house""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""canvas""",agreement
+115,a new house,"@n1 syntax.nominal dependent=""a"" dependent=""new"" head=""house""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+116,bring a man into the picture,"@c1 syntax.clause form=imperative verb=""bring"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+117,include a man in the drawing,"@c1 syntax.clause form=imperative verb=""include"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""drawing""",agreement
+118,a man in the picture,"@n1 syntax.nominal dependent=""a"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+119,paint the house blue,"@c1 syntax.clause form=imperative verb=""paint"" modifier=""blue"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+120,give the house a blue colour,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""house""
+@n2 syntax.nominal dependent=""a"" dependent=""blue"" head=""colour""",agreement
+121,"the house, blue","@n1 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=fragment modifier=""blue"" complement=$n1",agreement
+122,focus on the house,"@c1 syntax.clause form=imperative verb=""focus""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+123,choose the house for editing,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""editing""",agreement
+124,the house for editing,"@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""editing""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+125,shift the house to x 260 and y 180,"@c1 syntax.clause form=imperative verb=""shift"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""x""
+@n3 syntax.nominal head=""260""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""y""
+@n5 syntax.nominal head=""180""
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n4 to=$n5",agreement
+126,"the house at 260,180","@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""at"" from=$n1 to=$n2
+@n2 syntax.nominal head=""260,180""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+130,wipe everything from this drawing,"@c1 syntax.clause form=imperative verb=""wipe"" complement=$n1
+@n1 syntax.nominal head=""everything""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""drawing""",agreement
+131,an empty drawing canvas,"@n1 syntax.nominal dependent=""an"" dependent=""empty"" dependent=""drawing"" head=""canvas""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+132,erase the circle,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""circle""",agreement
+133,take the circle out of the picture,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""circle""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""picture""",agreement
+137,tell me which objects are in the drawing,"@c1 syntax.clause form=imperative verb=""tell"" complement=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""which"" head=""objects""
+@c2 syntax.clause form=declarative verb=""are"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""drawing""
+@r2 syntax.relation from=$c1 to=$c2",agreement
+141,list the house components,"@c1 syntax.clause form=imperative verb=""list"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""house"" head=""components""",agreement
+143,the parts of the house?,"@n1 syntax.nominal dependent=""the"" head=""parts""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+144,choose component 0 of the house,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal head=""component""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+145,focus on the first component of the house,"@c1 syntax.clause form=imperative verb=""focus""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""component""
+@r2 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""",agreement
+150,shift the first house component to x 140 and y 120,"@c1 syntax.clause form=imperative verb=""shift"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""house"" head=""component""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n2 syntax.nominal head=""x""
+@n3 syntax.nominal head=""140""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n4
+@n4 syntax.nominal head=""y""
+@n5 syntax.nominal head=""120""
+@r2 syntax.relation from=$n2 to=$n3
+@r3 syntax.relation from=$n4 to=$n5",agreement
+152,erase component 0 from the house,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal head=""component""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+153,take the first house component away,"@c1 syntax.clause form=imperative verb=""take"" modifier=""away"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""house"" head=""component""",agreement
+155,detach component 0 from the house,"@c1 syntax.clause form=imperative verb=""detach"" complement=$n1
+@n1 syntax.nominal head=""component""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation from=$n1 to=$n2",agreement
+156,make the first house component an independent object,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""house"" head=""component""
+@n2 syntax.nominal dependent=""an"" dependent=""independent"" head=""object""",agreement
+157,combine the house and circle into Scene with the visible label Village,"@c1 syntax.clause form=imperative verb=""combine"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""circle""
+@r1 syntax.relation attachment=ambiguous marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Scene""
+@r2 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""visible"" head=""label""
+@n5 syntax.nominal head=""Village""
+@r3 syntax.relation from=$n4 to=$n5",
+159,dissolve o4 into its members,"@c1 syntax.clause form=imperative verb=""dissolve"" complement=$n1
+@n1 syntax.nominal head=""o4""
+@r1 syntax.relation attachment=ambiguous marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""its"" head=""members""",agreement
+160,release the members of o4,"@c1 syntax.clause form=imperative verb=""release"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""members""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""o4""",agreement
+174,"draw a house, size 80","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@n2 syntax.nominal head=""size""
+@n3 syntax.nominal head=""80""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3",agreement
+189,"draw a house, coloured red","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""coloured"" complement=$n2
+@n2 syntax.nominal head=""red""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+212,"draw a house, labelled Home","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+225,"draw a house, size 80, labelled Home","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@n2 syntax.nominal head=""size""
+@n3 syntax.nominal head=""80""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3",agreement
+240,"draw a house, coloured red, labelled Home","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""coloured"" complement=$n2
+@n2 syntax.nominal head=""red""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n1 to=$c3",agreement
+270,"draw a man, size 80","@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""man""
+@n2 syntax.nominal head=""size""
+@n3 syntax.nominal head=""80""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$n3",agreement
+322,"update the house, labelled Home","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n2
+@n2 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+337,"update the house, size 80, labelled Home","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@n2 syntax.nominal head=""size""
+@n3 syntax.nominal head=""80""
+@c2 syntax.clause form=nonfinite verb=""labelled"" complement=$n4
+@n4 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n1 to=$c2
+@r3 syntax.relation from=$n2 to=$n3",agreement
+350,"update the house, coloured red, labelled Home","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""coloured"" complement=$n2
+@n2 syntax.nominal head=""red""
+@c3 syntax.clause form=nonfinite verb=""labelled"" complement=$n3
+@n3 syntax.nominal head=""Home""
+@r1 syntax.relation from=$n1 to=$c2
+@r2 syntax.relation from=$n1 to=$c3",agreement
+379,"update part 0 of the house, coloured red","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal head=""part""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""coloured"" complement=$n4
+@n4 syntax.nominal head=""red""
+@r2 syntax.relation from=$n1 to=$n2
+@r3 syntax.relation from=$n1 to=$c2",agreement
+385,group the house and circle,"@c1 syntax.clause form=imperative verb=""group"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""circle""",agreement
+391,create a house,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""house""",agreement
+394,list the objects on the canvas,"@c1 syntax.clause form=imperative verb=""list"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""objects""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""canvas""",agreement
+395,"move part 0 of o1 to 140,120","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""part""
+@n2 syntax.nominal head=""0""
+@r1 syntax.relation attachment=ambiguous marker=""of"" from=$c1 to=$n3
+@n3 syntax.nominal head=""o1""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""140,120""
+@r3 syntax.relation from=$n1 to=$n2",agreement
+396,draw a rectangle,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""rectangle""",agreement
+397,draw a balloon,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""balloon""",agreement
+399,choose the house and circle together,"@c1 syntax.clause form=imperative verb=""choose"" modifier=""together"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""circle""",
+400,describe the current drawing scene,"@c1 syntax.clause form=imperative verb=""describe"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""current"" dependent=""drawing"" head=""scene""",agreement
+416,"move the house to 260,180","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""260,180""",agreement
+417,"identify the objects briefly, for 4 seconds","@c1 syntax.clause form=imperative verb=""identify"" modifier=""briefly"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""objects""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""4"" head=""seconds""",agreement
+418,draw a cloud,"@c1 syntax.clause form=imperative verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""cloud""",agreement
+420,reverse the most recent drawing edit,"@c1 syntax.clause form=imperative verb=""reverse"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""most"" dependent=""recent"" dependent=""drawing"" head=""edit""",agreement
+437,clear the drawing,"@c1 syntax.clause form=imperative verb=""clear"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""drawing""",agreement
+443,leave the IDs on,"@c1 syntax.clause form=imperative verb=""leave"" modifier=""on"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""IDs""",agreement
+449,inspect the house components,"@c1 syntax.clause form=imperative verb=""inspect"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""house"" head=""components""",agreement

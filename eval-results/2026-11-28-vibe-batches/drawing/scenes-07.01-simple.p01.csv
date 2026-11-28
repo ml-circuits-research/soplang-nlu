@@ -1,0 +1,958 @@
+n,text,sop,label_state
+9,"i want the big dog by the bench facing left, as drawn so far","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""big"" head=""dog""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bench""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""left""
+@r2 syntax.relation marker=""as"" from=$c1 to=$c3
+@c3 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""
+@r3 syntax.relation from=$n2 to=$c2",agreement
+16,turn the dog left,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dog""",agreement
+19,"point the big dog by the bench to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+20,tunr the big dog by the bench to face left,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""left""",agreement
+21,turn the bigg dog by the bench to face left,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""bigg"" head=""dog""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""left""",agreement
+25,"point the small cat near the tree to the right, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cat""
+@r1 syntax.relation attachment=ambiguous marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+34,face the small cat right,"@c1 syntax.clause form=imperative verb=""face"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cat""",agreement
+36,turn the cat right,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cat""",agreement
+38,"point the small cat near the tree to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cat""
+@r1 syntax.relation attachment=ambiguous marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+39,turn the smal cat near the tree to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""smal"" head=""cat""
+@r1 syntax.relation attachment=ambiguous marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+40,turn the small cta near the tree to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""cta""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+51,face the tiny bird left,"@c1 syntax.clause form=imperative verb=""face"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tiny"" head=""bird""",agreement
+53,turn the bird left,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bird""",agreement
+61,"point the tall kid beside the house to the right, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""kid""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+69,"get the tall kid beside the house facing right, and a tiny bird up near the top — and that is the whole scene","@c1 syntax.clause form=imperative verb=""get"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""kid""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""right""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""tiny"" head=""bird""
+@r2 syntax.relation marker=""up near"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""top""
+@k2 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""whole"" head=""scene""
+@r3 syntax.relation from=$n1 to=$c2",agreement
+71,turn the kid right,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kid""",agreement
+73,"point the tall kid beside the house to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""kid""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+75,turn the tlal kid beside the house to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tlal"" head=""kid""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+81,"point the short boy by the tent to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""short"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+83,"i want the short boy by the tent facing left, as drawn so far","@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""short"" head=""boy""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""tent""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""left""
+@r2 syntax.relation marker=""as"" from=$c1 to=$c3
+@c3 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""
+@r3 syntax.relation from=$n2 to=$c2",agreement
+90,turn the boy left,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boy""",agreement
+93,"point the short boy by the tent to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""short"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+95,turn the short oby by the tent to face left,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""short"" head=""oby""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""left""",agreement
+105,face the large girl right,"@c1 syntax.clause form=imperative verb=""face"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""large"" head=""girl""",agreement
+107,turn the girl right,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""girl""",agreement
+109,"point the large girl near the lake to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""large"" head=""girl""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+110,turn the large gril near the lake to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""large"" head=""gril""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+115,"point the small duck beside the boat to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""duck""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+122,face the small duck left,"@c1 syntax.clause form=imperative verb=""face"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""duck""",agreement
+124,left: the small duck,"@c1 syntax.clause form=fragment modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""duck""",agreement
+126,"point the small duck beside the boat to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""duck""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+129,"the tall man next to the bench should face right, as drawn so far","@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""man""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" modifier=""right"" subject=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+132,"get the tall man next to the bench facing right, as drawn so far","@c1 syntax.clause form=imperative verb=""get"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""man""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""right""
+@r2 syntax.relation marker=""as"" from=$c1 to=$c3
+@c3 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""
+@r3 syntax.relation from=$n1 to=$c2",agreement
+137,"get the tall man next to the bench facing right, and a little cloud over on the right — right there in the picture","@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""man""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""right""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""little"" head=""cloud""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=imperative verb=""get"" modifier=""over"" modifier=""right"" modifier=""there"" complement=$k1
+@r3 syntax.relation marker=""in"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""picture""
+@r4 syntax.relation from=$n1 to=$c2",agreement
+139,face the tall man right,"@c1 syntax.clause form=imperative verb=""face"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""man""",agreement
+143,turn the tlal man next to the bench to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tlal"" head=""man""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+144,turn the tall mna next to the bench to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""mna""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+148,"point the little woman near the house to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""woman""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+159,turn the woman left,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""woman""",agreement
+160,left: the little woman,"@c1 syntax.clause form=fragment modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""woman""",agreement
+161,"point the little woman near the house to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""woman""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+175,face the huge bear right,"@c1 syntax.clause form=imperative verb=""face"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""huge"" head=""bear""",agreement
+177,turn the bear right,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bear""",agreement
+180,"point the huge bear behind the tree to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""huge"" head=""bear""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+186,"point the small dog by the lake to the right, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+195,face the small dog right,"@c1 syntax.clause form=imperative verb=""face"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""dog""",agreement
+196,turn the dog right,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""right"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dog""",agreement
+198,"point the small dog by the lake to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+199,turn the smal dog by the lake to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""smal"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+200,turn the small odg by the lake to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""odg""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+205,"point the big cat beside the fence to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""cat""
+@r1 syntax.relation marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+213,turn the cat left,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cat""",agreement
+216,"point the big cat beside the fence to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""cat""
+@r1 syntax.relation marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+217,turn the big cta beside the fence to face left,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""cta""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""left""",agreement
+221,"the cat under the bench on the left should face the lake, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""cat""
+@r1 syntax.relation marker=""under"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+232,"the cat under the bench, facing the lake","@n1 syntax.nominal dependent=""the"" head=""cat""
+@r1 syntax.relation marker=""under"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@c1 syntax.clause form=nonfinite verb=""facing"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""lake""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c2 to=$c1",agreement
+236,tunr the cat under the bench on the left to face the lake,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""cat""
+@r1 syntax.relation attachment=ambiguous marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""",agreement
+237,turn the dog behind the tree on the right to face the house — and that is the whole scene,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dog""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""whole"" head=""scene""",agreement
+239,"the dog behind the tree on the right should face the house, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""dog""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+243,"point the dog behind the tree on the right toward the house, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""behind"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+254,tunr the dog behind the tree on the right to face the house,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dog""
+@r1 syntax.relation attachment=ambiguous marker=""behind"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""",agreement
+255,turn the odg behind the tree on the right to face the house,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""odg""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""",agreement
+261,"point the bird on the fence in the middle toward the lake, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bird""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+272,turn the brid on the fence in the middle to face the lake,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""brid""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""",agreement
+276,"the kid beside the boat on the right should face the tree, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""kid""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+280,"point the kid beside the boat on the right toward the tree, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kid""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+281,the kid beside the boat on the right needs to face the tree — just like that in the scene,"@n1 syntax.nominal dependent=""the"" head=""kid""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""just"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""
+@r4 syntax.relation marker=""like"" from=$c2 to=$n5
+@n5 syntax.nominal head=""that""
+@r5 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""scene""",agreement
+290,turn the kdi beside the boat on the right to face the tree,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kdi""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""",agreement
+297,"point the duck on the lake on the left toward the bench, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""duck""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""bench""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+302,"point the duck on the lake on the left toward the bench, and a tiny bird up near the top","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""duck""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""bench""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""a"" dependent=""tiny"" head=""bird""
+@c2 syntax.clause form=fragment modifier=""up"" complement=$n5 ellipsis=$c1
+@r4 syntax.relation marker=""near"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""top""",agreement
+305,"the duck on the lake, facing the bench","@n1 syntax.nominal dependent=""the"" head=""duck""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@c1 syntax.clause form=nonfinite verb=""facing"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""bench""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c2 to=$c1",agreement
+309,tunr the duck on the lake on the left to face the bench,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""duck""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""bench""",agreement
+310,turn the dkc on the lake on the left to face the bench,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dkc""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""lake""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""bench""",agreement
+316,"point the girl near the house in the middle toward the tree, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""girl""
+@r1 syntax.relation marker=""near"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r3 syntax.relation marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+327,turn the gril near the house in the middle to face the tree,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""gril""
+@r1 syntax.relation attachment=ambiguous marker=""near"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""middle""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tree""",agreement
+329,turn the boy under the tree at the bottom to face the lake — and that is the whole scene,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""whole"" head=""scene""",agreement
+331,"the boy under the tree at the bottom should face the lake, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""under"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+335,"point the boy under the tree at the bottom toward the lake, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+346,turn the oby under the tree at the bottom to face the lake,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""oby""
+@r1 syntax.relation attachment=ambiguous marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""",agreement
+347,tunr the boy under the tree at the bottom to face the lake,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boy""
+@r1 syntax.relation attachment=ambiguous marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tree""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""",agreement
+351,"the man by the bench on the right should face the tent, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""man""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tent""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+355,"point the man by the bench on the right toward the tent, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""man""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""tent""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+357,i want the man by the bench on the right to face the tent,"@n1 syntax.nominal head=""i""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""man""
+@r1 syntax.relation marker=""by"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$n4 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n5
+@n5 syntax.nominal dependent=""the"" head=""tent""",agreement
+361,"the man by the bench, facing the tent","@n1 syntax.nominal dependent=""the"" head=""man""
+@r1 syntax.relation marker=""by"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@c1 syntax.clause form=nonfinite verb=""facing"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""tent""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c2 to=$c1",agreement
+366,turn the mna by the bench on the right to face the tent,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""mna""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$n3 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""tent""",agreement
+369,the woman next to the tent on the left should face the house,"@n1 syntax.nominal dependent=""the"" head=""woman""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""",agreement
+372,point the woman next to the tent on the left toward the house,"@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""woman""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""",agreement
+373,the woman next to the tent on the left needs to face the house — just like that in the scene,"@n1 syntax.nominal dependent=""the"" head=""woman""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""just"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@r4 syntax.relation marker=""like"" from=$c2 to=$n5
+@n5 syntax.nominal head=""that""
+@r5 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""scene""",agreement
+376,"point the woman next to the tent on the left toward the house, and a little cloud over on the right","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""woman""
+@r1 syntax.relation marker=""next to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""a"" dependent=""little"" head=""cloud""
+@c2 syntax.clause form=fragment modifier=""over"" complement=$n5 ellipsis=$c1
+@r4 syntax.relation marker=""on"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""right""",agreement
+383,turn the womn next to the tent on the left to face the house,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""womn""
+@r1 syntax.relation attachment=ambiguous marker=""next to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""tent""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""house""",agreement
+388,"the bear behind the house at the top should face the sun, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""bear""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""sun""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+392,"point the bear behind the house at the top toward the sun, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bear""
+@r1 syntax.relation attachment=ambiguous marker=""behind"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@r3 syntax.relation marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""sun""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+393,the bear behind the house at the top needs to face the sun — and that is the whole scene,"@n1 syntax.nominal dependent=""the"" head=""bear""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@c1 syntax.clause form=declarative verb=""needs"" subject=$n1
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""sun""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n5 syntax.nominal head=""that""
+@c3 syntax.clause form=declarative verb=""is"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""whole"" head=""scene""",agreement
+400,"the bear behind the house, facing the sun","@n1 syntax.nominal dependent=""the"" head=""bear""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@c1 syntax.clause form=nonfinite verb=""facing"" complement=$n3
+@n3 syntax.nominal dependent=""the"" head=""sun""
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$c2 to=$c1",agreement
+404,tunr the bear behind the house at the top to face the sun,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bear""
+@r1 syntax.relation marker=""behind"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r2 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""top""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""sun""",agreement
+407,"the bird beside the fence on the right should face the lake, as drawn so far","@n1 syntax.nominal dependent=""the"" head=""bird""
+@r1 syntax.relation marker=""beside"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""face"" subject=$n1 complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r3 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+410,"point the bird beside the fence on the right toward the lake, as drawn so far","@c1 syntax.clause form=imperative verb=""point"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bird""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation attachment=ambiguous marker=""toward"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""
+@r4 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""drawn"" modifier=""so"" modifier=""far""",agreement
+419,turn the brid beside the fence on the right to face the lake,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""brid""
+@r1 syntax.relation attachment=ambiguous marker=""beside"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""
+@r3 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" complement=$n4
+@n4 syntax.nominal dependent=""the"" head=""lake""",agreement
+423,change the colour of the little house to sage green,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""little"" head=""house""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""sage"" head=""green""",agreement
+425,recast the house in deep sage green,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""deep"" dependent=""sage"" head=""green""",agreement
+426,switch the little house over to warm sage green,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""house""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""warm"" dependent=""sage"" head=""green""",agreement
+428,I want the house in soft sage green,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""soft"" dependent=""sage"" head=""green""",agreement
+429,give the little house a deep sage green coat,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""house""
+@n2 syntax.nominal dependent=""a"" dependent=""deep"" dependent=""sage"" dependent=""green"" head=""coat""",agreement
+430,swap the house by the fence's colour out for warm sage green,"@c1 syntax.clause form=imperative verb=""swap"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n2 syntax.nominal dependent=""the"" head=""fence""
+@r2 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""colour""
+@r3 syntax.relation marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""warm"" dependent=""sage"" head=""green""",agreement
+433,just make the house deep sage green,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""deep"" modifier=""sage"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""house""",agreement
+434,"the little house in warm sage green, simple as that","@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""house""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""warm"" dependent=""sage"" head=""green""
+@c1 syntax.clause form=fragment modifier=""simple"" complement=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""that""",agreement
+439,make the boat navy,"@c1 syntax.clause form=imperative verb=""make"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boat""",agreement
+442,change the colour of the little boat to navy,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""little"" head=""boat""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""navy""",agreement
+445,switch the little boat over to classic navy,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""boat""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""classic"" head=""navy""",agreement
+447,I want the boat in deep navy,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""boat""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""deep"" head=""navy""",agreement
+448,swap the boat by the dock's colour out for classic navy,"@c1 syntax.clause form=imperative verb=""swap"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""boat""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n2 syntax.nominal dependent=""the"" head=""dock""
+@r2 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""colour""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""classic"" head=""navy""",agreement
+449,just turn the little boat navy,"@c1 syntax.clause form=imperative modifier=""just"" verb=""turn"" modifier=""navy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""boat""",agreement
+452,"the little boat in classic navy, simple as that","@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""boat""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""classic"" head=""navy""
+@c1 syntax.clause form=fragment modifier=""simple"" complement=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""that""",agreement
+456,paint the kite up in the sky warm coral pink,"@c1 syntax.clause form=imperative verb=""paint"" modifier=""up"" modifier=""warm"" modifier=""coral"" modifier=""pink"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kite""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""sky""",agreement
+458,change the colour of the little kite to coral,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""little"" head=""kite""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""coral""",agreement
+460,recast the kite in warm coral pink,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kite""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""warm"" dependent=""coral"" head=""pink""",agreement
+461,switch the little kite over to soft coral,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""kite""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""soft"" head=""coral""",agreement
+463,give the little kite a warm coral pink coat,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""little"" head=""kite""
+@n2 syntax.nominal dependent=""a"" dependent=""warm"" dependent=""coral"" dependent=""pink"" head=""coat""",agreement
+466,just make the kite warm coral pink,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""warm"" modifier=""coral"" modifier=""pink"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""kite""",agreement
+470,make the fence mustard,"@c1 syntax.clause form=imperative verb=""make"" modifier=""mustard"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""fence""",agreement
+474,change the colour of the garden fence to mustard,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""garden"" head=""fence""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""mustard""",agreement
+476,switch the garden fence over to bold mustard,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""fence""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""bold"" head=""mustard""",agreement
+479,give the garden fence a warm mustard coat,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""fence""
+@n2 syntax.nominal dependent=""a"" dependent=""warm"" dependent=""mustard"" head=""coat""",agreement
+480,swap the fence along the path's colour out for bold mustard,"@c1 syntax.clause form=imperative verb=""swap"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""fence""
+@r1 syntax.relation attachment=ambiguous marker=""along"" from=$c1 to=$n3
+@n2 syntax.nominal dependent=""the"" head=""path""
+@r2 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""colour""
+@r3 syntax.relation marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""bold"" head=""mustard""",agreement
+481,just turn the garden fence mustard,"@c1 syntax.clause form=imperative modifier=""just"" verb=""turn"" modifier=""mustard"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""fence""",agreement
+484,"the garden fence in bold mustard, simple as that","@n1 syntax.nominal dependent=""the"" dependent=""garden"" head=""fence""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""bold"" head=""mustard""
+@c1 syntax.clause form=fragment modifier=""simple"" complement=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""that""",agreement
+489,turn the flowers soft lavender,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""soft"" head=""lavender""",agreement
+491,colour all the flowers deep lavender,"@c1 syntax.clause form=imperative verb=""colour"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""deep"" head=""lavender""",agreement
+492,change the colour of the flowers to lavender,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""flowers""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""lavender""",agreement
+494,recast all the flowers in pale lavender,"@c1 syntax.clause form=imperative verb=""recast"" complement=$n1
+@n1 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""pale"" head=""lavender""",agreement
+495,switch the flowers over to deep lavender,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""deep"" head=""lavender""",agreement
+497,I want all the flowers in soft lavender,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""all"" dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""soft"" head=""lavender""",agreement
+498,give the flowers a pale lavender coat,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""a"" dependent=""pale"" dependent=""lavender"" head=""coat""",agreement
+499,swap every flower's colour out for deep lavender,"@c1 syntax.clause form=imperative verb=""swap"" modifier=""out"" complement=$n2
+@n1 syntax.nominal dependent=""every"" head=""flower""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""colour""
+@r2 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""deep"" head=""lavender""",agreement
+503,"the flowers in deep lavender, simple as that","@n1 syntax.nominal dependent=""the"" head=""flowers""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""deep"" head=""lavender""
+@c1 syntax.clause form=fragment modifier=""simple"" complement=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""that""",agreement
+505,hey — paint the flowers pale lavender,"@c1 syntax.clause form=imperative discourse=""hey"" verb=""paint"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""flowers""
+@n2 syntax.nominal dependent=""pale"" head=""lavender""",agreement
+513,I want the bench in deep teal,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""bench""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""deep"" head=""teal""",agreement
+514,give the park bench a bright teal coat,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""park"" head=""bench""
+@n2 syntax.nominal dependent=""a"" dependent=""bright"" dependent=""teal"" head=""coat""",agreement
+516,just turn the park bench teal,"@c1 syntax.clause form=imperative modifier=""just"" verb=""turn"" modifier=""teal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""park"" head=""bench""",agreement
+518,just make the bench bright teal,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" modifier=""bright"" modifier=""teal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""bench""",agreement
+519,"the park bench in blue-green teal, simple as that","@n1 syntax.nominal dependent=""the"" dependent=""park"" head=""bench""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""blue"" dependent=""green"" head=""teal""
+@c1 syntax.clause form=fragment modifier=""simple"" complement=$n1
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""that""",agreement
+529,"point the tall boy in the red hat to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
+531,"get the tall boy in the red hat facing left, on the canvas","@c1 syntax.clause form=imperative verb=""get"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""left""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""canvas""
+@r3 syntax.relation from=$n1 to=$c2",agreement
+535,"keep the tall boy in the red hat facing left, and a big bench at the bottom — right there in the picture","@c1 syntax.clause form=imperative verb=""keep"" modifier=""right"" modifier=""there"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""
+@c2 syntax.clause form=nonfinite verb=""facing"" modifier=""left""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""big"" head=""bench""
+@r2 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""bottom""
+@r3 syntax.relation marker=""in"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""the"" head=""picture""
+@r4 syntax.relation from=$n1 to=$c2",agreement
+539,left: the tall boy in the red hat,"@c1 syntax.clause form=fragment modifier=""left"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""",agreement
+541,"point the tall boy in the red hat to the left, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""",agreement
+542,tunr the tall boy in the red hat to face left,"@c1 syntax.clause form=imperative verb=""tunr"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""tall"" head=""boy""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""red"" head=""hat""
+@r2 syntax.relation marker=""to"" from=$n1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""left""",
+562,"point the small girl in the yellow dress to the right, thanks","@c1 syntax.clause form=imperative verb=""point"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""girl""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""yellow"" head=""dress""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""right""",agreement
+563,turn the small gril in the yellow dress to face right,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""small"" head=""gril""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""yellow"" head=""dress""
+@r2 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""face"" modifier=""right""",agreement
+569,"point the big man in the blue cap to the left, just like that","@c1 syntax.clause form=imperative verb=""point"" modifier=""just"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""big"" head=""man""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""blue"" head=""cap""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""left""
+@r3 syntax.relation attachment=ambiguous marker=""like"" from=$c1 to=$n4
+@n4 syntax.nominal head=""that""",agreement
