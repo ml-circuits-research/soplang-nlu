@@ -653,7 +653,10 @@ export function wiresOf(units) {
     // a clause that describes the nominal hangs on it; an adverbial clause hangs on the clause the nominal stands in
     // In a group of words with no verb, joined nominals each keep the adverbial clause that follows them ("how many
     // removals until the row is down to half its length, and how many removals until half of the row is gone?")
-    const own = dep === 'advcl' && part.index > head.index && home.form === 'fragment' && (head.dep === 'conj' || under(head).some(other => other.dep === 'conj'))
+    // (not in a group of words that shares the verb of a clause it is joined to, which the adverbial clause modifies: "shift
+    // the first pair right and the last pair left when you get a chance")
+    const own = dep === 'advcl' && part.index > head.index && home.form === 'fragment' && (head.dep === 'conj' || under(head).some(other => other.dep === 'conj')) &&
+      !(home.unit?.dep === 'conj' && verbal(units[home.unit.head]))
     if (heads(part)) return subordinate((dep === 'advcl' || dep === 'parataxis' || dep === 'dep') && !own ? home : listBefore(wire, head, part) ?? wire, part, home)
     if (markedFragment(part, home)) return
     if (interjection(part)) return discourse(home, part)
@@ -697,6 +700,9 @@ export function wiresOf(units) {
     // the subject of that clause, as in "could you draw a random scene")
     if (SUBJECT.has(dep) && home.type === 'clause' && home.unit === head && home.verb && home.verb !== head && home.verb.index < part.index && before) return subjectOf(home, part)
     if (SUBJECT.has(dep)) return complement(home, nominal(part, home, 'complement'))
+    // a describing word with what it says, set off by a comma before the nominal and hung on it as a word that says how
+    // (word repairs, rule 66: "a little smaller than the cat, one more bird"), modifies the clause
+    if (before && dep === 'advmod' && part.pos === 'ADJ' && units[lastOf(part) + 1]?.word === null && units[lastOf(part) + 1].value === ',') return describe(home, part)
     // an adverb that opens the nominal and is set off from it by punctuation modifies the clause
     // ("instead, a yellow column"); "then" after a punctuation mark joins the nominal to what stands before ("…, then a small cat")
     // A determiner opens a nominal: an adverb that opens a message of no verb before the determiner of its
@@ -936,8 +942,15 @@ export function wiresOf(units) {
     // a fragment that shares the verb (Rule 3)
     if (wire?.type === 'clause' || paired) {
       const beside = wire?.type === 'clause' ? wire : home
+      // a linking word of sequence that opens it after a mark joins it to the first ("…, then the last two left")
+      const opening = units[firstOf(part)]
+      const then = opening !== part && opening?.word && SEQUENCE.has(opening.lower) && opening.dep === 'advmod' && !under(opening).length && !taken(opening) &&
+        units[opening.index - 1]?.word === null && !units.slice(first.index + 1, opening.index).some(unit => unit.dep === 'cc') ? opening : null
+      if (then) reserved.add(then.index)
       const other = shares(clause(part))
-      return void noted(join(beside, other))
+      const group = noted(join(beside, other))
+      if (group && then) put(group, 'conjunction', then)
+      return
     }
     // a word joined to a word: both stand in the same wire under the same key
     if (key === 'dependent' && holder) return inside(holder, part)

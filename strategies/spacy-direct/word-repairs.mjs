@@ -2066,16 +2066,27 @@ export function repairWords(units) {
   //     to the right and the last two one place to the left", "turn the first three one step right" the first numeral,
   //     with the determiner and the adjectives before it, is a nominal of its own (what the verb acts on) and the second
   //     counts the noun after it, a measure of how far the verb goes. A numeral in figures after a number in letters
-  //     ("one 2"), a run of numbers written as one ("twenty one") and a later item of a list are left alone.
+  //     ("one 2") and a run of numbers written as one ("twenty one") are left alone; in a conjunct of the verb after a
+  //     conjunction the first numeral is the thing of that part.
   const COMPOUND_NUMBER = /^(twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)$/u
   for (const first of units) {
     const second = units[first.index + 1]
     if (!first.word || first.pos !== 'NUM' || first.dep !== 'nummod' || !second?.word || second.pos !== 'NUM' || second.dep !== 'nummod' || second.head !== first.head) continue
     if (/\d/u.test(first.value) !== /\d/u.test(second.value) || COMPOUND_NUMBER.test(first.lower) || under(second).length || under(first).some(part => part.index > first.index)) continue
     const noun = units[first.head]
-    if (noun.index !== second.index + 1 || !['NOUN', 'PROPN'].includes(noun.pos) || noun.head === noun.index || noun.dep === 'conj') continue
+    if (noun.index !== second.index + 1 || !['NOUN', 'PROPN'].includes(noun.pos) || noun.head === noun.index) continue
     const opening = [...under(noun).filter(part => part.index < first.index), ...under(first)]
     if (!opening.some(part => part.dep === 'det' || part.dep === 'amod')) continue
+    // a conjunct of the verb after a conjunction repeats its pattern and shares it ("…, and the last two one place to the
+    // left", rule 44): the first numeral is the thing of that part, as a subject is of a part with no verb
+    if (noun.dep === 'conj') {
+      if (!verbal(units[noun.head]) || units[firstOf(noun) - 1]?.pos !== 'CCONJ') continue
+      for (const part of opening) part.head = first.index
+      first.head = noun.index
+      first.dep = 'nsubj'
+      changed++
+      continue
+    }
     // the verb whose object the first numeral is: the noun's head, or the verb above the adverb the parser hung it on
     let verb = units[noun.head]
     if (!verbal(verb) && ['advmod', 'npadvmod'].includes(noun.dep) && verb.dep === 'advmod') verb = units[verb.head]
@@ -2198,6 +2209,187 @@ export function repairWords(units) {
     second.dep = first.dep
     first.head = second.index
     first.dep = 'compound'
+    changed++
+  }
+
+  // 65. A list joins its items one after the other, and a participle that describes one item ends at the comma after its
+  //     own words. In "a large green snake under the tree, a medium explorer kneeling facing left next to the rock, a small
+  //     green parrot on the tree, and two small green frogs on the rock" the parrot and the frogs are further items of the
+  //     list, not what the explorer kneels; nor is "a medium brown basket" in "a small boy sitting on the blanket, right on
+  //     the blanket, a medium brown basket" what the boy sits: the phrase with a preposition set before it after a comma
+  //     says where that item goes. A noun after a comma (and a conjunction) that opens with its own determiner or numeral,
+  //     that the parser hung on a participle describing a noun, on that noun, or on such a phrase set before it, is a
+  //     conjunct of the noun the participle describes, and the phrase set before it is its own.
+  for (const participle of units) {
+    if (!participle.word || participle.dep !== 'acl' || !['VBG', 'VBN'].includes(participle.tag) || participle.head > participle.index) continue
+    const noun = units[participle.head]
+    if (!['NOUN', 'PROPN'].includes(noun.pos)) continue
+    const items = new Set([noun.index])
+    for (const item of units) {
+      if (item.index <= participle.index || !item.word || item.quoted || !['NOUN', 'PROPN'].includes(item.pos) || !['conj', 'appos', 'dobj', 'dep', 'npadvmod', 'nsubj'].includes(item.dep)) continue
+      const opening = under(item).filter(part => part.index < item.index && ['det', 'nummod'].includes(part.dep))
+      const start = Math.min(item.index, ...under(item).filter(part => part.index < item.index && NOMINAL_INSIDE.has(part.dep)).map(part => firstOf(part)))
+      if (!opening.some(part => part.index === start)) continue
+      // what stands before it: a comma, or a comma and a conjunction; or a phrase with a preposition between two commas
+      let before = units[start - 1], conjunction = null, phrase = []
+      if (before?.word && before.pos === 'CCONJ') { conjunction = before; before = units[start - 2] }
+      if (!before || before.word || before.value !== ',') continue
+      if (!conjunction) {
+        const comma = units.slice(participle.index, before.index).reverse().find(mark => !mark.word && CLAUSE_END.has(mark.value))
+        const words = comma ? units.slice(comma.index + 1, before.index) : []
+        const lead = words.findIndex(word => !(word.pos === 'CCONJ' || word.pos === 'ADV' && !TWO_WORD_PREPOSITIONS.has(word.lower + ' ' + (units[word.index + 1]?.lower ?? ''))))
+        const marker = words[lead]
+        const opensPhrase = marker && (marker.pos === 'ADP' || TWO_WORD_PREPOSITIONS.has(marker.lower + ' ' + (units[marker.index + 1]?.lower ?? '')))
+        if (opensPhrase && words.every(word => word.word && !verbal(word))) {
+          phrase = words
+          if (words[0].pos === 'CCONJ') conjunction = words[0]
+        }
+      }
+      // it hangs on the participle or a word of its clause, on the noun, on an item before it, or on the phrase set before it
+      const at = units[item.head]
+      // (not an item of a list that a word of the participle's clause governs: "share of usage written plainly as 30%, 25%")
+      // (the phrase hangs on the item by its preposition; an adverb before the preposition grades it, "right on the rock")
+      const marker = phrase.find(word => word !== conjunction && word.pos !== 'ADV' || TWO_WORD_PREPOSITIONS.has(word.lower + ' ' + (units[word.index + 1]?.lower ?? '')))
+      // (a noun joined to the noun the preposition governs is a second thing it governs: "with the title across the top,
+      // the legend on the right")
+      if (!(at === participle || verbal(at) && within(at, participle) || items.has(at.index) || phrase.length && at === marker)) continue
+      if (phrase.length) {
+        for (const word of phrase) {
+          if (word === conjunction || word === marker) continue
+          if (word.index < marker.index) { word.head = marker.index; word.dep = 'advmod' } else if (!phrase.includes(units[word.head]) || word.head === word.index) word.head = marker.index
+        }
+        marker.head = item.index
+        if (!['prep', 'advmod'].includes(marker.dep)) marker.dep = marker.pos === 'ADP' ? 'prep' : 'advmod'
+      }
+      item.head = noun.index
+      item.dep = 'conj'
+      if (conjunction) { conjunction.head = noun.index; conjunction.dep = 'cc' }
+      items.add(item.index)
+      changed++
+    }
+  }
+
+  // 66. A nominal does not run across a comma back to a word before it. A comparison set off by a comma before a noun ("a
+  //     little smaller than the cat, one more bird", "twice as tall as the boy, one more tree") says how the thing should
+  //     be, not which thing it is: an adjective with a phrase of its own ("than the cat", "as the boy") or a comparative,
+  //     that the parser hung inside the nominal of a noun after the comma, hangs on that noun's clause as a word that says
+  //     how.
+  for (const adjective of units) {
+    if (!adjective.word || adjective.quoted || adjective.pos !== 'ADJ' || adjective.dep !== 'amod' || adjective.head < adjective.index) continue
+    const noun = units[adjective.head], comma = units[lastOf(adjective) + 1]
+    if (!['NOUN', 'PROPN'].includes(noun.pos) || !comma || comma.word || comma.value !== ',') continue
+    if (adjective.tag !== 'JJR' && !under(adjective).some(part => part.dep === 'prep')) continue
+    // (it opens the nominal: a determiner of the noun before it determines the word itself, "an arched for me, eyes")
+    if (firstOf(noun) < firstOf(adjective)) continue
+    // (the words between the comma and the noun are words of the noun's nominal)
+    if (units.slice(comma.index + 1, noun.index).some(unit => !unit.word || !within(unit, noun))) continue
+    if (noun.head === noun.index) { adjective.dep = 'advmod' } else if (verbal(units[noun.head]) && ['dobj', 'nsubj', 'attr'].includes(noun.dep)) { adjective.head = noun.head; adjective.dep = 'advmod' } else continue
+    changed++
+  }
+
+  // 67. A describing word or an adverb is no verb, and two parts set side by side each say their own: in "first three right,
+  //     last three left", "left pair right, right pair left", "rotate the first two right again, then the last two left"
+  //     the last part names a thing and says where it goes, with no verb of its own. A describing word or an adverb that
+  //     the parser made the head of the sentence, with a nominal right before it as its subject and no auxiliary, and with
+  //     the first part (a command verb, or a nominal) hung on it before a comma, gives the head to that first part, and is a
+  //     conjunct of it with its subject: a part with no verb set beside the first, which shares the verb of the first when
+  //     it has one. One the parser set beside a nominal that heads the sentence as a renaming, or joined to the object of a
+  //     verb ("turn the first two and the last two right and the middle two left"), is so joined to that nominal, or to the
+  //     verb.
+  for (const word of units) {
+    if (!word.word || word.quoted || !['ADJ', 'ADV'].includes(word.pos) || !['ROOT', 'conj', 'appos'].includes(word.dep)) continue
+    const subject = under(word).find(part => part.dep === 'nsubj' && part.index < word.index && lastOf(part) === word.index - 1 && ['NOUN', 'PROPN', 'NUM'].includes(part.pos))
+    if (!subject || under(word).some(part => ['aux', 'auxpass', 'cop'].includes(part.dep) || verbal(part) && part.index > word.index)) continue
+    const opening = units[firstOf(subject) - 1]
+    if (!opening) continue
+    if (word.dep === 'ROOT') {
+      if (opening.word || opening.value !== ',') continue
+      const first = under(word).find(part => part.index < opening.index && lastOf(part) === opening.index - 1 &&
+        (verbal(part) && ['advcl', 'parataxis', 'ccomp', 'dep'].includes(part.dep) && part.tag === 'VB' && !under(part).some(inner => SUBJECT.has(inner.dep)) ||
+          NOMINAL.has(part.pos) && ['dep', 'nsubj', 'npadvmod', 'appos'].includes(part.dep)))
+      if (!first || under(word).some(part => part !== first && part !== subject && part.word && part.index < word.index)) continue
+      first.head = first.index
+      first.dep = 'ROOT'
+      word.head = first.index
+      word.dep = 'conj'
+      changed++
+      continue
+    }
+    const head = units[word.head]
+    if (!NOMINAL.has(head.pos) || head.index > word.index) continue
+    if (head.dep === 'ROOT' && word.dep === 'appos' && !opening.word && opening.value === ',') { word.dep = 'conj'; changed++; continue }
+    const verb = units[head.head]
+    if (word.dep !== 'conj' || !['dobj', 'conj'].includes(head.dep) || !verbal(verb) || verb.index > head.index) continue
+    const conjunction = units.slice(lastOf(head) + 1, firstOf(subject)).find(part => part.word && part.pos === 'CCONJ' && part.head === head.index)
+    word.head = verb.index
+    if (conjunction) conjunction.head = verb.index
+    changed++
+  }
+
+  // 68. A word set between commas right after a nominal renames it: in "the ends, first and last, should trade", "the outer
+  //     two, first and last, should trade" the words between the commas name the same things again, as "the first and the
+  //     last" would, and do not say how the trading goes. A describing word that the parser hung inside the nominal of a
+  //     noun before it that is the subject of a verb, with a comma before it and a comma after its words right before that
+  //     verb or its auxiliary, and that the raw text writes ending a nominal
+  //     after a determiner ("the first", "the last") more often than said alone of a thing ("it is red"), renames that
+  //     nominal.
+  for (const word of units) {
+    if (!word.word || word.quoted || word.pos !== 'ADJ' || word.dep !== 'amod' || word.head > word.index) continue
+    const noun = units[word.head], before = units[word.index - 1], after = units[lastOf(word) + 1]
+    if (!['NOUN', 'PROPN', 'NUM'].includes(noun.pos) || before?.word !== null || before.value !== ',' || lastOf(noun) !== lastOf(word)) continue
+    // (between the subject and its verb: the word after the second comma is the verb or its auxiliary)
+    const next = after && units[after.index + 1]
+    if (!after || after.word || after.value !== ',' || !SUBJECT.has(noun.dep) || !next?.word || !(next.index === noun.head || next.head === noun.head && ['aux', 'auxpass'].includes(next.dep))) continue
+    const [, ending, alone] = USES[word.lower] ?? [0, 0, 0]
+    if (ending < LEAST_USES || ending <= alone) continue
+    word.dep = 'appos'
+    changed++
+  }
+
+  // 69. A preposition governs a gerund: in "walk me through drawing an er diagram", "walk me thru drawing a sequence
+  //     diagram" the word after the object governs "drawing" and marks how it stands to "walk". A word that the parser made
+  //     a particle of a verb, standing after the verb's object and right before a gerund that the parser hung on the same
+  //     verb and that takes an object of its own, is a preposition that governs the gerund.
+  for (const particle of units) {
+    if (!particle.word || particle.dep !== 'prt' || particle.tag !== 'RP') continue
+    const verb = units[particle.head], gerund = units[particle.index + 1]
+    if (!verbal(verb) || !gerund?.word || gerund.tag !== 'VBG' || gerund.head !== verb.index || !['advcl', 'xcomp', 'dep', 'ccomp'].includes(gerund.dep)) continue
+    if (!under(verb).some(part => ['dobj', 'dative'].includes(part.dep) && part.index > verb.index && part.index < particle.index)) continue
+    // (a gerund with an object of its own: not "try the explosion off going forward")
+    if (!under(gerund).some(part => part.dep === 'dobj')) continue
+    particle.dep = 'prep'
+    particle.pos = 'ADP'
+    particle.tag = 'IN'
+    gerund.head = particle.index
+    gerund.dep = 'pcomp'
+    changed++
+  }
+
+  // 70. A command opens with its verb, also after a comma ("it is just background, set Garden fully opaque", "fort he bedtike
+  //     story, set thhe sceen sepiz"). A word that the raw text shows to open commands (opensCommands), whose past form is
+  //     its base form ("set", "put"), that opens the words after a comma, and that the parser read as a past participle
+  //     describing the noun before the comma, with an object that names a thing, is the verb of a command beside the clause before the comma; a nominal right
+  //     after it that the parser hung on that noun as a renaming is its object.
+  for (const verb of units) {
+    if (!verb.word || verb.quoted || verb.pos !== 'VERB' || !['VBN', 'VBD'].includes(verb.tag) || verb.lower !== verb.lemma || !opensCommands(verb.lower)) continue
+    if (!['acl', 'relcl'].includes(verb.dep) || verb.head > verb.index || under(verb).some(part => SUBJECT.has(part.dep) || part.dep === 'aux' || part.dep === 'auxpass')) continue
+    const comma = markBefore(verb)
+    if (!comma || comma.value !== ',' || lastOf(units[verb.head]) !== verb.index && units[verb.head].index !== comma.index - 1) continue
+    // the clause before the comma: the highest word above the noun that still stands before the comma
+    let top = units[verb.head]
+    for (let steps = 0; top.head !== top.index && units[top.head].index < comma.index && steps < units.length; steps++) top = units[top.head]
+    const end = units.findIndex(unit => unit.index > verb.index && !unit.word && CLAUSE_END.has(unit.value))
+    const after = units.slice(verb.index + 1, end < 0 ? units.length : end).filter(unit => unit.word)
+    // (it has an object that names a thing: a name, or a noun with words of its own before it; not "the two boxes, put side
+    // by side")
+    const object = after.find(unit => NOMINAL.has(unit.pos) && (unit.head === verb.index || !within(unit, verb) && units[unit.head].index < verb.index) &&
+      ['dobj', 'npadvmod', 'appos', 'conj', 'dep'].includes(unit.dep))
+    if (!object || !(capitalised(object) || under(object).some(part => part.index < object.index && ['det', 'compound', 'poss', 'nummod'].includes(part.dep)))) continue
+    for (const unit of after) if (!within(unit, verb) && NOMINAL.has(unit.pos) && ['appos', 'conj', 'dep', 'npadvmod'].includes(unit.dep) && units[unit.head].index < verb.index) { unit.head = verb.index; unit.dep = 'dobj' }
+    verb.head = top.index
+    verb.dep = 'parataxis'
+    verb.tag = 'VB'
+    for (const part of under(verb)) if (part.dep === 'npadvmod' && NOMINAL.has(part.pos)) part.dep = 'dobj'
     changed++
   }
 

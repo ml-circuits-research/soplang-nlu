@@ -1,0 +1,69 @@
+Round 12 of the spaCy writer (from 82eb6e1), aimed at the hard half (messages where spaCy and hmm-rules write circuits that
+are not alike by the 'variants' key of prepare.mjs). Steps a1..j1 in the scratch folder spacy-round12; each line: the sets whose
+known circuits changed (rej = a rejected circuit changed, acc = an accepted one), and how the changes look by rules.md.
+
+The hard half inside the judged sets (hmm-rules-all.jsonl.gz against the round 11 circuits, writtenAlike 'variants'): fresh a
+1,102 of 2,225 messages, 76.6% accepted; fresh b 863 of 1,964, 82.9%; the Opus pilot (vibe) is all hard, 76.6%; the audit is
+almost all hard (1,764 of 1,800). Nearly every standing rejection is in the hard half. The pilot is three files and over-weights
+their families: the row-ordering messages ("first three right, last three left") are 15 of its 238 rows but 8 of 3,059 in the
+wide set; the fresh sets are the fairer estimate of the hard half.
+
+Grouping (group.mjs over the hard-half rejections of fresh a, fresh b, vibe, audit at round 11): nominal other 114, other 92,
+question/statement form 77, setting values merged into a nominal 68, command verb lost 58, part with no verb 57, coordination
+52, noun read as a verb 50, measure/direction 49, wrong clause 38, then/next 36, dash 29. Of the kinds named for this round:
+scene lists whose later items are made to hang on a participle ('kneeling', 'sitting', 'standing') fresh b 13, audit 10; part
+with no verb before a participle 4 (vibe); comparison before "one more X" 4 (vibe) + 1 (audit, "low on the ground, a medium
+bench"); phrase after a closing dash 4 (vibe) + 2 (audit); parts with no verb side by side / gapping (row ordering) ~10 (vibe);
+renamings between commas 3 (vibe); prepositions held as modifiers 4 ("walk me through drawing", fresh a/b); a command after a
+comma read as a participle 5 (fresh a); "whatever you want": no spaCy rejection left (the rejected ones were hmm-rules').
+
+a1 rule 65: a noun after a comma (and a conjunction) that opens with its own determiner or numeral, hung on a participle that
+   describes a list item, on that item, or on a phrase with a preposition set before it after a comma, is a further item of
+   the list; the phrase set before it is its own ("right on the blanket, a medium brown basket"): freshb 11 rej (~9 ok, 501 and
+   599 keep other faults) 1 acc (667: a relation now starts at the item, ok), audit 6 rej (5 ok, 577 partly), bench 3, wide 6
+   (read: fine; two relations move between allowed starts). Not an item that a word of the participle's clause governs ("share
+   of usage written plainly as 30%, 25%"), nor a noun joined to the object of the preposition ("with the title across the
+   top, the legend on the right").
+b1 clause rule 21 + rule 66 + writer: a participle heading the sentence takes no subject set off by a comma: the nominal heads a
+   part with no verb, the participle hangs on it ("a bird a little smaller than the cat, keeping everything else where it is");
+   a comparison (a comparative, or a describing word with its own phrase) set off by a comma before a noun says how, a
+   modifier of the clause ("a little smaller than the cat, one more bird"), not when a determiner of the noun stands before
+   it ("an arched for me, eyes"): vibe 8 rej (4 now L10, 4 match Opus's correction up to an allowed start), audit 3 rej (ok),
+   bench 2 (fine).
+c1 clause rule 18b: after the second of two dashes, a phrase with a preposition or an adverb that the parser hung inside the
+   aside belongs to the clause before the first dash (and that clause heads the sentence); not when a third dash follows:
+   vibe 4 rej (3 L10, 1 matches the note), audit 2 rej (1496 ok; 48 keeps its 'not right' fault) 1 acc (1673: the reading the
+   judges ask for in 1496, 2772 and vibe 177), wide 5 (an 'attachment=ambiguous' dropped on a relation from the same clause).
+d1 rule 67 + writer: a describing word or adverb that the parser made the head of the sentence with a subject right before it
+   gives the head to the first part (a command verb with no subject, or a nominal) and is a conjunct of it with its subject;
+   one set as a renaming of a nominal head, or joined to the object of a verb, is joined to that nominal or verb; a "then"
+   opening such a part after a mark is the conjunction: vibe 7 rej (30, 33, 51 L10; 90 ok; 54, 82, 91 keep a 'right' fault),
+   audit 1 rej (274, other fault remains).
+e1 rule 68: a describing word set between commas right after a subject, before its verb, that the raw text writes ending a
+   nominal after a determiner more often than said alone of a thing ("the first", "the last"), renames the subject: vibe 3
+   (L10), nothing else.
+f1 writer: an adverbial clause after a part that shares the verb of a clause starts at a clause, not at its nominal ("… and
+   the last pair left when you get a chance"): vibe 3 rej (21, 111 ok; 9 keeps its 'not' fault), audit 2 rej (other faults
+   remain) 1 acc (26, same reading as the label of bench 1836), bench 1836 -> L9, wide 2.
+g1 rule 69: a particle after the verb's object, right before a gerund with an object of its own, is a preposition governing
+   it ("walk me through drawing an er diagram"): fresh 3 rej, freshb 3 rej (4 ok; 109 keeps its 'how' fault).
+h1 rule 70: a word that opens commands (learned counts), whose past form is its base form, opening the words after a comma,
+   read as a participle of the noun before, with an object that names a thing, is a command beside the clause before ("it is
+   just background, set Garden fully opaque"); not "the two boxes, put side by side" (label): fresh 5 rej (ok).
+i1 rule 58 extended: two numerals side by side in a conjunct of the verb after a conjunction: the first is the thing of that
+   part ("…, and the last two one place to the left"): vibe 2 rej + 1 unknown (all L10).
+j1 clause rule 22: a clause opened by "so" after a comma that the parser made the head, with a command before the comma hung
+   on it, hangs on the command ("bigger than the boat, put a cloud, so the whole scene still reads"): vibe 2 (L10).
+
+Dropped: none (narrowed while checking: a1 items governed inside the participle's clause, nouns joined to a preposition's
+object; b1 an adjective after a determiner of the noun; c1 nominals after the dash and a third dash (two labels, 2777 and
+2908, kept); d1 verbs with a subject (1136); e1 words not between a subject and its verb (5 wrong changes); g1 gerunds with no
+object (171); h1 participles with no naming object (label 151)). Label conflicts appended: none (no label changes at j1).
+
+Totals r11 -> j1: fresh 8 changed (8 rej, ~7 ok), freshb 15 (14 rej, ~12 ok; 1 acc ok), vibe 30 (29 rej: 18 now L10, ~7 more
+match the notes; 1 unknown -> L10), audit 19 (14 rej, ~9 ok; 2 acc ok), bench 7 (1 -> L9, the rest read: fine), wide 13 of
+3,059 (read: fine). Estimated acceptance: fresh a 88.2 -> ~88.5% (hard half 76.6 -> ~77.2%), fresh b 92.4 -> ~93.0% (hard
+half 82.9 -> ~84.3%), vibe pilot 76.6 -> ~88%, audit 70.2 -> ~70.7%. The pilot's gain is mostly its own families (scene
+placements, row ordering); on the fresh hard half the round moves about +1 point. What is left there is scattered: settings
+merged into nominals, question form in misspelt messages, nouns read as verbs.
+Tests: 59 pass (a new test with 15 recorded parses, one or more per repair).

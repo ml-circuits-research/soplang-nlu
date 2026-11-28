@@ -497,6 +497,39 @@ export function repairClauses(units) {
     changed++
   }
 
+  // 18b. The second dash closes the phrase set aside, so the words after it go on with the clause before the first ("show
+  //     a bird a little smaller than the cat — keeping the rest of the scene as it is — with everything else left where it
+  //     is", "there is a cloud bigger than the boat — that is how the picture goes — just like that in the scene"). A phrase
+  //     after the second dash, a preposition or an adverb with its words, that the parser hung on a word between the dashes belongs to the clause
+  //     before the first; and a clause before the first dash that the parser hung on the clause set aside heads it.
+  for (const [open, close] of dashes.slice(0, -1).map((mark, n) => [mark, dashes[n + 1]])) {
+    const inside = units.slice(open.index + 1, close.index)
+    if (!inside.some(unit => unit.word) || !units[open.index - 1]?.word || !units[close.index + 1]?.word) continue
+    // the words after the second dash, up to the next mark that ends a sentence
+    const end = units.findIndex(unit => unit.index > close.index && !unit.word && STRONG.test(unit.value))
+    const after = units.slice(close.index + 1, end < 0 ? units.length : end).filter(unit => unit.word)
+    const aside = unit => unit.index > open.index && unit.index < close.index
+    const tops = after.filter(unit => unit.head !== unit.index && aside(units[unit.head]))
+    // (a phrase with a preposition or an adverb, not a nominal of its own; and no third dash after it, which would make
+    // the words between the first two the content and not a phrase set aside: "correct that — the cloud is small — just
+    // like that in the scene — keeping the rest")
+    if (!tops.length || tops.some(unit => !['ADP', 'ADV'].includes(unit.pos)) || close !== dashes[dashes.length - 1]) continue
+    // the clause before the first dash: the highest word above the last word before it that still stands before it
+    let before = units[open.index - 1]
+    for (let steps = 0; before.head !== before.index && units[before.head].index < open.index && steps < units.length; steps++) before = units[before.head]
+    if (!verbal(before)) continue
+    if (before.head !== before.index && aside(units[before.head])) {
+      const top = units[before.head]
+      if (top.head !== top.index) continue
+      before.head = before.index
+      before.dep = 'ROOT'
+      top.head = before.index
+      top.dep = 'parataxis'
+    }
+    for (const unit of tops) unit.head = before.index
+    changed++
+  }
+
   // 19. A determiner determines a noun, never a verb: one that the parser hung on a verb ("two ovals — no wait, undo") is a
   //     word said to the listener. And a verb that the parser hung on another as a word about what is said ("meta":
   //     "no wait") is a clause of its own beside it.
@@ -538,6 +571,48 @@ export function repairClauses(units) {
     verb.dep = 'conj'
     conjunction.head = head.index
     conjunction.dep = 'cc'
+    changed++
+  }
+
+  // 22. "so" after a comma opens a clause that says what the clause before it is for, and depends on it: in "bigger than
+  //     the boat, put a cloud, so the whole scene still reads" the command "put a cloud" heads the sentence, and the clause
+  //     of "reads" hangs on it by "so". A clause opened by "so" after a comma that the parser made the head of the
+  //     sentence, with a verb before the comma hung on it that has an object and neither subject nor auxiliary and whose
+  //     form is its base form ("put", "set"), gives the head to that verb, a command, and hangs on it; the words before
+  //     the command that the parser hung on the later clause belong to the command.
+  for (const verb of units) {
+    if (!verbal(verb) || verb.head !== verb.index || subjectOf(verb) === undefined) continue
+    const so = under(verb).find(part => part.lower === 'so' && ['mark', 'advmod'].includes(part.dep) && part.index < verb.index && units[part.index - 1]?.value === ',')
+    if (!so) continue
+    const command = under(verb).find(part => verbal(part) && part.index < so.index && ['ccomp', 'advcl', 'conj', 'dep'].includes(part.dep) && part.lower === part.lemma &&
+      !subjectOf(part) && !auxiliaries(part).length && under(part).some(inner => inner.dep === 'dobj') && last(part) === so.index - 2)
+    if (!command) continue
+    for (const part of under(verb)) if (part.index < command.index && part !== command) part.head = command.index
+    command.head = command.index
+    command.dep = 'ROOT'
+    command.tag = 'VB'
+    verb.head = command.index
+    verb.dep = 'advcl'
+    so.dep = 'mark'
+    changed++
+  }
+
+  // 21. A participle with no auxiliary makes no statement, so it takes no subject set off from it by a comma. In "a bird a
+  //     little smaller than the cat, keeping everything else where it is" the words before the comma are a part with no
+  //     verb, and the participle after it says how that part is to be done: the nominal that the parser made the subject
+  //     of a participle that heads the sentence, ending at a comma right before the participle, heads the sentence, and
+  //     the participle hangs on it.
+  for (const verb of units) {
+    if (!verbal(verb) || verb.tag !== 'VBG' || verb.head !== verb.index || auxiliaries(verb).length) continue
+    const subject = subjectOf(verb)
+    if (!subject || !['NOUN', 'PROPN'].includes(subject.pos) || subject.index > verb.index) continue
+    const comma = units[verb.index - 1]
+    if (!comma || comma.word || comma.value !== ',' || last(subject) !== comma.index - 1) continue
+    subject.head = subject.index
+    subject.dep = 'ROOT'
+    verb.head = subject.index
+    verb.dep = 'advcl'
+    for (const part of under(verb)) if (part.index < subject.index || !part.word) part.head = subject.index
     changed++
   }
   return changed
