@@ -16,11 +16,13 @@ const QUOTATION = /(?<![\p{L}\p{N}])"[^"\n]+"(?![\p{L}\p{N}])|“[^”\n]+”|«
 const HYPHEN = /^[-‐‑]$/u
 const LETTERS = /^[\p{L}\p{M}]+$/u
 const ALPHANUMERIC = /^[\p{L}\p{M}\p{N}]+$/u
+const DIGITS = /^\d+$/u
+const POWER = /^\d+\^\d+$/u
 
 /**
  * The units of a message: every word of `wordsOf(text)` in one unit, and every punctuation
  * token of the parser as a unit without words. A unit is one word, or a run of words that
- * the sentence treats as one: a quotation, a hyphenated compound ("x-axis"), or several
+ * the sentence treats as one: a quotation, a hyphenated compound ("x-axis"), a power ("10^6"), or several
  * words the parser kept as one token. Each unit carries the parser's evidence for its main
  * token: {index, word: [first, last] | null, start, end, value, lower, pos, tag, dep, lemma,
  * head, quoted}. `head` is the index of the unit it depends on, or its own index for a root.
@@ -42,6 +44,12 @@ export function unitsOf(text, tokens) {
     const starts = joined[index - 1] ? lettered : LETTERS.test(words[index - 1].text)
     lettered = false
     if (HYPHEN.test(text.slice(words[index - 1].end, words[index].start)) && starts && ALPHANUMERIC.test(words[index].text)) joined[index] = lettered = true
+  }
+  // A caret written between two numbers with no space writes one number, a power ("10^6"), however the parser cut it.
+  for (let index = 1; index + 1 < words.length; index++) {
+    if (words[index].text !== '^' || quoted[index] || !DIGITS.test(words[index - 1].text) || !DIGITS.test(words[index + 1].text)) continue
+    if (words[index - 1].end !== words[index].start || words[index].end !== words[index + 1].start) continue
+    joined[index] = joined[index + 1] = true
   }
   const real = tokens.filter(token => token.text.trim())
   for (const token of real) {
@@ -76,6 +84,8 @@ export function unitsOf(text, tokens) {
     unit.lower = unit.value.toLowerCase().replaceAll('’', "'")
     unit.pos = unit.quoted ? 'PROPN' : main?.pos ?? 'X'
     unit.tag = main?.tag ?? ''
+    // (a power is a number, whichever of its pieces ties it to the rest)
+    if (POWER.test(unit.value)) { unit.pos = 'NUM'; unit.tag = 'CD' }
     unit.dep = main?.dep ?? 'dep'
     unit.lemma = (main?.lemma ?? unit.value).toLowerCase()
     // the unit of the token it depends on; a token outside every unit (white space) is passed over

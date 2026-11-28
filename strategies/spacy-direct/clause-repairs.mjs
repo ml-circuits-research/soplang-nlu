@@ -12,6 +12,8 @@ const SUBJECT = new Set(['nsubj', 'nsubjpass', 'expl', 'csubj', 'csubjpass'])
 // the relations that hang a clause on a verb, and those that hang it on a noun
 const HUNG = new Set(['ccomp', 'xcomp', 'advcl'])
 const DESCRIBING = new Set(['acl', 'relcl'])
+// the marks after which a conjunction opens a clause
+const CLAUSE_MARK = /^[,;:—–-]+$/u
 
 /**
  * @param units the units of `unitsOf` (strategies/neural-dependencies/syntax-circuit.mjs);
@@ -613,6 +615,40 @@ export function repairClauses(units) {
     verb.head = subject.index
     verb.dep = 'advcl'
     for (const part of under(verb)) if (part.index < subject.index || !part.word) part.head = subject.index
+    changed++
+  }
+
+  // 23. A command cannot stand inside another clause (a settled case: a clause that ends a relation with a marker stands
+  //     inside the clause where the relation starts). A base form with neither subject nor auxiliary nor "to" (a
+  //     command) that the parser joined to a verb with a subject of its own that a subordinator or a question word
+  //     opens ("set Barn beside House so the two stages line up, and leave Pond alone", "i wonder if you could put two
+  //     red blocks on top, then copy the red tower") is joined to the clause that clause hangs on. And "so" after a comma
+  //     that opens a command ("leave House on the Hill, so move Pond right next to Gate") joins it to the clause before:
+  //     a conjunction, not a subordinator.
+  const isCommand = unit => verbal(unit) && ['VB', 'VBP'].includes(unit.tag) && unit.lower === unit.lemma && !subjectOf(unit) && !auxiliaries(unit).length && !introduced(unit)
+  for (const verb of units) {
+    // (the form of a command is the base form: "so they touch and stay level" shares 'they')
+    if (!isCommand(verb) || verb.tag !== 'VB' || !['conj', 'dep'].includes(verb.dep) || verb.head > verb.index) continue
+    const held = units[verb.head]
+    if (!verbal(held) || !subjectOf(held) || !under(held).some(part => part.dep === 'mark' && part.index < held.index || part.index < held.index && /^W/u.test(part.tag))) continue
+    // the clause it hangs on, above any verb joined to it
+    let top = held
+    for (let steps = 0; top.dep === 'conj' && top.head !== top.index && steps < units.length; steps++) top = units[top.head]
+    if (top.head === top.index || !HUNG.has(top.dep) || !verbal(units[top.head]) && units[top.head].head !== units[top.head].index) continue
+    // (the conjunction before it goes with it: "…, and leave Pond alone")
+    const joiner = under(held).filter(part => part.dep === 'cc' && part.index < verb.index && part.index > held.index).pop()
+    if (joiner && units.slice(joiner.index + 1, verb.index).every(other => other.head === verb.index)) joiner.head = top.head
+    verb.head = top.head
+    verb.dep = 'conj'
+    changed++
+  }
+  for (const verb of units) {
+    if (!verbal(verb) || !['VB', 'VBP'].includes(verb.tag) || verb.lower !== verb.lemma || subjectOf(verb) || auxiliaries(verb).length || verb.dep !== 'advcl' || verb.head > verb.index) continue
+    const so = under(verb).find(part => part.lower === 'so' && ['mark', 'advmod'].includes(part.dep) && part.index === firstWord(verb))
+    if (!so || units[so.index - 1]?.word || !CLAUSE_MARK.test(units[so.index - 1]?.value ?? '')) continue
+    if (under(verb).some(part => part.dep === 'mark' && part !== so || part.lower === 'to' && part.dep === 'aux')) continue
+    verb.dep = 'conj'
+    so.dep = 'cc'
     changed++
   }
   return changed

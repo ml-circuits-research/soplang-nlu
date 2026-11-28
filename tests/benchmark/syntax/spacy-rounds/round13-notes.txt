@@ -1,0 +1,85 @@
+Round 13 of the spaCy writer (from 195075d, round 12), aimed at fresh sample c (seed 2026-11-28-c, the first drawn on the
+re-split dataset of files of <=100 messages: 1,927 messages, 28 files; spaCy at round 12 = 86.6%, 258 rejections). audit.mjs
+now reads it as the set "freshc" (step.sh, hard.mjs, hardnotes.mjs and group.mjs too). Steps a1..i1 in the scratch folder
+spacy-round13; each line: the sets whose known circuits changed (rej = a rejected circuit changed, acc = an accepted one).
+Every message is found by its text; all 1,927 messages of sample c have a recorded parse.
+
+Left aside, as asked: the L6 verdicts on short sentences after a full stop ("That would help.", 16 in sample c) and on measure
+pairings ("four blocks wide and five blocks tall", 16). Three more L6 verdicts on a command after a full stop that is tied to
+nothing (186, 212, 261) were not acted on either.
+
+Grouping of the freshc rejections (group.mjs, then read one by one): powers in ranges "10^1 to 10^6" 33 (one file); words of
+order after a comma "worst first"/"highest first" held in a nominal ~30; a command joined inside a clause of "so"/"if" or made
+the end of a relation marked "so" 15; nouns made the verb / verb lost ~20 ("line Stove and Fridge up", "get Approve and
+Reject", "put it and Check in a column", "next place House", "move the house left", "close" in "shift Tree close beside Barn",
+"regions above plan"); "instead"/"then" in the wrong clause 8; misspelt words ("pleese" 5, "hvae" 3); linking words held as
+modifiers or discourse ("what about" 2, "except" 2, "of" in "a histogram of grouped …" 4); "the top right" split 3; "no more
+than that" 4; "give the diagram two panels" 3; particle written as a preposition ("drop in an aqualung") 2; "weeks above
+target only" 4; "the tick numbers on the top and the right" 6 (not repaired: which noun "and" joins needs what the words mean).
+
+a1 syntax-circuit (units) + word rule 4 + rule 71: a caret written between two numbers with no space is one number, a power
+   ("10^6"), whatever the parser cut; rule 4 (a preposition between two numbers marks a range) also takes the case where the
+   parser hung the second number on the first, and moves the words before the first number to it ("the same 10^1 to 10^6"),
+   not inside a nominal ("a four by three grid", read in wide); rule 71: an adverb hung on a number right before its own
+   preposition grades that preposition ("10^6 down to 10^1"): freshc 33 rej (~31 ok; 376 keeps 'sorry to nag', 394 'to to'),
+   audit 4 rej (3 ok; 684 keeps other faults), wide 3 (fine).
+b1 rule 72: a superlative with an ordinal numeral or "last" right after it, set off by a comma or dash, that the parser hung
+   on a noun (or on the verb of a clause describing one) is a modifier of the clause before the mark (the nearest verb above
+   the word before the mark that is no participle or describing clause; the head of a part with no verb); a verb joined to the
+   superlative is joined to that clause (settled case: a word of order after a nominal): freshc 28 rej (~24 ok; 239, 263, 270,
+   214 keep other faults) 6 acc (moved from the participle clause "keeping …" to the main clause, or from a nominal "biggest
+   first" of its own: same reading), audit 2 rej (ok), bench 2, wide 1 (fine).
+c1 clause rule 23: a base form with neither subject, auxiliary nor "to" (tag VB) that the parser joined to a verb with a
+   subject that a subordinator or question word opens is joined to the clause that clause hangs on, with its conjunction ("set
+   Barn beside House so the two stages line up, and leave Pond alone", "i wonder if you could put …, then copy …"); "so" after
+   a comma opening a command joins it to the clause before as a conjunction ("leave House on the Hill, so move Pond …"; settled
+   case on commands inside another clause): freshc 12 rej (ok), audit 9 rej (~6 ok) 5 acc, fresh 4 rej 8 acc, freshb 1 rej
+   (172: the judge asked for "shift" sharing "you" inside "what if"; now a command outside: an allowed reading, unsure) 1 acc,
+   bench 5 rej 4 acc (3 now equal the label: "the date changed, so change Sign …" -> L9), wide 15. The accepted ones held the
+   command as the end of "so"; the judges of fresh c (84, 614, 680), the audit (143, 1281) and the benchmarks (2823, 3000)
+   reject that, and the labels of "the date changed, so change …" write the coordination. Narrowed while checking: VBP forms
+   share the subject ("so they touch and stay level", "what if we put …, and leave …" left as they are), clauses that describe
+   a noun ("with the values shown …, and start …").
+d1 rules 73, 74: a capitalised name after a conjunction right after the object, joined to the verb (or to the object) as a
+   second verb, is a second object ("now put it and Check in a column", "would you line Approve and Ship up"); a capitalised
+   base form with an "auxiliary" right before it that opens the sentence and is no form of "be"/"do" and no modal makes that
+   word the verb and the name its object ("perhaps get Approve and Reject onto …", "then haxve Publish and Ship …"): freshc 8 rej
+   (ok), audit 1 acc (193 "set it and Refund across": same reading, now one clause), wide 2 (626 better, 612 fine).
+e1 rule 2 + "left": "next" that opens the sentence is passed over like "then" after a mark ("next place House next to Hill");
+   "left" with nothing of its own right after the object of a verb at the end of its clause says where ("move the house
+   left"), of the verb with no object right before it when there is one ("turn all the things to face left"): freshc 3 rej
+   (ok), fresh 1 rej (2368 ok).
+f1 rules 75, 76, 77: a word one letter apart from a word the raw text writes said to the listener (discourse-words.mjs,
+   "plese"), opening the message, made the subject of a base form right after it, is said to the listener ("pleese make …"; not
+   a pronoun: "they rae really …" was caught and excluded); an adverb set off by a comma at the head of the message, hung on a
+   later verb across the nominal of the part after the comma, belongs to that part ("instead, a small dog down at the bottom,
+   next stack …"); "then"/"next" after a mark hung on a word before it goes with the verb right after it, and a verb before
+   the mark hung on that verb heads the sentence ("dad two red blocks …, then clone …"): freshc 15 rej (13 ok; 1306, 1309 keep
+   other faults) 1 acc, audit 9 rej (~7 ok) 1 acc, bench 5, wide 2.
+g1 rules 16, 60, 78, 79, 80, 81: "in" before a new thing also when the tagger did not know the noun ("drop in an aqualung");
+   "what about" when the parser hung "what" on "about"; an adjective object of a preposition with a determiner and an adverb
+   after it ending the phrase: one nominal with the later word as head ("in the top right"); "no" hung as a negation on a
+   comparative grades it ("no more than that"); a plural nominal with its own numeral in letters right after the object, no
+   comma between, hung as a renaming, is a second object ("give the diagram two panels"; not "one way", "two spaces left");
+   a word hung as a conjunction that governs a nominal and that the tagger did not read as a coordinating conjunction is a
+   preposition ("same idea, except four panels"; not "but", label 2663): freshc 15 rej (ok) 3 acc (1308 top right; 1362, 1371
+   "add the bridge three green blocks": two complements, allowed), audit 3 rej (ok), bench 1 rej (ok), wide 8 (fine; "the tick
+   numbers two digits" now two complements of "like").
+h1 rule 82: a bare plural right after a comma, hung as a measure on the preposition after it, heads its part and renames the
+   nominal the preposition was hung on ("…, weeks above target only"): freshc 2 rej (ok).
+i1 rule 72 fixed (an ordinal that holds the superlative under it was skipped since d1): freshc 6 rej 6 acc (back to b1), audit 1.
+
+Dropped: rule 75 of e1 ("close" in "shift Tree close beside Barn" read as a word that grades the preposition): it also took
+the verbs of causing ("make the arrow run from …", "have the tree look at …", 9 accepted changes in bench and freshc); no count
+of the raw text tells "close" from "run" there. Label conflicts appended: 1 ("ok, the order feels wrong, so put the subchapter
+before the chapter", fresh 1313 and freshb: the label writes the command as the end of "so"). Test changed: round 3's "so"
+assertion now expects the coordination.
+
+Totals r12 -> i1 (known circuits changed): freshc 133 (118 rej, ~105 ok; 15 acc), audit 41 (28 rej, ~18 ok; 7 acc), fresh 13
+(5 rej, 2 ok; 8 acc), freshb 2 (1 rej, unsure; 1 acc), bench 24 (6 rej; 5 acc; 3 now L9), wide 31 of 3,059 (read), vibe 0.
+Estimated acceptance: freshc 86.6 -> ~92.0% (without the 32 pending L6 verdicts: 88.1 -> ~93.6%), fresh a 88.6 -> ~88.7%,
+fresh b 93.1 -> ~93.1%, audit 70.7 -> ~71.9%, vibe 89.1% (unchanged), old benchmark 97.0 -> ~97.1%.
+What is left in freshc: "see split into eight bins view of …" (9, generated text with no grammar), the tick numbers on "the top
+and the right" (6), "hvae"/causative "have" with a misspelling (3), "looking at the cat — the dog on the lawn" (3), "close"
+beside a preposition (3), "level with" (2), "regions above plan" (2), "line Stove and Fridge up" (1), the pending L6 (32).
+Tests: 60 pass (a new test with 25 recorded parses, one or more per repair).

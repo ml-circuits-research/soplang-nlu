@@ -1,7 +1,7 @@
 // Checks for a round of repairs in the spaCy writer, from the parser's recorded output (no parser, no Python).
 // Run from the folder soplang-nlu, with SOP_KNOWLEDGE_DIR unset.
 //
-//   node audit.mjs cache <dir>                                   parses and known verdicts of the four sets, into <dir>
+//   node audit.mjs cache <dir>                                   parses and known verdicts of the sets, into <dir>
 //   node audit.mjs write <dir> <set> <out.jsonl> [--code <tree>] the circuits of a writer (default: this checkout)
 //   node audit.mjs still <dir> <set> <circuits.jsonl> [--full]   the rejections that still stand in those circuits
 //   node audit.mjs changed <dir> <set> <before.jsonl> <after.jsonl> [--which rejected|accepted|unknown|all] [--brief]
@@ -19,6 +19,7 @@
 //   fresh  the fresh benchmark (eval-results/2026-11-28-syntax-benchmark-fresh): its 2,225 messages; a circuit judged
 //          there, or equal to the label known before the run (L9)
 //   freshb the second fresh benchmark (eval-results/2026-11-28-syntax-benchmark-fresh-b, seed 2026-11-28-b), read the same way
+//   freshc the third (eval-results/2026-11-28-syntax-benchmark-fresh-c, seed 2026-11-28-c, the first on files of <=100 messages)
 //   bench  the two earlier benchmark samples (fixed and random, 2026-11-26/27): their messages
 //   wide   every 60th message of the dataset, in the order of the recorded parses
 //   vibe   the pilot of file-level judging on the hard half (eval-results/2026-11-28-vibe-advanced-pilot/opus): spaCy
@@ -37,10 +38,10 @@ const {normalForm, readJsonl, readSample, readRegistry, readLabels, readCsv} = a
 const {unpackParse} = await import(pathToFileURL(at('strategies/rvss/data/run-spacy.mjs')).href)
 
 const AUDIT = 'eval-results/2026-11-27-silver-audit/'
-const FRESH = {fresh: 'eval-results/2026-11-28-syntax-benchmark-fresh/', freshb: 'eval-results/2026-11-28-syntax-benchmark-fresh-b/'}
+const FRESH = {fresh: 'eval-results/2026-11-28-syntax-benchmark-fresh/', freshb: 'eval-results/2026-11-28-syntax-benchmark-fresh-b/', freshc: 'eval-results/2026-11-28-syntax-benchmark-fresh-c/'}
 const BENCH = ['eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz', 'eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz']
 const VIBE = 'eval-results/2026-11-28-vibe-advanced-pilot/opus/'
-const SETS = ['audit', 'fresh', 'freshb', 'bench', 'wide', 'vibe']
+const SETS = ['audit', 'fresh', 'freshb', 'freshc', 'bench', 'wide', 'vibe']
 const WIDE_STRIDE = 60
 const [command, dirArg, ...rest] = process.argv.slice(2)
 const VALUED = ['--code', '--which', '--reason', '--case']
