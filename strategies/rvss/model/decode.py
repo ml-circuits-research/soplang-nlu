@@ -39,6 +39,8 @@ class VSAScorer:
         Pr = st['Pr']; L, NPp, P, _ = Pr.shape; self.L, self.P = L, P
         # Re(v . conj(P)) = [Re v, Im v] . [cos P; sin P]: one real matrix per part, (parts, 2D, L*P)
         # per label: (parts, 2D, P), so that only the legal labels are read
+        # all labels at once: (parts, 2D, L*P), one matrix-vector product per part (faster than gathering the legal ones)
+        # per label (L, parts, 2D, P): only the legal labels' prototypes are read (memory traffic is the cost)
         self.PRL = np.ascontiguousarray(np.concatenate([np.cos(Pr), np.sin(Pr)], 3).transpose(0, 1, 3, 2)).astype(np.float32)
         self.u, self.beta, self.bias = st['u'], st['beta'], st['bias']
         G = np.exp(1j * st['G']).astype(np.complex64)                  # (4, 3, P, D)
@@ -87,7 +89,8 @@ class VSAScorer:
             parts = np.concatenate([parts, (z.astype(np.complex64) @ self.SV)[None]])
         X = np.concatenate([parts.real, parts.imag], 1).astype(np.float32)          # (parts, 2D)
         idx = np.nonzero(ok)[0] if ok is not None else np.arange(self.L)
-        s = np.matmul(X[None, :, None, :], self.PRL[idx])[:, :, 0] * (self.sq / self.D)   # (n, parts, P)
+        Xr = X[:, None, :]
+        s = np.stack([np.matmul(Xr, self.PRL[i])[:, 0] for i in idx]) * (self.sq / self.D)   # (n, parts, P)
         b = self.beta[None, :, None]
         sc = self.bias[idx] + (self.u[None, :] * lse(b * s) / self.beta[None, :]).sum(1)
         out = np.full(self.L, -1e30); out[idx] = sc

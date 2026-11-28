@@ -4,8 +4,8 @@
 // trained to reproduce the spaCy strategy's circuits (distillation). The circuit is read back from the pilot's
 // own constellations and atlas (the m1star decoder) and written with writeCircuit. A Python worker (numpy, CPU,
 // one thread) holds the model.
-//   options / environment: modelPath (SOP_NLU_RVSS_MODEL, default .local-models/rvss/current),
-//   python (SOP_NLU_RVSS_PYTHON, default python3), timeoutMs.
+//   options / environment: modelPath (SOP_NLU_RVSS_MODEL, default .local-data/rvss/model/current: the model chosen on dev-B, see README.md),
+//   python (SOP_NLU_RVSS_PYTHON, default python3; it needs numpy and torch), timeoutMs.
 import {spawn} from 'node:child_process'
 import {createInterface} from 'node:readline'
 import {fileURLToPath} from 'node:url'
@@ -13,7 +13,7 @@ import {wordsOf} from '../../lib/syntax.mjs'
 import {writeNodes} from './writer.mjs'
 
 const workerPath = fileURLToPath(new URL('./worker.py', import.meta.url))
-export const installedModel = fileURLToPath(new URL('../../.local-models/rvss/current', import.meta.url))
+export const installedModel = fileURLToPath(new URL('../../.local-data/rvss/model/current', import.meta.url))
 
 function inputOf(text) {
   const ws = wordsOf(text); let prev = 0; const gaps = []

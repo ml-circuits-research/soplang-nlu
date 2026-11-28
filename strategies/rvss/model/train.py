@@ -178,7 +178,7 @@ def main():
     ap.add_argument('--batch', type=int, default=96); ap.add_argument('--max-words', type=int, default=0); ap.add_argument('--minutes', type=float, default=1e9)
     ap.add_argument('--lr', type=float, default=0.02); ap.add_argument('--lr-scalar', type=float, default=0.005); ap.add_argument('--seed', type=int, default=1)
     ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0)
-    ap.add_argument('--eval-only', action='store_true')
+    ap.add_argument('--eval-only', action='store_true'); ap.add_argument('--replace', action='store_true'); ap.add_argument('--confusion', action='store_true')
     a = ap.parse_args()
     torch.manual_seed(a.seed); np.random.seed(a.seed)
     os.makedirs(a.out, exist_ok=True)
@@ -194,7 +194,14 @@ def main():
     for t, labs in allowed.items():
         for lab in labs: mask[TYPES.index(t), labels.index(lab)] = True
     t0 = time.time()
-    tr = concat([load(n, 'train', a.max_words) for n in a.data.split(',')])
+    parts = [load(n, 'train', a.max_words) for n in a.data.split(',')]
+    if a.replace and len(parts) == 2:
+        # mixed.jsonl.gz: a message with a label is learned from its label only (spaCy's line is dropped)
+        lab = {tuple(w) for w in parts[1]['words']}
+        keep = np.array([tuple(w) not in lab for w in parts[0]['words']])
+        print('replace: spaCy lines kept', int(keep.sum()), 'of', len(keep), flush=True)
+        parts[0] = _reindex(parts[0], np.nonzero(keep)[0])
+    tr = concat(parts)
     dv = load(dvname, 'dev-B', a.max_words)
     dv = _reindex(dv, np.arange(min(len(dv['words']), 10 ** 9)))
     print('loaded', len(tr['words']), 'train messages', len(tr['ex_label']), 'acts;', len(dv['words']), 'dev-B', f'{time.time()-t0:.0f}s', flush=True)
@@ -243,6 +250,8 @@ def main():
                 lg, cl = forward(b)
                 right = lg.argmax(1) == b['label']
                 ok += int(right.sum()); tot += len(right)
+                if CONF is not None:
+                    for g_, p_ in zip(b['label'][~right].tolist(), lg.argmax(1)[~right].tolist()): CONF[(labels[g_], labels[p_])] = CONF.get((labels[g_], labels[p_]), 0) + 1
                 wrong = torch.zeros(len(idx[s:s + 256]), device=dev).index_add_(0, b['emsg'], (~right).float())
                 if cl is not None:
                     _, p_, g_ = group_loss(cl, b); pr[0] += p_[0]; pr[1] += p_[1]; ga[0] += g_[0]; ga[1] += g_[1]
@@ -251,6 +260,7 @@ def main():
         return {'act': ok / max(tot, 1), 'acts': tot, 'pointer': pr[0] / max(pr[1], 1), 'pointers': pr[1], 'gather': ga[0] / max(ga[1], 1), 'gathers': ga[1],
                 'messages_all_acts_right': msg_ok / max(msg_tot, 1)}
 
+    CONF = {} if a.confusion else None
     if a.eval_only:
         ck = torch.load(a.out + '/model.pt', map_location=dev, weights_only=False)
         model.load_state_dict(ck['state'], strict=False)
@@ -258,7 +268,12 @@ def main():
         nw = np.array([len(w) for w in dv['words']])
         for name, keep in [('<=12 words', nw <= 12), ('>12 words', nw > 12), ('all', nw > 0)]:
             res[name] = evaluate(Data(_reindex(dv, np.nonzero(keep)[0]), vocab, aid, dev), 10 ** 9); res[name]['messages'] = int(keep.sum())
-        print(json.dumps(res, indent=1)); json.dump(res, open(a.out + '/tf-by-length.json', 'w'), indent=1); return
+        print(json.dumps(res, indent=1)); json.dump(res, open(a.out + '/tf-by-length.json', 'w'), indent=1)
+        if CONF is not None:
+            top = sorted(CONF.items(), key=lambda x: -x[1])[:30]
+            json.dump([[g, p_, c // 2] for (g, p_), c in top], open(a.out + '/tf-confusion.json', 'w'), indent=0)
+            for (g, p_), c in top: print('confusion', g, '->', p_, c // 2)   # counted twice: the <=12 / >12 parts and all
+        return
     steps = int(a.epochs * T.n / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=[g['lr'] for g in opt.param_groups], total_steps=steps, pct_start=0.05)
     log = []; best = -1; t2 = time.time()
