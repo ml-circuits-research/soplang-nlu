@@ -769,5 +769,23 @@ export function repairClauses(units) {
     for (const unit of moved) unit.head = nominal.index
     if (moved.length) changed++
   }
+  // 28. A command cannot stand inside another clause (rule 23). A command after a mark (a comma, a semicolon, a colon or a
+  //     dash) that the parser hung on an infinitive, which completes the verb before it ("I need you to add a triangle
+  //     labelled Hours per project; then connect Hours per project to Website; then make Hours per project red"), is
+  //     the next step after the clause of that verb, not a part of what the infinitive says: it hangs on that verb, as
+  //     "then" joins "give" with "move" in "move the star so it sits under the table, then give it a thin outline".
+  for (const verb of units) {
+    if (!isCommand(verb) || verb.tag !== 'VB' || !['conj', 'dep', 'parataxis'].includes(verb.dep) || verb.head > verb.index) continue
+    const infinitive = units[verb.head]
+    if (!verbal(infinitive) || !under(infinitive).some(part => part.lower === 'to' && part.dep === 'aux' && part.index < infinitive.index) || infinitive.head === infinitive.index) continue
+    const above = units[infinitive.head]
+    if (!verbal(above) || above.index > infinitive.index || !HUNG.has(infinitive.dep)) continue
+    // a mark between the infinitive's words and the command, and only linking words of the command after it
+    const opening = firstWord(verb)
+    const mark = units[opening - 1]
+    if (!mark || mark.word || !CLAUSE_MARK.test(mark.value) || units.slice(opening, verb.index).some(unit => unit.word && unit.head !== verb.index)) continue
+    verb.head = above.index
+    changed++
+  }
   return changed
 }

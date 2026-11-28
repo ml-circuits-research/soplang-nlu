@@ -12,8 +12,10 @@
 // verbs ("up", "out", "off" …), the articles "a" and "the", the numerals of tens, hundreds and
 // thousands, "how", "what" and "about" of "how about", the word of thanks "thanks", the pronoun "none", the ordinal
 // numerals and "last", the negative determiner "no") and "left", the
-// past form of the common verb "leave", and with it "right", the other word of direction, and the common verbs of causing
-// "make", "have" and "let"; none names a noun, an adjective or a word particular to these messages.
+// past form of the common verb "leave", and with it "right", the other word of direction, the common verbs of causing
+// "make", "have" and "let", the common verbs of colouring "colour", "color", "paint", "tint" and "shade", and the
+// prepositions of place and order ("above", "below", "under", "over", "behind", "beside", "near", "inside", "outside",
+// "before", "after", "beyond", "within"); none names a noun, an adjective or a word particular to these messages.
 // Some rules also read counts learned from the raw text of the messages: how often a word that opens
 // a sentence is followed by a determiner or a pronoun (command-openers.mjs, written by
 // learn-openers.mjs), and how a word stands after a determiner, after "to", a subject pronoun or a
@@ -208,10 +210,13 @@ export function repairWords(units) {
   //    that is capitalised, does not open its sentence and takes nothing a verb takes is a name:
   //    "from Start to Review", "link Plan to Build", "make Valid? a rounded rectangle". One with an
   //    object of its own opens words that are quoted without quotation marks ("notes Bring draft"). So is
-  //    a capitalised participle that the parser hung where a nominal stands ("book Room 2 for Planning").
+  //    a capitalised participle that the parser hung where a nominal stands ("book Room 2 for Planning"), that a
+  //    preposition governs ("connect Start to Done", "an arrow from Approved? back to Review"), or that the parser hung
+  //    by no named relation on the verb right before it ("move Done to the bottom", "mark Done with a double circle").
   const NOMINAL_PLACE = new Set(['pobj', 'dobj', 'nsubj', 'nsubjpass', 'attr', 'appos', 'compound', 'npadvmod'])
   for (const unit of units) {
-    const verbForm = unit.pos === 'VERB' && (['VB', 'VBP'].includes(unit.tag) || ['VBG', 'VBN', 'VBD'].includes(unit.tag) && NOMINAL_PLACE.has(unit.dep))
+    const governedForm = unit.dep === 'pcomp' && units[unit.head]?.pos === 'ADP' || unit.dep === 'dep' && unit.head === unit.index - 1 && verbal(units[unit.head])
+    const verbForm = unit.pos === 'VERB' && (['VB', 'VBP'].includes(unit.tag) || ['VBG', 'VBN', 'VBD'].includes(unit.tag) && (NOMINAL_PLACE.has(unit.dep) || governedForm))
     const adjective = unit.pos === 'ADJ' && !['amod', 'compound', 'nmod', 'conj'].includes(unit.dep)
     if (!unit.word || unit.quoted || !verbForm && !adjective) continue
     if (!capitalised(unit) || opensSentence(unit)) continue
@@ -223,6 +228,8 @@ export function repairWords(units) {
     unit.pos = 'PROPN'
     unit.tag = 'NNP'
     unit.lemma = unit.lower
+    if (unit.dep === 'pcomp' && units[unit.head].pos === 'ADP') unit.dep = 'pobj'
+    else if (unit.dep === 'dep' && governedForm) unit.dep = under(units[unit.head]).some(part => part.dep === 'dobj') ? 'dep' : 'dobj'
     if (to) {
       to.pos = 'ADP'
       to.tag = 'IN'
@@ -231,6 +238,35 @@ export function repairWords(units) {
       unit.head = to.index
       unit.dep = 'pobj'
     }
+    changed++
+  }
+  //    A capitalised base form inside a sentence with a bare small-lettered noun right after it as its object, standing
+  //    where a nominal stands or right after the noun it would describe, is the first word of a name of two words:
+  //    "replace Pay tax with …", "insert a step Check stock between n5 and n2", "notes Bring draft". The noun heads the
+  //    name, in the place of the verb; the verb is a word of it.
+  for (const unit of units) {
+    if (!unit.word || unit.quoted || unit.pos !== 'VERB' || unit.tag !== 'VB' || !capitalised(unit) || opensSentence(unit) || unit.head === unit.index) continue
+    const object = units[unit.index + 1], parts = under(unit)
+    if (!object?.word || object.quoted || object.head !== unit.index || object.dep !== 'dobj' || !/^\p{Ll}+$/u.test(object.value) || object.pos !== 'NOUN' || under(object).length) continue
+    // (the "to" of an infinitive alone before it is the preposition before the name: "connect Receive order to Check stock")
+    const to = parts.find(part => part.index === unit.index - 1 && part.lower === 'to' && part.tag === 'TO' && part.dep === 'aux')
+    if (parts.some(part => part !== object && part !== to && (part.index < unit.index || VERB_ONLY.has(part.dep)))) continue
+    const near = unit.head < unit.index && !units.slice(unit.head + 1, unit.index).some(other => other.word && verbal(other))
+    const place = to || NOMINAL_PLACE.has(unit.dep) || unit.dep === 'dep' && near || ['acl', 'relcl'].includes(unit.dep) && unit.head === unit.index - 1 && ['NOUN', 'PROPN'].includes(units[unit.head].pos)
+    if (!place) continue
+    if (to) {
+      to.pos = 'ADP'; to.tag = 'IN'; to.dep = 'prep'; to.head = unit.head
+      unit.head = to.index; unit.dep = 'pobj'
+    }
+    object.head = unit.head
+    object.dep = ['acl', 'relcl'].includes(unit.dep) ? 'appos' : unit.dep === 'dep' && verbal(units[unit.head]) ? 'dobj' : unit.dep
+    for (const part of parts) if (part !== object && part !== to) part.head = object.head === object.index ? object.index : verbal(units[object.head]) ? object.head : object.index
+    unit.head = object.index
+    unit.dep = 'compound'
+    unit.pos = 'PROPN'
+    unit.tag = 'NNP'
+    unit.lemma = unit.lower
+    object.pos = 'PROPN'
     changed++
   }
   // A word said to the listener opens what is said, or is set off from the other words by a mark ("hey, move it",
@@ -284,6 +320,32 @@ export function repairWords(units) {
     unit.tag = name ? 'NNP' : 'NN'
     unit.dep = 'dep'
     unit.lemma = unit.lower
+    changed++
+  }
+
+  // 2a. A command opens with its verb, and some verbs write the base form and the past participle alike ("set", "put",
+  //     "cut"). The first word of a message, one the raw text opens commands with (opensCommands), that the tagger read
+  //     as such a participle (written as its base form) describing the noun after it, is the verb of the command: "set
+  //     station lights blinking amber", "set neon signs pink cyan buzzing". The nominal it was said to describe is its
+  //     object; a verb the parser made the head of the message takes the place of a clause the command completes.
+  for (const verb of units) {
+    if (!verb.word || verb.quoted || verb.pos !== 'VERB' || !['VBN', 'VBD'].includes(verb.tag) || verb.dep !== 'amod' || verb.lemma !== verb.lower) continue
+    if (units.slice(0, verb.index).some(unit => unit.word) || !opensCommands(verb.lower) || under(verb).length) continue
+    let noun = units[verb.head]
+    if (!noun || noun.index < verb.index || !['NOUN', 'PROPN'].includes(noun.pos)) continue
+    // the top of the nominal it stands in
+    for (let steps = 0; noun.head !== noun.index && NOMINAL_INSIDE.has(noun.dep) && steps < units.length; steps++) noun = units[noun.head]
+    const root = units.find(unit => unit.word && unit.head === unit.index)
+    if (!root) continue
+    verb.tag = 'VB'
+    verb.head = verb.index
+    verb.dep = 'ROOT'
+    if (root !== noun && root !== verb) {
+      root.head = verb.index
+      root.dep = verbal(root) ? 'xcomp' : 'dep'
+    }
+    noun.head = verb.index
+    noun.dep = 'dobj'
     changed++
   }
 
@@ -561,6 +623,31 @@ export function repairWords(units) {
     changed++
   }
 
+  //    Nor between two nouns: "the months above plan" are the months that stand above the plan. A preposition of place
+  //    or order that the tagger read as an adverb or an adjective, which the parser made, with the noun right before it, a
+  //    word of the nominal of the noun right after it, links the first noun to the second: the first heads the nominal, with the
+  //    words before it, and the preposition marks a relation from it to the second.
+  const PLACING = new Set(['above', 'below', 'under', 'over', 'behind', 'beside', 'near', 'inside', 'outside', 'before', 'after', 'beyond', 'within'])
+  for (const marker of units) {
+    const left = units[marker.index - 1], right = units[marker.index + 1]
+    if (!marker.word || marker.quoted || !PLACING.has(marker.lower) || !['ADV', 'ADJ'].includes(marker.pos) || !left?.word || !right?.word) continue
+    if (!['NOUN', 'PROPN'].includes(left.pos) || !['NOUN', 'PROPN', 'NUM'].includes(right.pos) || right.head === right.index) continue
+    // (the three words hang together in the nominal of the second noun: "months above" on "plan", or "months" on "above")
+    const chain = marker.head === left.index && left.head === right.index && ['nmod', 'compound', 'amod'].includes(left.dep) ||
+      left.head === marker.index && marker.head === right.index && ['amod', 'advmod'].includes(marker.dep)
+    if (!chain || under(right).some(part => part.index > left.index && part.index < right.index && part !== left && part !== marker)) continue
+    if (under(left).some(part => part !== marker && part.index > left.index) || under(marker).some(part => part !== left)) continue
+    left.head = right.head
+    left.dep = right.dep
+    for (const part of under(right)) if (part.index < left.index) part.head = left.index
+    marker.head = left.index
+    marker.dep = 'prep'
+    marker.pos = 'ADP'
+    marker.tag = 'IN'
+    right.head = marker.index
+    right.dep = 'pobj'
+    changed++
+  }
   //    Two numbers side by side make no one number: after a name, the first labels the name and the second counts
   //    what follows ("make Tractor 2 62 pixels wide", where the parser made "2" a word of "62").
   for (const number of units) {
@@ -710,6 +797,86 @@ export function repairWords(units) {
     left.pos = 'ADV'
     left.tag = 'RB'
     left.lemma = left.lower
+    changed++
+  }
+  //    Nor is "left" a verb right after the thing a verb before it moves, when nothing of a verb follows it: no object,
+  //    no clause, only the end of its part, an adverb, a conjunction, "of" ("put the road left of the mountain") or "by"
+  //    and a measure ("i want the red block left by one place"). The thing is an object pronoun or "it" right after the
+  //    verb ("don't send it left after all", "move it left"), or a nominal with a verb (or a first word the raw text
+  //    writes as one) right before it ("point the boy left and ask him …", "place the mountain left of the tree"), which
+  //    the parser made the subject of "left" or on which it hung "left". "left" says where the verb takes the thing: an
+  //    adverb of that verb, the thing its object, and a phrase marked "of" right after "left" goes with "left".
+  //    (Not "everything else left where it is": a clause follows; nor "the man left": no verb before the nominal.)
+  for (const left of units) {
+    if (!left.word || left.lower !== 'left' || left.pos !== 'VERB' || !['VBD', 'VBN'].includes(left.tag) || left.head === left.index) continue
+    if (under(left).some(part => ['aux', 'auxpass', 'mark', 'dobj', 'dative', 'ccomp', 'advcl', 'xcomp', 'acomp', 'oprd', 'prt'].includes(part.dep))) continue
+    const previous = units[left.index - 1]
+    if (!previous?.word || !NOMINAL.has(previous.pos)) continue
+    // the thing: the nominal that ends right before "left"
+    let thing = previous
+    for (let steps = 0; thing.head !== thing.index && thing.head !== left.index && units[thing.head].index < left.index && NOMINAL_INSIDE.has(thing.dep) && steps < units.length; steps++) thing = units[thing.head]
+    if (lastOf(thing) >= left.index && thing.head !== left.index && left.head !== thing.index) continue
+    const pronoun = thing === previous && thing.pos === 'PRON' && (OBJECT_FORM.has(thing.lower) || thing.lower === 'it')
+    const opening = firstOf(thing) === thing.index ? thing : units[firstOf(thing)]
+    const before = units[opening.index - 1]
+    // the verb right before the thing (after a particle of its own: "turn it back left" is left to rule 83)
+    const verb = before?.word && (verbal(before) && !AUXILIARY.has(before.lower) ||
+      opensSentence(before) && ['NOUN', 'X', 'PROPN'].includes(before.pos) && !capitalised(before) && (canBeVerb(before.lower) || opensCommands(before.lower))) ? before : null
+    if (!verb || pronoun && verb.index !== thing.index - 1) continue
+    if (!pronoun && !(thing.head === left.index && SUBJECT.has(thing.dep) || left.head === thing.index && ['acl', 'relcl', 'amod'].includes(left.dep))) continue
+    if (pronoun && !(thing.head === left.index || thing.head === verb.index)) continue
+    // what follows: nothing of a verb
+    const next = units[left.index + 1]
+    const measure = next?.word && next.lower === 'by' && under(next).some(part => GOVERNED.has(part.dep) && under(part).some(inner => inner.pos === 'NUM'))
+    if (next?.word && !measure && next.lower !== 'of' && !['ADV', 'CCONJ', 'INTJ'].includes(next.pos) && next.dep !== 'cc') continue
+    if (next?.word && next.lower === 'of' && !under(next).some(part => GOVERNED.has(part.dep))) continue
+    // the verb takes the place of "left" where the parser hung the verb on it; the thing is its object
+    if (verb.head === left.index) {
+      verb.head = left.head === left.index ? verb.index : left.head
+      verb.dep = left.head === left.index ? 'ROOT' : left.dep
+    } else if (left.head === left.index) { verb.head = verb.index; verb.dep = 'ROOT' }
+    if (!verbal(verb)) { verb.pos = 'VERB'; verb.tag = 'VB'; verb.lemma = verb.lower }
+    if (verb.head === verb.index) verb.dep = 'ROOT'
+    thing.head = verb.index
+    thing.dep = 'dobj'
+    for (const part of under(left)) {
+      if (part.dep === 'conj' || part.dep === 'cc' || part.dep === 'punct') part.head = verb.index
+      else if (part.dep === 'agent') part.dep = 'prep'
+    }
+    // (a phrase marked "of" right after "left" that the parser hung on the thing or the verb goes with "left")
+    if (next?.word && next.lower === 'of' && next.head !== left.index && [thing.index, verb.index].includes(next.head)) next.head = left.index
+    left.head = verb.index
+    left.dep = 'advmod'
+    left.pos = 'ADV'
+    left.tag = 'RB'
+    left.lemma = left.lower
+    changed++
+  }
+  //    "left of" and "right of" place a thing beside another ("a gazelle left of the hill"): the word of direction with
+  //    no determiner and the "of" right after it are one linking word (settled case: "left of" may be one marker). One
+  //    that the parser hung on the noun before it, with "of" hung on it or on that noun ("four boats in a vertical line
+  //    left of the cloud column"), or hung on that "of" ("how about a tree right of the house"), where that noun ends a
+  //    relation, is the first word of the marker of a relation from that noun, so "of" no longer starts at the thing
+  //    placed. (After a verb, or on a subject or an object, it is left as it is.)
+  for (const word of units) {
+    const marker = units[word.index + 1]
+    if (!word.word || word.quoted || !['left', 'right'].includes(word.lower) || !marker?.word || marker.lower !== 'of' || GOVERNED.has(word.dep)) continue
+    // (set off by a comma it says where the thing of the clause goes: "a bar chart … for North, South and East, left of the table")
+    if (markBefore(word)) continue
+    if (under(word).some(part => part.dep === 'det' || part.dep === 'poss') || !under(marker).some(part => GOVERNED.has(part.dep))) continue
+    const thing = word.head === marker.index ? units[marker.head] : units[word.head]
+    if (!thing || thing === word || thing === marker || !['NOUN', 'PROPN', 'PRON'].includes(thing.pos) || thing.index > word.index) continue
+    // (only a thing that ends a relation, where the word of direction would be a word of its nominal or "of" start at
+    // it: a subject or an object leaves both to its clause, "put the mountain right of the house")
+    if (!GOVERNED.has(thing.dep) && !under(thing).some(part => part.dep === 'mark')) continue
+    if (word.head === marker.index ? marker.head === marker.index : marker.head !== word.index && marker.head !== thing.index) continue
+    word.head = thing.index
+    word.dep = 'prep'
+    word.pos = 'ADP'
+    word.tag = 'IN'
+    word.lemma = word.lower
+    marker.head = word.index
+    marker.dep = 'prep'
     changed++
   }
   //    So does a phrase marked "of" right after a pronoun or a numeral written in letters that heads a nominal of its
@@ -1250,6 +1417,46 @@ export function repairWords(units) {
     participle.dep = 'acl'
     given.head = participle.index
     given.dep = 'oprd'
+    changed++
+  }
+  //     So does one with a nominal opened by a determiner or a numeral right before it that the parser hung on the noun
+  //     after the participle ("a ellipse labelled Sales chart", with "ellipse" a word of the nominal of "chart"), or on
+  //     which it hung that noun ("a diamond labelled Prices", with "Prices" set beside "diamond"), when what the
+  //     participle gives is a name (a capitalised word that does not open its sentence): the participle describes the
+  //     nominal before it, and the words after it are what it gives.
+  for (const participle of units) {
+    if (!participle.word || participle.quoted || participle.tag !== 'VBN' || participle.dep !== 'amod' || participle.head <= participle.index) continue
+    const thing = units[participle.index - 1], given = units[participle.head], first = units[participle.index + 1]
+    if (!thing?.word || !['NOUN', 'PROPN'].includes(thing.pos) || !under(thing).some(part => part.dep === 'det' || part.dep === 'nummod')) continue
+    if (!first?.word || !capitalised(first) || opensSentence(first) || !['NOUN', 'PROPN', 'NUM'].includes(given.pos)) continue
+    const thingUnderGiven = thing.head === given.index && ['nmod', 'compound', 'amod', 'npadvmod'].includes(thing.dep)
+    const givenBeside = given.head === thing.index && ['appos', 'compound', 'nmod', 'dep'].includes(given.dep)
+    if (!thingUnderGiven && !givenBeside) continue
+    // (only the participle and the words of the name hang on the noun between them)
+    if (under(given).some(part => part !== participle && part !== thing && (part.index < participle.index || part.index > given.index && !GOVERNED.has(part.dep) && part.dep !== 'prep'))) continue
+    if (thingUnderGiven) {
+      thing.head = given.head === given.index ? thing.index : given.head
+      thing.dep = given.head === given.index ? 'ROOT' : given.dep
+      for (const part of under(given)) if (part.index < participle.index && part !== thing && part !== participle) part.head = thing.index
+    }
+    participle.head = thing.index
+    participle.dep = 'acl'
+    given.head = participle.index
+    given.dep = 'oprd'
+    changed++
+  }
+  //     A name given by a participle may hold a phrase with a marker ("a circle labelled Visits by month", "a triangle
+  //     labelled Hours per project"): a preposition right after the name, with a bare small-lettered noun as its object
+  //     that ends its part, which the parser hung on a verb before the participle, belongs to the name.
+  for (const marker of units) {
+    if (!marker.word || marker.quoted || marker.dep !== 'prep' || marker.pos !== 'ADP' || marker.head >= marker.index || !verbal(units[marker.head])) continue
+    const name = units[marker.index - 1], object = units[marker.index + 1], after = units[marker.index + 2]
+    if (!name?.word || !capitalised(name) || opensSentence(name) || name.head === name.index) continue
+    const participle = units[name.head]
+    if (participle.tag !== 'VBN' || !['oprd', 'dobj', 'attr'].includes(name.dep) || participle.head === participle.index || participle.index > name.index || participle.head < marker.head) continue
+    if (!object?.word || object.head !== marker.index || object.dep !== 'pobj' || !/^\p{Ll}+$/u.test(object.value) || under(object).length || under(marker).length !== 1) continue
+    if (after?.word) continue
+    marker.head = name.index
     changed++
   }
 
@@ -2105,6 +2312,65 @@ export function repairWords(units) {
     changed++
   }
 
+  // 56b. A name ends its nominal (rule 56), and a word that says how a thing should be follows the nominal of that thing
+  //     (settled case: "font bigger", "make the box red"). A small-lettered word that ends its part right after a name
+  //     (a capitalised word that does not open its sentence, or letters and figures: "n3", "e2") that ends a relation
+  //     from the object of a verb or from its clause, and that the raw text shows to describe or to be said of a thing
+  //     (describes, sayable), is said of that object: "turn the arrow from Approved? to Publish blue", "colour the branch
+  //     under Alpha olive", "make the connection from n1 curved". It is an adjective of the clause of the verb, as in
+  //     "make the box red", whatever word of the name's nominal the parser made it or hung it on; the name heads that
+  //     nominal. After the verbs of colouring ("colour", "color", "paint", "tint", "shade") the word is the colour the
+  //     thing gets, also when the raw text writes it before a noun only as often as it ends a nominal ("colour the
+  //     branch under Left plum"), and also right after the object noun itself ("colour the subtree plum", "paint the
+  //     whole Left branch plum, from …"): the noun before it heads the object.
+  const COLOURING = new Set(['colour', 'color', 'paint', 'tint', 'shade'])
+  const leansDescribing = unit => { const [before, ending, , all, plural] = USES[unit.lower] ?? [0, 0, 0, 0, 0]; return before + ending >= LEAST_USES && before >= ending && plural <= PLURAL_SHARE * all }
+  const nameOrId = unit => unit.word && !unit.quoted && (capitalised(unit) && !opensSentence(unit) || /^\p{Ll}+\d+$/u.test(unit.value))
+  for (const word of units) {
+    if (!word.word || word.quoted || !/^\p{Ll}[\p{Ll}-]*$/u.test(word.value) || /(?<!s)s$/u.test(word.lower)) continue
+    const next = units[word.index + 1]
+    if (next?.word && next.dep !== 'cc' && next.pos !== 'INTJ') continue
+    // (what the parser hung on it after a mark is no word of its nominal: "paint the whole Left branch plum, from …")
+    if (under(word).some(part => part.index > word.index) && !(next && !next.word)) continue
+    const previous = units[word.index - 1]
+    if (!previous?.word || previous.quoted) continue
+    // (a second object of the same preposition: "to Publish blue", both hung on "to")
+    const sibling = word.dep === 'pobj' && previous.dep === 'pobj' && previous.head === word.head
+    // the nominal the word stands in or beside, and the place where it starts: its top word
+    let top = word.head === previous.index || sibling ? previous : word
+    for (let steps = 0; top.head !== top.index && NOMINAL_INSIDE.has(top.dep) && steps < units.length; steps++) top = units[top.head]
+    const named = nameOrId(previous)
+    let verb = null, governed = false
+    if (named && GOVERNED.has(top.dep) && top.dep === 'pobj') {
+      // the relation: from the object of a verb, or from the verb itself, which has an object before it
+      let at = units[top.head]
+      for (let steps = 0; at && !verbal(at) && at.head !== at.index && ['prep', 'pobj', 'conj', 'dobj'].includes(at.dep) && steps < units.length; steps++) at = units[at.head]
+      if (at && verbal(at) && under(at).some(part => part.dep === 'dobj' && part.index < word.index)) verb = at
+      governed = true
+    } else if (!named && ['NOUN', 'PROPN'].includes(previous.pos) && !capitalised(previous) && top === word && ['dobj', 'appos'].includes(word.dep) && previous.head === word.index && ['compound', 'nmod', 'amod'].includes(previous.dep)) {
+      const holder = units[word.head]
+      if (holder && COLOURING.has(holder.lower) && holder.index < word.index && holder.pos !== 'ADJ') verb = holder
+    }
+    if (!verb || verb.quoted) continue
+    const colouring = COLOURING.has(verb.lower)
+    if (!(describes(word.lower) || sayable(word.lower) || colouring && leansDescribing(word))) continue
+    if (!governed && !colouring) continue
+    if (governed && !sibling && !(word.head === previous.index && ['amod', 'compound', 'appos', 'dep', 'npadvmod'].includes(word.dep) || previous.head === word.index && ['compound', 'amod', 'nmod', 'nummod'].includes(previous.dep))) continue
+    // the name (or the object noun) takes the place of the word where the parser made the word its head
+    if (previous.head === word.index) {
+      for (const part of under(word)) if (part !== previous) part.head = previous.index
+      previous.head = word.head === word.index ? previous.index : word.head
+      previous.dep = word.head === word.index ? 'ROOT' : word.dep
+      if (previous.dep === 'appos' && verbal(units[previous.head])) previous.dep = 'dobj'
+    }
+    if (!verbal(verb)) { verb.pos = 'VERB'; verb.tag = 'VB' }
+    word.head = verb.index
+    word.dep = 'oprd'
+    word.pos = 'ADJ'
+    word.tag = 'JJ'
+    changed++
+  }
+
   // 57. A numeral with no determiner and no noun after it is a measure, and an adjective describes no bare measure: in
   //     "the first half goes right one", "move the first pair right one", "turn the first two right one" the adjective
   //     before the numeral says how the verb goes (a modifier of its clause), and the numeral how far. A numeral that the
@@ -2477,6 +2743,27 @@ export function repairWords(units) {
     word.head = marker.index
     changed++
   }
+  //     So does an adverb that the parser hung on a noun right before it, with a preposition right after it that governs
+  //     an object and hangs on that noun or on the adverb: "three medium brown sacks over on the right side", "a vertical
+  //     stem from the circle down to the line" (settled case: a word that grades a linking word says nothing about the
+  //     thing before it). It grades the preposition, which links the noun to its object.
+  for (const word of units) {
+    if (!word.word || word.quoted || word.pos !== 'ADV' || word.dep !== 'advmod' || word.head >= word.index) continue
+    const noun = units[word.head], marker = units[word.index + 1]
+    if (!['NOUN', 'PROPN'].includes(noun.pos) || noun.index > word.index || !marker?.word || marker.dep !== 'prep' || marker.pos !== 'ADP') continue
+    // (a subject or an object leaves the adverb to its clause already: "put the stall over on the left"; "left" and
+    // "right" may end the nominal: "in the top right in the scene")
+    if (['left', 'right'].includes(word.lower)) continue
+    // (a subject or an object leaves the adverb to its clause already: "put the stall over on the left")
+    if (!['pobj', 'appos', 'conj', 'npadvmod'].includes(noun.dep)) continue
+    if (marker.head !== noun.index && marker.head !== word.index || !under(marker).some(part => GOVERNED.has(part.dep))) continue
+    if (under(word).some(part => part !== marker)) continue
+    // (the last word of the noun's nominal before the adverb: the adverb follows the nominal, not a phrase inside it)
+    if (units.slice(noun.index + 1, word.index).some(unit => !unit.word || !within(unit, noun))) continue
+    marker.head = noun.index
+    word.head = marker.index
+    changed++
+  }
 
   // 72. A word of order after a noun cannot describe it from there: it says in what order the clause sets the things
   //     (a settled case: "orders by week first"). A superlative with an ordinal numeral or "last" right after it, set off
@@ -2763,6 +3050,64 @@ export function repairWords(units) {
     thing.head = word.index
     thing.dep = 'nsubj'
     changed++
+  }
+
+  // 57b. A list joins items of one kind, and an item may leave out the noun that a later item names: "build two blue,
+  //     one green and one red block", "make the row as two blue, one green, one red", "two blue blocks, one green and
+  //     one red". A numeral written in letters right before a describing word with no noun after it, in a list (a comma
+  //     or a conjunction right before the numeral or right after the word), opening its item, is one item: the word heads it and the numeral counts it, as
+  //     in "two blue". The parser's other ties of the numeral go to the word; an item it set beside the item before it
+  //     (an apposition) or joined to a word of another item is a conjunct of the first item of the list.
+  const describingWord = unit => unit.word && !unit.quoted && /^\p{Ll}+$/u.test(unit.value) && (unit.tag === 'JJ' || ['NOUN', 'PROPN'].includes(unit.pos) && (describes(unit.lower) || sayable(unit.lower)))
+  const listMark = unit => Boolean(unit) && (!unit.word && unit.value === ',' || unit.word && unit.dep === 'cc' && ['and', 'or'].includes(unit.lower))
+  const items = []
+  for (const numeral of units) {
+    const word = units[numeral.index + 1], after = units[word?.index + 1]
+    if (!numeral.word || numeral.quoted || numeral.pos !== 'NUM' || !word || !describingWord(word) || DIRECTION.has(word.lower)) continue
+    if (after?.word && !['ADP', 'CCONJ'].includes(after.pos)) continue
+    if (under(numeral).some(part => part.dep === 'det') || !listMark(units[numeral.index - 1]) && !listMark(after)) continue
+    // (a numeral written in letters, after a mark, a conjunction, a verb or a preposition: not a measure in figures, "160
+    // wide, 100 high", nor a number naming a thing, "box one plum", nor one after a word of order, "first three clockwise")
+    const lead = units[numeral.index - 1]
+    if (!/^\p{Ll}+$/u.test(numeral.value) || lead?.word && !['CCONJ', 'VERB', 'ADP', 'AUX'].includes(lead.pos)) continue
+    if (!(word.head === numeral.index || numeral.head === word.index || numeral.head === word.head)) continue
+    if (word.head === numeral.index) {
+      word.head = numeral.head === numeral.index ? word.index : numeral.head
+      word.dep = numeral.head === numeral.index ? 'ROOT' : numeral.dep
+    }
+    for (const part of under(numeral)) part.head = word.index
+    numeral.head = word.index
+    numeral.dep = 'nummod'
+    // (the word heads a nominal: a noun of the list, not a word said of a thing)
+    word.pos = 'NOUN'
+    word.tag = 'NN'
+    if (['nsubj', 'npadvmod', 'amod', 'dep'].includes(word.dep) && word.head !== word.index && units[word.head].pos === 'NUM' && units[word.head].dep === 'nummod') word.dep = 'conj'
+    // an item right after a comma, or a conjunction, after an item: a conjunct of it (whatever the parser or an earlier
+    // rule made of the numeral: a measure of the verb, a word renaming the item before)
+    const mark = units[numeral.index - 1], before = mark && (mark.word ? units[mark.index - 1]?.value === ',' ? units[mark.index - 2] : units[mark.index - 1] : units[mark.index - 1])
+    if (listMark(mark) && before?.word && ['NOUN', 'ADJ'].includes(before.pos) && under(before).some(part => part.dep === 'nummod' && part.pos === 'NUM') && !within(before, word)) {
+      word.head = before.index
+      word.dep = 'conj'
+      if (mark.word) mark.head = word.index
+    }
+    items.push(word)
+    changed++
+  }
+  //     The first item of the list: the item, or the noun with a numeral of its own, that the earlier items hang on.
+  for (const item of items) {
+    const isItem = unit => unit.word && (items.includes(unit) || ['NOUN', 'ADJ'].includes(unit.pos) && under(unit).some(part => part.dep === 'nummod' && part.pos === 'NUM'))
+    let first = item
+    for (let steps = 0; first.head !== first.index && ['conj', 'appos'].includes(first.dep) && isItem(units[first.head]) && units[first.head].index < first.index && steps < units.length; steps++) first = units[first.head]
+    if (first === item) continue
+    item.head = first.index
+    item.dep = 'conj'
+    // a later item the parser joined to this one, and the noun of the last item, join the first
+    for (const part of under(item)) if (part.dep === 'conj' && isItem(part)) part.head = first.index
+  }
+  for (const item of items) for (const part of under(item)) if (part.dep === 'conj' && part.index > item.index && ['NOUN', 'ADJ'].includes(part.pos) && under(part).some(inner => inner.dep === 'nummod')) {
+    let first = item
+    for (let steps = 0; first.dep === 'conj' && first.head !== first.index && steps < units.length; steps++) first = units[first.head]
+    if (first !== item) part.head = first.index
   }
 
   return changed

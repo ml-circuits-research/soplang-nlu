@@ -1,0 +1,107 @@
+Round 15 of the spaCy writer (from eb3e6ca, round 14), aimed at the fresh sample d (seed 2026-11-28-d, with the area
+general: spaCy 87.8% at round 14, the owner's pending cases counted as accepted). Steps a2..k2 in the scratch folder
+spacy-round15; each line: the sets whose known circuits changed (rej = a rejected circuit changed, acc = an accepted one).
+Every message is found by its text. Verdicts marked PENDING-COURTESY / PENDING-MEASURE were not acted on.
+
+Tools: audit.mjs has the set "freshd" (eval-results/2026-11-28-syntax-benchmark-fresh-d), a main source beside the earlier
+fresh sets; step.sh writes eight sets (three writers at a time); group.mjs and hardnotes.mjs list freshd. 97 messages of d
+(the area general) had no recorded parse: they were parsed here (one process, CPU) and passed to the cache with
+`audit.mjs cache <dir> --parses tests/benchmark/syntax/spacy-rounds/freshd-parses.jsonl` (new option; {text, parse}
+lines packed as run-spacy.mjs writes them; the file is kept beside these notes).
+The cache reproduces the run: freshd 1,772 of 2,019 acceptable at round 14 (87.8%).
+
+Lesson of round 14 kept: each repair is a kind of construction, and its effect is estimated on the sets it was not drawn
+from ("off d"). Most kinds of d are rare or absent elsewhere: the honest off-d effect of this round is small.
+
+Grouping of d's 246 standing rejections at round 14 (group.mjs, fd column): nominal other 53, other 27, value said of the
+thing merged into its nominal 23 (+13 "words that say how a thing should be"), noun or name read as a verb 15, measure and
+pairing 14, part tied to nothing 12, participle without its clause 11, coordination 10, command verb lost 9, then/next 8,
+question form 8, grading word in a nominal 8, compound split 7, relation start 7, linking word as modifier 6.
+Read one by one: the avatar template "change an open mouth tan" / "a grin for me, mouth default" (~23, one file of d);
+"left" written as a verb (13); counted colours "two blue, one green and one red block" (16); box names read as verbs
+("connect Start to Done", "Approved?", "Check stock", "Pay tax": 12); "labelled X" (12); a value after a name ending a
+relation or after the object of a verb of colouring (12); 'over'/'down' grading a preposition held in a nominal (9);
+"I need you to X; then Y" commands put inside the infinitive (1 flagged, 10 accepted against the settled case); statements
+before a full stop that give the reason of the next command (6, d only); "set X Y Z" telegraphic settings (8).
+
+a2 word rule 5 (new part): "left" tagged as a verb right after the thing a verb before it moves, when nothing of a verb
+   follows (end of the part, an adverb, a conjunction, "of", or "by" with a measure): an object pronoun or "it" right after
+   the verb ("don't send it left after all", "move it left"), or a nominal after a verb or after a first word the raw text
+   writes as a verb ("point the boy left and ask …", "place the mountain left of the tree", "i want the red block left by
+   one place"). "left" is an adverb of that verb, the thing its object, "of" goes with "left". Not "everything else left
+   where it is". freshd 12 rej (ok), bench 1 rej (174: "of" now starts at the clause, settled case), others 0.
+   Off d: bench +1; fresh a/b/c, audit, vibe, wide unchanged (~0).
+b2 word rule 5 (new part): "left of"/"right of" with no determiner, right after a noun that ends a relation (not set off by
+   a comma, not after a subject or object), is one marker of a relation from that noun ("four boats in a vertical line left
+   of the cloud column", "how about a tree right of the house"). freshd 3 rej (ok), fresh 3 (672 rej, now from the
+   regions: unsure; 670 L9 label -> label conflict; 658 ?), freshb the same 3, bench 1 ? (better). Narrowed twice: the first
+   version changed ~60 accepted "put X left of Y" circuits (both forms pass): limited to nouns that end a relation; then a
+   comma before "left" excluded ("…, left of the table" says where the chart goes). Off d: ~+0.5 (fresh/freshb 672 unsure).
+c2 word rule 71 (new part): an adverb hung on a noun before it, with a preposition right after it that governs an object and
+   hangs on that noun or on the adverb, grades the preposition (settled case 100): "three medium brown sacks over on the
+   right side", "a vertical stem from the circle down to the line". Only for a noun that ends a relation, an apposition, a
+   conjunct or a measure (a subject or object already leaves the adverb to its clause); not "left"/"right" ("in the top
+   right in the scene"). freshd 15 (10 rej ok; 5 acc: only the start of a relation, clause -> nominal, both pass), audit 10
+   (5 rej: 1265 ok, 4 keep other faults; 3 acc start only), freshb 3 (2 rej, same template, ok), freshc 4 acc (start only),
+   bench 14 (1 rej -> L8 known; 4 acc read: fine), vibe 3 acc (start only), wide 8. Off d: freshb +2, bench +1, audit +1.
+d2 word rule 1 (extended): a capitalised participle inside a sentence that a preposition governs, or that the parser hung by
+   no named relation on the verb right before it, is a name ("connect Start to Done", "an arrow from Approved? back to
+   Review", "move Done to the bottom", "mark Done with a double circle"). freshd 9 rej (ok; 319 keeps "dashed" as a verb),
+   audit 1 rej (1564 "from Signup to Team", ok), wide 2 (fine). Off d: audit +1.
+e2 word rule 18 (extended): a participle hung as a describing word on the name after it, with a nominal opened by a
+   determiner right before it that the parser hung on the name or the name on it, describes that nominal and gives the
+   name ("a diamond labelled Prices", "a ellipse labelled Sales chart"); and a preposition right after such a name, with a
+   bare small-lettered noun ending its part, that the parser hung on the main verb, belongs to the name ("labelled Visits
+   by month", "labelled Hours per project"). freshd 10 rej (ok) + 1 acc (100118: "by month" now inside the label; the
+   judges rejected the old form 5 times of 6), audit 3 rej (242, 480, 1262: ok), bench 2 (2680 acc, same as 100118).
+   Off d: audit +3.
+f2 word rule 56b (new): a describing word ending its part right after a name (capitalised, or letters and figures: n3, e2)
+   that ends a relation from the object of a verb or from its clause is said of that object: a modifier of the clause
+   ("turn the arrow from Approved? to Publish blue", "colour the branch under Alpha olive", "make the connection from n1
+   curved"); after the verbs of colouring a word the raw text writes before a noun at least as often as it ends a nominal
+   passes too ("under Left plum"), also right after the object noun ("colour the subtree plum", "paint the whole Left branch
+   plum, from …"). freshd 10 rej (ok), audit 2 rej (478, 1733: ok) + 2 ? (better: "make part 0 of o1 red, …").
+   Off d: audit +2. (Not "elbow", "one-way": the counts do not show them said of a thing.)
+g2 word rule 57b (new, after all other word rules): a numeral in letters right before a describing word with no noun after
+   it, in a list (a comma or a conjunction right before the numeral or right after the word), opening its item after a
+   mark, a conjunction, a verb or a preposition, is one item: the word heads it, the numeral counts it, and the items are
+   conjuncts of the first ("build two blue, one green and one red block", "make the row as two blue, one green, one red").
+   Narrowed: the first version turned measures in figures ("160 wide, 100 high"), "box one plum" and "first three
+   clockwise" into items (bench 1889 accepted -> L3): numerals in figures and numerals after other words excluded.
+   freshd 15 rej (ok but 1320 "ua") + 1 acc (1318, better), audit 1 acc (1775, both pass). Off d: 0 (the template is d's).
+h2 word rule 2a (new): the first word of a message that the raw text opens commands with, tagged as a participle written as
+   its base form and describing the noun after it, is the command verb ("set station lights blinking amber"). freshd 3 rej
+   (1462 ok; 1428, 1433 keep their values in the wrong wires). Off d: 0.
+i2 word rule 4 (new part): a preposition of place or order read as an adverb or adjective, joined with the noun before it
+   into the nominal of the noun after it, links the two ("the months above plan"). freshd 2 rej (ok). Off d: 0.
+j2 clause rule 28 (new): a command after a mark that the parser hung on an infinitive completing the verb before it is the
+   next step after that verb's clause (settled case: a command cannot stand inside another clause; "move the star so …,
+   then give it …"): "I need you to add a triangle labelled …; then connect …; then make … red". freshd 1 rej (170 ok) + 2 ?
+   + 10 acc (the judges accepted the old form 10 times and rejected it in 170 and in audit 1313/1742, fresh 77: the new form
+   is the one the settled case asks for), audit 4 rej (1313 ok; 37, 1742, 1069 keep other faults) + 1 ?, fresh 1 rej (77
+   "teach me to draw …, then explain …": ok), freshb 1 rej (same text, ok), bench 4 acc (same form, read), wide 10 (read).
+   Off d: fresh +1, freshb +1, audit +1.
+k2 word rule 1 (new part): a capitalised base form inside a sentence with a bare small-lettered noun right after it as its
+   object, where a nominal stands (also after the "to" of an infinitive) or right after the noun it would describe, begins a
+   name of two words ("replace Pay tax with …", "insert a step Check stock between …", "connect Receive order to Check
+   stock"). Narrowed: a word hung on an earlier verb across another verb is left ("…, then label it Check rows").
+   freshd 2 rej (ok), audit 2 rej (802, 1361: ok), wide 1 (same text as 628). Off d: audit +2.
+
+Dropped or left: "how about moving …" (one message in all sets: the beam's parse), "set the grid lines to dotted" (one
+message), the avatar template "change an open mouth tan" / "mouth default" (~23, one file of d; the words are no evidence of
+a value: "tan" is not counted, "default" ends a nominal 163 times of 168), statements before a full stop that give the reason
+of a command (6, one file of d; the policy on parts after a full stop is the owner's pending question), measures not tied to
+their relation (some pending), "do the y axis scale log" ("log" ends a nominal 109 times of 138).
+
+Label conflict appended (label-conflicts.jsonl): fresh 670 "visualise 120, 80 and 40 for North, South and East in a bar
+chart left of the table" (L9 label: "left" a dependent of "chart" and "of" from "chart", against the settled case of
+"left of the hill").
+
+Totals r14 -> k2 (known circuits changed): freshd 94 (77 rej, ~65 expected ok; 17 acc, forms the settled cases accept),
+audit 26 (17 rej, ~12 ok; 4 acc read), fresh 4 (2 rej, ~1.5 ok; 1 acc L9 -> conflict), freshb 7 (4 rej, ~3 ok), freshc 4
+(4 acc, start of a relation only), bench 23 (2 rej ok; 9 acc, all read: fine; 12 ?), vibe 3 (acc, start only), wide 22 of
+3,059 (read).
+Estimated acceptance (acceptable / known): freshd 87.8 -> ~90.9%, audit 73.7 -> ~74.5%, fresh a 88.8 -> ~88.9%, fresh b
+93.1 -> ~93.3%, fresh c 92.8% (unchanged), vibe 89.6% (unchanged), old benchmark 97.3 -> ~97.4%. Off d this round adds
+~+0.1 to +0.2 points to a new sample: the d gain comes mostly from kinds that occur in its own templates.
+Tests: 62 pass (a new test with 18 recorded parses, one or more per repair).

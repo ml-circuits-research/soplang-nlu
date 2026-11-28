@@ -1,7 +1,7 @@
 // Groups the rejections that still stand after a step by what their notes name, for the choice of the next repairs.
 //   node group.mjs <notes file> [group name]      (a group name lists its items)
 // The notes file: for each standing rejection a line "<set>\t<n> <grade> <text>" and a line with the note, as written by
-//   for s in fresh freshb freshc vibe audit; do node audit.mjs still <dir> $s <circuits> | awk -v s=$s '/^## /{sub(/^## /,""); h=$0; getline; print s"\t"h; print "\t"$0}'; done
+//   for s in fresh freshb freshc freshd vibe audit; do node audit.mjs still <dir> $s <circuits> | awk -v s=$s '/^## /{sub(/^## /,""); h=$0; getline; print s"\t"h; print "\t"$0}'; done
 // The nominal group is subdivided: the value said of a thing merged into its nominal, a name after a common noun, a
 // compound noun split, list items merged, numbers, a word that grades a linking word, quoted data.
 import {readFileSync} from 'node:fs'
@@ -38,6 +38,6 @@ const K = [
 ]
 const groups = new Map(K.map(([k]) => [k, []])); groups.set('other', [])
 for (const it of items) { const k = K.find(([, re, also]) => re.test(it.note) && (!also || also.test(it.note)))?.[0] ?? 'other'; groups.get(k).push(it) }
-const bySet = list => ['fresh', 'freshb', 'freshc', 'vibe', 'audit'].map(s => (s.startsWith('fresh') && s !== 'fresh' ? 'f' + s.slice(5) : s.slice(0, 1)) + list.filter(i => i.set === s).length).join(' ')
+const bySet = list => ['fresh', 'freshb', 'freshc', 'freshd', 'vibe', 'audit'].map(s => (s.startsWith('fresh') && s !== 'fresh' ? 'f' + s.slice(5) : s.slice(0, 1)) + list.filter(i => i.set === s).length).join(' ')
 for (const [k, list] of [...groups].sort((a, b) => b[1].length - a[1].length)) console.log(String(list.length).padStart(4), k, '(' + bySet(list) + ')')
 if (process.argv[3]) for (const it of groups.get(process.argv[3]) ?? []) console.log(it.set, it.head.slice(0, 140), '\n   ', it.note.slice(0, 260))

@@ -1,7 +1,9 @@
 // Checks for a round of repairs in the spaCy writer, from the parser's recorded output (no parser, no Python).
 // Run from the folder soplang-nlu, with SOP_KNOWLEDGE_DIR unset.
 //
-//   node audit.mjs cache <dir>                                   parses and known verdicts of the sets, into <dir>
+//   node audit.mjs cache <dir> [--parses <file.jsonl>]           parses and known verdicts of the sets, into <dir>
+//                                                                (--parses: {text, parse} lines, packed as run-spacy.mjs
+//                                                                writes them, for messages with no recorded parse)
 //   node audit.mjs write <dir> <set> <out.jsonl> [--code <tree>] the circuits of a writer (default: this checkout)
 //   node audit.mjs still <dir> <set> <circuits.jsonl> [--full]   the rejections that still stand in those circuits
 //   node audit.mjs changed <dir> <set> <before.jsonl> <after.jsonl> [--which rejected|accepted|unknown|all] [--brief]
@@ -20,6 +22,7 @@
 //          there, or equal to the label known before the run (L9)
 //   freshb the second fresh benchmark (eval-results/2026-11-28-syntax-benchmark-fresh-b, seed 2026-11-28-b), read the same way
 //   freshc the third (eval-results/2026-11-28-syntax-benchmark-fresh-c, seed 2026-11-28-c, the first on files of <=100 messages)
+//   freshd the fourth (eval-results/2026-11-28-syntax-benchmark-fresh-d, seed 2026-11-28-d, with the area general)
 //   bench  the two earlier benchmark samples (fixed and random, 2026-11-26/27): their messages
 //   wide   every 60th message of the dataset, in the order of the recorded parses
 //   vibe   the pilot of file-level judging on the hard half (eval-results/2026-11-28-vibe-advanced-pilot/opus): spaCy
@@ -38,13 +41,13 @@ const {normalForm, readJsonl, readSample, readRegistry, readLabels, readCsv} = a
 const {unpackParse} = await import(pathToFileURL(at('strategies/rvss/data/run-spacy.mjs')).href)
 
 const AUDIT = 'eval-results/2026-11-27-silver-audit/'
-const FRESH = {fresh: 'eval-results/2026-11-28-syntax-benchmark-fresh/', freshb: 'eval-results/2026-11-28-syntax-benchmark-fresh-b/', freshc: 'eval-results/2026-11-28-syntax-benchmark-fresh-c/'}
+const FRESH = {fresh: 'eval-results/2026-11-28-syntax-benchmark-fresh/', freshb: 'eval-results/2026-11-28-syntax-benchmark-fresh-b/', freshc: 'eval-results/2026-11-28-syntax-benchmark-fresh-c/', freshd: 'eval-results/2026-11-28-syntax-benchmark-fresh-d/'}
 const BENCH = ['eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz', 'eval-results/2026-11-27-syntax-benchmark-random/sample.json.gz']
 const VIBE = 'eval-results/2026-11-28-vibe-advanced-pilot/opus/'
-const SETS = ['audit', 'fresh', 'freshb', 'freshc', 'bench', 'wide', 'vibe']
+const SETS = ['audit', 'fresh', 'freshb', 'freshc', 'freshd', 'bench', 'wide', 'vibe']
 const WIDE_STRIDE = 60
 const [command, dirArg, ...rest] = process.argv.slice(2)
-const VALUED = ['--code', '--which', '--reason', '--case']
+const VALUED = ['--code', '--which', '--reason', '--case', '--parses']
 const flags = rest.filter(arg => arg.startsWith('--')), args = rest.filter((arg, i) => !arg.startsWith('--') && !VALUED.includes(rest[i - 1]))
 const option = name => { const i = rest.indexOf('--' + name); return i >= 0 ? rest[i + 1] : undefined }
 const dir = resolve(dirArg ?? '.')
@@ -105,6 +108,7 @@ if (command === 'cache') {
     if (wide && text) { sets.wide.push({key: 'wide:' + text, n: ++w, text, id: null}); want.add(text) }
     if (text && want.has(text) && r.parse && !parses[text]) parses[text] = r.parse
   }
+  if (option('parses')) for (const r of readJsonl(resolve(option('parses')))) if (want.has(r.text) && r.parse && !parses[r.text]) parses[r.text] = r.parse
   // labels and the registry, for the texts of the sets
   const texts = new Set(Object.values(sets).flat().map(m => m.text))
   const labels = readLabels()
