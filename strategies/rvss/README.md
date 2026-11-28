@@ -217,6 +217,43 @@ copies), 137 corrections of those. a17: from g15, 2 epochs on d17s, without weak
 met per decision or by more data of those kinds).
 dev-B and dev-G numbers of a17 are seen data (a diagnostic of fit); its real measurement is the coordinator's new 1%.
 
+**Fresh sample e, fully judged** (`eval-results/2026-11-28-syntax-benchmark-fresh-e/`, seed 2026-11-28-e, 2,542 messages:
+1,842 webmeet + 700 general, file-level, drawn by the coordinator after a17 was trained, judged by Opus, published to the
+dataset at 0886cb3):
+
+| Strategy | all | webmeet | general |
+| --- | ---: | ---: | ---: |
+| **rVSS a17** (beam 4, reading rules off) | **90.4%** | **91.5%** | 89.3% |
+| spaCy (writer 3f13f69) | 90.8% | 89.4% | 96.4% |
+
+rVSS is ahead of spaCy on webmeet for the first time; `current` points to a17 (`reading.json`: beam 4). Its decode of the
+sample first stopped writing after 1,320 messages: a read-back that differs from the pilot's tree carried numpy integers
+in its nodes and `json.dumps` failed at the end of decode.py (worker.py had the same fault); both now write plain numbers,
+and the other 1,222 were decoded with the same model and appended. 2,534 of 2,542 circuits valid, 47.0 ms per message.
+
+**What rVSS still gets wrong** (the judges' notes on its rejected circuits, grouped by their wording; "also spaCy" =
+the same circuit was spaCy's):
+
+| Fault | fresh e (a17): 231 rejected | also spaCy | h2h dev-G (g15): 188 rejected | also spaCy |
+| --- | ---: | ---: | ---: | ---: |
+| names and nominal boundaries (a name split or merged, the wrong head) | 54 | 8 | 36 | 2 |
+| question and clause form (a question written as declarative, `Let us` as a question) | 52 | 13 | 36 | 0 |
+| a word made the verb that is not one, or the verb lost into a nominal | 28 | 0 | 19 | 0 |
+| linking words and relations (a linking word held as a modifier, the wrong end) | 24 | 3 | 22 | 3 |
+| coordination (which conjuncts) | 18 | 1 | 11 | 0 |
+| auxiliary against main verb | 9 | 3 | 19 | 0 |
+| words said to the listener (please, thanks, sorry) | 6 | 0 | 7 | 1 |
+| measures, clock times, numbers | 4 | 0 | 13 | 2 |
+| order of steps lost (L6) | 4 | 2 | 0 | 0 |
+| other | 32 | 5 | 25 | 3 |
+
+By grade: fresh e L3 119, L1 87, L5 12, L6 12, L2 1; h2h L3 92, L1 77, L5 15, L2 2, L6 2.
+
+**Next (running).** All data again at dataset 0886cb3 (the 2,542 judged fresh-e circuits are labels now; set `d18s`:
+judge 12,443, written 31, spaCy 168,802 + 64,417, agreement 16; 4,192 targets differ from spaCy's), then from a17 one
+epoch without (a18) and with the route book and its path drawing (a18p, `--rb 256 --path 256`, DESIGN 7.2, aimed at long
+messages), measured on the dev diagnostics.
+
 ## Evening sprint (2026-11-28, from 12:50): the general corpora, targets at 3f13f69, the route book
 
 **In short.** spaCy (HEAD 3f13f69, round 15) wrote circuits for the 65,494 messages of `syntactic/general/` (CLINC150, SGD,
