@@ -133,3 +133,12 @@ The reasons behind the choices these questions touch are on [Decisions 1–5](de
 ---
 
 Next: [From the nlu schema](nlu-mapping.md) · Up: [The syntax schema](README.md)
+
+## Open question (owner, 2026-11-28): the order of wires
+
+The circuit is written in the order of the message, but the order of wires is "not compared" (see
+[Correctness](correctness.md)): nothing in a circuit states that one sentence follows another. The owner noted that
+if the order of the wires were kept as part of the circuit, some ties between sentences might not be needed. For now
+the decision is to tie by meaning: a part that refers to an earlier sentence or paragraph (thanks, a comment, a
+clarification, a reason) is tied to what it refers to, because order alone would not say which sentence or paragraph
+it refers to. Whether the schema should also state the order of top-level wires is open.
