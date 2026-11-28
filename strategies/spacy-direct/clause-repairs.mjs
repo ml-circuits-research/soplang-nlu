@@ -41,6 +41,15 @@ export function repairClauses(units) {
   const firstWord = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => firstWord(part, depth + 1)))
   const first = (unit, depth = 0) => depth > 60 ? unit.index : Math.min(unit.index, ...under(unit).map(part => first(part, depth + 1)))
   const last = (unit, depth = 0) => depth > 60 ? unit.index : Math.max(unit.index, ...under(unit).map(part => last(part, depth + 1)))
+  // does a unit hang on another, directly or not?
+  const within = (unit, top) => {
+    for (let at = unit, steps = 0; steps <= units.length; steps++) {
+      if (at === top) return true
+      if (at.head === at.index) return false
+      at = units[at.head]
+    }
+    return false
+  }
 
   // 0. A word that joins two clauses stands at the head of the second. "so" after a punctuation mark,
   //    followed directly by the words of a clause, opens that clause, whatever later verb the parser
@@ -105,6 +114,49 @@ export function repairClauses(units) {
       verb.head = earlier.index
       verb.dep = 'advcl'
     } else if (before.length) continue
+    so.dep = 'mark'
+    changed++
+  }
+
+  //    "so" that opens a sentence, before a clause with a subject of its own that a comma sets off in front of a
+  //    command, says what the command is for: "so it looks windy, spin the crown on the tree", "so they look at each
+  //    other, make that girl face right", "so I can edit the right connection, pick arrow a1". It marks the fronted
+  //    clause, which hangs on the command as its adverbial clause, whichever of the two the parser hung on the other.
+  //    (What a command is for is still to come: a clause in the past tense says why, "so the review step became
+  //    approval, update the list", and is left alone.)
+  //    "so" that opens a message right before a command joins nothing: a word said to the listener ("so straighten
+  //    it"), as "And", "Then" or "So" at the start of a message.
+  const opensMessage = unit => !units.slice(0, unit.index).some(other => other.word && other.pos !== 'INTJ' && other.dep !== 'intj')
+  const command = unit => verbal(unit) && unit.tag === 'VB' && !subjectOf(unit) && !auxiliaries(unit).length && !introduced(unit)
+  for (const so of units) {
+    if (!so.word || so.lower !== 'so' || under(so).length || !['advmod', 'cc', 'mark', 'dep'].includes(so.dep)) continue
+    const mark = units[so.index - 1]
+    if (!opensMessage(so) && !(mark && !mark.word && STRONG.test(mark.value))) continue
+    const next = units[so.index + 1], held = units[so.head]
+    if (opensMessage(so) && next === held && command(held)) {
+      so.dep = 'intj'
+      changed++
+      continue
+    }
+    const subject = units.find(unit => unit.word && SUBJECT.has(unit.dep) && first(unit) === so.index + 1)
+    const clause = subject && units[subject.head]
+    if (!clause || !verbal(clause) || clause.index < subject.index || !sentential(clause) || under(clause).some(part => part.dep === 'mark') ||
+      [clause, ...auxiliaries(clause)].some(verb => verb.tag === 'VBD')) continue
+    // the comma that ends the clause, and the command right after it
+    const comma = units.find(unit => !unit.word && unit.value === ',' && unit.index > clause.index)
+    const after = comma && units[comma.index + 1]
+    const commanding = !after?.word ? null : command(after) ? after : after.head > after.index && command(units[after.head]) ? units[after.head] : null
+    if (!commanding || commanding.head !== clause.index && clause.head !== commanding.index || units.slice(so.index + 1, comma.index).some(unit => unit.word && unit !== clause && !within(unit, clause)) ||
+      units.slice(so.index, comma.index).some(unit => !unit.word && STRONG.test(unit.value))) continue
+    if (commanding.head === clause.index) {
+      const top = clause.head === clause.index
+      commanding.head = top ? commanding.index : clause.head
+      commanding.dep = top ? 'ROOT' : clause.dep
+      for (const part of under(clause)) if (part.index > comma.index && part !== commanding) part.head = commanding.index
+      clause.head = commanding.index
+    }
+    clause.dep = 'advcl'
+    so.head = clause.index
     so.dep = 'mark'
     changed++
   }

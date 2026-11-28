@@ -9,8 +9,9 @@
 // The only words a rule names are function words ("of", "else", "in", "to", pronouns, determiners,
 // numerals, the auxiliaries "do" and "have" and the closed class of auxiliaries, the linking adverbs
 // of sequence "then" and "next", the two-word prepositions of the writer, the particles of phrasal
-// verbs ("up", "out", "off" …), the article "a", the word of thanks "thanks") and "left", the past form
-// of the common verb "leave"; none names a noun, an adjective or a word particular to these messages.
+// verbs ("up", "out", "off" …), the articles "a" and "the", the numerals of tens, hundreds and
+// thousands, "how", "what" and "about" of "how about", the word of thanks "thanks") and "left", the
+// past form of the common verb "leave"; none names a noun, an adjective or a word particular to these messages.
 // Some rules also read counts learned from the raw text of the messages: how often a word that opens
 // a sentence is followed by a determiner or a pronoun (command-openers.mjs, written by
 // learn-openers.mjs), and how a word stands after a determiner, after "to", a subject pronoun or a
@@ -1879,5 +1880,116 @@ export function repairWords(units) {
     word.tag = 'JJ'
     changed++
   }
+
+  // 56. A name follows the common noun it names, and the words that say how the thing should be follow its nominal:
+  //     "change a node Backup brown large", "add a retangle 2 white medium", "just give me a group Summary tiny", "give me
+  //     a text magenta small". In the clause of a verb that takes the nominal, at its end (the end of the message or a
+  //     punctuation mark), a run of small-lettered words that the raw text shows to describe (describes) or to be said
+  //     of a thing (sayable), after a small-lettered noun opened by a determiner or a numeral and any capitalised words
+  //     and numbers in figures that name it, is said of that noun, whatever word of them the parser made the head: the noun heads the nominal, the
+  //     name is tied to it (rule 3), and each word of the run is an adjective said of it, which the writer holds as a
+  //     modifier of the clause that takes the nominal (rule 55). After a preposition the run is left alone ("set the
+  //     colour of the box red": the colour is red, not the box); a plural describes nothing ("the title Q2 sales").
+  for (const noun of units) {
+    if (!noun.word || noun.quoted || !['NOUN', 'X'].includes(noun.pos) || capitalised(noun) || describes(noun.lower) || sayable(noun.lower)) continue
+    const determiner = units[noun.index - 1]
+    if (!determiner?.word || !['DT', 'CD'].includes(determiner.tag) || !NOMINAL_INSIDE.has(determiner.dep)) continue
+    let at = noun.index + 1
+    const name = [], run = []
+    while (units[at]?.word && !units[at].quoted && (capitalised(units[at]) && !verbal(units[at]) || units[at].pos === 'NUM' && /^\d/u.test(units[at].value))) name.push(units[at++])
+    while (units[at]?.word && !units[at].quoted && !capitalised(units[at]) && ['ADJ', 'NOUN', 'PROPN', 'X'].includes(units[at].pos) &&
+      !/(?<!s)s$/u.test(units[at].lower) && (describes(units[at].lower) || sayable(units[at].lower))) run.push(units[at++])
+    if (!run.length || units[at]?.word) continue
+    const span = [determiner, noun, ...name, ...run]
+    const tops = span.filter(unit => unit.head === unit.index || !span.includes(units[unit.head]))
+    const outer = tops.find(unit => unit.head !== unit.index && units[unit.head].index < determiner.index) ?? tops.find(unit => unit.head !== unit.index)
+    if (!outer || GOVERNED.has(outer.dep) || SUBJECT.has(outer.dep) || !verbal(units[outer.head])) continue
+    if (tops.length === 1 && tops[0] === noun && run.every(word => word.head === noun.index && word.dep === 'amod') && name.every(word => within(word, noun))) continue
+    // the words outside that hang on a word of the run or of the name hang on the noun
+    for (const unit of units) if (unit.word && !span.includes(unit) && span.includes(units[unit.head]) && unit.head !== noun.index) unit.head = noun.index
+    noun.head = outer.head
+    noun.dep = outer === noun ? noun.dep : ['dep', 'appos', 'npadvmod', 'amod', 'compound', 'nmod'].includes(outer.dep) ? 'dobj' : outer.dep
+    determiner.head = noun.index
+    if (name.length) {
+      const last = name[name.length - 1]
+      for (const word of name) { word.head = word === last ? noun.index : last.index; word.dep = word === last ? 'appos' : 'compound' }
+    }
+    for (const word of run) { word.head = noun.index; word.dep = 'amod'; word.pos = 'ADJ'; word.tag = 'JJ' }
+    changed++
+  }
+
+  // 57. A numeral with no determiner and no noun after it is a measure, and an adjective describes no bare measure: in
+  //     "the first half goes right one", "move the first pair right one", "turn the first two right one" the adjective
+  //     before the numeral says how the verb goes (a modifier of its clause), and the numeral how far. A numeral that the
+  //     parser so made a word renaming the object before it ("the first pair right one") is the measure of the verb.
+  for (const number of units) {
+    if (!number.word || number.pos !== 'NUM' || number.head === number.index) continue
+    const adjective = units[number.index - 1], parts = under(number)
+    if (!adjective?.word || adjective.pos !== 'ADJ' || adjective.dep !== 'amod' || adjective.head !== number.index || parts.length !== 1 || under(adjective).length ||
+      !['dobj', 'appos', 'npadvmod'].includes(number.dep)) continue
+    if (units[number.index + 1]?.word && NOMINAL.has(units[number.index + 1].pos)) continue
+    // the verb: the number's head, or the verb of the object it renames
+    let verb = units[number.head]
+    if (number.dep === 'appos' && ['dobj', 'dative'].includes(verb.dep)) verb = units[verb.head]
+    if (!verbal(verb) || verb.index > adjective.index) continue
+    adjective.head = verb.index
+    adjective.dep = 'advmod'
+    if (number.dep === 'appos') { number.head = verb.index; number.dep = 'npadvmod' }
+    changed++
+  }
+
+  // 58. Two numerals side by side count no one noun ("two one place" is no number): in "turn the first two boxes one place
+  //     to the right and the last two one place to the left", "turn the first three one step right" the first numeral,
+  //     with the determiner and the adjectives before it, is a nominal of its own (what the verb acts on) and the second
+  //     counts the noun after it, a measure of how far the verb goes. A numeral in figures after a number in letters
+  //     ("one 2"), a run of numbers written as one ("twenty one") and a later item of a list are left alone.
+  const COMPOUND_NUMBER = /^(twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)$/u
+  for (const first of units) {
+    const second = units[first.index + 1]
+    if (!first.word || first.pos !== 'NUM' || first.dep !== 'nummod' || !second?.word || second.pos !== 'NUM' || second.dep !== 'nummod' || second.head !== first.head) continue
+    if (/\d/u.test(first.value) !== /\d/u.test(second.value) || COMPOUND_NUMBER.test(first.lower) || under(second).length || under(first).some(part => part.index > first.index)) continue
+    const noun = units[first.head]
+    if (noun.index !== second.index + 1 || !['NOUN', 'PROPN'].includes(noun.pos) || noun.head === noun.index || noun.dep === 'conj') continue
+    const opening = [...under(noun).filter(part => part.index < first.index), ...under(first)]
+    if (!opening.some(part => part.dep === 'det' || part.dep === 'amod')) continue
+    // the verb whose object the first numeral is: the noun's head, or the verb above the adverb the parser hung it on
+    let verb = units[noun.head]
+    if (!verbal(verb) && ['advmod', 'npadvmod'].includes(noun.dep) && verb.dep === 'advmod') verb = units[verb.head]
+    if (!verbal(verb) || verb.index > first.index || !['dobj', 'npadvmod'].includes(noun.dep)) continue
+    for (const part of opening) part.head = first.index
+    first.head = verb.index
+    first.dep = 'dobj'
+    noun.head = verb.index
+    noun.dep = 'npadvmod'
+    changed++
+  }
+
+  // 59. A determiner opens a nominal. An adjective with a determiner of its own right before it and no noun after it to
+  //     describe stands for a thing: "the original", "the original again", "set the moon face the left", "looking the
+  //     right". It is the head of its nominal, a noun. (After "a" it may grade the word after it: "a little smaller".)
+  for (const adjective of units) {
+    if (!adjective.word || adjective.quoted || adjective.pos !== 'ADJ' || ['amod', 'acomp', 'conj', 'advmod', 'oprd', 'ccomp', 'xcomp', 'advcl'].includes(adjective.dep)) continue
+    const determiner = units[adjective.index - 1], next = units[adjective.index + 1]
+    if (!determiner?.word || determiner.dep !== 'det' || determiner.head !== adjective.index || determiner.lower !== 'the') continue
+    if (next?.word && ['NOUN', 'PROPN', 'NUM', 'ADJ', 'ADV'].includes(next.pos) || under(adjective).some(part => SUBJECT.has(part.dep) || part.dep === 'aux')) continue
+    adjective.pos = 'NOUN'
+    adjective.tag = 'NN'
+    changed++
+  }
+
+  // 60. "about" in "how about", "what about" is a linking word and marks what follows it: "how about marker interval
+  //     slightly larger?", "how about larger axis labels?". One the parser hung on "how" (or "what"), which it hung on the
+  //     noun after them, marks that noun, as it does in "how about a painting" (rule 4).
+  for (const how of units) {
+    const about = units[how.index + 1]
+    if (!how.word || !['how', 'what'].includes(how.lower) || !opensSentence(how) || !about?.word || about.lower !== 'about' || under(about).length) continue
+    const noun = units[how.head]
+    if (!noun || noun.index <= about.index || !['NOUN', 'PROPN', 'NUM'].includes(noun.pos) || about.head !== how.index || how.dep !== 'advmod') continue
+    if (units.slice(about.index + 1, noun.index).some(word => !word.word || !within(word, noun))) continue
+    about.head = noun.index
+    about.dep = 'mark'
+    changed++
+  }
+
   return changed
 }

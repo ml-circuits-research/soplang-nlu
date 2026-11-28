@@ -649,7 +649,8 @@ export function wiresOf(units) {
     }
     const describing = part.pos === 'ADJ' && units[firstOf(part) - 1]?.word && !under(part).some(inner => inner.dep === 'det' || inner.dep === 'poss')
     if (dep === 'appos' && !describing) {
-      const tie = relation(wire, nominal(part, home, 'beside'), [], home)
+      // (one after the last item of a list renames the whole list: "the first and the last, the ones at the ends, should swap")
+      const tie = relation(listBefore(wire, head, part) ?? wire, nominal(part, home, 'beside'), [], home)
       if (wire.negated.has(part.index)) put(tie, 'negation', wire.negated.get(part.index))
       return
     }
