@@ -8,10 +8,13 @@ and bundles the terms of each part. The control model reads the same terms as sy
 import hashlib
 import numpy as np
 
-PARTS = ['word', 'cur', 'parent', 'aside', 'last', 'hist', 'stack', 'cand']
-P_WORD, P_CUR, P_PAR, P_ASIDE, P_LAST, P_HIST, P_STACK, P_CAND = range(8)
+PARTS = ['word', 'cur', 'parent', 'aside', 'last', 'hist', 'stack', 'cand', 'cur-star', 'last-star']
+P_WORD, P_CUR, P_PAR, P_ASIDE, P_LAST, P_HIST, P_STACK, P_CAND, P_CSTAR, P_LSTAR = range(10)
 NOFF = 99          # "no position" marker for a term
 VIEW = {'version': 1}   # 2: window -3..+4 in the word part, the grandparent's opener in the stack part
+# 3: view 2 and the condensed constellations as state (DESIGN 5.4-5.5, 8.1): the star of the open constellation the
+#    pilot fills and the star of the last closed one, each the bundle of all its stars bound with their keys
+#    (key (x) kind(word) for a word; key (x) type (x) kind(opener) for a held constellation), two more parts
 OFFCLIP = 12
 
 
@@ -241,7 +244,19 @@ class State:
             if G.t != 'M':
                 og = self.opener(G); add((P_STACK, 'grand:' + G.t, off(og), og))
                 for q, k in G.words[-2:]: add((P_STACK, 'grand-word:' + k, off(q), q))
+        if VIEW['version'] >= 3:
+            if X.t != 'M': self._star(T, P_CSTAR, X)
+            else: add((P_CSTAR, 'star:none', NOFF, -1))
+            if self.last_closed is not None: self._star(T, P_LSTAR, self.nodes[self.last_closed])
+            else: add((P_LSTAR, 'star:none', NOFF, -1))
         return T
+
+    def _star(self, T, part, X):
+        """the condensed star of constellation X as terms: every word and every held constellation, bound with its key"""
+        T.append((part, 'star-type:' + X.t, NOFF, -1))
+        for q, k in X.words: T.append((part, 'star-key:' + k, NOFF, q))
+        for c in X.children:
+            nd = self.nodes[c]; T.append((part, 'star-child:%s:%s' % (nd.key, nd.t), NOFF, self.opener(nd)))
 
     def _wire(self, T, part, E, X, off, full):
         add = T.append

@@ -20,6 +20,7 @@ benchmark (known accepted, a lower bound) and on a fresh random file-level sampl
 | dataset cd17b12 | `webmeet-dataset` after the re-split of 2026-11-28 (no file over 100 messages, 1,886 files; paths and rows changed, texts did not). The sets here are unchanged by it: every line carries its message's text and its split, and every lookup is by text (texts are unique). dev-B and train are therefore the text-keyed lines of `distill.jsonl.gz` (dev-B: 15,104 texts), never re-derived from file paths; `build-sets.mjs`, which derives the split from paths, must not be run again for these sets |
 | dataset 3992284, 1899af0 | after the old benchmark was rejudged for spaCy (round 12) and for rvss vsa2p16-d9f (all 1,831 circuits); the `benchmark-cd17b12/` recounts and vsa2k2hmm-d9f's benchmark row are at 1899af0 |
 | targets 9f76a39 | spaCy's circuits written by the writer at 9f76a39 (HEAD, rounds 7 and 8), from the same recorded parses; runs after 09:00 train on them |
+| targets 195075d | spaCy's circuits written by the writer at 195075d (round 12; the spaCy code is the same at HEAD 4b000ab), from the same recorded parses; the sets were refreshed at 11:20 and every run of the afternoon trains and is measured on them; registry decisions (`judged`) at dataset 476f7b7 |
 
 ## How to read the numbers
 
@@ -122,6 +123,165 @@ node strategies/rvss/data/refresh.mjs --rewritten .local-data/rvss/spacy-run-0f2
 node strategies/rvss/data/moves.mjs --threads 4
 node strategies/rvss/model/export.mjs
 python strategies/rvss/model/prep.py .local-data/rvss/model/distill.jsonl .local-data/rvss/model/d9f2 --workers 4 --view 2
+```
+
+## Afternoon sprint (2026-11-28, 11:15 to 12:45): targets at 195075d, roll-in, beam, condensed stars
+
+**In short.** On the targets of the spaCy writer at 195075d (round 12), the pilot trained one more epoch on its own
+moves (roll-in, DESIGN 9.4) and reading with a beam of 4, **vsa2k2hmm-dag12 with beam 4**, equals spaCy on **59.6%** of
+dev-B (relaxed 69.0%, valid 99.7%), against 57.5% for vsa2k2hmm-d9f and 57.6% for the logistic control on the same
+targets; 45.6 ms per message on one CPU thread (greedy: about 13 ms), 8 MB. The roll-in moves little by itself (+0.3
+points; in held-out states the pilot reaches after its own errors, decisions right 0.9065 against 0.9024); the beam
+gives +0.8. The fit of closed constellations (DESIGN 10), by superposition or learned against the beam's own wrong
+constellations, lowers equality at every weight tried, and is not used. The condensed constellation stars as the
+pilot's state (view 3) improve close decisions and opening at 8+ words under teacher forcing but not free running
+(58.0%). `current` now points to vsa2k2hmm-dag12, whose `reading.json` sets the beam of 4. Its old-benchmark circuits
+are in `eval-results/2026-11-28-levels-rvss-vsa2k2hmm-dag12-b4/`, with 392 circuits to judge in 3 packets. The long
+messages are not solved: 21.6% at 25-39 words. **Next step:** the route book inside the pilot (keys read from
+the opener, the pair of kinds and the path, DESIGN 7), so that the pilot's open/close decisions at a distance read the
+constellation it would place into; and a dynamic oracle for structural deviations, without which roll-in sees only
+key and mark errors (2,352 of 6,457 roll-in sequences stopped at the first structural deviation).
+
+Every GPU job went through `tools/gpu-run.sh`, one at a time; decoding and measuring used at most 4 CPU processes;
+free memory stayed above 70 GB; the watchdog stopped nothing.
+
+### 1. Targets refreshed to the writer at 195075d
+
+`data/refresh.mjs` now finds every message by its text only (it keyed by file and row before; the dataset was
+re-split since); `file` and `row` stay in the lines as information. The parses are those recorded at 0f20f16; the
+spaCy code (lib/, strategies/spacy*, strategies/neural-dependencies) is the same at 195075d and at HEAD 4b000ab, and
+`rewrite.mjs` with the `git archive` copy of 195075d gives byte for byte the existing `rewritten-195075d.jsonl`.
+dev-B stays the same 15,104 texts. The 9f76a39 sets moved to `.local-data/rvss/at-9f76a39/`.
+
+| Count (refresh.json) | Value |
+| --- | ---: |
+| lines of distill (train + dev-B) | 181,450, none dropped |
+| circuits changed as written / in the normal-form core | 3,835 (2.11%) / 3,833: train 3,422, dev-B 413 |
+| changed, by length (train + dev-B) | <10 words 1,179, 10-24 1,880, 25-39 428, 40+ 348 |
+| registry decisions on the new circuits (dataset 476f7b7) | train 2,313 accepted, 105 rejected; dev-B 1,005 accepted, 192 rejected |
+| moves derived and replayed identically | train 165,147 of 166,346 (99.279%), dev-B 15,079 of 15,104 (99.834%) |
+| teacher-forced examples (`d12`, view 2) | 165,148 train messages, 5,343,124 acts; 15,079 dev-B messages, 398,394 acts |
+
+The old models scored against the new targets: vsa2k2hmm-d9f 57.8% to 57.5% exact, the control 57.9% to 57.6%.
+
+### 2. Roll-in with the pilot's own moves (DESIGN 9.4)
+
+`model/rollin.py`: the pilot reads a training message while the adopted oracle's moves are known. Where its move
+differs from the gold one only by a key or marks (a word under another key, a wire closed with other marks, a wire of
+the gold type opened under another key, a held item claimed under another key) the state stays consistent with the
+gold tree, the pilot's move is applied, and every later state gives an example labelled with the gold move. Any other
+deviation stops the sequence after a followed one (early update); before one the gold move is applied. The sequence
+also stops where the gold move is not legal in the pilot's state. No dynamic oracle exists for structural deviations.
+
+- Data: vsa2k2hmm-ft12 read every 4th training message (41,280): 8,004 deviations followed; 6,457 messages gave
+  60,376 examples; 2,352 sequences stopped at a structural deviation, 974 where the gold move was illegal.
+- Training (`train.py --init`, 1 epoch, lr 0.005 / 0.002 for scalars, from vsa2k2hmm-d9f): **ft12** on d12 alone
+  (the control for the roll-in), **dag12** on d12 plus the roll-in examples drawn 4 times (240 k of 5.6 M examples).
+- Held-out states the pilot reaches: `rollin.py --split dev-B` with ft12 on all of dev-B (3,317 deviations, 2,555
+  messages, 13,938 decisions), scored with `train.py --eval-only --by-decision --dev rollin12dv`.
+
+### 3. A beam scored by the fit of what it builds (DESIGN 10)
+
+`decode.py --beam K` keeps K hypotheses, each expanded by its 3 best moves, ranked by the sum of the moves' log
+probabilities; `--fit L` adds L x fit(X) for every constellation X a hypothesis closes. Two fits were tried:
+superposition prototypes (`fitproto.py`: the phase of the sum of the kind constellations K_X of the gold
+constellations of every 8th training message, per type; fit = z-score of sim(K_X, Pi_t)) and learned ones (`fitlearn.py`: Pi_t, a_t, b_t by logistic
+regression on 57,548 constellations closed in the final beam of 4,129 training messages, 34,441 gold; held-out
+accuracy 0.745, AUC nominal 0.79, relation 0.88, clauses 0.61-0.77; fit = log p(gold) or its log-odds). The settings
+were chosen on 2,064 training messages (`eval/beam-tune.sh`, every 80th, not among fitlearn's), before dev-B:
+
+| Setting (training messages, exact / relaxed) | ft12 | dag12 |
+| --- | --- | --- |
+| greedy | 57.3% / 70.0% | |
+| beam 4 | 57.7% / 71.2% | 58.0% / 71.4% |
+| beam 4, superposition fit 0.3 / 1.0 | 57.4% / 70.7%; 55.0% / 67.5% | |
+| beam 4, learned fit (log p) 0.5 / 1.0 / 2.0 | | 57.4%; 55.8%; 52.2% |
+| beam 4, learned fit (log-odds) 0.3 / 1.0 | | 57.4%; 52.5% |
+| beam 8 | | 58.0% / 71.4% (the same as beam 4, twice the time) |
+
+Word-synchronous pruning (`--sync`) was 4 times slower than the plain beam and is not used. Every fit lowers equality:
+a constellation can look typical of its type and still be the wrong grouping (the errors are where a wire opens and
+closes, which K_X does not see), and the fit term favours hypotheses that close fewer constellations.
+
+### 4. The condensed constellations as the pilot's state (view 3)
+
+`core.py` view 3 adds two parts to the pilot's view: the star of the open constellation it fills and the star of the
+last closed one, each the bundle of all its stars bound with their keys (key x kind(word); key x type x kind(opener)
+for a held constellation), as the constellation is condensed (DESIGN 5.4-5.5). Trained from scratch, 3 epochs on
+`d12v3` (vsa3k2hmm-d12; 2 more parts of prototypes per outcome, 2.3 M parameters, 9.3 MB).
+
+### Results (targets 195075d; dev-B 15,104 messages; old benchmark 1,831 messages, registry of now)
+
+| Run | TF act | TF all-acts | dev-B exact | relaxed | variants | valid | word placement | exact <10 / 10-24 / 25-39 / 40+ | relaxed <10 / 10-24 / 25-39 | known accepted (old benchmark) | ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: |
+| logreg2t-d9f (control, 9f76a39 targets) | 0.9703 | | 57.6% | 65.6% | 66.0% | 97.5% | 88.8% | 66.3 / 49.9 / 23.4 / 1 of 14 | 73.8 / 58.4 / 29.7 | 1369 (74.8%) | 5.0 |
+| vsa2k2hmm-d9f (9f76a39 targets) | 0.9698 | | 57.5% | 67.0% | 67.3% | 99.3% | 91.0% | 67.5 / 48.4 / 22.3 / 0 | 76.6 / 58.4 / 28.7 | 1354 (73.9%) | 13.2 |
+| vsa2k2hmm-ft12 (+1 epoch, d12) | 0.9711 | 0.609 | 58.5% | 67.9% | 68.1% | 99.3% | 91.4% | 68.3 / 49.7 / 22.1 / 1 | 77.2 / 59.6 / 28.5 | 1359 (74.2%) | |
+| vsa2k2hmm-dag12 (+1 epoch, d12 + roll-in) | 0.9711 | 0.610 | 58.8% | 68.0% | 68.2% | 99.3% | 91.4% | 68.7 / 49.7 / 20.9 / 1 | 77.7 / 59.5 / 27.8 | 1363 (74.4%) | |
+| **vsa2k2hmm-dag12, beam 4** | | | **59.6%** | **69.0%** | 69.2% | 99.7% | 91.9% | 69.4 / 50.8 / 21.6 / 1 | 78.4 / 60.8 / 28.3 | 1371 (74.9%) | 45.6 |
+| vsa3k2hmm-d12 (view 3, from scratch) | 0.9708 | 0.604 | 58.0% | 67.2% | 67.4% | 99.3% | 91.1% | 68.2 / 48.9 / 19.1 / 1 | 77.3 / 58.4 / 24.4 | 1331 (72.7%) | |
+
+ms: median per message through `index.mjs` on one CPU thread, 400 benchmark messages (`speed.mjs`); the beam's
+p90 is 136 ms. spaCy: 109.9 ms, 477.5 MB. Known accepted is a lower bound (unjudged circuits count as not accepted).
+
+**Decisions by kind and by distance** (teacher forcing, all of dev-B on the 195075d targets, `by-decision.json`; the
+control and vsa2k2hmm-d9f trained on the 9f76a39 targets), and in the held-out states the pilot reaches after its
+own key or mark errors (roll-in states of dev-B, `by-decision-rollin12dv.json`):
+
+| Decision, distance | n | control | vsa2k2hmm-d9f | ft12 | dag12 | view 3 | n (roll-in states) | ft12, roll-in states | dag12, roll-in states |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| all | 398,394 | 0.9703 | 0.9698 | 0.9711 | 0.9711 | 0.9708 | 13,938 | 0.9024 | 0.9065 |
+| open, all | 105,315 | 0.9647 | 0.9629 | 0.9639 | 0.9638 | 0.9635 | 2,906 | 0.8878 | 0.8909 |
+| open, 1 | 43,210 | 0.9739 | 0.9706 | 0.9708 | 0.9714 | 0.9709 | 1,473 | 0.8900 | 0.8934 |
+| open, 2-3 | 20,652 | 0.9427 | 0.9449 | 0.9468 | 0.9466 | 0.9432 | 678 | 0.8333 | 0.8348 |
+| open, 4-7 | 7,484 | 0.9335 | 0.9264 | 0.9309 | 0.9250 | 0.9280 | 332 | 0.8976 | 0.9036 |
+| open, 8+ | 1,856 | 0.9057 | 0.8901 | 0.8842 | 0.8906 | 0.8976 | 128 | 0.8984 | 0.9219 |
+| close, all | 111,876 | 0.9653 | 0.9618 | 0.9637 | 0.9632 | 0.9644 | 4,850 | 0.9614 | 0.9596 |
+| close, 2-3 | 25,838 | 0.9503 | 0.9427 | 0.9434 | 0.9434 | 0.9456 | 718 | 0.9234 | 0.9220 |
+| close, 4-7 | 14,874 | 0.9519 | 0.9511 | 0.9562 | 0.9556 | 0.9564 | 431 | 0.9327 | 0.9188 |
+| close, 8+ | 6,476 | 0.9700 | 0.9568 | 0.9600 | 0.9600 | 0.9648 | 269 | 0.9368 | 0.9405 |
+| place, all | 163,680 | 0.9813 | 0.9825 | 0.9834 | 0.9837 | 0.9826 | 5,442 | 0.8537 | 0.8642 |
+| gather (coordination), all | 5,617 | 0.9281 | 0.9445 | 0.9525 | 0.9496 | 0.9487 | 388 | 0.9871 | 0.9871 |
+| reopen, all | 712 | 0.4761 | 0.4228 | 0.4621 | 0.4480 | 0.4719 | 36 | 0.139 | 0.194 |
+| reopen: which wire | 712 | 0.7725 | 0.8174 | 0.8455 | 0.8357 | 0.8287 | | | |
+| point, all | 520 | 0.8404 | 0.8731 | 0.8942 | 0.8769 | 0.9019 | | | |
+
+What it shows: under teacher forcing the roll-in changes nothing (it adds states, not accuracy in gold states); in the
+states the pilot reaches after its own errors it helps placement (+1.1 points) and opening at 8+ words (+2.4), as
+roll-in should, but a message is already wrong once the pilot errs, so exact equality moves only +0.3. The beam lets
+a later word overturn an earlier decision: +0.8 exact, +1.0 relaxed, valid circuits 99.3% to 99.7%, mostly on 10-24
+words (49.7% to 50.8%). The condensed stars help the decisions that read the constellation's content (close, point,
+reopen, opening at 8+), not free running. Long messages (25-39 words: 21.6%) and reopen (0.45) stay the losses.
+
+**Old benchmark for judges.** `eval-results/2026-11-28-levels-rvss-vsa2k2hmm-dag12-b4/` (as
+`2026-11-28-levels-spacy-rvss`): the old benchmark's sample (1,831 messages, held out of training), `rvss.jsonl`
+(vsa2k2hmm-dag12 with beam 4), `summary.json`, and `judge-prepare.mjs --size 170`: 849 circuits equal to the
+message's label, 513 already accepted, 70 already rejected, 7 without a valid circuit, **392 to judge in 3 packets**
+(170, 170, 52).
+
+**Clean-up.** The first builder's view-2 sets `distill2.*` and `labels2.*` (2.2 GB) are deleted; nothing reads them
+(`train.py` now defaults to `--data d12 --dev d12`). Not deleted (the owner decides): the first builder's view-1 sets
+`distill.{train,dev-B}.*`, `labels.{train,dev-B}.*`, `distill.meta.json`, `labels.meta.json` (2.0 GB; only the old
+view-1 models read them), the 9f76a39 set `d9f2.*` (1.7 GB; superseded by `d12`, prepared again in a minute from
+`at-9f76a39/`), and the first builder's small leftovers (`smoke-*`, `beam1*`, `beam4*`, `dev20/300/1000.jsonl`,
+`gold-*.jsonl`, the empty `vsa8-distill/` and `vsa128-distill/`).
+
+Commands (from `soplang-nlu/`):
+
+```sh
+M=.local-data/rvss/model; PY=/home/salboaie/nlp-venv/bin/python
+node strategies/rvss/data/refresh.mjs --rewritten .local-data/rvss/spacy-run-0f20f16/rewritten-195075d.jsonl --commit 195075d
+#   then the 9f76a39 sets moved to at-9f76a39/, the 195075d ones from at-195075d/ to .local-data/rvss/
+node strategies/rvss/data/moves.mjs --threads 4; node strategies/rvss/model/export.mjs
+$PY strategies/rvss/model/prep.py $M/distill.jsonl $M/d12 --workers 4 --view 2      # and $M/d12v3 --view 3
+tools/gpu-run.sh $PY strategies/rvss/model/train.py --data d12 --out $M/vsa2k2hmm-ft12 --init $M/vsa2k2hmm-d9f \
+  --epochs 1 --lr 0.005 --lr-scalar 0.002 --k2 64 --hmm $M/stations.jsonl
+$PY strategies/rvss/model/rollin.py $M/vsa2k2hmm-ft12 $M/distill.jsonl $M/rollin12 --workers 4 --follow 1.0 --stride 4
+tools/gpu-run.sh $PY strategies/rvss/model/train.py --data d12,rollin12 --data-weight 1,4 --out $M/vsa2k2hmm-dag12 \
+  --init $M/vsa2k2hmm-d9f --epochs 1 --lr 0.005 --lr-scalar 0.002 --k2 64 --hmm $M/stations.jsonl
+$PY strategies/rvss/model/rollin.py $M/vsa2k2hmm-ft12 $M/distill.jsonl $M/rollin12dv --workers 4 --follow 1.0 --split dev-B
+tools/gpu-run.sh $PY strategies/rvss/model/train.py --data d12v3 --dev d12v3 --out $M/vsa3k2hmm-d12 --epochs 3 --k2 64 --hmm $M/stations.jsonl
+RVSS_DECODE_ARGS="--beam 4" strategies/rvss/eval/measure.sh vsa2k2hmm-dag12 4 vsa2k2hmm-dag12-b4
 ```
 
 ## Runs on the refreshed targets
@@ -319,10 +479,12 @@ measured on held-out files and the fresh sample.
 | kinds of kinds (5.4, 5.7 second memory) | built as a second level over the window of word kinds (`--k2`); the design's kind of a closed constellation from its condensed star `s(Y)` is not built |
 | decisions scored by parts against prototypes (8.5); choices among stars (8.6) | built |
 | constellations, condensing `c(X) = rho(phase(C_X))`, atlas, read-back by the m1star decoder (5.4-5.6, 6) | built at the output: the circuit is read back from the pilot's own constellations and atlas; 99.4-99.6% of decoded messages read back the same as the explicit tree |
-| the pilot reading condensed stars as its state | missing: the pilot's views are bundles of symbolic state atoms (types, keys, distances of the open, held and last wires) bound with kinds, not the condensed constellation stars |
+| the pilot reading condensed stars as its state | built as view 3 (`core.py`): the stars of the open and of the last closed constellation (every star bound with its key) are two more parts of the view, beside the symbolic state atoms; better close, point and reopen decisions under teacher forcing, no gain in free running (vsa3k2hmm-d12, 58.0%) |
 | route book inside the pilot: keys from the opener, pair of kinds, path, backward at a claim, beacon, vote, cleanup against named key stars; key–value memories A, B, L (7) | built only in the M2a test (`m2a.py`, grouping given: 96.71% against the control's 95.04%); the pilot places a key as one outcome among its moves |
 | situation memory (9.1) | built (`--sit`), no gain at step 2,000 (first builder), not kept |
-| roll-in with the pilot's own moves (9.4), beam scored by fit (10), re-placement, bottom-up reader | missing (a plain beam of 4 was tried early: no gain) |
+| roll-in with the pilot's own moves (9.4) | built (`rollin.py`): key and mark deviations followed, early update at structural ones (no dynamic oracle); +0.3 points exact (vsa2k2hmm-dag12) |
+| beam scored by fit (10) | built (`decode.py --beam --fit`, `fitproto.py`, `fitlearn.py`): the beam of 4 gives +0.8 points exact; every fit tried lowers equality and is not used |
+| re-placement, bottom-up reader | missing |
 | judged weights, negatives from rejected circuits (M3) | missing (labels mixed in lowered equality with spaCy, vsa2-mixed) |
 
 ## Files
@@ -330,9 +492,12 @@ measured on held-out files and the fresh sample.
 | File | What |
 | --- | --- |
 | `model/core.py`, `prep.py` | the pilot's state, moves and views; teacher-forced examples |
-| `model/net.py`, `train.py` | the VSA pilot and the logistic control; training (`--k2`, `--hmm`, `--lex`, `--dev`, `--eval-train` added on 2026-11-28; `RVSS_TRAIN_DEVICE=cpu` for a CPU check) |
-| `model/decode.py`, `worker.py`, `index.mjs`, `writer.mjs` | free running on the CPU and the strategy module |
-| `data/refresh.mjs` | the sets with a newer spaCy writer, splits and exclusions kept |
+| `model/net.py`, `train.py` | the VSA pilot and the logistic control; training (`--k2`, `--hmm`, `--lex`, `--dev`, `--eval-train` added on 2026-11-28; `--init`, `--data-weight` and view 3 in the afternoon; `RVSS_TRAIN_DEVICE=cpu` for a CPU check) |
+| `model/decode.py`, `worker.py`, `index.mjs`, `writer.mjs` | free running on the CPU and the strategy module; `--beam`, `--fit`, `--sync`; the model folder's `reading.json` tells the worker and decode.py how to read (beam, fit) |
+| `data/refresh.mjs` | the sets with a newer spaCy writer, splits and exclusions kept; messages found by text only |
+| `model/rollin.py` | roll-in with the pilot's own moves (DESIGN 9.4): examples in the states the pilot reaches (train), or held-out ones for measuring (`--split dev-B`) |
+| `model/fitproto.py`, `model/fitlearn.py` | DESIGN 10: kind constellations of closed constellations; prototypes by superposition (`fit.npz`) and learned against the beam's own wrong constellations (`fit-learned.npz`) |
+| `eval/beam-tune.sh` | a decoding setting tried on 2,064 training messages (`train-inputs-s80.jsonl`) before dev-B is read |
 | `data/stations.mjs` | the station HMM's posterior per word (forward–backward); `.local-data/rvss/model/stations.jsonl` |
 | `eval/measure-fresh.sh` | decode a run on the fresh sample, equality with spaCy by split, the unjudged list |
 | `eval/fresh-sample.mjs` | inputs, spaCy targets and the unjudged list for a fresh file-level sample |

@@ -5,8 +5,9 @@
 //   node strategies/rvss/data/refresh.mjs --rewritten <rewritten-<commit>.jsonl> --commit <commit>
 //        [--in <folder with distill/mixed.jsonl.gz>] [--out <folder>] [--dataset <webmeet-dataset>]
 //
-// For every line of <in>/distill.jsonl.gz: the circuit of the same message (file, row, same text) in the rewritten
-// file replaces `sop`; `source` becomes spacy@<commit>; `judged` is the registry's newest decision on the new circuit
+// For every line of <in>/distill.jsonl.gz: the circuit of the same message in the rewritten file replaces `sop`. Messages
+// are found by their text only (texts are unique in the dataset; after the re-split of 2026-11-28 file names and rows
+// changed, so they are never used as keys); `file` and `row` stay as the sets hold them, as information; `source` becomes spacy@<commit>; `judged` is the registry's newest decision on the new circuit
 // (dataset at HEAD). A message whose new circuit is missing (the writer fails) is dropped and counted. The spaCy lines
 // of mixed.jsonl.gz (origin spacy) are replaced the same way; label lines stay as they are and their `spacySame` is
 // recomputed against the new circuit. Writes <out>/distill.jsonl.gz, mixed.jsonl.gz, spacy-silver.jsonl.gz and
@@ -36,25 +37,24 @@ const now = new Map(); const silver = []
 for await (const line of linesOf(rewritten)) {
   if (!line) continue
   const r = JSON.parse(line)
-  now.set(r.file + '#' + r.row, r); silver.push({text: r.text, file: r.file, row: r.row, sop: r.sop, error: r.error, ms: r.ms ?? null})
+  now.set(r.text, r); silver.push({text: r.text, file: r.file, row: r.row, sop: r.sop, error: r.error, ms: r.ms ?? null})
 }
 gz('spacy-silver.jsonl.gz', silver); silver.length = 0
 const registry = readRegistry(join(dataset, 'annotations/syntax/v1/judged'))
 const core = (text, sop) => { try { return normalForm(text, sop)?.core ?? null } catch { return null } }
 const bucket = n => n < 10 ? '<10' : n < 25 ? '10-24' : n < 40 ? '25-39' : '40+'
-const count = {lines: 0, dropped: 0, droppedExamples: [], textDiffers: 0, written: {}, core: {}, total: {}, judged: {}}
+const count = {lines: 0, dropped: 0, droppedExamples: [], written: {}, core: {}, total: {}, judged: {}}
 const inc = (o, k) => { o[k] = (o[k] ?? 0) + 1 }
 const coreCache = new Map()
 const distill = []
 for await (const line of linesOf(join(input, 'distill.jsonl.gz'))) {
   const o = JSON.parse(line); count.lines++
-  const r = now.get(o.file + '#' + o.row)
-  if (r && r.text !== o.text) { count.textDiffers++; continue }
+  const r = now.get(o.text)
   if (!r?.sop) { count.dropped++; if (count.droppedExamples.length < 5) count.droppedExamples.push({file: o.file, row: o.row, error: r?.error}); continue }
   const k = o.split + ' ' + bucket(wordsOf(o.text).length)
   inc(count.total, k)
   const cNew = core(o.text, r.sop)
-  coreCache.set(o.file + '#' + o.row, cNew)
+  coreCache.set(o.text, cNew)
   if (r.sop !== o.sop) { inc(count.written, k); if (cNew !== core(o.text, o.sop)) inc(count.core, k) }
   const decided = lookup(registry, o.text, cNew)
   const n = {...o, sop: r.sop, source: 'spacy@' + commit, judged: decided?.verdict ?? null}
@@ -62,14 +62,14 @@ for await (const line of linesOf(join(input, 'distill.jsonl.gz'))) {
   distill.push(n)
 }
 gz('distill.jsonl.gz', distill)
-const byKey = new Map(distill.map(d => [d.file + '#' + d.row, d])); distill.length = 0
+const byKey = new Map(distill.map(d => [d.text, d])); distill.length = 0
 const mixed = []; const mcount = {lines: 0, spacyReplaced: 0, spacyDropped: 0, labels: 0, spacySameBefore: 0, spacySameNow: 0}
 for await (const line of linesOf(join(input, 'mixed.jsonl.gz'))) {
   const o = JSON.parse(line); mcount.lines++
-  const d = byKey.get(o.file + '#' + o.row)
+  const d = byKey.get(o.text)
   if (o.origin === 'spacy') { if (d) { mixed.push(d); mcount.spacyReplaced++ } else mcount.spacyDropped++; continue }
   mcount.labels++; if (o.spacySame) mcount.spacySameBefore++
-  const spacySame = d ? coreCache.get(o.file + '#' + o.row) === core(o.text, o.sop) : false
+  const spacySame = d ? coreCache.get(o.text) === core(o.text, o.sop) : false
   if (spacySame) mcount.spacySameNow++
   mixed.push({...o, spacySame})
 }

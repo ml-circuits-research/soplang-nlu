@@ -1,7 +1,11 @@
 """rvss M2c: the pilot reads alone (its own moves), greedy or with a small beam scored by fit, and the
 circuit is read back from the pilot's own stars (m1star.py decoder on the pilot's atlas).
 
-  python decode.py <model dir> <in.jsonl> <out.jsonl> [--workers 16] [--limit N] [--beam 1]
+  python decode.py <model dir> <in.jsonl> <out.jsonl> [--workers 16] [--limit N] [--beam 1] [--fit 0] [--sync]
+--beam K keeps K hypotheses (each expanded by its 3 best moves); --fit L adds L x fit(X) for every constellation X a
+hypothesis closes (DESIGN 10; fit = z-score of sim(phase(K_X), Pi_t) against the gold constellations, fitproto.py,
+<model dir>/fit.npz); --sync prunes word-synchronously (hypotheses compete only with those at the same word).
+Without --beam, <model dir>/reading.json (as worker.py reads it) gives beam, fit and sync when it exists.
 in: lines {text, file, row, words, gaps}; out: lines {file, row, text, nodes, moves, readback, ms, error}
 Also importable: Pilot(model_dir).read(words, gaps) -> dict (used by worker.py).
 """
@@ -17,8 +21,10 @@ m1star = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(m1star
 
 TYPES = ['M', 'nominal', 'relation', 'clause', 'coordination']
 KIND = {'claim': 0, 'reopen': 1, 'point': 2, 'gather': 3}
+# RVSS_FIT_MARGIN=1: the learned fit is the margin (log-odds that the constellation is a gold one), not its log-probability
+FIT_MARGIN = os.environ.get('RVSS_FIT_MARGIN') == '1'
 BEAM_SYNC = os.environ.get('RVSS_BEAM_SYNC') == '1'; BEAM_NORM = os.environ.get('RVSS_BEAM_NORM') == '1'
-ACT_PARTS = [0, 1, 2, 3, 4, 5, 6]; BOUND = [1, 2, 3]; NPARTS = 8
+ACT_PARTS = [0, 1, 2, 3, 4, 5, 6]; BOUND = [1, 2, 3]; NPARTS = 10     # parts 8, 9: view 3's condensed stars
 
 
 def atom_id(a):
@@ -49,6 +55,7 @@ class VSAScorer:
         self.ug, self.betag, self.biasg = st['ug'], st['betag'], st['biasg']
         self.sq = math.sqrt(D)
         self.sit = a.get('sit', 0)
+        self.act_parts = ACT_PARTS + ([8, 9] if a.get('view', 1) >= 3 else [])
         self.gam = float(st['gam']) if a.get('lex') else 0.0
         self.k2 = a.get('k2', 0)
         self.hmm = bool(a.get('hmm'))
@@ -109,7 +116,7 @@ class VSAScorer:
     def act(self, kap, terms, bw, bt, ok=None):
         V = self.bundle(kap, terms)
         kw = kap[bw]
-        parts = np.stack([V[j] for j in ACT_PARTS] + [V[b] * kw for b in BOUND])
+        parts = np.stack([V[j] for j in self.act_parts] + [V[b] * kw for b in BOUND])
         if self.sit:
             Vall = (parts * self.Sk).sum(0) / math.sqrt(len(parts))
             z = self.beta_s * (Vall @ self.SQc).real * (self.sq / self.D); z = np.exp(z - z.max()); z = z / z.sum()
@@ -187,7 +194,7 @@ class LogRegScorer:
 class Pilot:
     def __init__(self, model_dir, device='cpu'):
         import torch
-        ck = torch.load(os.path.join(model_dir, 'model.pt'), map_location='cpu', weights_only=False); ck['_dir'] = model_dir
+        ck = torch.load(os.path.join(model_dir, 'model.pt'), map_location='cpu', weights_only=False); ck['_dir'] = model_dir; self.dir = model_dir
         self.labels = ck['labels']; self.allowed = {t: set(v) for t, v in ck['allowed'].items()}
         self.kind = ck['args']['model']; VIEW['version'] = ck['args'].get('view', 1)
         self.sc = VSAScorer(ck) if self.kind == 'vsa' else LogRegScorer(ck)
@@ -212,9 +219,31 @@ class Pilot:
             for j, p in lst: P[i, j] = p
         return P
 
-    def read(self, words, gaps, beam=1, stations=None):
+    def fitness(self, S, h, kap):
+        """DESIGN 10: how well a closed constellation fits the prototype of its type (z-score against gold ones)"""
+        if not hasattr(self, '_fit'):
+            import fitproto
+            learned = os.path.join(self.dir, 'fit-learned.npz')
+            if os.path.exists(learned):
+                # fitlearn.py: learned prototypes; fit = log p(the constellation is a gold one), or its log-odds (RVSS_FIT_MARGIN)
+                z = np.load(learned)
+                self._fit = ({t: i for i, t in enumerate(z['types'].tolist())}, np.conj(z['Pi']), z['a'], z['b'], fitproto, True)
+            else:
+                z = np.load(os.path.join(self.dir, 'fit.npz'))
+                self._fit = ({t: i for i, t in enumerate(z['types'].tolist())}, np.conj(z['Pi']), z['mu'], z['sd'], fitproto, False)
+        ix, Pc, mu, sd, fp, learned = self._fit
+        i = ix.get(fp.ftype(S.nodes[h]))
+        if i is None: return -3.0
+        K = fp.kind_constellation(S, h, kap, self.sc.stars.atom)
+        if learned:
+            z = mu[i] * (K @ Pc[i]).real / math.sqrt(len(K)) + sd[i]
+            return float(z) if FIT_MARGIN else float(-np.logaddexp(0, -z))
+        return float(((K @ Pc[i]).real / len(K) - mu[i]) / sd[i])
+
+    def read(self, words, gaps, beam=1, stations=None, fit=0.0, sync=None):
         t0 = time.perf_counter()
         n = len(words)
+        sync = BEAM_SYNC if sync is None else sync
         kap = self.sc.kinds(words, self.stations(words, stations) if getattr(self.sc, 'hmm', False) else None)
         NT = n  # index of the "no token" row
         S0 = State(words, gaps)
@@ -223,25 +252,31 @@ class Pilot:
         while True:
             if all(b[1].done() for b in beam_): break
             steps += 1
-            if steps > (10 * n + 40) * (beam if BEAM_SYNC else 1): raise RuntimeError('too many moves')
+            if steps > (10 * n + 40) * (beam if sync else 1): raise RuntimeError('too many moves')
             nxt = []
             live = [b[1].p for b in beam_ if not b[1].done()]
             pmin = min(live) if live else None
             for sc0, S, mv, h in beam_:
-                if S.done() or (BEAM_SYNC and S.p > pmin): nxt.append((sc0, S, mv, h)); continue
+                if S.done() or (sync and S.p > pmin): nxt.append((sc0, S, mv, h)); continue
                 for lp, m, h2 in self.expand(S, kap, NT, h, k=1 if beam == 1 else 3, forced=forced):
                     S2 = S if beam == 1 else S.clone()
-                    S2.apply(m); nxt.append((sc0 + lp, S2, mv + [m], h2))
+                    S2.apply(m)
+                    # in a beam, a hypothesis that keeps moving stars without placing a word (only the executor's
+                    # forced relaxation allows it) is dropped rather than kept waiting at its word
+                    if beam > 1 and S2.since_place > 12 and len(nxt) + len(beam_) > 1: continue
+                    if fit and m['op'] == 'close': lp += fit * self.fitness(S2, S2.last_closed, kap)
+                    nxt.append((sc0 + lp, S2, mv + [m], h2))
             if not nxt: raise RuntimeError('no legal move')
             # word-synchronous pruning (BEAM_SYNC=1): hypotheses compete only with those at the same word, so
             # that one with fewer moves so far is not preferred for having fewer log probabilities summed
-            if BEAM_SYNC:
+            if sync:
                 buckets = {}
                 for b in sorted(nxt, key=lambda b: -b[0]): buckets.setdefault(('done' if b[1].done() else b[1].p), []).append(b)
                 beam_ = [b for v in buckets.values() for b in v[:beam]]
             else:
                 nxt.sort(key=lambda b: -b[0]); beam_ = nxt[:beam]
         best = max(beam_, key=lambda b: b[0] / (BEAM_NORM and max(1, len(b[2])) or 1)); S, moves = best[1], best[2]; forced = forced[0]
+        if getattr(self, 'keep_beam', False): self.last_beam = (kap, [b[1] for b in beam_])     # fitlearn.py reads the final hypotheses
         t1 = time.perf_counter()
         nodes = {str(k): {'type': nd.t, 'words': nd.words, 'atoms': nd.atoms, 'refs': nd.refs, 'parent': nd.parent, 'key': nd.key}
                  for k, nd in S.nodes.items()}
@@ -340,12 +375,12 @@ class Pilot:
 
 
 def run_chunk(args):
-    model_dir, lines, beam = args
+    model_dir, lines, beam, fit, sync = args
     P = Pilot(model_dir); out = []
     for o in lines:
         t0 = time.perf_counter()
         try:
-            r = P.read(o['words'], o['gaps'], beam); r['error'] = None
+            r = P.read(o['words'], o['gaps'], beam, fit=fit, sync=sync); r['error'] = None
         except Exception as e:
             r = {'error': 'no circuit: ' + str(e)[:100], 'nodes': None, 'moves': None}
         r['ms'] = round((time.perf_counter() - t0) * 1000, 3)
@@ -359,10 +394,19 @@ def main():
     limit = int(args[args.index('--limit') + 1]) if '--limit' in args else None
     split = args[args.index('--split') + 1] if '--split' in args else None
     beam = int(args[args.index('--beam') + 1]) if '--beam' in args else 1
+    fit = float(args[args.index('--fit') + 1]) if '--fit' in args else 0.0
+    sync = '--sync' in args or BEAM_SYNC
+    stride = int(args[args.index('--stride') + 1]) if '--stride' in args else 1
+    rd = os.path.join(md, 'reading.json')
+    if '--beam' not in args and os.path.exists(rd):
+        # how the strategy reads with this model (worker.py reads the same file)
+        how = json.load(open(rd)); beam, fit, sync = int(how.get('beam', 1)), float(how.get('fit', 0)), bool(how.get('sync', False))
+        print('reading.json', how, flush=True)
     lines = [json.loads(l) for l in open(src)]
     if split: lines = [o for o in lines if o.get('split') == split]
+    lines = lines[::stride]
     if limit: lines = lines[:limit]
-    chunks = [(md, lines[i:i + 100], beam) for i in range(0, len(lines), 100)]
+    chunks = [(md, lines[i:i + 100], beam, fit, sync) for i in range(0, len(lines), 100)]
     from multiprocessing import Pool
     t0 = time.time()
     with Pool(workers) as pool: res = [r for part in pool.imap(run_chunk, chunks) for r in part]

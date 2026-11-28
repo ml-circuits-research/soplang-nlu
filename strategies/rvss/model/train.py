@@ -1,9 +1,11 @@
 """rvss M2b: train the pilot's decisions under teacher forcing (VSA model or the logistic control).
 
-  python train.py --model vsa|logreg --data distill[,labels] --out <dir> [--epochs 2] [--D 1024] [--C 64]
+  python train.py --model vsa|logreg --data d12[,rollin12] --out <dir> [--epochs 2] [--D 1024] [--C 64]
                   [--batch 96] [--max-words N] [--minutes M]
-Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py). dev-B is the distill dev-B (spaCy) of --dev
-(default distill2 for view 2, distill for view 1).
+Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py; rollin.py gives a train part only). dev-B is the
+spaCy dev-B of --dev (default d12: the targets of the writer at 195075d, view 2).
+--init <dir>: start from that model (fine-tuning); parameters indexed by label are copied row by row (labels.json only
+grows), the others where the shapes agree. --data-weight w1,w2,...: how often each data part is drawn (repeats).
 """
 import argparse, json, math, os, sys, time
 import numpy as np
@@ -194,12 +196,13 @@ def group_loss(logits, b):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--model', default='vsa'); ap.add_argument('--data', default='distill'); ap.add_argument('--out', required=True)
+    ap.add_argument('--model', default='vsa'); ap.add_argument('--data', default='d12'); ap.add_argument('--out', required=True)
     ap.add_argument('--epochs', type=float, default=2); ap.add_argument('--D', type=int, default=1024); ap.add_argument('--C', type=int, default=64)
     ap.add_argument('--P', type=int, default=4)
     ap.add_argument('--batch', type=int, default=96); ap.add_argument('--max-words', type=int, default=0); ap.add_argument('--minutes', type=float, default=1e9)
     ap.add_argument('--lr', type=float, default=0.02); ap.add_argument('--lr-scalar', type=float, default=0.005); ap.add_argument('--seed', type=int, default=1)
     ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0); ap.add_argument('--lex', action='store_true'); ap.add_argument('--dev', default=''); ap.add_argument('--k2', type=int, default=0); ap.add_argument('--eval-train', type=int, default=0); ap.add_argument('--by-decision', action='store_true'); ap.add_argument('--hmm', default='', help='station posteriors (data/stations.mjs output)')
+    ap.add_argument('--init', default=''); ap.add_argument('--data-weight', default='')
     ap.add_argument('--eval-only', action='store_true'); ap.add_argument('--replace', action='store_true'); ap.add_argument('--confusion', action='store_true')
     a = ap.parse_args()
     torch.manual_seed(a.seed); np.random.seed(a.seed)
@@ -207,7 +210,7 @@ def main():
     dev = torch.device(os.environ.get('RVSS_TRAIN_DEVICE', 'cuda'))   # cpu for a small --eval-only check
     labels = json.load(open(L + 'labels.json'))
     meta = json.load(open(L + a.data.split(',')[0] + '.meta.json')); a.view = meta.get('view', 1)
-    dvname = a.dev or ('distill2' if a.view == 2 else 'distill')
+    dvname = a.dev or 'd12'
     allowed = {}
     for name in a.data.split(','):
         for k, c in json.load(open(L + name + '.meta.json'))['allowed'].items():
@@ -224,6 +227,9 @@ def main():
         keep = np.array([tuple(w) not in lab for w in parts[0]['words']])
         print('replace: spaCy lines kept', int(keep.sum()), 'of', len(keep), flush=True)
         parts[0] = _reindex(parts[0], np.nonzero(keep)[0])
+    if a.data_weight:
+        reps = [int(x) for x in a.data_weight.split(',')]
+        parts = [p for p, r in zip(parts, reps) for _ in range(r)]
     tr = concat(parts)
     dv = load(dvname, 'dev-B', a.max_words)
     dv = _reindex(dv, np.arange(min(len(dv['words']), 10 ** 9)))
@@ -233,21 +239,37 @@ def main():
     for ws in tr['words'] + dv['words']:
         for w in ws: vocab.setdefault(w, len(vocab))
     atoms = np.unique(np.concatenate([tr['term_atom'], tr['cterm_atom'], dv['term_atom'], dv['cterm_atom']]))
+    src = a.out if a.eval_only else a.init
+    if src:
+        # the atom rows of the model read (the control hashes an atom's row): its own atoms first, in its order
+        old = torch.load(src + '/model.pt', map_location='cpu', weights_only=False).get('atoms')
+        if old is not None:
+            known = set(old); atoms = np.array(list(old) + [int(x) for x in atoms if int(x) not in known], np.int64)
     amap = {int(x): i for i, x in enumerate(atoms)}
-    lut = np.zeros(int(atoms.max()) + 1, np.int64); lut[atoms] = np.arange(len(atoms))
+    lut = np.zeros(int(np.max(atoms)) + 1, np.int64); lut[atoms] = np.arange(len(atoms))
     aid = lambda arr: lut[np.asarray(arr)]
     S = Stars(a.D)
     t1 = time.time()
     if a.model == 'vsa':
         W = np.stack([S.f(w) for w in vocab]); A = np.stack([seeded('rvss-atom-id:%d' % int(x), a.D) for x in atoms])
         print('stars', W.shape, A.shape, f'{time.time()-t1:.0f}s', flush=True)
-        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0).to(dev)
+        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0, view=a.view).to(dev)
         opt = torch.optim.Adam([{'params': model.phase_params(), 'lr': a.lr}, {'params': model.scalar_params(), 'lr': a.lr_scalar}])
     else:
         import zlib
         low = np.array([zlib.crc32(w.lower().encode()) & 0x7fffffff for w in vocab]); sf = np.array([zlib.crc32(('suf:' + w.lower()[-3:]).encode()) & 0x7fffffff for w in vocab])
         model = LogReg(len(labels), 21, torch.as_tensor(low), torch.as_tensor(sf), a.triples).to(dev)
         opt = torch.optim.Adam(model.parameters(), lr=a.lr)
+    if a.init:
+        ck = torch.load(a.init + '/model.pt', map_location=dev, weights_only=False)
+        own = model.state_dict(); old_labels = ck['labels']
+        for k, v in ck['state'].items():
+            if k not in own: continue
+            if own[k].shape == v.shape: own[k].copy_(v)
+            elif k in ('Pr', 'bias') and own[k].shape[1:] == v.shape[1:]:
+                for i, lab in enumerate(old_labels): own[k][labels.index(lab)] = v[i]
+            else: print('init: not copied', k, tuple(v.shape), tuple(own[k].shape), flush=True)
+        print('init from', a.init, flush=True)
     T = Data(tr, vocab, aid, dev); Dv = Data(dv, vocab, aid, dev)
     print('on gpu', f'{time.time()-t0:.0f}s', flush=True)
     w_or = torch.tensor([WEIGHT[i] for i in range(4)], device=dev)
@@ -311,7 +333,7 @@ def main():
         if a.by_decision:
             evaluate(Dv, 10 ** 9)
             out = {f'{k[0]} | {k[1]}': {'right': v[0], 'n': v[1], 'acc': round(v[0] / v[1], 4)} for k, v in sorted(BYDEC.items())}
-            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision.json', 'w'), indent=1); return
+            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision' + ('-' + a.dev if a.dev and a.dev != 'd12' else '') + '.json', 'w'), indent=1); return
         if a.eval_train:
             # teacher forcing on train messages (every 37th, up to N): fitting against generalising
             sel = np.arange(0, len(tr['words']), 37)[:a.eval_train]

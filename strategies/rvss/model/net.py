@@ -32,8 +32,11 @@ def off_index(off):
 
 
 class VSA(nn.Module):
-    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0):
+    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0, view=2):
         super().__init__()
+        # view 3 (core.py): two more bundled parts, the condensed stars of the open and of the last closed constellation
+        self.nview = 10 if view >= 3 else NPARTS
+        self.act_parts = ACT_PARTS + ([8, 9] if view >= 3 else [])
         self.D, self.C, self.P, self.L, self.sit, self.lex, self.k2, self.hmm = D, C, P, nlabels, sit, lex, k2, hmm
         # fixed stars (not learned): atom stars, word stars, smooth positions, window permutations
         self.register_buffer('atomstars', atoms)                       # (A, D) complex
@@ -67,11 +70,11 @@ class VSA(nn.Module):
             self.lam2 = nn.Parameter(torch.tensor([0.5, 0.7, 1.0, 1.0, 1.0, 0.7, 0.5]))
             self.K2 = nn.Parameter(torch.rand(k2, D) * 2 * math.pi)
             self.beta_k2 = nn.Parameter(torch.tensor(30.0)); self.g2 = nn.Parameter(torch.tensor(0.5))
-        nparts = len(ACT_PARTS) + len(BOUND) + (1 if sit else 0)
+        nparts = len(self.act_parts) + len(BOUND) + (1 if sit else 0)
         if sit:
             # the situation memory (DESIGN 9.1): the whole view, each part bound with a fixed part star, read
             # against `sit` learned situation stars; the attention-weighted value star is one more part
-            nb = len(ACT_PARTS) + len(BOUND)
+            nb = len(self.act_parts) + len(BOUND)
             self.register_buffer('Sk', torch.stack([torch.as_tensor(seeded_np('rvss-part:%d' % j, D)) for j in range(nb)]))
             self.SQ = nn.Parameter(torch.rand(sit, D) * 2 * math.pi); self.SV = nn.Parameter(torch.rand(sit, D) * 2 * math.pi)
             self.beta_s = nn.Parameter(torch.tensor(8.0))
@@ -147,16 +150,16 @@ class VSA(nn.Module):
         return out
 
     def act_logits(self, kap, ex, part, atom, off, tok, bw, bt):
-        V = self.bundle(kap, NPARTS, ex, part, atom, off, tok)[:, ACT_PARTS]
+        V = self.bundle(kap, self.nview, ex, part, atom, off, tok)[:, self.act_parts]
         kw = kap[bw]
-        Vb = torch.stack([V[:, b] * kw for b in BOUND], 1)
+        Vb = torch.stack([V[:, b] * kw for b in BOUND], 1)     # BOUND parts 1-3 are at the same places in V
         Va = torch.cat([V, Vb], 1)
         if self.sit: Va = torch.cat([Va, self.situation(Va)], 1)
         return self.score_parts(Va, self.Pr, self.u, self.beta) + self.bias
 
     def cand_logits(self, kap, cidx, part, atom, off, tok, kind, bw, bt):
         """cidx: candidate index of each term; kind/bw/bt per candidate -> (Ncand,)"""
-        V = self.bundle(kap, NPARTS, cidx, part, atom, off, tok)[:, P_CAND]
+        V = self.bundle(kap, self.nview, cidx, part, atom, off, tok)[:, P_CAND]
         Vs = torch.stack([V, V * kap[bt], V * kap[bw]], 1)               # (N, 3, D)
         Gc = torch.polar(torch.ones_like(self.G), self.G)               # (4, 3, P, D)
         s = torch.einsum('nqd,kqpd->nkqp', Vs, Gc.conj()).real / self.D * math.sqrt(self.D)

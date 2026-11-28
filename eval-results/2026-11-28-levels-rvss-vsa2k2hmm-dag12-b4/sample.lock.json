@@ -1,0 +1,23 @@
+{
+  "sample": "sample.json.gz",
+  "seed": "syntax-2026-11-27",
+  "share": 0.01,
+  "count": 1831,
+  "dataset": {
+    "commit": "5c45966e0d4f2bf501067a9ce1a8ff80ca42ac6f",
+    "csvFiles": 100,
+    "records": 183094,
+    "distinctTexts": 183094
+  },
+  "excluded": [
+    {
+      "file": "eval-results/2026-11-26-fresh-locked-one-percent/sample.json.gz",
+      "sha256": "9a6cdc16332e32b7d78ed1500738e75ada86a86234e44396d173860086b44e65",
+      "messages": 1831,
+      "inTheDataset": 1831
+    }
+  ],
+  "sampleSha256": "65962cd499749bbf9b621c4af533117ff2bf590258488287ed5a781ad257af51",
+  "method": "The distinct texts of the dataset are ordered by sha256(seed + \"\\0\" + text). The sample is the first round(share × distinct texts) of them that stand in no excluded file. A text carries the id of its first record.",
+  "tool": "tests/benchmark/syntax/sample.mjs"
+}
