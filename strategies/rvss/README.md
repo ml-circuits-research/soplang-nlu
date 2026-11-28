@@ -125,6 +125,56 @@ node strategies/rvss/model/export.mjs
 python strategies/rvss/model/prep.py .local-data/rvss/model/distill.jsonl .local-data/rvss/model/d9f2 --workers 4 --view 2
 ```
 
+## Evening sprint (2026-11-28, from 12:50): the general corpora, targets at 3f13f69, the route book
+
+**In short.** spaCy (HEAD 3f13f69, round 15) wrote circuits for the 65,494 messages of `syntactic/general/` (CLINC150, SGD,
+SNIPS, generated); 62,195 went into training (origin `general`) and 3,296 (33 whole files, about 5% of every folder)
+into **dev-G**, a held-out set outside webmeet (`data/README.md`, "The general corpora"). The webmeet targets moved to the
+3f13f69 writer (3,885 circuits changed, 2.1%); dev-B and the old benchmark are the same texts. One more epoch from
+vsa2k2hmm-dag12 on webmeet + general, **vsa2k2hmm-g15 with beam 4**, equals spaCy on **57.8% of dev-G** (dag12: 40.2%, the
+same epoch on webmeet only: 40.7%) and **60.8% of dev-B** (dag12 on the same targets 59.4%, webmeet-only epoch 60.5%).
+Outside webmeet the logistic control (98.6 M weights) reaches only 24.5%: its dev-B lead was memorised templates.
+The route book inside the pilot (`--rb`, DESIGN 7) gives no gain under teacher forcing; free running is being measured.
+
+### Results (targets 3f13f69; dev-B 15,104 messages; dev-G 3,296; beam 4 for the VSA runs)
+
+| Run | TF act (dev-B) | TF all-acts | dev-B exact | relaxed | valid | exact <10 / 10-24 / 25-39 | dev-G exact | dev-G relaxed | dev-G valid | dev-G exact <10 / 10-24 / 25-39 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | --- |
+| logreg2t-d9f (control, scored on the new targets) | | | 57.2% | 65.2% | 97.5% | 66.4 / 49.1 / 19.5 | 24.5% | 31.0% | 92.7% | 33.9 / 10.2 / 0 of 24 |
+| vsa2k2hmm-dag12, beam 4 (scored on the new targets) | | | 59.4% | 68.8% | 99.7% | 69.6 / 50.4 / 17.2 | 40.2% | 50.3% | 99.0% | 50.9 / 23.9 / 0 of 24 |
+| vsa2k2hmm-ft15 (+1 epoch, `d15`: webmeet only) | 0.9721 | 0.618 | 60.5% | 70.0% | 99.6% | 69.8 / 52.2 / 23.2 | 40.7% | 51.0% | 98.6% | 51.5 / 24.1 / 4.2 |
+| **vsa2k2hmm-g15** (+1 epoch, `d15g`: webmeet + general) | 0.9727 | 0.623 | **60.8%** | **70.3%** | 99.7% | 70.0 / 52.8 / 23.4 | **57.8%** | **68.2%** | 99.4% | 69.2 / 40.4 / 12.5 |
+| vsa2k2hmm-g15rb (as g15, `--rb 256`) | 0.9726 | 0.622 | measuring | | | | | | | |
+
+dev-G by corpus (exact): dag12 clinc150 47.4%, sgd 41.3%, snips-nlu-benchmark 26.0%, snips-built-in 33.0%, generated
+37.1%; g15 61.8%, 59.6%, 50.7%, 42.0%, 45.4%. Old benchmark (held out, registry of now, a lower bound): g15 1,532 known
+accepted (83.7%, 157 unjudged), = spaCy exact 59.5%; ft15 1,369 (74.8%, 377 unjudged, read earlier against an older
+registry). Speed and size as vsa2k2hmm-dag12 (45.6 ms per message with beam 4, 8 MB).
+
+**The route book inside the pilot (`--rb M`, `net.py` `rb_logits`, `decode.py` `rb_scores`).** For the constellation the
+pilot fills and for the one below it (the receiver after a close), the pair code of its opener and the incoming word,
+q = T_type ⊗ κ(opener) ⊗ ρ_q(κ(word)), is read against M learned key stars (a key–value memory, DESIGN 7.1); the values
+beside the keys are the gate numbers of every move (DESIGN 8.4's γ(q)). The code has no distance in it, so an opener eight
+words back is read as one next to the word. 256 key stars, 2 × 256 × 44 gate numbers; the gate numbers start at zero
+(the run starts from dag12's function). Trainer and decoder agree exactly (teacher forcing on 2,415 messages with
+random gate numbers: 23,157 of 24,300 decisions right in both).
+
+**Labels.** No move-label list is kept apart any more (`labels.json` is gone, at the owner's wish): each prepared set's
+`meta.json` holds its own list, `train.py` builds the run's list from the checkpoint and the sets it reads and maps every
+set onto it; `rollin.py` writes its model's list into its meta.
+
+Commands (from `soplang-nlu/`; the data steps are in `data/README.md`):
+
+```sh
+M=.local-data/rvss/model; PY=/home/salboaie/nlp-venv/bin/python
+T="strategies/rvss/model/train.py --init $M/vsa2k2hmm-dag12 --epochs 1 --lr 0.005 --lr-scalar 0.002 --k2 64 --hmm $M/stations.jsonl"
+tools/gpu-run.sh $PY $T --data d15 --dev d15 --out $M/vsa2k2hmm-ft15
+tools/gpu-run.sh $PY $T --data d15g --dev d15g --out $M/vsa2k2hmm-g15
+tools/gpu-run.sh $PY $T --data d15g --dev d15g --rb 256 --out $M/vsa2k2hmm-g15rb
+RVSS_DECODE_ARGS="--beam 4" strategies/rvss/eval/measure.sh vsa2k2hmm-g15 3 vsa2k2hmm-g15-b4
+RVSS_DECODE_ARGS="--beam 4" strategies/rvss/eval/measure-general.sh vsa2k2hmm-g15 3 vsa2k2hmm-g15-b4
+```
+
 ## Afternoon sprint (2026-11-28, 11:15 to 12:45): targets at 195075d, roll-in, beam, condensed stars
 
 **In short.** On the targets of the spaCy writer at 195075d (round 12), the pilot trained one more epoch on its own
@@ -495,6 +545,8 @@ measured on held-out files and the fresh sample.
 | `model/net.py`, `train.py` | the VSA pilot and the logistic control; training (`--k2`, `--hmm`, `--lex`, `--dev`, `--eval-train` added on 2026-11-28; `--init`, `--data-weight` and view 3 in the afternoon; `RVSS_TRAIN_DEVICE=cpu` for a CPU check) |
 | `model/decode.py`, `worker.py`, `index.mjs`, `writer.mjs` | free running on the CPU and the strategy module; `--beam`, `--fit`, `--sync`; the model folder's `reading.json` tells the worker and decode.py how to read (beam, fit) |
 | `data/refresh.mjs` | the sets with a newer spaCy writer, splits and exclusions kept; messages found by text only |
+| `data/add-general.mjs` | the general corpora (`syntactic/general/`) added to the sets: origin `general`, dev-G by file hash, benchmark and dev-B near-copies left out |
+| `eval/measure-general.sh` | free running on dev-G, equality with spaCy by length and by corpus |
 | `model/rollin.py` | roll-in with the pilot's own moves (DESIGN 9.4): examples in the states the pilot reaches (train), or held-out ones for measuring (`--split dev-B`) |
 | `model/fitproto.py`, `model/fitlearn.py` | DESIGN 10: kind constellations of closed constellations; prototypes by superposition (`fit.npz`) and learned against the beam's own wrong constellations (`fit-learned.npz`) |
 | `eval/beam-tune.sh` | a decoding setting tried on 2,064 training messages (`train-inputs-s80.jsonl`) before dev-B is read |
