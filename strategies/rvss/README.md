@@ -171,11 +171,51 @@ one edit from a held-out text left out.
 | --- | ---: | ---: | ---: | --- | --- | --- |
 | g15 (d15g: spaCy targets) | 61.2% | 45.0% | 57.8% | 80.2% (0) | 82.8% (175) | 29.4% (10,331) |
 | l16 (d16l: label targets) | 47.1% | 53.7% | 58.0% | 73.8% (141; rejected 115 against g15's 190) | 76.2% (290; rejected 136 against 130) | 41.1% (8,611) |
+| l16f (d16l + `--focus len25=2,coord=1.5,reopen=2,rel3=1.5`) | 48.2% | 51.6% | 55.1% | 70.4% (167; rejected 120) | 76.3% (292; rejected 132) | 38.8% (8,941) |
 
 The label targets move the circuits toward the labels (+8.7 points on dev-B) and away from spaCy (-14.1); the agreement
 labels follow conventions that differ from spaCy's in 47% of messages. Judged acceptance cannot decide between the two
 until the new circuits are judged (l16 has 141 and 290 unjudged circuits where g15 has 0 and 175; its known rejections
 are fewer on dev-G and about equal on the benchmark).
+
+The weak-spot weights (l16f against l16, one change) move accuracy from short to long messages: dev-B against the label
+targets 25-39 words 21.6% against 19.5%, but <10 words 63.0% against 65.2% and 10-24 40.5% against 42.7%; 51.6% against
+53.7% in all, and dev-G 55.1% against 58.0%. Weighting whole messages by their kind costs more than it gives; a17 (below)
+was restarted without them.
+
+### 2. Rules at reading time, switched off (`core.py` `LEGAL_OFF`)
+
+The owner: the fewer rules at reading time, the better. What the reader holds that is not learned: the schema's rules in
+`legal()` (below), the executor (the loop over words, the list of open constellations, the moves' bookkeeping), the beam,
+the writer's join of neighbouring words at one key (`writer.mjs`) and the final `validateSyntax` check; the labels a top
+type may take (`allowed`) are counted from the training data. Each rule of `legal()` was switched off on g15 (beam 4),
+measured on every 8th dev-B message (1,844 decoded; = spaCy) and on the 1,000 judged h2h messages:
+
+| Rules switched off | dev-B exact | valid | 25-39 words | h2h accepted (unjudged) | rejected |
+| --- | ---: | ---: | ---: | --- | ---: |
+| none (all rules on) | 61.3% | 99.7% | 28.6% | 80.2% (0) | 190 |
+| compat: which wire types a reference key takes, keys that hold one wire | 61.3% | 99.7% | 28.6% | 80.2% (1) | 187 |
+| close: what a wire needs before it closes | 61.4% | 99.6% | 28.6% | 80.6% (7) | 181 |
+| word: keys that hold one word (head, verb) | 61.3% | 99.7% | 28.6% | 80.2% (0) | 190 |
+| order: claim / point only right after an open; no reopen twice in a row | 61.3% | 99.7% | 28.6% | 80.2% (0) | 190 |
+| since: at most 12 moves without placing a word | 61.3% | 99.7% | 28.6% | 80.2% (0) | 190 |
+| all five | 61.4% | 99.6% | | 80.6% (8) | 179 |
+
+None of them carries anything: the pilot has learned what they say. They are now off by default (`RVSS_LEGAL_OFF=none`
+brings them back); the executor's own consistency (a move that cannot be applied) and `validateSyntax` remain.
+
+### 3. All data, spaCy first (set `d17s`, run a17)
+
+The owner (16:00): train on all annotated data, nothing held out; the coordinator, after l16: the agreement labels follow
+older conventions, so spaCy's current circuit comes before them. `build-labels.mjs --all --spacy-first`: a label a judge
+accepted or wrote, or a circuit the registry accepted (weight 3) > spaCy's circuit unless a judge rejected it > the
+agreement label > a plausible label > spaCy's circuit anyway. 245,709 messages (dataset 7e98ec6, with the 1,000 h2h
+labels): judge 10,596, written 31, spaCy 169,965 (webmeet) + 65,104 (general), agreement 13; 3,922 targets (1.6%) differ
+from spaCy's circuit. Formerly held out, now trained on: dev-B 14,761, dev-G 3,296, the old benchmark 1,954 (with its
+copies), 137 corrections of those. a17: from g15, 2 epochs on d17s, without weak-spot weights (a first a17 with
+`--focus` was stopped at about 18 minutes after l16f showed whole-message weights to be a net loss; weak spots are to be
+met per decision or by more data of those kinds).
+dev-B and dev-G numbers of a17 are seen data (a diagnostic of fit); its real measurement is the coordinator's new 1%.
 
 ## Evening sprint (2026-11-28, from 12:50): the general corpora, targets at 3f13f69, the route book
 
@@ -188,9 +228,8 @@ same epoch on webmeet only: 40.7%) and **60.8% of dev-B** (dag12 on the same tar
 Outside webmeet the logistic control (98.6 M weights) reaches only 24.5%: its dev-B lead was memorised templates.
 The route book inside the pilot (`--rb`, DESIGN 7) gives no gain under teacher forcing (open at 8+ words 0.8929 against
 0.8886, n = 1,858) and +0.1 / +0.5 points in free running (within noise), at 55.5 ms instead of 45.6 ms per message;
-`current` is g15 (beam 4). Its old-benchmark circuits for judges: `eval-results/2026-11-28-levels-rvss-vsa2k2hmm-g15-b4/`,
-953 equal to the label, 563 already accepted, 130 already rejected, 10 without a valid circuit, **175 to judge in 2
-packets** (170 + 5).
+`current` is g15 (beam 4). Its old-benchmark levels folder (175 circuits to judge in 2 packets) was made and then deleted
+at the coordinator's request: the old benchmark is no longer held out (sprint 4).
 
 ### Results (targets 3f13f69; dev-B 15,104 messages; dev-G 3,296; beam 4 for the VSA runs)
 

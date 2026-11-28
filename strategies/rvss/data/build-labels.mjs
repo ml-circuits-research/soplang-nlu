@@ -3,7 +3,11 @@
 // general), found by text.
 //
 //   node strategies/rvss/data/build-labels.mjs --spacy <run or rewritten .jsonl>... [--sets <folder with distill.jsonl.gz>]
-//        [--out <folder>] [--dataset <webmeet-dataset>] [--missing <out.jsonl>] [--all]
+//        [--out <folder>] [--dataset <webmeet-dataset>] [--missing <out.jsonl>] [--all] [--spacy-first]
+//
+// --spacy-first (coordinator, 2026-11-28, after l16: the agreement labels follow older conventions): judge-accepted or
+//   judge-written > spaCy's circuit unless a judge rejected it > agreement > plausible > spaCy's circuit anyway; an
+//   agreement label then counts only where spaCy's circuit is rejected or missing.
 //
 // --all (owner, 2026-11-28: VSS learns the roles of words, not each word, so nothing is held out): every message is
 //   split train, the old benchmark's messages and their corrections included; `held` keeps what the message was
@@ -42,7 +46,7 @@ const many = name => args.flatMap((a, i) => a === '--' + name ? [args[i + 1]] : 
 const dataset = resolve(opt('dataset', join(repo, '../webmeet-dataset')))
 const setsDir = resolve(opt('sets', join(repo, '.local-data/rvss')))
 const out = resolve(opt('out', join(repo, '.local-data/rvss/at-labels')))
-const ALL = args.includes('--all')
+const ALL = args.includes('--all'), SPACY_FIRST = args.includes('--spacy-first')
 const {readRegistry, normalForm, readSample} = await import(join(repo, 'tests/benchmark/syntax/lib.mjs'))
 const {messagesOf} = await import(join(repo, 'strategies/rvss/data/run-spacy.mjs'))
 const {wordsOf} = await import(join(repo, 'lib/syntax.mjs'))
@@ -104,9 +108,11 @@ for (const m of all) {
     const accepted = [...(registry.byText.get(m.text)?.values() ?? [])].filter(r => r.verdict === 'accepted' && r.sop)
     if (accepted.length) { const r = accepted.find(r => r.core === spCore) ?? accepted[accepted.length - 1]; target = r.sop; origin = 'judge' }
   }
+  const spOrigin = area.startsWith('general') ? 'general' : 'spacy'
+  if (!target && SPACY_FIRST && sp && spCore && verdict(m.text, spCore) !== 'rejected') { target = sp; origin = spOrigin }
   if (!target && m.label && labCore && m.accepted_by === 'agreement' && verdict(m.text, labCore) !== 'rejected') { target = m.label; origin = 'agreement' }
   if (!target && m.label && labCore && m.accepted_by === 'plausible' && verdict(m.text, labCore) !== 'rejected') { target = m.label; origin = 'plausible' }
-  if (!target && sp && spCore && verdict(m.text, spCore) !== 'rejected') { target = sp; origin = area.startsWith('general') ? 'general' : 'spacy' }
+  if (!target && sp && spCore && (SPACY_FIRST || verdict(m.text, spCore) !== 'rejected')) { target = sp; origin = spOrigin }
   if (!target) { inc(count.noTarget, split + ' ' + (sp ? (spCore && verdict(m.text, spCore) === 'rejected' ? 'spaCy rejected' : 'spaCy invalid') : 'no spaCy circuit')); continue }
   const tCore = coreOf(m.text, target)
   const spacySame = tCore !== null && tCore === spCore

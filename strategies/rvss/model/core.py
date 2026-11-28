@@ -320,11 +320,13 @@ SINGLE_REF = {'subject', 'ellipsis', 'to'}
 SINGLE_WORD = {'verb', 'head'}
 
 
-# reading-time rules that can be switched off one at a time to measure what each one carries (RVSS_LEGAL_OFF, a comma
-# list): compat (which wire types a reference key takes, keys that hold one wire), close (what a wire needs before it
-# closes), word (keys that hold one word), order (claim / point only right after an open; no reopen twice in a row),
-# since (at most 12 moves without placing a word)
-LEGAL_OFF = set(filter(None, os.environ.get('RVSS_LEGAL_OFF', '').split(',')))
+# reading-time rules: compat (which wire types a reference key takes, keys that hold one wire), close (what a wire needs
+# before it closes), word (keys that hold one word), order (claim / point only right after an open; no reopen twice in a
+# row), since (at most 12 moves without placing a word). Switched off one at a time and all together on g15 (README,
+# sprint 4) none of them carried anything (dev-B exact 61.3% with all, 61.4% with none; judged h2h 80.2% / 80.6%): the
+# pilot has learned them, so they are off by default. RVSS_LEGAL_OFF (a comma list, or 'none' to keep them all) chooses.
+_off = os.environ.get('RVSS_LEGAL_OFF', 'compat,close,word,order,since')
+LEGAL_OFF = set() if _off == 'none' else set(filter(None, _off.split(',')))
 
 
 def compat(key, t):
