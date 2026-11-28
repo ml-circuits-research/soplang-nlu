@@ -1,0 +1,938 @@
+n,text,sop,alt,label_state
+6,"nice, do another!","@c1 syntax.clause form=imperative modifier=""nice"" verb=""do"" complement=$n1
+@n1 syntax.nominal head=""another""","@c1 syntax.clause form=imperative discourse=""nice"" verb=""do"" complement=$n1
+@n1 syntax.nominal head=""another""",
+10,"nice, make it simpler","@c1 syntax.clause form=imperative modifier=""nice"" verb=""make"" modifier=""simpler"" complement=$n1
+@n1 syntax.nominal head=""it""","@c1 syntax.clause form=imperative discourse=""nice"" verb=""make"" modifier=""simpler"" complement=$n1
+@n1 syntax.nominal head=""it""",
+15,"hmm, more like that","@c1 syntax.clause form=fragment modifier=""hmm"" modifier=""more""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1
+@n1 syntax.nominal head=""that""","@c1 syntax.clause form=fragment discourse=""hmm"" modifier=""more""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1
+@n1 syntax.nominal head=""that""",
+26,"nice, make it busier","@c1 syntax.clause form=imperative modifier=""nice"" verb=""make"" modifier=""busier"" complement=$n1
+@n1 syntax.nominal head=""it""","@c1 syntax.clause form=imperative discourse=""nice"" verb=""make"" modifier=""busier"" complement=$n1
+@n1 syntax.nominal head=""it""",
+30,"nice, make it busier please","@c1 syntax.clause form=imperative modifier=""nice"" verb=""make"" modifier=""busier"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""it""","@c1 syntax.clause form=imperative discourse=""nice"" verb=""make"" modifier=""busier"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""it""",
+31,another one like that,"@n1 syntax.nominal dependent=""another"" head=""one""
+@r1 syntax.relation marker=""like"" from=$n1 to=$n2
+@n2 syntax.nominal head=""that""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""another""
+@n2 syntax.nominal head=""one""
+@c1 syntax.clause form=imperative verb=""like"" complement=$n3
+@n3 syntax.nominal head=""that""
+@c2 syntax.clause form=fragment complement=$n1 complement=$n2
+@r1 syntax.relation from=$c1 to=$c2",
+33,"nice, another one","@n1 syntax.nominal dependent=""nice"" dependent=""another"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""one""",
+39,"nice, a busier one please","@n1 syntax.nominal dependent=""nice"" dependent=""a"" dependent=""busier"" head=""one""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""busier"" head=""one""",
+41,"nice, a different one","@n1 syntax.nominal dependent=""nice"" dependent=""a"" dependent=""different"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""different"" head=""one""",
+42,"nice, another one like that!","@n1 syntax.nominal dependent=""nice"" dependent=""another"" head=""one""
+@r1 syntax.relation marker=""like"" from=$n1 to=$n2
+@n2 syntax.nominal head=""that""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" complement=$n1
+@n1 syntax.nominal dependent=""another"" head=""one""
+@r1 syntax.relation marker=""like"" from=$n1 to=$n2
+@n2 syntax.nominal head=""that""",
+55,more detail,"@n1 syntax.nominal dependent=""more"" head=""detail""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""more"" modifier=""detail""",
+67,"nice, more detail","@n1 syntax.nominal dependent=""nice"" dependent=""more"" head=""detail""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" modifier=""more"" modifier=""detail""",
+68,"nice, a simpler one!","@n1 syntax.nominal dependent=""nice"" dependent=""a"" dependent=""simpler"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""simpler"" head=""one""",
+69,"nice, a simpler one","@n1 syntax.nominal dependent=""nice"" dependent=""a"" dependent=""simpler"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=fragment modifier=""nice"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""simpler"" head=""one""",
+71,"please draw any diagram you like, thanks","@c1 syntax.clause form=imperative discourse=""please"" verb=""draw"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""diagram""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""please"" verb=""draw"" modifier=""like"" discourse=""thanks"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""diagram""
+@n2 syntax.nominal head=""you""",
+77,"hey, draw any flowchart you like, thanks","@c1 syntax.clause form=imperative discourse=""hey"" verb=""draw"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""draw"" modifier=""like"" discourse=""thanks"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""",
+79,"can you draw any chart you like, thanks","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" discourse=""thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" head=""chart""
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n3
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" modifier=""like"" discourse=""thanks"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" head=""chart""
+@n3 syntax.nominal head=""you""",
+80,"now surprise me with a diagram, thanks","@c1 syntax.clause form=imperative discourse=""now"" verb=""surprise"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""diagram""","@c1 syntax.clause form=imperative modifier=""now"" verb=""surprise"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""diagram""",
+95,now create a random chart now,"@c1 syntax.clause form=imperative discourse=""now"" verb=""create"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""","@c1 syntax.clause form=imperative modifier=""now"" verb=""create"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""",
+97,now draw any cycle you like please,"@c1 syntax.clause form=imperative discourse=""now"" verb=""draw"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""cycle""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""draw"" modifier=""like"" discourse=""please"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""cycle""
+@n2 syntax.nominal head=""you""",
+103,"I want you to draw any diagram you like, thanks","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" discourse=""thanks"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""draw"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""any"" head=""diagram""
+@n4 syntax.nominal head=""you""
+@c3 syntax.clause form=declarative verb=""like"" subject=$n4
+@r2 syntax.relation from=$n3 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""draw"" modifier=""like"" discourse=""thanks"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""any"" head=""diagram""
+@n4 syntax.nominal head=""you""",
+104,ok draw any flow chart you like!,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""any"" dependent=""flow"" head=""chart""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" verb=""draw"" modifier=""like"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" dependent=""flow"" head=""chart""
+@n2 syntax.nominal head=""you""",
+109,"now create a random chart, thanks","@c1 syntax.clause form=imperative discourse=""now"" verb=""create"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""","@c1 syntax.clause form=imperative modifier=""now"" verb=""create"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""",
+110,"now make a random cycle, thanks","@c1 syntax.clause form=imperative discourse=""now"" verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""cycle""","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""cycle""",
+125,now create a random flow chart please,"@c1 syntax.clause form=imperative discourse=""now"" verb=""create"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" dependent=""flow"" head=""chart""","@c1 syntax.clause form=imperative modifier=""now"" verb=""create"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" dependent=""flow"" head=""chart""",
+130,ok draw any flowchart you like for me,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""
+@r2 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" verb=""draw"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""like for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""",
+131,can you draw any chart you like,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" head=""chart""
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n3
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" modifier=""like"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" head=""chart""
+@n3 syntax.nominal head=""you""",
+140,now chart the numbers I mentioned!,"@c1 syntax.clause form=imperative discourse=""now"" verb=""chart"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""chart"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+141,turn what I said into a flowchart this time,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n4
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1 complement=$n4
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+142,"hey, chart the numbers I mentioned now","@c1 syntax.clause form=imperative discourse=""hey"" verb=""chart"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""chart"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" modifier=""now"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+147,ok make a chart of the figures I gave you,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+149,"go on, turn what I said into a flowchart now","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""turn"" modifier=""now""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c2 to=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" modifier=""now"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c3 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c2 to=$c3",
+151,"hey, make a chart of the figures I gave you this time","@c1 syntax.clause form=imperative discourse=""hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+153,make a chart of the figures I gave you,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+159,I want you to make a chart of the figures I gave you this time,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""chart""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""figures""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n5 complement=$n6 complement=$n7
+@n6 syntax.nominal head=""you""
+@n7 syntax.nominal dependent=""this"" head=""time""
+@r3 syntax.relation from=$n4 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""make"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""a"" head=""chart""
+@r2 syntax.relation marker=""of"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""figures""
+@n5 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n5 complement=$n6 complement=$n7
+@n6 syntax.nominal head=""you""
+@n7 syntax.nominal dependent=""this"" head=""time""",
+160,just make a chart of the figures I gave you,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+162,"go on, make a chart of the figures I gave you this time","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""this"" head=""time""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""this"" head=""time""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",
+165,"hey, turn what I said into a flowchart this time","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn"" complement=$n4
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1 complement=$n4
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+166,now turn what I said into a flowchart now,"@c1 syntax.clause form=imperative discourse=""now"" verb=""turn"" modifier=""now""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" modifier=""now"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2",
+168,ok make a chart of the figures I gave you!,"@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+173,now chart the numbers I mentioned please,"@c1 syntax.clause form=imperative discourse=""now"" verb=""chart"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""chart"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" discourse=""please"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+175,"go on, make a diagram of the process I just described this time","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diagram""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""process""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative modifier=""just"" verb=""described"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""this"" head=""time""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diagram""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""process""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative modifier=""just"" verb=""described"" subject=$n3 complement=$n4
+@n4 syntax.nominal dependent=""this"" head=""time""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",
+176,"now make a chart of the figures I gave you, thanks","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" discourse=""thanks"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+182,I want you to turn what I said into a flowchart this time,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""turn"" subject=$n2 complement=$n6
+@n3 syntax.nominal head=""what""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" subject=$n4 complement=$n3
+@r2 syntax.relation marker=""into"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""flowchart""
+@n6 syntax.nominal dependent=""this"" head=""time""
+@r3 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""turn"" subject=$n2
+@n3 syntax.nominal head=""what""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" subject=$n4 complement=$n3 complement=$n6
+@r2 syntax.relation marker=""into"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""flowchart""
+@n6 syntax.nominal dependent=""this"" head=""time""
+@r3 syntax.relation from=$c2 to=$c3",
+186,"go on, make a chart of the figures I gave you now","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$n2 to=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""gave"" modifier=""now"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@r2 syntax.relation from=$c1 to=$c3",
+187,just make a chart of the figures I gave you for me,"@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""me""
+@r3 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative modifier=""just"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""me""
+@r3 syntax.relation from=$c1 to=$c2",
+188,now make a diagram of the process I just described now,"@c1 syntax.clause form=imperative discourse=""now"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diagram""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""process""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""described"" modifier=""now"" subject=$n3
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""diagram""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""process""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative modifier=""just"" verb=""described"" modifier=""now"" subject=$n3
+@r2 syntax.relation from=$n2 to=$c2",
+191,now turn what I said into a flowchart,"@c1 syntax.clause form=imperative discourse=""now"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2",
+193,"hey, make a chart of the figures I gave you, thanks","@c1 syntax.clause form=imperative discourse=""hey"" verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""hey"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" discourse=""thanks"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+196,ok chart the numbers I mentioned,"@c1 syntax.clause form=fragment discourse=""ok"" complement=$n1
+@n1 syntax.nominal head=""chart""
+@n2 syntax.nominal dependent=""the"" head=""numbers""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n3
+@r1 syntax.relation from=$n1 to=$n2
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" verb=""chart"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""numbers""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""mentioned"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",
+198,please turn what I said into a flowchart this time,"@c1 syntax.clause form=imperative discourse=""please"" verb=""turn"" complement=$n4
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""please"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1 complement=$n4
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+199,now turn what I said into a flowchart this time,"@c1 syntax.clause form=imperative discourse=""now"" verb=""turn"" complement=$n4
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1 complement=$n4
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@n4 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2",
+201,I want you to turn what I said into a flowchart now,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""turn"" modifier=""now"" subject=$n2
+@n3 syntax.nominal head=""what""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" subject=$n4 complement=$n3
+@r2 syntax.relation marker=""into"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""flowchart""
+@r3 syntax.relation from=$c2 to=$c3","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" subject=$n1
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""turn"" subject=$n2
+@n3 syntax.nominal head=""what""
+@n4 syntax.nominal head=""I""
+@c3 syntax.clause form=declarative verb=""said"" modifier=""now"" subject=$n4 complement=$n3
+@r2 syntax.relation marker=""into"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""flowchart""
+@r3 syntax.relation from=$c2 to=$c3",
+210,"now a pie chart with random values, thanks","@c1 syntax.clause form=fragment discourse=""now"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""","@c1 syntax.clause form=fragment modifier=""now"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""",
+212,now draw a pie chart with realistic numbers now,"@c1 syntax.clause form=imperative discourse=""now"" verb=""draw"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""realistic"" head=""numbers""","@c1 syntax.clause form=imperative modifier=""now"" verb=""draw"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""realistic"" head=""numbers""",
+231,"can you a chart with random values, thanks","@c1 syntax.clause form=interrogative verb=""can"" discourse=""thanks"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""random"" head=""values""","@c1 syntax.clause form=interrogative verb=""can"" discourse=""thanks"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""random"" head=""values""",
+244,now draw a pie chart with realistic numbers for me,"@c1 syntax.clause form=imperative discourse=""now"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""realistic"" head=""numbers""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""","@c1 syntax.clause form=imperative modifier=""now"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""realistic"" head=""numbers""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""",
+247,could you a pie chart with random values,"@c1 syntax.clause form=declarative verb=""could"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""random"" head=""values""","@c1 syntax.clause form=interrogative verb=""could"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""random"" head=""values""",
+252,now make up some numbers for a bar chart now,"@c1 syntax.clause form=imperative discourse=""now"" verb=""make"" modifier=""up"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""some"" head=""numbers""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" modifier=""up"" modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""some"" head=""numbers""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""",
+259,"go on, a bar chart with random values this time","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""
+@n3 syntax.nominal dependent=""this"" head=""time""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n2 to=$n3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""
+@n3 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1
+@r3 syntax.relation from=$n2 to=$n3",
+262,"go on, a chart with plausible values please","@c1 syntax.clause form=imperative verb=""go"" modifier=""on"" discourse=""please""
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""plausible"" head=""values""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""plausible"" head=""values""
+@c2 syntax.clause form=fragment discourse=""please"" complement=$n1
+@r2 syntax.relation from=$c1 to=$c2",
+263,could you a line chart with plausible values,"@c1 syntax.clause form=interrogative verb=""could"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""line"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""plausible"" head=""values""","@c1 syntax.clause form=interrogative verb=""could"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""line"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""plausible"" head=""values""",
+269,now fill a bar chart with sample data,"@c1 syntax.clause form=imperative discourse=""now"" verb=""fill"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""sample"" head=""data""","@c1 syntax.clause form=imperative modifier=""now"" verb=""fill"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""sample"" head=""data""",
+277,please from now on keep the random diagrams rich,"@c1 syntax.clause form=imperative discourse=""please"" modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""please"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+278,"ok, from now on keep the random diagrams normal","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""on"" verb=""keep"" modifier=""normal"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""normal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+279,"ok, random flowcharts should be simple from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""simple"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""simple"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+280,"ok, by default, make composed diagrams detailed","@c1 syntax.clause form=imperative discourse=""ok"" verb=""make""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""
+@c2 syntax.clause form=nonfinite verb=""detailed"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=fragment discourse=""ok""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@c2 syntax.clause form=imperative verb=""make"" modifier=""detailed"" complement=$n2
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""",
+281,"please by default, make composed diagrams detailed","@c1 syntax.clause form=imperative discourse=""please"" verb=""make""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""
+@c2 syntax.clause form=nonfinite verb=""detailed"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""please"" verb=""make"" modifier=""detailed"" complement=$n2
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""",
+283,"ok, from now on keep the random diagrams busy","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""on"" verb=""keep"" modifier=""busy"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""busy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+286,"ok, random flowcharts should be minimal from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""minimal"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""minimal"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+287,please from now on keep the random diagrams simple,"@c1 syntax.clause form=imperative discourse=""please"" modifier=""on"" verb=""keep"" modifier=""simple"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""please"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""simple"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+288,please random flowcharts should be minimal from now on,"@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" verb=""be"" modifier=""minimal"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" verb=""be"" modifier=""minimal"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+290,random flowcharts should be busy from now on,"@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""busy"" modifier=""on"" subject=$n1
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""busy"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1",
+291,always make the surprise charts detailed,"@c1 syntax.clause form=imperative modifier=""always"" verb=""make""
+@n1 syntax.nominal dependent=""the"" dependent=""surprise"" head=""charts""
+@c2 syntax.clause form=nonfinite verb=""detailed"" subject=$n1
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative modifier=""always"" verb=""make"" modifier=""detailed"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""surprise"" head=""charts""",
+292,please random flowcharts should be detailed from now on,"@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" auxiliary=""be"" verb=""detailed"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" auxiliary=""be"" verb=""detailed"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+293,"ok, by default, make composed diagrams simple","@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" modifier=""simple"" complement=$n2
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""","@c1 syntax.clause form=fragment discourse=""ok""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@c2 syntax.clause form=imperative verb=""make"" modifier=""simple"" complement=$n2
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""",
+294,"ok, random flowcharts should be detailed from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" auxiliary=""be"" verb=""detailed"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" auxiliary=""be"" verb=""detailed"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+295,"ok, random flowcharts should be normal from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""normal"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""normal"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+297,please from now on keep the random diagrams normal,"@c1 syntax.clause form=imperative discourse=""please"" modifier=""on"" verb=""keep"" modifier=""normal"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""please"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""normal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+301,please from now on keep the random diagrams busy,"@c1 syntax.clause form=imperative discourse=""please"" modifier=""on"" verb=""keep"" modifier=""busy"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""please"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""busy"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+306,"ok, from now on keep the random diagrams detailed","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""on"" verb=""keep""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""
+@c2 syntax.clause form=nonfinite verb=""detailed"" subject=$n2
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""detailed"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+307,"ok, random flowcharts should be busy from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""busy"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""busy"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+308,"ok, random flowcharts should be rich from now on","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""rich"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""ok"" auxiliary=""should"" verb=""be"" modifier=""rich"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+309,from now on keep the random diagrams rich,"@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@c1 syntax.clause form=imperative modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+310,"ok, from now on keep the random diagrams rich","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""ok"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""rich"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+320,can you draw any flow chart you like please,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" discourse=""please"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" dependent=""flow"" head=""chart""
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n3
+@r1 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""draw"" modifier=""like"" discourse=""please"" subject=$n1 complement=$n2 complement=$n3
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""any"" dependent=""flow"" head=""chart""
+@n3 syntax.nominal head=""you""",
+321,"go on, make a random chart, thanks","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""
+@c3 syntax.clause form=fragment discourse=""thanks""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""random"" head=""chart""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+323,"go on, make a pie chart with random numbers, thanks","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""numbers""
+@c3 syntax.clause form=fragment discourse=""thanks""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2 conjunct=$c3","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@c2 syntax.clause form=imperative verb=""make"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""pie"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""numbers""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",
+327,from now on keep the random diagrams simple,"@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@c1 syntax.clause form=imperative modifier=""on"" verb=""keep"" modifier=""simple"" complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""simple"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+333,now draw any flowchart you like this time,"@c1 syntax.clause form=imperative discourse=""now"" verb=""draw"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""this"" head=""time""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""draw"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""flowchart""
+@n2 syntax.nominal head=""you""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""this"" head=""time""",
+334,turn what I said into a flowchart now,"@c1 syntax.clause form=imperative verb=""turn"" modifier=""now""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""turn""
+@n1 syntax.nominal head=""what""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""said"" modifier=""now"" subject=$n2 complement=$n1
+@r1 syntax.relation marker=""into"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""flowchart""
+@r2 syntax.relation from=$c1 to=$c2",
+335,now make a chart of the figures I gave you for me,"@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""me""
+@r3 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative modifier=""now"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n5
+@n5 syntax.nominal head=""me""
+@r3 syntax.relation from=$c1 to=$c2",
+340,please random flowcharts should be simple from now on,"@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" verb=""be"" modifier=""simple"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""now""","@c1 syntax.clause form=declarative discourse=""please"" auxiliary=""should"" verb=""be"" modifier=""simple"" modifier=""from"" modifier=""now"" modifier=""on"" subject=$n1
+@n1 syntax.nominal dependent=""random"" head=""flowcharts""",
+344,please from now on keep the random diagrams minimal,"@c1 syntax.clause form=imperative discourse=""please"" modifier=""on"" verb=""keep"" modifier=""minimal"" complement=$n2
+@r1 syntax.relation marker=""from"" from=$c1 to=$n1
+@n1 syntax.nominal head=""now""
+@n2 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""","@c1 syntax.clause form=imperative discourse=""please"" modifier=""from"" modifier=""now"" modifier=""on"" verb=""keep"" modifier=""minimal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""random"" head=""diagrams""",
+345,"ok, more like that","@c1 syntax.clause form=fragment modifier=""ok"" modifier=""more""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1
+@n1 syntax.nominal head=""that""","@c1 syntax.clause form=fragment discourse=""ok"" modifier=""more""
+@r1 syntax.relation marker=""like"" from=$c1 to=$n1
+@n1 syntax.nominal head=""that""",
+351,now show those numbers as a bar chart for me,"@c1 syntax.clause form=imperative discourse=""now"" verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""those"" head=""numbers""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""","@c1 syntax.clause form=imperative modifier=""now"" verb=""show"" complement=$n1
+@n1 syntax.nominal dependent=""those"" head=""numbers""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""me""",
+355,"ok, by default, make composed diagrams normal","@c1 syntax.clause form=imperative discourse=""ok"" verb=""make"" modifier=""normal"" complement=$n2
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""","@c1 syntax.clause form=fragment discourse=""ok""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal head=""default""
+@c2 syntax.clause form=imperative verb=""make"" modifier=""normal"" complement=$n2
+@n2 syntax.nominal dependent=""composed"" head=""diagrams""",
+365,"draw any chart you like, thanks","@c1 syntax.clause form=imperative verb=""draw"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""any"" head=""chart""
+@n2 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative verb=""like"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""draw"" modifier=""like"" discourse=""thanks"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""any"" head=""chart""
+@n2 syntax.nominal head=""you""",
+367,could you make a chart of the figures I gave you please,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""make"" discourse=""please"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""figures""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""you""
+@r2 syntax.relation from=$n3 to=$c2","@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""make"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""figures""
+@n4 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" discourse=""please"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+368,please make a chart of the figures I gave you,"@c1 syntax.clause form=imperative discourse=""please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$n2 to=$c2","@c1 syntax.clause form=imperative discourse=""please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""figures""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""gave"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""you""
+@r2 syntax.relation from=$c1 to=$c2",
+373,now a bar chart with random values this time,"@c1 syntax.clause form=fragment discourse=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""
+@n3 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$n1 to=$n3","@c1 syntax.clause form=fragment modifier=""now"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bar"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""random"" head=""values""
+@n3 syntax.nominal dependent=""this"" head=""time""
+@r2 syntax.relation from=$n2 to=$n3",
+374,"go on, a chart with plausible values","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""plausible"" head=""values""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n1","@c1 syntax.clause form=imperative verb=""go"" modifier=""on""
+@n1 syntax.nominal dependent=""a"" head=""chart""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""plausible"" head=""values""
+@r2 syntax.relation from=$c1 to=$c2
+@c2 syntax.clause form=fragment complement=$n1",

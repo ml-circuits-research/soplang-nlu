@@ -1,0 +1,1668 @@
+n,text,sop,label_state
+1,schedule a meeting with Ana tomorrow,"@c1 syntax.clause form=imperative verb=""schedule"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Ana""",agreement
+2,push the budget sync back by an hour,"@c1 syntax.clause form=imperative verb=""push"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""an"" head=""hour""",agreement
+3,when is my dentist appointment?,"@c1 syntax.clause form=interrogative modifier=""when"" verb=""is"" subject=$n1
+@n1 syntax.nominal dependent=""my"" dependent=""dentist"" head=""appointment""",agreement
+4,what's on my calendar tomorrow?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" modifier=""tomorrow"" subject=$n1
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""calendar""",agreement
+5,do I have anything with Lee this week?,"@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n1 complement=$n2 complement=$n4
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal head=""anything""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Lee""
+@n4 syntax.nominal dependent=""this"" head=""week""",agreement
+6,I'd like a separate calendar for Side project,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'d"" verb=""like"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""separate"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""Side"" head=""project""",agreement
+7,can you set up a calendar named Kids school?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""set"" modifier=""up"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""calendar""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n3
+@n3 syntax.nominal dependent=""Kids"" head=""school""
+@r1 syntax.relation from=$n2 to=$c2",agreement
+10,new calendar: Freelance,"@n1 syntax.nominal dependent=""new"" head=""calendar""
+@n2 syntax.nominal head=""Freelance""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+11,add one more calendar for me,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""calendar""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""me""",agreement
+12,I need a calendar for running,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n2 to=$c2
+@c2 syntax.clause form=nonfinite verb=""running""",agreement
+13,add a teal calendar called Book club,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""teal"" head=""calendar""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal dependent=""Book"" head=""club""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+14,create a calendar named Holidays and make it orange,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""calendar""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n2
+@n2 syntax.nominal head=""Holidays""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""orange"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+15,please make a purple calendar for Choir,"@c1 syntax.clause form=imperative discourse=""please"" verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""purple"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Choir""",agreement
+16,set up a Birthdays calendar in pink,"@c1 syntax.clause form=imperative verb=""set"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""Birthdays"" head=""calendar""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""pink""",agreement
+17,could you add a calendar called Garden with a lime green colour?,"@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""calendar""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n3
+@n3 syntax.nominal head=""Garden""
+@r1 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""lime"" dependent=""green"" head=""colour""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+19,make a calendar for Doctor visits and give it a red colour,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""Doctor"" head=""visits""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""give"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal dependent=""a"" dependent=""red"" head=""colour""",agreement
+21,"would it be possible to get a calendar for the house move? Call it Moving and colour it brown, please","@c1 syntax.clause form=interrogative auxiliary=""would"" verb=""be"" modifier=""possible"" subject=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""get"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""calendar""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""house"" head=""move""
+@c3 syntax.clause form=imperative verb=""Call"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal head=""Moving""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c3 conjunct=$c4
+@c4 syntax.clause form=imperative verb=""colour"" modifier=""brown"" discourse=""please"" complement=$n6
+@n6 syntax.nominal head=""it""",agreement
+23,Mihai asked for a shared Team lunches calendar; please add it and make it gold,"@n1 syntax.nominal head=""Mihai""
+@c1 syntax.clause form=declarative verb=""asked"" subject=$n1
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""shared"" dependent=""Team"" dependent=""lunches"" head=""calendar""
+@c2 syntax.clause form=imperative discourse=""please"" verb=""add"" complement=$n3
+@n3 syntax.nominal head=""it""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""make"" modifier=""gold"" complement=$n4
+@n4 syntax.nominal head=""it""",agreement
+24,a lavender calendar for yoga retreats,"@n1 syntax.nominal dependent=""a"" dependent=""lavender"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""yoga"" head=""retreats""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+25,add a coral calendar,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""coral"" head=""calendar""",agreement
+30,give me a reddish calendar for Concerts,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal dependent=""a"" dependent=""reddish"" head=""calendar""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Concerts""",agreement
+31,rename the Gym calendar to Fitness,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Gym"" head=""calendar""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Fitness""",agreement
+32,change the name of Work to Office,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Work""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Office""",agreement
+34,can you rename Family to Family and friends?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""rename"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Family""
+@r1 syntax.relation marker=""to"" from=$c1 to=$k1
+@n3 syntax.nominal head=""Family""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal head=""friends""",agreement
+35,please retitle Gym as Training,"@c1 syntax.clause form=imperative discourse=""please"" verb=""retitle"" complement=$n1
+@n1 syntax.nominal head=""Gym""
+@r1 syntax.relation marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Training""",agreement
+36,switch the Work calendar's name to Acme,"@c1 syntax.clause form=imperative verb=""switch"" complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""Work"" head=""calendar""
+@r1 syntax.relation marker=""'s"" from=$n2 to=$n1
+@n2 syntax.nominal head=""name""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Acme""",agreement
+37,"I changed jobs last week, so could you rename Work to Northwind?","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""changed"" subject=$n1 complement=$n2 complement=$n3
+@n2 syntax.nominal head=""jobs""
+@n3 syntax.nominal dependent=""last"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""could"" verb=""rename"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal head=""Work""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""Northwind""",agreement
+41,"before I share it with Ana, please give the Family calendar a friendlier name, Our home","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""share"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""it""
+@r2 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Ana""
+@c2 syntax.clause form=imperative discourse=""please"" verb=""give"" complement=$n4 complement=$n5
+@n4 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""
+@n5 syntax.nominal dependent=""a"" dependent=""friendlier"" head=""name""
+@n6 syntax.nominal dependent=""Our"" head=""home""
+@r3 syntax.relation from=$n5 to=$n6",agreement
+42,rename this calendar to Personal,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""calendar""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Personal""",agreement
+43,call it Errands,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal head=""Errands""",agreement
+44,give the gym calendar a better name,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""gym"" head=""calendar""
+@n2 syntax.nominal dependent=""a"" dependent=""better"" head=""name""",agreement
+45,Work should be Studio now,"@n1 syntax.nominal head=""Work""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""now"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Studio""",agreement
+46,new name for Family: Clan,"@n1 syntax.nominal dependent=""new"" head=""name""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Family""
+@n3 syntax.nominal head=""Clan""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3",agreement
+48,make the Gym calendar green,"@c1 syntax.clause form=imperative verb=""make"" modifier=""green"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Gym"" head=""calendar""",agreement
+49,change the colour of Work to dark blue,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""colour""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Work""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""dark"" head=""blue""",agreement
+50,can you colour the Family calendar orange?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""colour"" modifier=""orange"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""",agreement
+52,switch the Family calendar to a pink color,"@c1 syntax.clause form=imperative verb=""switch"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""pink"" head=""color""",agreement
+53,recolour the Work calendar teal,"@c1 syntax.clause form=imperative verb=""recolour"" modifier=""teal"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Work"" head=""calendar""",agreement
+54,the Family calendar should be yellow,"@n1 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" modifier=""yellow"" subject=$n1",agreement
+55,"I can barely see the Gym entries. Change that calendar to a bright orange, please","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""can"" modifier=""barely"" verb=""see"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Gym"" head=""entries""
+@c2 syntax.clause form=imperative verb=""Change"" discourse=""please"" complement=$n3
+@n3 syntax.nominal dependent=""that"" head=""calendar""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""a"" dependent=""bright"" head=""orange""",agreement
+56,"if it's not too much trouble, I'd prefer Work in grey; it's less distracting","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal head=""it""
+@c1 syntax.clause form=declarative verb=""'s"" negation=""not"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""too"" dependent=""much"" head=""trouble""
+@n3 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""'d"" verb=""prefer"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""Work""
+@r2 syntax.relation marker=""in"" from=$n4 to=$n5
+@n5 syntax.nominal head=""grey""
+@n6 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""'s"" modifier=""less"" modifier=""distracting"" subject=$n6
+@k1 syntax.coordination conjunct=$c2 conjunct=$c3",agreement
+61,different colour for Work please,"@n1 syntax.nominal dependent=""different"" head=""colour""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Work""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1",agreement
+64,turn Work to silver,"@c1 syntax.clause form=imperative verb=""turn"" complement=$n1
+@n1 syntax.nominal head=""Work""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""silver""",agreement
+65,remove Family from my calendars,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""Family""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""calendars""",agreement
+67,can you delete Book club?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""Book"" head=""club""",agreement
+69,drop the Holidays calendar,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Holidays"" head=""calendar""",agreement
+70,take the Side project calendar out,"@c1 syntax.clause form=imperative verb=""take"" modifier=""out"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Side"" dependent=""project"" head=""calendar""",agreement
+71,erase my Family calendar,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""my"" dependent=""Family"" head=""calendar""",agreement
+73,the course finished in June. Could you remove the Evening classes calendar now?,"@n1 syntax.nominal dependent=""the"" head=""course""
+@c1 syntax.clause form=declarative verb=""finished"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""June""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""remove"" modifier=""now"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal dependent=""the"" dependent=""Evening"" dependent=""classes"" head=""calendar""",agreement
+74,"we merged everything into Family, so please delete the old Kids calendar","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative verb=""merged"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""everything""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Family""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative discourse=""please"" verb=""delete"" complement=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""old"" dependent=""Kids"" head=""calendar""",agreement
+76,"if the Moving calendar is empty now, just remove it, thanks","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" dependent=""Moving"" head=""calendar""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""empty"" modifier=""now"" subject=$n1
+@c2 syntax.clause form=imperative modifier=""just"" verb=""remove"" discourse=""thanks"" complement=$n2
+@n2 syntax.nominal head=""it""",agreement
+79,bin the Choir calendar,"@c1 syntax.clause form=imperative verb=""bin"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Choir"" head=""calendar""",agreement
+80,remove that calendar please,"@c1 syntax.clause form=imperative verb=""remove"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""calendar""",agreement
+82,scrap Freelance,"@c1 syntax.clause form=imperative verb=""scrap"" complement=$n1
+@n1 syntax.nominal head=""Freelance""",agreement
+84,add Tom to my contacts,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""Tom""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""contacts""",agreement
+85,create a person called Elena Popescu,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""person""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal dependent=""Elena"" head=""Popescu""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+89,add someone new: Marta Silva,"@c1 syntax.clause form=imperative verb=""add"" modifier=""new"" complement=$n1
+@n1 syntax.nominal head=""someone""
+@n2 syntax.nominal dependent=""Marta"" head=""Silva""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+92,I keep typing Carla's name and it doesn't find her. Could you add Carla Mendes as a contact?,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""keep"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""typing"" complement=$n3
+@n2 syntax.nominal head=""Carla""
+@r1 syntax.relation marker=""'s"" from=$n3 to=$n2
+@n3 syntax.nominal head=""name""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@n4 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative auxiliary=""does"" negation=""n't"" verb=""find"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""her""
+@c4 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n6 complement=$n7
+@n6 syntax.nominal head=""you""
+@n7 syntax.nominal dependent=""Carla"" head=""Mendes""
+@r2 syntax.relation marker=""as"" from=$c4 to=$n8
+@n8 syntax.nominal dependent=""a"" head=""contact""
+@r3 syntax.relation from=$c1 to=$c2",agreement
+95,our new intern is called Felix Wong; would you create him as a person?,"@n1 syntax.nominal dependent=""our"" dependent=""new"" head=""intern""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Felix"" head=""Wong""
+@c2 syntax.clause form=interrogative auxiliary=""would"" verb=""create"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal head=""him""
+@r1 syntax.relation marker=""as"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""a"" head=""person""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+96,new person: Dana,"@n1 syntax.nominal dependent=""new"" head=""person""
+@n2 syntax.nominal head=""Dana""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+97,add Leo,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""Leo""",agreement
+102,put Zoe in people,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""Zoe""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal head=""people""",agreement
+103,rename Lee to Lee Chen,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal head=""Lee""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Lee"" head=""Chen""",agreement
+104,change Priya to Priya Nair,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Priya"" head=""Nair""",agreement
+105,"Mihai goes by Mike now, please update his name","@n1 syntax.nominal head=""Mihai""
+@c1 syntax.clause form=declarative verb=""goes"" modifier=""now"" subject=$n1
+@r1 syntax.relation marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Mike""
+@c2 syntax.clause form=imperative discourse=""please"" verb=""update"" complement=$n3
+@n3 syntax.nominal dependent=""his"" head=""name""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+106,can you change the name of Ana to Ana Ionescu?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Ana""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""Ana"" head=""Ionescu""",agreement
+110,please call Ana Annie in the people list,"@c1 syntax.clause form=imperative discourse=""please"" verb=""call"" complement=$n1
+@n1 syntax.nominal dependent=""Ana"" head=""Annie""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""people"" head=""list""",agreement
+112,there are two Lees in the office. Could you rename ours to Lee from Sales?,"@n1 syntax.nominal head=""there""
+@c1 syntax.clause form=declarative verb=""are"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""two"" head=""Lees""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""office""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""rename"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal head=""ours""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""Lee""
+@r3 syntax.relation marker=""from"" from=$n6 to=$n7
+@n7 syntax.nominal head=""Sales""",agreement
+118,rename this person to Pri,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""person""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Pri""",agreement
+119,Ana becomes Anastasia,"@n1 syntax.nominal head=""Ana""
+@c1 syntax.clause form=declarative verb=""becomes"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Anastasia""",agreement
+120,call him Lenny instead,"@c1 syntax.clause form=imperative verb=""call"" modifier=""instead"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""him""
+@n2 syntax.nominal head=""Lenny""",agreement
+121,Lee should read Lee K.,"@n1 syntax.nominal head=""Lee""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""read"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Lee"" head=""K""",agreement
+122,change her name to Ana Maria,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""her"" head=""name""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Ana"" head=""Maria""",agreement
+124,remove Lee from my people,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""Lee""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""people""",agreement
+125,please take Mihai off the people list,"@c1 syntax.clause form=imperative discourse=""please"" verb=""take"" complement=$n1
+@n1 syntax.nominal head=""Mihai""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""people"" head=""list""",agreement
+126,can you delete Ana from the contacts?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Ana""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""contacts""",agreement
+129,erase Priya from people,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""people""",agreement
+133,"if Mihai isn't on any meetings anymore, you can remove him from people","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal head=""Mihai""
+@c1 syntax.clause form=declarative verb=""is"" negation=""n't"" modifier=""anymore"" subject=$n1
+@r2 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""any"" head=""meetings""
+@n3 syntax.nominal head=""you""
+@c2 syntax.clause form=declarative auxiliary=""can"" verb=""remove"" subject=$n3 complement=$n4
+@n4 syntax.nominal head=""him""
+@r3 syntax.relation marker=""from"" from=$c2 to=$n5
+@n5 syntax.nominal head=""people""",agreement
+136,remove her from contacts,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""her""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal head=""contacts""",agreement
+137,bin Priya,"@c1 syntax.clause form=imperative verb=""bin"" complement=$n1
+@n1 syntax.nominal head=""Priya""",agreement
+138,Mihai can go from the people list,"@n1 syntax.nominal head=""Mihai""
+@c1 syntax.clause form=declarative auxiliary=""can"" verb=""go"" subject=$n1
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""people"" head=""list""",agreement
+139,lose that contact,"@c1 syntax.clause form=imperative verb=""lose"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""contact""",agreement
+141,create a new meeting room named Studio B,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""new"" dependent=""meeting"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n2
+@n2 syntax.nominal dependent=""Studio"" head=""B""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+142,"can you set up a room, the Library?","@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""set"" modifier=""up"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""room""
+@n3 syntax.nominal dependent=""the"" head=""Library""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+145,new room: Maple,"@n1 syntax.nominal dependent=""new"" head=""room""
+@n2 syntax.nominal head=""Maple""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+147,I need the Phone booth as a room,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Phone"" head=""booth""
+@r1 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""room""",agreement
+148,add a room called Willow with 12 seats,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Willow""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""12"" head=""seats""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+152,add a big room,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""big"" head=""room""",agreement
+154,add a room called Oak room on the 3rd floor,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal dependent=""Oak"" head=""room""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""3rd"" head=""floor""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+158,can you add a meeting room called Kepler next to the kitchen?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""meeting"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n3
+@n3 syntax.nominal head=""Kepler""
+@r1 syntax.relation attachment=ambiguous marker=""next to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""kitchen""
+@r2 syntax.relation from=$n2 to=$c2",agreement
+164,add a room named Vault in the basement and give it 6 seats,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n2
+@n2 syntax.nominal head=""Vault""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""basement""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""give"" complement=$n4 complement=$n5
+@n4 syntax.nominal head=""it""
+@n5 syntax.nominal dependent=""6"" head=""seats""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+165,there's a new focus room on the mezzanine. Could you add it as Perch?,"@n1 syntax.nominal head=""there""
+@c1 syntax.clause form=declarative verb=""'s"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""new"" dependent=""focus"" head=""room""
+@r1 syntax.relation marker=""on"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" head=""mezzanine""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""add"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation marker=""as"" from=$c2 to=$n6
+@n6 syntax.nominal head=""Perch""",agreement
+166,"if possible, add the Rooftop room - it's on the top floor, above the canteen","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@c1 syntax.clause form=fragment modifier=""possible""
+@c2 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Rooftop"" head=""room""
+@n2 syntax.nominal head=""it""
+@c3 syntax.clause form=declarative verb=""'s"" subject=$n2
+@r2 syntax.relation marker=""on"" from=$c3 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""top"" head=""floor""
+@r3 syntax.relation marker=""above"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""the"" head=""canteen""
+@r4 syntax.relation from=$c2 to=$c3",agreement
+169,new room in the west wing,"@n1 syntax.nominal dependent=""new"" head=""room""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""west"" head=""wing""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+172,"Cabin room, in the annex","@n1 syntax.nominal dependent=""Cabin"" head=""room""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""annex""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+173,add a room somewhere quiet,"@c1 syntax.clause form=imperative verb=""add"" modifier=""somewhere"" modifier=""quiet"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""",agreement
+175,rename the Cedar room to Redwood,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Redwood""",agreement
+178,the Focus pod should be called Pod 1,"@n1 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""Pod""
+@n3 syntax.nominal head=""1""
+@r1 syntax.relation from=$n2 to=$n3",agreement
+181,relabel the cedar room as Room 301,"@c1 syntax.clause form=imperative verb=""relabel"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""cedar"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""as"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Room""
+@n3 syntax.nominal head=""301""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+183,people keep confusing it with the board room. Could you rename the Cedar room to Cedar studio?,"@n1 syntax.nominal head=""people""
+@c1 syntax.clause form=declarative verb=""keep"" subject=$n1
+@c2 syntax.clause form=nonfinite verb=""confusing"" complement=$n2
+@n2 syntax.nominal head=""it""
+@r1 syntax.relation marker=""with"" from=$c2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""board"" head=""room""
+@c3 syntax.clause form=interrogative auxiliary=""Could"" verb=""rename"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r2 syntax.relation marker=""to"" from=$c3 to=$n6
+@n6 syntax.nominal dependent=""Cedar"" head=""studio""
+@r3 syntax.relation from=$c1 to=$c2",agreement
+184,rename the Focus pod to Phone booth and set its seats to 1,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Phone"" head=""booth""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""set"" complement=$n3
+@n3 syntax.nominal dependent=""its"" head=""seats""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""1""",agreement
+188,rename this room Atlas,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""this"" head=""room""
+@n2 syntax.nominal head=""Atlas""",agreement
+189,call it the Hive,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal dependent=""the"" head=""Hive""",agreement
+190,focus pod becomes Pod A,"@n1 syntax.nominal dependent=""focus"" head=""pod""
+@c1 syntax.clause form=declarative verb=""becomes"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Pod"" head=""A""",agreement
+191,new name for the cedar room: Spruce,"@n1 syntax.nominal dependent=""new"" head=""name""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""cedar"" head=""room""
+@n3 syntax.nominal head=""Spruce""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3",agreement
+192,give the board room a shorter name,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""board"" head=""room""
+@n2 syntax.nominal dependent=""a"" dependent=""shorter"" head=""name""",agreement
+194,set the Board room to 14 seats,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""14"" head=""seats""",agreement
+195,the Cedar room now fits 10 people,"@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@c1 syntax.clause form=declarative modifier=""now"" verb=""fits"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""10"" head=""people""",agreement
+196,change the capacity of the Focus pod to 2,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""capacity""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""2""",agreement
+198,please make the Cedar room a six-seater,"@c1 syntax.clause form=imperative discourse=""please"" verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@n2 syntax.nominal dependent=""a"" head=""six-seater""",agreement
+200,reduce the cedar room to 8 seats,"@c1 syntax.clause form=imperative verb=""reduce"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""cedar"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""8"" head=""seats""",agreement
+204,set the board room to 18 seats and book it for the weekly review,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""board"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""18"" head=""seats""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""book"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation marker=""for"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+207,Board room: 22 seats,"@n1 syntax.nominal dependent=""Board"" head=""room""
+@n2 syntax.nominal dependent=""22"" head=""seats""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+208,two more seats in the cedar room,"@n1 syntax.nominal dependent=""two"" dependent=""more"" head=""seats""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""cedar"" head=""room""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+211,fewer seats in the Board room,"@n1 syntax.nominal dependent=""fewer"" head=""seats""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+212,Cedar room fits 7,"@n1 syntax.nominal dependent=""Cedar"" head=""room""
+@c1 syntax.clause form=declarative verb=""fits"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""7""",agreement
+213,change that room to 11 seats,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""11"" head=""seats""",agreement
+214,move the Cedar room to the 3rd floor,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""3rd"" head=""floor""",agreement
+216,change the Focus pod location to the ground floor,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Focus"" dependent=""pod"" head=""location""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""ground"" head=""floor""",agreement
+217,can you set the location of the board room to the east wing?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""set"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""location""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""board"" head=""room""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""east"" head=""wing""",agreement
+219,relocate the Board room to the Bucharest office,"@c1 syntax.clause form=imperative verb=""relocate"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Bucharest"" head=""office""",agreement
+220,set the Cedar room as being on the 1st floor,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r1 syntax.relation marker=""as"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""being""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""1st"" head=""floor""",agreement
+222,"the Board room moved during the renovation. Could you change its location to the north wing, by the lifts?","@n1 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@c1 syntax.clause form=declarative verb=""moved"" subject=$n1
+@r1 syntax.relation marker=""during"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""renovation""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""change"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal dependent=""its"" head=""location""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""north"" head=""wing""
+@r3 syntax.relation attachment=ambiguous marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""lifts""",agreement
+228,Board room is in the annex now,"@n1 syntax.nominal dependent=""Board"" head=""room""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""now"" subject=$n1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""annex""",agreement
+229,put the focus pod on level 3,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""focus"" head=""pod""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""level""
+@n3 syntax.nominal head=""3""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+230,move it to the other building,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""other"" head=""building""",agreement
+231,cedar room location: west wing,"@n1 syntax.nominal dependent=""cedar"" dependent=""room"" head=""location""
+@n2 syntax.nominal dependent=""west"" head=""wing""
+@c1 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$n2",agreement
+234,delete the Focus pod,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""",agreement
+235,remove the Cedar room from the rooms list,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""rooms"" head=""list""",agreement
+237,can you delete the Oak room?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""delete"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""Oak"" head=""room""",agreement
+239,take Studio B out of the rooms,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""Studio"" head=""B""
+@r1 syntax.relation attachment=ambiguous marker=""out of"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""rooms""",agreement
+240,drop the cedar room,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""cedar"" head=""room""",agreement
+242,"move the budget sync to the Focus pod, then remove the Board room","@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""remove"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""",agreement
+246,delete this room,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""room""",agreement
+248,remove that room please,"@c1 syntax.clause form=imperative verb=""remove"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""room""",agreement
+249,bin the focus pod,"@c1 syntax.clause form=imperative verb=""bin"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""focus"" head=""pod""",agreement
+251,scrap the cedar one,"@c1 syntax.clause form=imperative verb=""scrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""cedar"" head=""one""",agreement
+252,lose the Oak room,"@c1 syntax.clause form=imperative verb=""lose"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Oak"" head=""room""",agreement
+253,set up a meeting with Ana and Lee on Thursday at 2pm,"@c1 syntax.clause form=imperative verb=""set"" modifier=""up"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Ana""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Lee""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n4
+@n4 syntax.nominal head=""Thursday""
+@r3 syntax.relation marker=""at"" from=$n1 to=$n5
+@n5 syntax.nominal head=""2pm""",agreement
+254,book a call with Priya tomorrow at 10:30,"@c1 syntax.clause form=imperative verb=""book"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""call""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""
+@r2 syntax.relation marker=""at"" from=$n1 to=$n3
+@n3 syntax.nominal head=""10:30""",agreement
+255,can you schedule a 1:1 with Mihai on Monday at 9am?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""schedule"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""1:1""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Mihai""
+@r2 syntax.relation marker=""on"" from=$n2 to=$n4
+@n4 syntax.nominal head=""Monday""
+@r3 syntax.relation marker=""at"" from=$n4 to=$n5
+@n5 syntax.nominal head=""9am""",agreement
+258,put a Roadmap chat with Ana on my calendar for Friday at 4pm,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""Roadmap"" head=""chat""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Ana""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""my"" head=""calendar""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Friday""
+@r4 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n5
+@n5 syntax.nominal head=""4pm""",agreement
+259,invite Lee and Mihai to a meeting on Wednesday at noon,"@c1 syntax.clause form=imperative verb=""invite"" complement=$k1
+@n1 syntax.nominal head=""Lee""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""Mihai""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""meeting""
+@r2 syntax.relation marker=""on"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Wednesday""
+@r3 syntax.relation marker=""at"" from=$n3 to=$n5
+@n5 syntax.nominal head=""noon""",agreement
+261,"Lee wants to go over the launch numbers, so could you set up a meeting with him and Priya on Thursday afternoon?","@n1 syntax.nominal head=""Lee""
+@c1 syntax.clause form=declarative verb=""wants"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""go""
+@r2 syntax.relation marker=""over"" from=$c2 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""launch"" head=""numbers""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=interrogative auxiliary=""could"" verb=""set"" modifier=""up"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal dependent=""a"" head=""meeting""
+@r3 syntax.relation marker=""with"" from=$n4 to=$k2
+@n5 syntax.nominal head=""him""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n5 conjunct=$n6
+@n6 syntax.nominal head=""Priya""
+@r4 syntax.relation attachment=ambiguous marker=""on"" from=$c3 to=$n7
+@n7 syntax.nominal dependent=""Thursday"" head=""afternoon""",agreement
+264,schedule a meeting with Priya on Friday at 2pm and move the budget sync to Monday,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n3
+@n3 syntax.nominal head=""Friday""
+@r3 syntax.relation marker=""at"" from=$n1 to=$n4
+@n4 syntax.nominal head=""2pm""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r4 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal head=""Monday""",agreement
+267,meet Priya on Friday,"@c1 syntax.clause form=imperative verb=""meet"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Friday""",agreement
+269,lunch meeting with Lee and Ana,"@n1 syntax.nominal dependent=""lunch"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Lee""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Ana""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+270,book me in with Priya,"@c1 syntax.clause form=imperative verb=""book"" modifier=""in"" complement=$n1
+@n1 syntax.nominal head=""me""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Priya""",agreement
+271,set up something with Lee,"@c1 syntax.clause form=imperative verb=""set"" modifier=""up"" complement=$n1
+@n1 syntax.nominal head=""something""
+@r1 syntax.relation attachment=ambiguous marker=""with"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Lee""",agreement
+272,I need to see Mihai tomorrow,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""see"" modifier=""tomorrow"" complement=$n2
+@n2 syntax.nominal head=""Mihai""",agreement
+273,schedule a meeting called Q1 planning next Friday at 10am,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2 complement=$n3
+@n2 syntax.nominal dependent=""Q1"" head=""planning""
+@n3 syntax.nominal dependent=""next"" head=""Friday""
+@r1 syntax.relation marker=""at"" from=$n1 to=$n4
+@n4 syntax.nominal head=""10am""
+@r2 syntax.relation from=$n1 to=$c2",agreement
+274,add a Vendor call on Dec 3 at 15:00,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""Vendor"" head=""call""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Dec""
+@n3 syntax.nominal head=""3""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""15:00""
+@r3 syntax.relation from=$n2 to=$n3",agreement
+275,can you book a team meeting for Tuesday at half past nine?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""book"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" dependent=""team"" head=""meeting""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Tuesday""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""half""
+@r3 syntax.relation marker=""past"" from=$n4 to=$n5
+@n5 syntax.nominal head=""nine""",agreement
+280,schedule a 45 minute meeting with Ana on Tuesday at 11,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""45"" dependent=""minute"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Ana""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n3
+@n3 syntax.nominal head=""Tuesday""
+@r3 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""11""",agreement
+281,set up a call with Mihai tomorrow at 9 for 20 minutes,"@c1 syntax.clause form=imperative verb=""set"" modifier=""up"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""call""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Mihai""
+@r2 syntax.relation marker=""at"" from=$n1 to=$n3
+@n3 syntax.nominal head=""9""
+@r3 syntax.relation marker=""for"" from=$n3 to=$n4
+@n4 syntax.nominal dependent=""20"" head=""minutes""",agreement
+283,a quick meeting with Lee,"@n1 syntax.nominal dependent=""a"" dependent=""quick"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Lee""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+286,schedule a design review in the Cedar room tomorrow at 3pm,"@c1 syntax.clause form=imperative verb=""schedule"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""design"" head=""review""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r2 syntax.relation marker=""at"" from=$n1 to=$n3
+@n3 syntax.nominal head=""3pm""",agreement
+287,can you set up a meeting with Lee in the Focus pod on Monday at 9:30?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""set"" modifier=""up"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Lee""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@r3 syntax.relation marker=""on"" from=$n2 to=$n5
+@n5 syntax.nominal head=""Monday""
+@r4 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n6
+@n6 syntax.nominal head=""9:30""",agreement
+288,"there'll be eight of us for the Partner pitch, so please put it in the Board room on Thursday at 2pm","@n1 syntax.nominal head=""there""
+@c1 syntax.clause form=declarative auxiliary=""'ll"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""eight""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""us""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Partner"" head=""pitch""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative discourse=""please"" verb=""put"" complement=$n5
+@n5 syntax.nominal head=""it""
+@r3 syntax.relation marker=""in"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n7
+@n7 syntax.nominal head=""Thursday""
+@r5 syntax.relation marker=""at"" from=$n7 to=$n8
+@n8 syntax.nominal head=""2pm""",agreement
+290,book the board room for the review,"@c1 syntax.clause form=imperative verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""board"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""review""",agreement
+292,grab a room for my call with Ana,"@c1 syntax.clause form=imperative verb=""grab"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""call""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Ana""",agreement
+293,add a Parent-teacher meeting to the Family calendar on Tuesday at 5pm,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""Parent"" dependent=""teacher"" head=""meeting""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""
+@r2 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Tuesday""
+@r3 syntax.relation marker=""at"" from=$n3 to=$n4
+@n4 syntax.nominal head=""5pm""",agreement
+294,schedule a meeting with Lee on Friday at 11 on my Work calendar,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Lee""
+@r2 syntax.relation marker=""on"" from=$n1 to=$n3
+@n3 syntax.nominal head=""Friday""
+@r3 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""11""
+@r4 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n5
+@n5 syntax.nominal dependent=""my"" dependent=""Work"" head=""calendar""",agreement
+295,put a session with my trainer on the Gym calendar for Saturday at 8am,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""session""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""trainer""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Gym"" head=""calendar""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Saturday""
+@r4 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n5
+@n5 syntax.nominal head=""8am""",agreement
+316,add a meeting about the move with some notes,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""about"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""move""
+@r2 syntax.relation marker=""with"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""some"" head=""notes""",agreement
+320,schedule a meeting with Ana and Lee when they're both free,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Ana""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Lee""
+@r2 syntax.relation marker=""when"" from=$c1 to=$c2
+@n4 syntax.nominal head=""they""
+@c2 syntax.clause form=declarative verb=""'re"" modifier=""free"" subject=$n4 complement=$n5
+@n5 syntax.nominal head=""both""",agreement
+321,book a call with Priya in the first free slot tomorrow,"@c1 syntax.clause form=imperative verb=""book"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""call""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""
+@r2 syntax.relation marker=""in"" from=$n1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" dependent=""free"" head=""slot""",agreement
+324,book the first open slot on Monday for a call with Priya,"@c1 syntax.clause form=imperative verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" dependent=""open"" head=""slot""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Monday""
+@r2 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""a"" head=""call""
+@r3 syntax.relation marker=""with"" from=$n3 to=$n4
+@n4 syntax.nominal head=""Priya""",agreement
+332,next free spot for a Mihai catch-up,"@n1 syntax.nominal dependent=""next"" dependent=""free"" head=""spot""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""Mihai"" head=""catch-up""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+337,add an event called Haircut on Saturday at 11am,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""event""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal head=""Haircut""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Saturday""
+@r2 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n4
+@n4 syntax.nominal head=""11am""
+@r3 syntax.relation from=$n1 to=$c2",agreement
+340,add a dentist appointment,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""dentist"" head=""appointment""",agreement
+341,Swimming at 6,"@c1 syntax.clause form=nonfinite verb=""Swimming""
+@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal head=""6""",agreement
+345,put Physio on Friday at 4pm for 40 minutes,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""Physio""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Friday""
+@r2 syntax.relation marker=""at"" from=$c1 to=$n3
+@n3 syntax.nominal head=""4pm""
+@r3 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""40"" head=""minutes""",agreement
+350,add a short Meditation event,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""short"" dependent=""Meditation"" head=""event""",agreement
+351,select the budget sync,"@c1 syntax.clause form=imperative verb=""select"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+352,pick the dentist appointment in the calendar,"@c1 syntax.clause form=imperative verb=""pick"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""dentist"" head=""appointment""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""calendar""",agreement
+353,can you highlight Lunch with Sam?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""highlight"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Sam""",agreement
+356,choose the review event,"@c1 syntax.clause form=imperative verb=""choose"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""review"" head=""event""",agreement
+357,go to the Dentist,"@c1 syntax.clause form=imperative verb=""go""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""the"" head=""Dentist""",agreement
+358,rename the budget sync to Finance sync,"@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""Finance"" head=""sync""",agreement
+359,change the title of the weekly review to Team review,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""title""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Team"" head=""review""",agreement
+360,can you set the Title of the design critique to Design jam?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""set"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""Title""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""Design"" head=""jam""",agreement
+364,give the weekly review a clearer title,"@c1 syntax.clause form=imperative verb=""give"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@n2 syntax.nominal dependent=""a"" dependent=""clearer"" head=""title""",agreement
+365,make the budget sync 45 minutes long,"@c1 syntax.clause form=imperative verb=""make"" modifier=""long"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@n2 syntax.nominal dependent=""45"" head=""minutes""",agreement
+366,change the length of the design critique to an hour,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""length""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""an"" head=""hour""",agreement
+368,"we never finish the design critique on time, so could you extend it by 15 minutes?","@n1 syntax.nominal head=""we""
+@c1 syntax.clause form=declarative negation=""never"" verb=""finish"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal head=""time""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""could"" verb=""extend"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal head=""it""
+@r2 syntax.relation marker=""by"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""15"" head=""minutes""",agreement
+370,make this meeting a bit shorter,"@c1 syntax.clause form=imperative verb=""make"" modifier=""shorter"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""this"" head=""meeting""
+@n2 syntax.nominal dependent=""a"" head=""bit""",agreement
+371,yoga should be 75 minutes,"@n1 syntax.nominal head=""yoga""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""be"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""75"" head=""minutes""",agreement
+377,add an agenda to the weekly review,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""an"" head=""agenda""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+379,add Priya to the budget sync,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+380,invite Lee and Mihai to the design critique,"@c1 syntax.clause form=imperative verb=""invite"" complement=$k1
+@n1 syntax.nominal head=""Lee""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""Mihai""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+381,can you include Ana in the weekly review?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""include"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Ana""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+382,take Lee off the budget sync,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal head=""Lee""
+@r1 syntax.relation marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+383,please put Mihai on the invite list for the weekly review,"@c1 syntax.clause form=imperative discourse=""please"" verb=""put"" complement=$n1
+@n1 syntax.nominal head=""Mihai""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""invite"" head=""list""
+@r2 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+384,remove Priya from the design critique,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+386,swap Lee for Mihai in the weekly review,"@c1 syntax.clause form=imperative verb=""swap"" complement=$n1
+@n1 syntax.nominal head=""Lee""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Mihai""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+389,add Ana to the weekly review and move it to the Board room,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""Ana""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""",agreement
+391,our new designer Noor starts Monday. Please add her to the design critique so she can see how we work,"@n1 syntax.nominal dependent=""our"" dependent=""new"" head=""designer""
+@n2 syntax.nominal head=""Noor""
+@c1 syntax.clause form=declarative verb=""starts"" subject=$n1 complement=$n3
+@n3 syntax.nominal head=""Monday""
+@c2 syntax.clause form=imperative discourse=""Please"" verb=""add"" complement=$n4
+@n4 syntax.nominal head=""her""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation marker=""so"" from=$c2 to=$c3
+@n6 syntax.nominal head=""she""
+@c3 syntax.clause form=declarative auxiliary=""can"" verb=""see"" subject=$n6
+@c4 syntax.clause form=declarative modifier=""how"" verb=""work"" subject=$n7
+@n7 syntax.nominal head=""we""
+@r3 syntax.relation from=$n1 to=$n2
+@r4 syntax.relation from=$c3 to=$c4",agreement
+393,add Lee to this one,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal head=""Lee""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""one""",agreement
+395,invite the whole team to the weekly review,"@c1 syntax.clause form=imperative verb=""invite"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""whole"" head=""team""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+396,Lee should join the design critique,"@n1 syntax.nominal head=""Lee""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""join"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+397,move the budget sync to the Cedar room,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""",agreement
+398,can you put the weekly review in the Focus pod?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""put"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""",agreement
+399,switch the budget sync over to the board room,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""board"" head=""room""",agreement
+400,please book the Cedar room for the weekly review,"@c1 syntax.clause form=imperative discourse=""please"" verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+402,set the room of the budget sync to Focus pod,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""room""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Focus"" head=""pod""",agreement
+404,the projector in the Board room is broken. Could you move the design critique to the Cedar room?,"@n1 syntax.nominal dependent=""the"" head=""projector""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""broken"" subject=$n1
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""move"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""",agreement
+408,Cedar room for this one,"@n1 syntax.nominal dependent=""Cedar"" head=""room""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""one""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+409,find a bigger room for the weekly review,"@c1 syntax.clause form=imperative verb=""find"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bigger"" head=""room""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""",agreement
+410,budget sync in the Board room,"@n1 syntax.nominal dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+411,different room for the design critique,"@n1 syntax.nominal dependent=""different"" head=""room""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+413,move yoga to the Gym calendar,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""yoga""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Gym"" head=""calendar""",agreement
+414,can you change the calendar of the budget sync to Work?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""change"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" head=""calendar""
+@r1 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Work""",agreement
+415,switch Lunch with Sam over to Family,"@c1 syntax.clause form=imperative verb=""switch"" modifier=""over"" complement=$n1
+@n1 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Sam""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Family""",agreement
+416,I want yoga on my Family calendar instead,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""want"" modifier=""instead"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""yoga""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""my"" dependent=""Family"" head=""calendar""",agreement
+417,assign the dentist to the Family calendar,"@c1 syntax.clause form=imperative verb=""assign"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dentist""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""",agreement
+421,"if the design critique is still on my Family calendar by mistake, please put it back on Work","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""still"" subject=$n1
+@r2 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""Family"" head=""calendar""
+@r3 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal head=""mistake""
+@c2 syntax.clause form=imperative discourse=""please"" verb=""put"" modifier=""back"" complement=$n4
+@n4 syntax.nominal head=""it""
+@r4 syntax.relation marker=""on"" from=$c2 to=$n5
+@n5 syntax.nominal head=""Work""",agreement
+422,"I'm sharing the Book club calendar with friends, so would you move the yoga onto it?","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative auxiliary=""'m"" verb=""sharing"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Book"" dependent=""club"" head=""calendar""
+@r1 syntax.relation marker=""with"" from=$c1 to=$n3
+@n3 syntax.nominal head=""friends""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""would"" verb=""move"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""you""
+@n5 syntax.nominal dependent=""the"" head=""yoga""
+@r2 syntax.relation marker=""onto"" from=$c2 to=$n6
+@n6 syntax.nominal head=""it""",agreement
+426,move it to Work,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Work""",agreement
+428,Lunch with Sam belongs to Family,"@n1 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Sam""
+@c1 syntax.clause form=declarative verb=""belongs"" subject=$n1
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""Family""",agreement
+430,weekly review to the Work calendar,"@n1 syntax.nominal dependent=""weekly"" head=""review""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Work"" head=""calendar""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+431,move the budget sync to 3pm,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""3pm""",agreement
+432,set the Start of the design critique to 10:30,"@c1 syntax.clause form=imperative verb=""set"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""Start""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal head=""10:30""",agreement
+433,can you reschedule the weekly review for noon?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""reschedule"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n3
+@n3 syntax.nominal head=""noon""",agreement
+435,the yoga studio changed its timetable. Could you shift yoga to 7 in the evening?,"@n1 syntax.nominal dependent=""the"" dependent=""yoga"" head=""studio""
+@c1 syntax.clause form=declarative verb=""changed"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""its"" head=""timetable""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""shift"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal head=""yoga""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n5
+@n5 syntax.nominal head=""7""
+@r2 syntax.relation marker=""in"" from=$n5 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""evening""",agreement
+437,Lunch with Sam at 1,"@n1 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Sam""
+@r2 syntax.relation marker=""at"" from=$n1 to=$n3
+@n3 syntax.nominal head=""1""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+438,move the dentist to the afternoon,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""dentist""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""afternoon""",agreement
+439,move the weekly review to Friday,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Friday""",agreement
+440,please push the design critique to next Tuesday,"@c1 syntax.clause form=imperative discourse=""please"" verb=""push"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""next"" head=""Tuesday""",agreement
+441,"Sam is travelling this week, so could we move Lunch with Sam to the 24th?","@n1 syntax.nominal head=""Sam""
+@c1 syntax.clause form=declarative auxiliary=""is"" verb=""travelling"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""this"" head=""week""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=interrogative auxiliary=""could"" verb=""move"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""we""
+@n4 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n4 to=$n5
+@n5 syntax.nominal head=""Sam""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n6
+@n6 syntax.nominal dependent=""the"" head=""24th""",agreement
+442,move the budget sync to Monday and invite Priya,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Monday""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""invite"" complement=$n3
+@n3 syntax.nominal head=""Priya""",agreement
+444,yoga tomorrow instead,"@n1 syntax.nominal head=""yoga""
+@c1 syntax.clause form=fragment modifier=""tomorrow"" modifier=""instead"" complement=$n1",agreement
+445,push the review to another day,"@c1 syntax.clause form=imperative verb=""push"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""another"" head=""day""",agreement
+446,move the weekly review an hour later,"@c1 syntax.clause form=imperative verb=""move"" modifier=""later"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@n2 syntax.nominal dependent=""an"" head=""hour""",agreement
+447,push the design critique back 30 minutes,"@c1 syntax.clause form=imperative verb=""push"" modifier=""back"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@n2 syntax.nominal dependent=""30"" head=""minutes""",agreement
+448,can you bring the budget sync forward by 15 minutes?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""bring"" modifier=""forward"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""15"" head=""minutes""",agreement
+455,move the weekly review an hour earlier and put it in the Cedar room,"@c1 syntax.clause form=imperative verb=""move"" modifier=""earlier"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@n2 syntax.nominal dependent=""an"" head=""hour""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Cedar"" head=""room""",agreement
+459,push it back an hour,"@c1 syntax.clause form=imperative verb=""push"" modifier=""back"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""it""
+@n2 syntax.nominal dependent=""an"" head=""hour""",agreement
+461,move this one slightly earlier,"@c1 syntax.clause form=imperative verb=""move"" modifier=""slightly"" modifier=""earlier"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""one""",agreement
+462,bump the weekly review by an hour,"@c1 syntax.clause form=imperative verb=""bump"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation attachment=ambiguous marker=""by"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""an"" head=""hour""",agreement
+465,delete Yoga and the dentist,"@c1 syntax.clause form=imperative verb=""delete"" complement=$k1
+@n1 syntax.nominal head=""Yoga""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""dentist""",agreement
+466,remove the budget sync and the design critique,"@c1 syntax.clause form=imperative verb=""remove"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+467,"cancel the weekly review, the budget sync and the design critique","@c1 syntax.clause form=imperative verb=""cancel"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+470,take the design critique and the dentist off my calendar,"@c1 syntax.clause form=imperative verb=""take"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""dentist""
+@r1 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""my"" head=""calendar""",agreement
+472,"I'm off sick tomorrow, so please cancel the budget sync and the design critique","@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""'m"" modifier=""off"" modifier=""tomorrow"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""sick""
+@k1 syntax.coordination conjunction=""so"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative discourse=""please"" verb=""cancel"" complement=$k2
+@n3 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@k2 syntax.coordination conjunction=""and"" conjunct=$n3 conjunct=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+474,"delete yoga and the dentist, then move the budget sync to Friday","@c1 syntax.clause form=imperative verb=""delete"" complement=$k1
+@n1 syntax.nominal head=""yoga""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""dentist""
+@k2 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""move"" complement=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Friday""",agreement
+475,"if Sam can't come anyway, just drop Lunch with Sam along with the yoga class","@r1 syntax.relation marker=""if"" from=$c2 to=$c1
+@n1 syntax.nominal head=""Sam""
+@c1 syntax.clause form=declarative auxiliary=""ca"" negation=""n't"" verb=""come"" modifier=""anyway"" subject=$n1
+@c2 syntax.clause form=imperative modifier=""just"" verb=""drop"" complement=$n2
+@n2 syntax.nominal head=""Lunch""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Sam""
+@r3 syntax.relation marker=""along with"" from=$n2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""yoga"" head=""class""",agreement
+478,kill the budget sync and yoga,"@c1 syntax.clause form=imperative verb=""kill"" complement=$k1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""yoga""",agreement
+480,no weekly review or design critique,"@n1 syntax.nominal dependent=""no"" dependent=""weekly"" head=""review""
+@k1 syntax.coordination conjunction=""or"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""design"" head=""critique""
+@c1 syntax.clause form=fragment complement=$k1",agreement
+482,remove the review and the sync,"@c1 syntax.clause form=imperative verb=""remove"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""review""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" head=""sync""",agreement
+484,bin the dentist and the budget sync,"@c1 syntax.clause form=imperative verb=""bin"" complement=$k1
+@n1 syntax.nominal dependent=""the"" head=""dentist""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+486,delete the budget sync,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+487,cancel the design critique,"@c1 syntax.clause form=imperative verb=""cancel"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+488,can you remove Lunch with Sam from my calendar?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""remove"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Sam""
+@r2 syntax.relation marker=""from"" from=$c1 to=$n4
+@n4 syntax.nominal dependent=""my"" head=""calendar""",agreement
+490,I rebooked for next month. Could you delete the old dentist appointment?,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""rebooked"" subject=$n1
+@r1 syntax.relation marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""next"" head=""month""
+@c2 syntax.clause form=interrogative auxiliary=""Could"" verb=""delete"" subject=$n3 complement=$n4
+@n3 syntax.nominal head=""you""
+@n4 syntax.nominal dependent=""the"" dependent=""old"" dependent=""dentist"" head=""appointment""",agreement
+492,scrap the critique,"@c1 syntax.clause form=imperative verb=""scrap"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""critique""",agreement
+493,"the dentist is off, delete it","@n1 syntax.nominal dependent=""the"" head=""dentist""
+@c1 syntax.clause form=declarative verb=""is"" modifier=""off"" subject=$n1
+@c2 syntax.clause form=imperative verb=""delete"" complement=$n2
+@n2 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+494,remove the selected event,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""selected"" head=""event""",agreement
+495,can you cancel this one?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""cancel"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal dependent=""this"" head=""one""",agreement
+496,please delete the event I've selected,"@c1 syntax.clause form=imperative discourse=""please"" verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""event""
+@n2 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative auxiliary=""'ve"" verb=""selected"" subject=$n2
+@r1 syntax.relation from=$n1 to=$c2",agreement
+498,erase the current selection from the calendar,"@c1 syntax.clause form=imperative verb=""erase"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""current"" head=""selection""
+@r1 syntax.relation marker=""from"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""calendar""",agreement
+503,"hmm, I added this by mistake; please just remove it","@c1 syntax.clause form=imperative discourse=""hmm"" discourse=""please"" modifier=""just"" verb=""remove"" complement=$n4
+@n1 syntax.nominal head=""I""
+@c2 syntax.clause form=declarative verb=""added"" subject=$n1 complement=$n2
+@n2 syntax.nominal head=""this""
+@r1 syntax.relation marker=""by"" from=$c2 to=$n3
+@n3 syntax.nominal head=""mistake""
+@n4 syntax.nominal head=""it""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2",agreement
+504,delete that event,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""event""",agreement
+505,cancel it please,"@c1 syntax.clause form=imperative verb=""cancel"" discourse=""please"" complement=$n1
+@n1 syntax.nominal head=""it""",agreement
+507,remove the selected one,"@c1 syntax.clause form=imperative verb=""remove"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""selected"" head=""one""",agreement
+508,kill that appointment,"@c1 syntax.clause form=imperative verb=""kill"" complement=$n1
+@n1 syntax.nominal dependent=""that"" head=""appointment""",agreement
+510,drop it from the calendar,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""calendar""",agreement
+514,"before I plan the weekend, what's on the Family calendar?","@r1 syntax.relation marker=""before"" from=$c2 to=$c1
+@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""plan"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""the"" head=""weekend""
+@n3 syntax.nominal head=""what""
+@c2 syntax.clause form=interrogative verb=""'s"" subject=$n3
+@r2 syntax.relation marker=""on"" from=$c2 to=$n4
+@n4 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""",agreement
+515,what's the schedule for today?,"@n1 syntax.nominal head=""what""
+@c1 syntax.clause form=interrogative verb=""'s"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" head=""schedule""
+@r1 syntax.relation marker=""for"" from=$n2 to=$n3
+@n3 syntax.nominal head=""today""",agreement
+517,my agenda for Monday,"@n1 syntax.nominal dependent=""my"" head=""agenda""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Monday""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+519,what time does the design critique start?,"@n1 syntax.nominal dependent=""what"" head=""time""
+@c1 syntax.clause form=interrogative auxiliary=""does"" verb=""start"" subject=$n2 complement=$n1
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""",agreement
+522,at what time is the budget sync tomorrow?,"@r1 syntax.relation marker=""at"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""what"" head=""time""
+@c1 syntax.clause form=interrogative verb=""is"" modifier=""tomorrow"" subject=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""",agreement
+532,time of the review?,"@n1 syntax.nominal head=""time""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""review""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+533,when is it?,"@c1 syntax.clause form=interrogative modifier=""when"" verb=""is"" subject=$n1
+@n1 syntax.nominal head=""it""",agreement
+535,what time is lunch with Sam,"@n1 syntax.nominal dependent=""what"" head=""time""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""lunch""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Sam""",agreement
+538,do I have any meetings with Priya next week?,"@c1 syntax.clause form=interrogative auxiliary=""do"" verb=""have"" subject=$n1 complement=$n2 complement=$n4
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""any"" head=""meetings""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Priya""
+@n4 syntax.nominal dependent=""next"" head=""week""",agreement
+542,"Ana wants to meet on Thursday at 2, but do I already have something then?","@n1 syntax.nominal head=""Ana""
+@c1 syntax.clause form=declarative verb=""wants"" subject=$n1
+@r1 syntax.relation marker=""to"" from=$c1 to=$c2
+@c2 syntax.clause form=nonfinite verb=""meet""
+@r2 syntax.relation marker=""on"" from=$c2 to=$n2
+@n2 syntax.nominal head=""Thursday""
+@r3 syntax.relation marker=""at"" from=$n2 to=$n3
+@n3 syntax.nominal head=""2""
+@k1 syntax.coordination conjunction=""but"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=interrogative auxiliary=""do"" modifier=""already"" verb=""have"" modifier=""then"" subject=$n4 complement=$n5
+@n4 syntax.nominal head=""I""
+@n5 syntax.nominal head=""something""",agreement
+549,am I busy tomorrow morning,"@c1 syntax.clause form=interrogative verb=""am"" modifier=""busy"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""I""
+@n2 syntax.nominal dependent=""tomorrow"" head=""morning""",agreement
+553,Gym sounds too serious. Let's call it Move instead,"@n1 syntax.nominal head=""Gym""
+@c1 syntax.clause form=declarative verb=""sounds"" modifier=""too"" modifier=""serious"" subject=$n1
+@c2 syntax.clause form=imperative verb=""Let"" complement=$n2
+@n2 syntax.nominal head=""'s""
+@c3 syntax.clause form=nonfinite verb=""call"" modifier=""instead"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""it""
+@n4 syntax.nominal head=""Move""
+@r1 syntax.relation from=$c2 to=$c3",agreement
+556,can you add Sofia to the people list?,"@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""add"" subject=$n1 complement=$n2
+@n1 syntax.nominal head=""you""
+@n2 syntax.nominal head=""Sofia""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""people"" head=""list""",agreement
+557,fix the spelling of Priya,"@c1 syntax.clause form=imperative verb=""fix"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""spelling""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""",agreement
+558,delete the contact Priya,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""contact""
+@n2 syntax.nominal head=""Priya""
+@r1 syntax.relation from=$n1 to=$n2",agreement
+560,add a room called Oak room,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal dependent=""Oak"" head=""room""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+564,schedule a sync with Priya and add a short agenda,"@c1 syntax.clause form=imperative verb=""schedule"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""sync""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""add"" complement=$n3
+@n3 syntax.nominal dependent=""a"" dependent=""short"" head=""agenda""",agreement
+568,no Mihai at the design critique,"@n1 syntax.nominal dependent=""no"" head=""Mihai""
+@r1 syntax.relation marker=""at"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+569,put the budget sync in the Focus pod and push it to 3pm,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@r1 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""push"" complement=$n3
+@n3 syntax.nominal head=""it""
+@r2 syntax.relation marker=""to"" from=$c2 to=$n4
+@n4 syntax.nominal head=""3pm""",agreement
+570,move it to the focus pod,"@c1 syntax.clause form=imperative verb=""move"" complement=$n1
+@n1 syntax.nominal head=""it""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""focus"" head=""pod""",agreement
+571,take this appointment off my calendar,"@c1 syntax.clause form=imperative verb=""take"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""appointment""
+@r1 syntax.relation attachment=ambiguous marker=""off"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" head=""calendar""",agreement
+574,create a new calendar called Book club,"@c1 syntax.clause form=imperative verb=""create"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""new"" head=""calendar""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n2
+@n2 syntax.nominal dependent=""Book"" head=""club""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+577,change the name of the Focus pod to Quiet pod,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""name""
+@r1 syntax.relation marker=""of"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Focus"" head=""pod""
+@r2 syntax.relation marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""Quiet"" head=""pod""",agreement
+579,book the Board room for a meeting with Ana on Friday at 10,"@c1 syntax.clause form=imperative verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""a"" head=""meeting""
+@r2 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Ana""
+@r3 syntax.relation marker=""on"" from=$n2 to=$n4
+@n4 syntax.nominal head=""Friday""
+@r4 syntax.relation marker=""at"" from=$n4 to=$n5
+@n5 syntax.nominal head=""10""",agreement
+583,bring Ana into it,"@c1 syntax.clause form=imperative verb=""bring"" complement=$n1
+@n1 syntax.nominal head=""Ana""
+@r1 syntax.relation marker=""into"" from=$c1 to=$n2
+@n2 syntax.nominal head=""it""",agreement
+587,anything with Ana today?,"@n1 syntax.nominal head=""anything""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Ana""
+@c1 syntax.clause form=fragment modifier=""today"" complement=$n1",agreement
+588,the Work calendar should be called Day job,"@n1 syntax.nominal dependent=""the"" dependent=""Work"" head=""calendar""
+@c1 syntax.clause form=declarative auxiliary=""should"" auxiliary=""be"" verb=""called"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Day"" head=""job""",agreement
+592,this room can go,"@n1 syntax.nominal dependent=""this"" head=""room""
+@c1 syntax.clause form=declarative auxiliary=""can"" verb=""go"" subject=$n1",agreement
+594,book a room for this,"@c1 syntax.clause form=imperative verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""room""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""this""",agreement
+595,put the dentist appointment on the Family calendar,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""dentist"" head=""appointment""
+@r1 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Family"" head=""calendar""",agreement
+596,transfer the design critique to the Work calendar,"@c1 syntax.clause form=imperative verb=""transfer"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r1 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Work"" head=""calendar""",agreement
+598,make this room bigger,"@c1 syntax.clause form=imperative verb=""make"" modifier=""bigger"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""room""",agreement
+599,delete him,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal head=""him""",agreement
+601,put that on my personal calendar,"@c1 syntax.clause form=imperative verb=""put"" complement=$n1
+@n1 syntax.nominal head=""that""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""my"" dependent=""personal"" head=""calendar""",agreement
+605,delete the Gym calendar,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Gym"" head=""calendar""",agreement
+606,delete this calendar,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""calendar""",agreement
+608,delete this person,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""person""",agreement
+611,drop Priya from this meeting,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal head=""Priya""
+@r1 syntax.relation attachment=ambiguous marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""this"" head=""meeting""",agreement
+612,this meeting can go,"@n1 syntax.nominal dependent=""this"" head=""meeting""
+@c1 syntax.clause form=declarative auxiliary=""can"" verb=""go"" subject=$n1",agreement
+615,I need a new contact named Kenji,"@n1 syntax.nominal head=""I""
+@c1 syntax.clause form=declarative verb=""need"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""new"" head=""contact""
+@c2 syntax.clause form=nonfinite verb=""named"" complement=$n3
+@n3 syntax.nominal head=""Kenji""
+@r1 syntax.relation from=$n2 to=$c2",agreement
+616,drop Mihai from the list of people,"@c1 syntax.clause form=imperative verb=""drop"" complement=$n1
+@n1 syntax.nominal head=""Mihai""
+@r1 syntax.relation marker=""from"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" head=""list""
+@r2 syntax.relation marker=""of"" from=$n2 to=$n3
+@n3 syntax.nominal head=""people""",agreement
+617,book a two hour workshop with Lee and Priya on Friday at 1pm,"@c1 syntax.clause form=imperative verb=""book"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""two"" dependent=""hour"" head=""workshop""
+@r1 syntax.relation marker=""with"" from=$n1 to=$k1
+@n2 syntax.nominal head=""Lee""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n2 conjunct=$n3
+@n3 syntax.nominal head=""Priya""
+@r2 syntax.relation attachment=ambiguous marker=""on"" from=$c1 to=$n4
+@n4 syntax.nominal head=""Friday""
+@r3 syntax.relation attachment=ambiguous marker=""at"" from=$c1 to=$n5
+@n5 syntax.nominal head=""1pm""",agreement
+619,book a free slot with Priya tomorrow,"@c1 syntax.clause form=imperative verb=""book"" modifier=""tomorrow"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""free"" head=""slot""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Priya""",agreement
+621,reschedule the dentist appointment for Dec 3,"@c1 syntax.clause form=imperative verb=""reschedule"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""dentist"" head=""appointment""
+@r1 syntax.relation attachment=ambiguous marker=""for"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Dec""
+@n3 syntax.nominal head=""3""
+@r2 syntax.relation from=$n2 to=$n3",agreement
+622,what day is Lunch with Sam?,"@n1 syntax.nominal dependent=""what"" head=""day""
+@c1 syntax.clause form=interrogative verb=""is"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""Lunch""
+@r1 syntax.relation marker=""with"" from=$n2 to=$n3
+@n3 syntax.nominal head=""Sam""",agreement
+623,"yoga, when?","@n1 syntax.nominal head=""yoga""
+@c1 syntax.clause form=fragment modifier=""when"" complement=$n1",agreement
+627,make this calendar brown,"@c1 syntax.clause form=imperative verb=""make"" modifier=""brown"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""calendar""",agreement
+631,later by 30 minutes,"@c1 syntax.clause form=fragment modifier=""later""
+@r1 syntax.relation marker=""by"" from=$c1 to=$n1
+@n1 syntax.nominal dependent=""30"" head=""minutes""",agreement
+632,delete this meeting,"@c1 syntax.clause form=imperative verb=""delete"" complement=$n1
+@n1 syntax.nominal dependent=""this"" head=""meeting""",agreement
+635,please file the weekly review under Work,"@c1 syntax.clause form=imperative discourse=""please"" verb=""file"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation marker=""under"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Work""",agreement
+636,Gym in lime,"@n1 syntax.nominal head=""Gym""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""lime""
+@c1 syntax.clause form=fragment complement=$n1",agreement
+638,put a meeting in on Thursday,"@c1 syntax.clause form=imperative verb=""put"" modifier=""in"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""on"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Thursday""",agreement
+639,set up a meeting with Mihai as soon as possible,"@c1 syntax.clause form=imperative verb=""set"" modifier=""up"" modifier=""as"" modifier=""soon"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""meeting""
+@r1 syntax.relation marker=""with"" from=$n1 to=$n2
+@n2 syntax.nominal head=""Mihai""
+@r2 syntax.relation marker=""as"" from=$c1 to=$n3
+@n3 syntax.nominal head=""possible""",agreement
+640,change the room for the design critique to the Board room,"@c1 syntax.clause form=imperative verb=""change"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""room""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""design"" head=""critique""
+@r2 syntax.relation attachment=ambiguous marker=""to"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""",agreement
+641,relocate the weekly review to the Board room,"@c1 syntax.clause form=imperative verb=""relocate"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""weekly"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""Board"" head=""room""",agreement
+642,one more person on the budget sync,"@n1 syntax.nominal dependent=""one"" dependent=""more"" head=""person""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""budget"" head=""sync""
+@c1 syntax.clause form=fragment complement=$n1",agreement

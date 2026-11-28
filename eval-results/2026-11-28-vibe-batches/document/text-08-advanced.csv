@@ -1,0 +1,80 @@
+n,text,sop,alt,label_state
+12,centre the first paragraph,"@c1 syntax.clause form=fragment modifier=""centre"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""paragraph""","@c1 syntax.clause form=imperative verb=""centre"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""first"" head=""paragraph""",agreement
+26,make the paragraph say Updated paragraph,"@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""the"" head=""paragraph""
+@c2 syntax.clause form=nonfinite verb=""say"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Updated"" head=""paragraph""
+@r1 syntax.relation from=$c1 to=$c2","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""paragraph""
+@c2 syntax.clause form=nonfinite verb=""say"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""Updated"" head=""paragraph""
+@r1 syntax.relation from=$c1 to=$c2",agreement
+40,what chapters and blocks are in this document?,"@n1 syntax.nominal dependent=""what"" head=""chapters""
+@k1 syntax.coordination conjunction=""and"" conjunct=$n1 conjunct=$n2
+@n2 syntax.nominal head=""blocks""
+@c1 syntax.clause form=interrogative verb=""are"" complement=$k1
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""this"" head=""document""","@n1 syntax.nominal dependent=""what"" head=""chapters""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c2 conjunct=$c1
+@n2 syntax.nominal head=""blocks""
+@c1 syntax.clause form=interrogative verb=""are"" subject=$n2
+@r1 syntax.relation marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""this"" head=""document""
+@c2 syntax.clause form=fragment complement=$n1",agreement
+43,redo the document edit,"@c1 syntax.clause form=imperative verb=""redo"" complement=$n1
+@n1 syntax.nominal dependent=""the"" head=""document""
+@c2 syntax.clause form=imperative verb=""edit""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""redo"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""document"" head=""edit""",agreement
+51,retitle this document Project notes,"@c1 syntax.clause form=imperative verb=""retitle"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""this"" head=""document""
+@n2 syntax.nominal dependent=""Project"" head=""notes""","@c1 syntax.clause form=imperative verb=""retitle"" complement=$n1
+@n1 syntax.nominal dependent=""this"" dependent=""document"" dependent=""Project"" head=""notes""",agreement
+52,call the document Project notes,"@c1 syntax.clause form=imperative verb=""call"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" head=""document""
+@n2 syntax.nominal dependent=""Project"" head=""notes""","@c1 syntax.clause form=imperative verb=""call"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""document"" dependent=""Project"" head=""notes""",agreement
+62,apply bold to Hello in the first paragraph,"@c1 syntax.clause form=imperative verb=""apply"" complement=$n1
+@n1 syntax.nominal head=""bold""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal head=""Hello""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n3
+@n3 syntax.nominal dependent=""the"" dependent=""first"" head=""paragraph""","@c1 syntax.clause form=imperative verb=""apply"" modifier=""bold""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Hello""
+@r2 syntax.relation attachment=ambiguous marker=""in"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""the"" dependent=""first"" head=""paragraph""",agreement
+67,"first paragraph, centred","@n1 syntax.nominal dependent=""first"" head=""paragraph""
+@n2 syntax.nominal head=""centred""
+@c1 syntax.clause form=fragment complement=$n1 complement=$n2","@n1 syntax.nominal dependent=""first"" head=""paragraph""
+@c1 syntax.clause form=fragment modifier=""centred"" complement=$n1",agreement
+71,"b2 first, all other blocks in their existing order","@n1 syntax.nominal dependent=""b2"" dependent=""first"" dependent=""all"" dependent=""other"" head=""blocks""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""their"" dependent=""existing"" head=""order""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal head=""b2"" dependent=""first""
+@n2 syntax.nominal dependent=""all"" dependent=""other"" head=""blocks""
+@r1 syntax.relation marker=""in"" from=$n2 to=$n3
+@n3 syntax.nominal dependent=""their"" dependent=""existing"" head=""order""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n2",
+107,reverse the most recent document edit,"@c1 syntax.clause form=imperative verb=""reverse"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""the"" dependent=""most"" dependent=""recent"" head=""document""
+@n2 syntax.nominal head=""edit""","@c1 syntax.clause form=imperative verb=""reverse"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""most"" dependent=""recent"" dependent=""document"" head=""edit""",agreement
+109,go forward one document edit,"@c1 syntax.clause form=imperative verb=""go"" modifier=""forward"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""one"" head=""document""
+@n2 syntax.nominal head=""edit""","@c1 syntax.clause form=imperative verb=""go"" complement=$n1
+@n1 syntax.nominal dependent=""forward"" dependent=""one"" dependent=""document"" head=""edit""",agreement
+116,"update the Chapter heading, centred","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Chapter"" head=""heading""
+@n2 syntax.nominal head=""centred""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""update"" complement=$n1
+@n1 syntax.nominal dependent=""the"" dependent=""Chapter"" head=""heading""
+@c2 syntax.clause form=nonfinite verb=""centred""
+@r1 syntax.relation from=$n1 to=$c2",agreement
+183,one document edit back,"@n1 syntax.nominal dependent=""one"" head=""document""
+@n2 syntax.nominal head=""edit""
+@c1 syntax.clause form=fragment modifier=""back"" complement=$n1 complement=$n2","@n1 syntax.nominal dependent=""one"" dependent=""document"" head=""edit"" dependent=""back""
+@c1 syntax.clause form=fragment complement=$n1",agreement

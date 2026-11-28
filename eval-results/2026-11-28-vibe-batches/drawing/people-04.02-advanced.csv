@@ -1,0 +1,485 @@
+n,text,sop,alt,label_state
+31,add a mole earrings,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""mole""
+@n2 syntax.nominal head=""earrings""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""mole"" head=""earrings""",
+48,add a frown shoulders,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""frown""
+@n2 syntax.nominal head=""shoulders""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""frown"" head=""shoulders""",
+67,add a looking up beard,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""beard""
+@c2 syntax.clause form=nonfinite verb=""looking"" modifier=""up""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""add"" modifier=""up"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""looking""
+@n2 syntax.nominal head=""beard""",
+68,add a looking out mouth,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""looking"" dependent=""out"" head=""mouth""","@c1 syntax.clause form=imperative verb=""add"" modifier=""out"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""looking""
+@n2 syntax.nominal head=""mouth""",
+69,add a looking in moustache,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""looking"" dependent=""in"" head=""moustache""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""looking""
+@r1 syntax.relation marker=""in"" from=$n1 to=$n2
+@n2 syntax.nominal head=""moustache""",
+82,add a bald on top moustache,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""bald"" head=""moustache""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal head=""top""","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""bald""
+@r1 syntax.relation marker=""on"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""top"" head=""moustache""",
+84,add a centre parting eyes,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""centre""
+@n2 syntax.nominal dependent=""parting"" head=""eyes""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""centre"" dependent=""parting"" head=""eyes""",
+122,"a long straight part, please — that's back hair","@n1 syntax.nominal dependent=""a"" dependent=""long"" dependent=""straight"" head=""part""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1
+@n2 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""back"" head=""hair""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@n1 syntax.nominal dependent=""a"" dependent=""long"" dependent=""straight"" head=""part""
+@c1 syntax.clause form=fragment discourse=""please"" complement=$n1
+@n2 syntax.nominal head=""that""
+@c2 syntax.clause form=declarative verb=""'s"" subject=$n2 complement=$n3
+@n3 syntax.nominal dependent=""back"" head=""hair""
+@r1 syntax.relation from=$c2 to=$c1",
+123,"eyes — add a long curly, please","@n1 syntax.nominal head=""eyes""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""long"" head=""curly""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""eyes""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""long"" head=""curly""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+127,"head — add a hoodie, please","@n1 syntax.nominal head=""head""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hoodie""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""head""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""hoodie""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+129,"a tank top for me, cheeks","@n1 syntax.nominal dependent=""a"" dependent=""tank"" head=""top""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment modifier=""cheeks"" complement=$n1","@n1 syntax.nominal dependent=""a"" dependent=""tank"" head=""top""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""cheeks""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+130,"a small for me, beard","@n1 syntax.nominal dependent=""a"" dependent=""small"" head=""beard""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""a"" head=""small""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""beard""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+135,"a cloak for me, ears","@n1 syntax.nominal dependent=""a"" head=""cloak""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""ears""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""cloak""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""ears""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+137,"head — add a cape, please","@n1 syntax.nominal head=""head""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""cape""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""head""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""cape""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+140,"eyebrows — add a thick, please","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""thick""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""thick""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+142,"an oval for me, head","@n1 syntax.nominal dependent=""an"" head=""oval""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""head""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""an"" head=""oval""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""head""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+145,"shoulders — add a short, please","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""short""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""short""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+151,"eyebrows — add a thick arched, please","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""thick"" head=""arched""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""thick""
+@c2 syntax.clause form=nonfinite verb=""arched"" discourse=""please""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c3
+@r2 syntax.relation from=$n2 to=$c2",
+155,add a log sides eyebrows,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1 complement=$n3
+@n1 syntax.nominal dependent=""a"" head=""log""
+@n2 syntax.nominal head=""sides""
+@n3 syntax.nominal head=""eyebrows""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""log"" dependent=""sides"" head=""eyebrows""",
+159,"mouth — add a knight helmet, please","@n1 syntax.nominal head=""mouth""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""knight"" head=""helmet""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""mouth""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""knight"" head=""helmet""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+160,"a beret for me, glasses","@n1 syntax.nominal dependent=""a"" head=""beret""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""glasses""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""beret""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment modifier=""glasses"" complement=$n1",
+170,"a hoodie for me, head","@n1 syntax.nominal dependent=""a"" head=""hoodie""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""head""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""hoodie""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""head""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+175,"a bolt for me, hair","@n1 syntax.nominal dependent=""a"" head=""bolt""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment modifier=""hair"" complement=$n1","@n1 syntax.nominal dependent=""a"" head=""bolt""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""hair""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+176,"a lashes for me, head","@n1 syntax.nominal dependent=""a"" head=""lashes""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment modifier=""head"" complement=$n1","@n1 syntax.nominal dependent=""a"" head=""lashes""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""head""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+177,add a loooking up beard,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""beard""
+@c2 syntax.clause form=nonfinite verb=""loooking"" modifier=""up""
+@r1 syntax.relation from=$n1 to=$c2","@c1 syntax.clause form=imperative verb=""add"" modifier=""up"" complement=$n1 complement=$n2
+@n1 syntax.nominal dependent=""a"" head=""loooking""
+@n2 syntax.nominal head=""beard""",
+178,"a looking out for me, mouth","@c1 syntax.clause form=nonfinite modifier=""a"" verb=""looking"" modifier=""out"" modifier=""mouth""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""me""","@n1 syntax.nominal dependent=""a"" head=""looking""
+@c1 syntax.clause form=fragment modifier=""out"" complement=$k1
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""mouth""
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+180,"beard — add a curly, please","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""curly""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""curly""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+182,"hair — add a mohawk, please","@n1 syntax.nominal head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""mohawk""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""mohawk""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+193,"ears — add a cloak, please","@n1 syntax.nominal head=""ears""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""cloak""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""ears""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""cloak""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+194,"moustache — add a boiler suit, please","@n1 syntax.nominal head=""moustache""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""boiler"" head=""suit""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""moustache""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""boiler"" head=""suit""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+196,"eyebrows — add an open, please","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""open""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""open""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+197,"glasses — add a talking, please","@n1 syntax.nominal head=""glasses""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""talking""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""glasses""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""talking""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+198,"beard — add a lip bite, please","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""lip"" head=""bite""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""lip"" head=""bite""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+204,"By chance, could you add a long straight part called back hair? The hair_front layers expect their other half to exist already.","@r1 syntax.relation marker=""By"" from=$c1 to=$n1
+@n1 syntax.nominal head=""chance""
+@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""add"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""a"" dependent=""long"" dependent=""straight"" head=""part""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n4
+@n4 syntax.nominal dependent=""back"" head=""hair""
+@n5 syntax.nominal dependent=""The"" dependent=""hair_front"" head=""layers""
+@c3 syntax.clause form=declarative verb=""expect"" subject=$n5
+@n6 syntax.nominal dependent=""their"" dependent=""other"" head=""half""
+@r2 syntax.relation marker=""to"" from=$c3 to=$c4
+@c4 syntax.clause form=nonfinite verb=""exist"" modifier=""already"" subject=$n6
+@r3 syntax.relation from=$n3 to=$c2","@r1 syntax.relation marker=""By"" from=$c1 to=$n1
+@n1 syntax.nominal head=""chance""
+@c1 syntax.clause form=interrogative auxiliary=""could"" verb=""add"" subject=$n2 complement=$n3
+@n2 syntax.nominal head=""you""
+@n3 syntax.nominal dependent=""a"" dependent=""long"" dependent=""straight"" head=""part""
+@c2 syntax.clause form=nonfinite verb=""called"" complement=$n4
+@n4 syntax.nominal dependent=""back"" head=""hair""
+@n5 syntax.nominal dependent=""The"" dependent=""hair_front"" head=""layers""
+@c3 syntax.clause form=declarative verb=""expect"" subject=$n5 complement=$n6
+@n6 syntax.nominal dependent=""their"" dependent=""other"" head=""half""
+@r2 syntax.relation marker=""to"" from=$n6 to=$c4
+@c4 syntax.clause form=nonfinite verb=""exist"" modifier=""already""
+@r3 syntax.relation from=$n3 to=$c2",
+205,"eyebrows — add a bob, please","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""bob""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""eyebrows""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""bob""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+207,"hat — add a tear, please","@c1 syntax.clause form=imperative modifier=""hat"" verb=""add"" discourse=""please"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""tear""","@n1 syntax.nominal head=""hat""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""tear""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+209,"beard — add a space helmet, please","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""space"" head=""helmet""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""beard""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""space"" head=""helmet""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+214,"back hair — add a tongue out, please","@n1 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" modifier=""out"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""tongue""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" modifier=""out"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""tongue""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+216,"back hair — add a closed, please","@n1 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""closed""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""closed""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+217,"mouth — add a looking out, please","@n1 syntax.nominal head=""mouth""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please""
+@c2 syntax.clause form=nonfinite modifier=""a"" verb=""looking"" modifier=""out""
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c1
+@r1 syntax.relation from=$c1 to=$c2","@n1 syntax.nominal head=""mouth""
+@c1 syntax.clause form=imperative verb=""add"" modifier=""out"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" head=""looking""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+220,"shoulders — add a police cap, please","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""police"" head=""cap""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""police"" head=""cap""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+221,"shoulders — add a flower wreath, please","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""flower"" head=""wreath""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""shoulders""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""flower"" head=""wreath""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+228,"a box for me, mouth","@n1 syntax.nominal dependent=""a"" head=""box""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""mouth""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""box""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""mouth""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+229,"a freckles for me, eyes","@n1 syntax.nominal dependent=""a"" head=""freckles""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""eyes""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""freckles""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""eyes""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+232,"a sleepy for me, ears","@n1 syntax.nominal dependent=""a"" head=""sleepy""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""ears""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""sleepy""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""ears""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+234,"an arched for me, eyes","@n1 syntax.nominal dependent=""an"" dependent=""arched"" head=""eyes""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@c1 syntax.clause form=fragment complement=$n1","@n1 syntax.nominal dependent=""an"" head=""arched""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""eyes""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+239,"a receding for me, nose","@c1 syntax.clause form=nonfinite modifier=""a"" verb=""receding""
+@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""me""
+@n2 syntax.nominal head=""nose""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=fragment complement=$n2","@n1 syntax.nominal dependent=""a"" head=""receding""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""nose""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+241,add a hop back hair,"@c1 syntax.clause form=imperative verb=""add"" modifier=""back"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""hop""
+@n2 syntax.nominal head=""hair""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""hop"" dependent=""back"" head=""hair""",
+243,"a wizard hat for me, eyes","@n1 syntax.nominal dependent=""a"" dependent=""wizard"" head=""hat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""eyes""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" dependent=""wizard"" head=""hat""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal head=""eyes""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",
+254,add a side parting cheeks,"@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" head=""side""
+@n2 syntax.nominal dependent=""parting"" head=""cheeks""
+@r1 syntax.relation from=$n1 to=$n2","@c1 syntax.clause form=imperative verb=""add"" complement=$n1
+@n1 syntax.nominal dependent=""a"" dependent=""side"" dependent=""parting"" head=""cheeks""",
+258,"hair — add a sun hat, please","@n1 syntax.nominal head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""sun"" head=""hat""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""hair""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""a"" dependent=""sun"" head=""hat""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+260,"glasses — add an overalls, please","@n1 syntax.nominal head=""glasses""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""overalls""
+@c2 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c2 conjunct=$c1","@n1 syntax.nominal head=""glasses""
+@c1 syntax.clause form=imperative verb=""add"" discourse=""please"" complement=$n2
+@n2 syntax.nominal dependent=""an"" head=""overalls""
+@c2 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+261,that back hair: making it long straight comes first,"@n1 syntax.nominal dependent=""that"" dependent=""back"" head=""hair""
+@c1 syntax.clause form=nonfinite verb=""making"" modifier=""long"" modifier=""straight"" complement=$n2
+@n2 syntax.nominal head=""it""
+@c2 syntax.clause form=declarative verb=""comes"" modifier=""first""
+@c3 syntax.clause form=fragment complement=$n1
+@k1 syntax.coordination conjunct=$c3 conjunct=$c2
+@r1 syntax.relation from=$c2 to=$c1","@n1 syntax.nominal head=""that""
+@n2 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=nonfinite verb=""making"" modifier=""long"" modifier=""straight"" complement=$n3
+@n3 syntax.nominal head=""it""
+@c2 syntax.clause form=imperative verb=""comes"" modifier=""first""
+@c3 syntax.clause form=fragment complement=$n1 complement=$n2
+@r1 syntax.relation from=$c3 to=$c1
+@r2 syntax.relation from=$c2 to=$c3",
+262,"a t-shirt for me, back hair","@n1 syntax.nominal dependent=""a"" head=""t-shirt""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=fragment complement=$n1
+@r2 syntax.relation from=$n1 to=$n3","@n1 syntax.nominal dependent=""a"" head=""t-shirt""
+@r1 syntax.relation marker=""for"" from=$n1 to=$n2
+@n2 syntax.nominal head=""me""
+@n3 syntax.nominal dependent=""back"" head=""hair""
+@c1 syntax.clause form=fragment complement=$k1
+@k1 syntax.coordination conjunct=$n1 conjunct=$n3",

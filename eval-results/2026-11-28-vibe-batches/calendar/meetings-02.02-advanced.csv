@@ -1,0 +1,112 @@
+n,text,sop,alt,label_state
+5,make Oak room seat 8 people and put Floor 2 as its location,"@c1 syntax.clause form=imperative verb=""make""
+@n1 syntax.nominal dependent=""Oak"" head=""room""
+@c2 syntax.clause form=nonfinite verb=""seat"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""8"" head=""people""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""put"" complement=$n3
+@n3 syntax.nominal head=""Floor""
+@n4 syntax.nominal head=""2""
+@r1 syntax.relation marker=""as"" from=$c3 to=$n5
+@n5 syntax.nominal dependent=""its"" head=""location""
+@r2 syntax.relation from=$c1 to=$c2
+@r3 syntax.relation from=$n3 to=$n4","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Oak room""
+@c2 syntax.clause form=nonfinite verb=""seat"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""8"" head=""people""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c3
+@c3 syntax.clause form=imperative verb=""put"" complement=$n3
+@n3 syntax.nominal head=""Floor 2""
+@r1 syntax.relation marker=""as"" from=$c3 to=$n4
+@n4 syntax.nominal dependent=""its"" head=""location""
+@r2 syntax.relation from=$c1 to=$c2",
+6,make Retro 45 minutes and put Retro in Cedar,"@c1 syntax.clause form=imperative verb=""make"" complement=$n1 complement=$n2
+@n1 syntax.nominal head=""Retro""
+@n2 syntax.nominal dependent=""45"" head=""minutes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n3
+@n3 syntax.nominal head=""Retro""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n4
+@n4 syntax.nominal head=""Cedar""","@c1 syntax.clause form=imperative verb=""make"" complement=$n1
+@n1 syntax.nominal head=""Retro 45 minutes""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@c2 syntax.clause form=imperative verb=""put"" complement=$n2
+@n2 syntax.nominal head=""Retro""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n3
+@n3 syntax.nominal head=""Cedar""",agreement
+9,stand up - put Standup in ROOM 4 pls,"@c1 syntax.clause form=imperative verb=""stand"" modifier=""up""
+@c2 syntax.clause form=imperative verb=""put"" complement=$n1 complement=$n3
+@n1 syntax.nominal head=""Standup""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n2
+@n2 syntax.nominal head=""ROOM""
+@n3 syntax.nominal dependent=""4"" head=""pls""
+@r2 syntax.relation from=$c2 to=$c1","@c1 syntax.clause form=imperative verb=""stand"" modifier=""up""
+@c2 syntax.clause form=imperative verb=""put"" discourse=""pls"" complement=$n1
+@n1 syntax.nominal head=""Standup""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n2
+@n2 syntax.nominal head=""ROOM 4""
+@r2 syntax.relation from=$c1 to=$c2",
+12,"rename team review to sprint planning, thanks","@c1 syntax.clause form=imperative verb=""rename"" complement=$n1
+@n1 syntax.nominal dependent=""team"" head=""review""
+@r1 syntax.relation marker=""to"" from=$n1 to=$n2
+@n2 syntax.nominal dependent=""sprint"" head=""planning""
+@c2 syntax.clause form=fragment discourse=""thanks""
+@k1 syntax.coordination conjunct=$c1 conjunct=$c2","@c1 syntax.clause form=imperative verb=""rename"" discourse=""thanks"" complement=$n1
+@n1 syntax.nominal dependent=""team"" head=""review""
+@r1 syntax.relation marker=""to"" from=$c1 to=$n2
+@n2 syntax.nominal dependent=""sprint"" head=""planning""",
+13,"for Interview, notes should say resume walk-through, system design, then 10 min for questions","@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Interview""
+@n2 syntax.nominal head=""notes""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""say"" subject=$n2
+@c2 syntax.clause form=nonfinite verb=""resume"" complement=$n3 complement=$n4
+@n3 syntax.nominal head=""walk-through""
+@n4 syntax.nominal dependent=""system"" head=""design""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c2 conjunct=$c3
+@n5 syntax.nominal dependent=""10"" head=""min""
+@r2 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal head=""questions""
+@r3 syntax.relation from=$c1 to=$k1
+@c3 syntax.clause form=fragment complement=$n5","@r1 syntax.relation marker=""for"" from=$c1 to=$n1
+@n1 syntax.nominal head=""Interview""
+@n2 syntax.nominal head=""notes""
+@c1 syntax.clause form=declarative auxiliary=""should"" verb=""say"" modifier=""design"" subject=$n2 complement=$k2
+@n3 syntax.nominal dependent=""resume"" head=""walk-through""
+@n4 syntax.nominal head=""system""
+@k1 syntax.coordination conjunction=""then"" conjunct=$c1 conjunct=$c2
+@n5 syntax.nominal dependent=""10"" head=""min""
+@r2 syntax.relation marker=""for"" from=$n5 to=$n6
+@n6 syntax.nominal head=""questions""
+@k2 syntax.coordination conjunct=$n3 conjunct=$n4
+@c2 syntax.clause form=fragment complement=$n5",
+14,any chance you can make the planning meeting 45 mins? thanks,"@n1 syntax.nominal dependent=""any"" head=""chance""
+@n2 syntax.nominal head=""you""
+@c1 syntax.clause form=declarative auxiliary=""can"" verb=""make"" subject=$n2 complement=$n3 complement=$n4
+@n3 syntax.nominal dependent=""the"" dependent=""planning"" head=""meeting""
+@n4 syntax.nominal dependent=""45"" head=""mins""
+@c2 syntax.clause form=fragment discourse=""thanks""
+@c3 syntax.clause form=fragment complement=$n1
+@r1 syntax.relation from=$n1 to=$c1","@n1 syntax.nominal dependent=""any"" head=""chance""
+@n2 syntax.nominal head=""you""
+@c1 syntax.clause form=interrogative auxiliary=""can"" verb=""make"" subject=$n2 complement=$n3 complement=$n4 complement=$n5
+@n3 syntax.nominal dependent=""the"" head=""planning""
+@n4 syntax.nominal head=""meeting""
+@n5 syntax.nominal dependent=""45"" head=""mins""
+@c2 syntax.clause form=fragment discourse=""thanks"" complement=$n1
+@r1 syntax.relation from=$c1 to=$c2",
+15,what rooms have at least 8 seats?,"@n1 syntax.nominal dependent=""what"" head=""rooms""
+@c1 syntax.clause form=interrogative verb=""have"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""at"" dependent=""least"" dependent=""8"" head=""seats""","@n1 syntax.nominal dependent=""what"" head=""rooms""
+@c1 syntax.clause form=interrogative verb=""have"" modifier=""at"" modifier=""least"" subject=$n1 complement=$n2
+@n2 syntax.nominal dependent=""8"" head=""seats""",agreement
+16,"how long is mid-year, and which room is mid-year in?","@c1 syntax.clause form=interrogative modifier=""how"" modifier=""long"" verb=""is"" subject=$n1
+@n1 syntax.nominal head=""mid-year""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n2 syntax.nominal dependent=""which"" head=""room""
+@c2 syntax.clause form=interrogative verb=""is"" subject=$n3
+@n3 syntax.nominal head=""mid-year""
+@r1 syntax.relation marker=""in"" from=$c2 to=$n2","@c1 syntax.clause form=declarative modifier=""how"" modifier=""long"" verb=""is"" modifier=""mid"" modifier=""year""
+@k1 syntax.coordination conjunction=""and"" conjunct=$c1 conjunct=$c2
+@n1 syntax.nominal dependent=""which"" head=""room""
+@c2 syntax.clause form=interrogative verb=""is"" modifier=""in"" subject=$n2 complement=$n1
+@n2 syntax.nominal head=""mid-year""",

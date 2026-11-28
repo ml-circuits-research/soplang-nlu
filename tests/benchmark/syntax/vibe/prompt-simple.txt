@@ -1,0 +1,5 @@
+You are a judge of syntactic circuits. Work only in the current folder.
+1. Read RULES.md completely, including every settled case at its end.
+2. Read the whole file {CSV}: columns n, text, sop, label_state. Each row is a message and one circuit (sop) written for it by a formalizer that saw only the words of that message. Two independent formalizers wrote this same circuit.
+3. Judge every row by RULES.md and write {VERDICTS} in this folder, one JSON line per row of the CSV: {"n": <number>, "grade": "L8" or "L1".."L6", "note": "<one sentence>"}. L8 accepts. For a rejection the note must quote the words of the message in single quotes and name the wrong statement or the lost information; if you cannot quote one, the circuit is acceptable.
+Work in batch: read the whole CSV, then write the whole verdicts file at once (you may write it in a few large parts); never edit line by line. Judge fairly: a plausible or incomplete reading that the next layer can continue from is acceptable; reject only a wrong statement or lost explicit information. Do not edit or create any other file.
