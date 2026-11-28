@@ -8,6 +8,8 @@
 // runs the last two steps of <tree> (lib/ and strategies/spacy-beam of some commit) on it, as spacy-beam's
 // analyse() and the reader do. --compare counts the lines whose circuit (or error) differs from the run's.
 // `ms` stays the run's: the time of the parser and of the run's writer (the writer is a small part of it).
+// `file` and `row` are copied from the run's lines (the dataset's file names when it was recorded, maybe an older split);
+// a reader of the output matches by `text`, which is unique in the dataset.
 // The parser's output depends on the model, worker.py and spaCy, not on the writer; a commit that changes
 // strategies/neural-dependencies/worker.py, the model or the spaCy install needs a new run instead.
 import {createReadStream, writeFileSync, openSync, writeSync, closeSync} from 'node:fs'

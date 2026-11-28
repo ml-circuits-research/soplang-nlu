@@ -93,18 +93,15 @@ if (command === 'cache') {
   for (const file of BENCH) for (const {id, text} of readSample(at(file))) if (!benchTexts.has(text)) { benchTexts.add(text); sets.bench.push({key: 'bench:' + id, n: ++b, text, id}) }
   // the parses: by text (the parse depends on the text only)
   const want = new Set(Object.values(sets).flat().map(m => m.text))
-  const textOf = new Map()   // file#row -> text, for the messages wanted and the wide set
   let line = 0
-  const silver = createInterface({input: createReadStream(at('.local-data/rvss/spacy-silver.jsonl.gz')).pipe(createGunzip()), crlfDelay: Infinity})
-  for await (const raw of silver) { if (!raw) continue; const r = JSON.parse(raw); textOf.set(r.file + '#' + r.row, r.text) }
   const parses = {}
-  const recorded = createInterface({input: createReadStream(at('.local-data/rvss/spacy-parses.jsonl.gz')).pipe(createGunzip()), crlfDelay: Infinity})
+  const recorded = createInterface({input: createReadStream(at('.local-data/rvss/spacy-parses-by-text.jsonl.gz')).pipe(createGunzip()), crlfDelay: Infinity})
   let w = 0
   for await (const raw of recorded) {
     if (!raw) continue
-    const r = JSON.parse(raw), text = textOf.get(r.file + '#' + r.row)
+    const r = JSON.parse(raw), text = r.text
     const wide = line++ % WIDE_STRIDE === 0
-    if (wide && text) { sets.wide.push({key: 'wide:' + r.file + '#' + r.row, n: ++w, text, id: r.file + '#' + r.row}); want.add(text) }
+    if (wide && text) { sets.wide.push({key: 'wide:' + text, n: ++w, text, id: null}); want.add(text) }
     if (text && want.has(text) && r.parse && !parses[text]) parses[text] = r.parse
   }
   // labels and the registry, for the texts of the sets
@@ -231,9 +228,9 @@ if (command === 'conflict') {
   // the label: the one known before the run of a fresh set, else the label of the dataset now
   let label = before.find(line => line.text === m.text)?.label ?? null
   label ??= labels.get(m.text)?.label ?? null
-  // the file and row of the message: from its id, else the syntactic file that holds it
-  let [file, rowNumber] = (m.id ?? '').includes('#') ? m.id.split('#') : [labels.files.get(m.text) ?? null, null]
-  if (file && !rowNumber) {
+  // the file and row of the message now: found by its text (an id may name a file of an older split of the dataset)
+  let file = labels.files.get(m.text) ?? null, rowNumber = null
+  if (file) {
     const [, ...rows] = readCsv(readFileSync(join(labels.dir, file), 'utf8'))
     rowNumber = rows.findIndex(r => r[0] === m.text) + 1 || null
   }

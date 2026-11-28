@@ -14,12 +14,18 @@ Everything large is in `.local-data/rvss/` (git-ignored). The code is here.
 | spaCy strategy, the parser run (`run-spacy.mjs`) | **0f20f16** (a `git archive` copy; lib/, schemas/, worlds/ and the parser transport are the same at eb576f9) |
 | spaCy strategy, the circuits of the main sets | **eb576f9** (round 6, which changes only the writer; written from the recorded parses, see below) |
 | soplang-nlu when the sets were built (normalForm, the registry reader, oracle2.mjs) | 8fdaed1; `oracle2.mjs` last changed in 94b3036; these scripts are not committed yet |
-| parser | spaCy 3.8.16, `en_core_web_trf` 3.8.0 (478 MB on disk), `/tmp/sop-nlu-trf-model/python-trf-one` (one thread per process) |
+| parser | spaCy 3.8.16, `en_core_web_trf` 3.8.0 (478 MB on disk), `~/models/sop-nlu-trf/python-trf-one` (one thread per process; it was `/tmp/sop-nlu-trf-model/` until the restart of 2026-11-28 emptied /tmp) |
+
+**After the dataset re-split (webmeet-dataset cd17b12, 2026-11-28).** File paths and row numbers changed; texts did
+not, and texts are unique. The sets keep every message's text and split, so dev-B is the set of texts marked
+`dev-B` in `distill.jsonl.gz`, looked up by text, never re-derived from file paths. `build-sets.mjs` derives the split
+from paths and is not to be run again for these sets; a newer spaCy writer goes in with `refresh.mjs` (see
+`../README.md`), which keeps every line and split.
 
 ## How to rebuild
 
 Run from `soplang-nlu/` with the spaCy strategy's settings (`SOP_NLU_SYNTAX_PYTHON`, `SOP_NLU_SYNTAX_MODEL`; on this
-machine `source <scratchpad>/round-env.sh`) and `SOP_KNOWLEDGE_DIR` unset:
+machine `. ~/models/sop-nlu-trf/env.sh`, which also unsets `SOP_KNOWLEDGE_DIR`):
 
 ```sh
 # 0. a copy of the spaCy strategy's code at one commit, so the run does not change when the working tree does
@@ -74,7 +80,7 @@ A commit that changes `strategies/neural-dependencies/worker.py`, the model or t
 | File | What it holds |
 | --- | --- |
 | `spacy-silver.jsonl.gz` (9.4 MB) | every message, {text, file, row, sop, error, ms}, the spaCy strategy at **eb576f9**; `row` counts the records of the file from 1; `sop` is null where the strategy gave no circuit |
-| `spacy-parses.jsonl.gz` (30 MB) | the parser's output per message {file, row, parse: {t: tokens, a: [score, heads, labels] per beam parse}} (`unpackParse` in run-spacy.mjs) |
+| `spacy-parses-by-text.jsonl.gz` (30 MB) | the parser's output per message, keyed by its text: {text, parse (file and row are information only): {t: tokens, a: [score, heads, labels] per beam parse}} (`unpackParse` in run-spacy.mjs) |
 | `distill.jsonl.gz` | every message outside the benchmark with a spaCy circuit: {text, file, row, split, sop, origin: "spacy", source: "spacy@eb576f9", judged}; `judged` is the registry's newest decision on that circuit: accepted, rejected or null |
 | `mixed.jsonl.gz` | every message outside the benchmark: its accepted label {origin: judge / agreement / written, source, accepted_by, spacySame}, else spaCy's line from distill. `spacySame`: the label and spaCy's circuit have the same normal-form core |
 | `excluded.jsonl.gz` | the messages left out of everything: {file, row, text, why, benchId, benchText}; why = benchmark, copy (same text up to case and spaces), near-copy (one character inserted, deleted or replaced, after case and spaces) |

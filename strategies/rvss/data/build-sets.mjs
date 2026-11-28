@@ -6,7 +6,7 @@
 //
 // Writes into <out> (default .local-data/rvss):
 //   spacy-silver.jsonl.gz   every message: {text, file, row, sop, error, ms}; sop null where the strategy gave none
-//   spacy-parses.jsonl.gz   (--parses) the parser's output per message {file, row, parse} (see run-spacy.mjs)
+//   spacy-parses-by-text.jsonl.gz   (--parses) the parser's output per message {text, parse, file, row}: text is the key; file and row are information only (see run-spacy.mjs)
 //   distill.jsonl.gz        every message outside the benchmark with a spaCy circuit:
 //                           {text, file, row, split, sop, origin: "spacy", source: "spacy@<commit>", judged}
 //                           judged = the registry's decision on that very circuit (newest line): accepted, rejected, null
@@ -73,19 +73,19 @@ for await (const line of linesOf(runFile)) {
   if (!line) continue
   const row = JSON.parse(line)
   silver.set(row.file + '#' + row.row, {text: row.text, file: row.file, row: row.row, sop: row.sop, error: row.error, ms: row.ms ?? null})
-  if (keepParses && row.parse && parsesSource === runFile) parses.push({file: row.file, row: row.row, parse: row.parse})
+  if (keepParses && row.parse && parsesSource === runFile) parses.push({text: row.text, parse: row.parse, file: row.file, row: row.row})
 }
 if (keepParses && parsesSource !== runFile) for await (const line of linesOf(parsesSource)) {
   if (!line) continue
   const row = JSON.parse(line)
-  if (row.parse && silver.get(row.file + '#' + row.row)?.text === row.text) parses.push({file: row.file, row: row.row, parse: row.parse})
+  if (row.parse && silver.get(row.file + '#' + row.row)?.text === row.text) parses.push({text: row.text, parse: row.parse, file: row.file, row: row.row})
 }
 const missing = messages.filter(m => !silver.has(key(m)))
 const silverLines = messages.filter(m => silver.has(key(m))).map(m => silver.get(key(m)))
 const silverTextMismatch = messages.filter(m => silver.has(key(m)) && silver.get(key(m)).text !== m.text).length
 if (silverTextMismatch) throw Error(silverTextMismatch + ' messages have another text in the run than in the dataset: run the strategy again')
 gz('spacy-silver.jsonl.gz', silverLines)
-if (keepParses) gz('spacy-parses.jsonl.gz', parses)
+if (keepParses) gz('spacy-parses-by-text.jsonl.gz', parses)
 const msValues = silverLines.map(s => s.ms).filter(Number.isFinite).sort((a, b) => a - b)
 const q = p => msValues[Math.min(msValues.length - 1, Math.floor(p * (msValues.length - 1)))]
 const errors = {}

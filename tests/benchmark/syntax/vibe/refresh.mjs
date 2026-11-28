@@ -43,14 +43,15 @@ if (force || !existsSync(rewritten)) {
 
 // ---- 3: the sorting again
 const jsonl = file => gunzipSync(readFileSync(file)).toString('utf8').split('\n').filter(Boolean).map(l => JSON.parse(l))
-const key = (file, row) => file + '#' + row
+// Every row is found by its text (unique in the dataset): the file names and row numbers of the recorded files and of the
+// batches may be those of an older split of the dataset.
 const now = new Map()
-for (const l of readFileSync(rewritten, 'utf8').split('\n')) { if (!l) continue; const r = JSON.parse(l); now.set(key(r.file, r.row), r) }
-const hmm = new Map(jsonl(join(rvss, 'hmm-rules-all.jsonl.gz')).map(r => [key(r.file, r.row), r]))
+for (const l of readFileSync(rewritten, 'utf8').split('\n')) { if (!l) continue; const r = JSON.parse(l); now.set(r.text, r) }
+const hmm = new Map(jsonl(join(rvss, 'hmm-rules-all.jsonl.gz')).map(r => [r.text, r]))
 const registry = readRegistry()
 
 const walk = dir => readdirSync(dir).flatMap(name => { const p = join(dir, name); return statSync(p).isDirectory() ? (name.startsWith('.') ? [] : walk(p)) : [p] })
-// rows with a verdict file of an advanced part: file#n -> judged
+// texts of the rows with a verdict file of an advanced part
 const judgedParts = new Set()
 const advancedParts = walk(batches).filter(p => /-advanced\.p\d+\.verdicts\.jsonl$/u.test(p))
 for (const vf of advancedParts) {
@@ -58,7 +59,7 @@ for (const vf of advancedParts) {
   if (!existsSync(csv)) continue
   const file = csv.slice(batches.length + 1).replace(/-advanced\.p\d+\.csv$/u, '.csv')
   const numbers = new Map(readCsv(readFileSync(csv, 'utf8')).slice(1).map(c => [Number(c[0]), c[1]]))
-  for (const l of readFileSync(vf, 'utf8').split('\n')) { if (!l.trim()) continue; try { const v = JSON.parse(l); if (numbers.has(v.n)) judgedParts.add(key(file, v.n)) } catch {} }
+  for (const l of readFileSync(vf, 'utf8').split('\n')) { if (!l.trim()) continue; try { const v = JSON.parse(l); if (numbers.has(v.n)) judgedParts.add(numbers.get(v.n)) } catch {} }
 }
 const pilot = join(packageRoot, 'eval-results/2026-11-28-vibe-advanced-pilot/opus')
 const pilotTexts = new Set()
@@ -76,9 +77,9 @@ for (const path of files) {
   const simple = [], advanced = []
   count.files++; count.advancedBefore += rows.length
   for (const [n, text, oldSop, , labelState] of rows) {
-    const k = key(file, n), s = now.get(k), h = hmm.get(k)
-    if (s?.text !== text || h?.text !== text) throw new Error('text differs at ' + k)
-    if (judgedParts.has(k)) { count.judgedVerdictFile++; continue }
+    const s = now.get(text), h = hmm.get(text)
+    if (!s || !h) throw new Error('no recorded circuit for ' + JSON.stringify(text))
+    if (judgedParts.has(text)) { count.judgedVerdictFile++; continue }
     if (pilotTexts.has(text)) { count.judgedPilot++; continue }
     const a = s.sop ? normalForm(text, s.sop) : null, b = h.sop ? normalForm(text, h.sop) : null
     const circuit = a?.sop ?? ''

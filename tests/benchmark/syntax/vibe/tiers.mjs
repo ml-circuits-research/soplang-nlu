@@ -12,6 +12,8 @@
 //   opus/packet-NN.csv (+ .key.jsonl)        levels 2-4 (and rows with no spaCy circuit), most suspicious first, columns n,text,sop,alt,label_state;
 //                                            n counts the packet; the key gives {n, file, row, level}
 //   index.json, tiers.json                   part -> file; counts
+// File names and row numbers here are those of the batches (the dataset's split when they were made); every join with other
+// data (audit scores, the dataset) is by text, which is unique. A consumer of merged/final.jsonl must also match by text.
 // merge: reads the verdicts of the parts (valid lines only). A row is accepted by the cheap models when both accept; a rejection by
 //   either sends it to opus-escalated/packet-eNN.csv (rows already in a packet stay there, new ones go to new packets). Opus verdicts
 //   (packet-*.verdicts.jsonl in opus/, opus-escalated/, opus-spotcheck/) override the cheap ones. Writes merged/final.jsonl: {file, row,
@@ -77,14 +79,14 @@ if (command === 'build') {
   const refresh = resolve(packageRoot, opt('refresh', 'eval-results/2026-11-28-hard-half/refresh-45d48a3'))
   const refreshInfo = JSON.parse(readFileSync(join(refresh, 'refresh.json'), 'utf8'))
   const stored = new Map()
-  for (const l of readFileSync(join(packageRoot, '.local-data/rvss/silver-audit/scores.jsonl'), 'utf8').split('\n')) { if (!l) continue; const r = JSON.parse(l); stored.set(r.id, r) }
+  for (const l of readFileSync(join(packageRoot, '.local-data/rvss/silver-audit/scores.jsonl'), 'utf8').split('\n')) { if (!l) continue; const r = JSON.parse(l); stored.set(r.text, r) }
   const levels = [], byFile = new Map(), count = {rows: 0, noCircuit: 0, fromAudit: 0, fromPort: 0, levels: {1: 0, 2: 0, 3: 0, 4: 0}}
   const check = {n: 0, same: 0, a: [], b: []}
   for (const file of walk(join(refresh, 'advanced')).sort()) {
     const oldRows = new Map(readCsv(readFileSync(join(batches, file.replace(/\.csv$/u, '-advanced.csv')), 'utf8')).slice(1).map(c => [Number(c[0]), c[2]]))
     const rows = []
     for (const [n, text, sop, alt, labelState] of readCsv(readFileSync(join(refresh, 'advanced', file), 'utf8')).slice(1)) {
-      const row = Number(n), s = stored.get(file + '#' + row)
+      const row = Number(n), s = stored.get(text)
       let level, p, from
       if (!sop) { level = 4; p = null; from = 'no-circuit'; count.noCircuit++ }
       else {
