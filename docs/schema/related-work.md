@@ -138,7 +138,8 @@ Next: [From the nlu schema](nlu-mapping.md) · Up: [The syntax schema](README.md
 
 The circuit is written in the order of the message, but the order of wires is "not compared" (see
 [Correctness](correctness.md)): nothing in a circuit states that one sentence follows another. The owner noted that
-if the order of the wires were kept as part of the circuit, some ties between sentences might not be needed. For now
-the decision is to tie by meaning: a part that refers to an earlier sentence or paragraph (thanks, a comment, a
-clarification, a reason) is tied to what it refers to, because order alone would not say which sentence or paragraph
-it refers to. Whether the schema should also state the order of top-level wires is open.
+if the order of the wires were kept as part of the circuit, some ties between sentences might not be needed. The owner's
+decision (later the same day): the order of wires is useful and must be kept (circuits are written in the order of
+the message); ties between sentences are recommended, not required, since such references are hard to settle at this
+step and, like pronouns, belong to later steps of the pipeline; there will be ambiguous cases. Whether the schema
+should state the order of top-level wires explicitly (and compare it) is open.
