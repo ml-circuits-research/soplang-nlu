@@ -49,6 +49,13 @@ class VSAScorer:
         self.ug, self.betag, self.biasg = st['ug'], st['betag'], st['biasg']
         self.sq = math.sqrt(D)
         self.sit = a.get('sit', 0)
+        self.gam = float(st['gam']) if a.get('lex') else 0.0
+        self.k2 = a.get('k2', 0)
+        self.hmm = bool(a.get('hmm'))
+        if self.hmm:
+            self.Hs = np.stack([seeded('rvss-station:%d' % j, D) for j in range(25)]); self.lamh = st['lamh']
+        if self.k2:
+            self.lam2 = st['lam2']; self.K2 = np.exp(1j * st['K2']).astype(np.complex64); self.beta_k2 = float(st['beta_k2']); self.g2 = float(st['g2'])
         if self.sit:
             self.Sk = st['Sk']; self.SQc = np.conj(np.exp(1j * st['SQ'])).T.astype(np.complex64).copy(); self.SV = np.exp(1j * st['SV']).astype(np.complex64)
             self.beta_s = float(st['beta_s'])
@@ -64,17 +71,30 @@ class VSAScorer:
         if v is None: v = self.acache[a] = seeded('rvss-atom-id:%d' % a, self.D)
         return v
 
-    def kinds(self, words):
+    def kinds(self, words, post=None):
         n = len(words); W = np.stack([self.stars.f(w) for w in words])
         x = np.zeros((n, self.D), np.complex64)
+        H = (post.astype(np.complex64) @ self.Hs) if self.hmm else None
         for j, d in enumerate(range(-3, 4)):
             for k in range(n):
                 q = k + d
-                if 0 <= q < n: x[k] += self.lam[j] * W[q][self.rho[j]]
+                if 0 <= q < n:
+                    x[k] += self.lam[j] * W[q][self.rho[j]]
+                    if self.hmm: x[k] += self.lamh[j] * H[q][self.rho[j]]
         x = x / np.maximum(np.abs(x), 1e-6)
         sim = (x @ np.conj(self.K).T).real / self.D
         z = self.beta_k * sim; z = np.exp(z - z.max(1, keepdims=True)); pi = z / z.sum(1, keepdims=True)
         kap = (pi.astype(np.complex64) @ self.K)
+        if self.k2:
+            x2 = np.zeros((n, self.D), np.complex64)
+            for j, d in enumerate(range(-3, 4)):
+                for k in range(n):
+                    q = k + d
+                    if 0 <= q < n: x2[k] += self.lam2[j] * kap[q][self.rho[j]]
+            x2 = x2 / np.maximum(np.abs(x2), 1e-6)
+            z = self.beta_k2 * (x2 @ np.conj(self.K2).T).real / self.D; z = np.exp(z - z.max(1, keepdims=True)); pi2 = z / z.sum(1, keepdims=True)
+            kap = kap + self.g2 * (pi2.astype(np.complex64) @ self.K2)
+        if self.gam: kap = kap + self.gam * W
         return np.concatenate([kap, np.ones((1, self.D), np.complex64)])
 
     def bundle(self, kap, terms):
@@ -136,7 +156,7 @@ class LogRegScorer:
         self.triples = ck['args'].get('triples', False)
         self.E = st['E.weight']; self.Ec = st['Ec.weight']; self.bias = st['bias']
 
-    def kinds(self, words):
+    def kinds(self, words, post=None):
         self.low = [zlib.crc32(w.lower().encode()) & 0x7fffffff for w in words] + [-1]
         self.suf = [zlib.crc32(('suf:' + w.lower()[-3:]).encode()) & 0x7fffffff for w in words] + [-1]
         return None
@@ -176,10 +196,26 @@ class Pilot:
             self.sc.to_device(device); self.device = device
         self.rb = m1star.Space(1024)
 
-    def read(self, words, gaps, beam=1):
+    def stations(self, words, given=None):
+        """(n, 25) station posteriors: given by the caller (index.mjs computes them), else looked up in the
+        file of data/stations.mjs (SOP_RVSS_STATIONS, default .local-data/rvss/model/stations.jsonl)"""
+        P = np.zeros((len(words), 25), np.float32)
+        if given is None:
+            if not hasattr(self, '_st'):
+                path = os.environ.get('SOP_RVSS_STATIONS', os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../.local-data/rvss/model/stations.jsonl'))
+                self._st = {}
+                for line in open(path):
+                    o = json.loads(line); self._st[o['key']] = o['post']
+            given = self._st.get('\u0001'.join(words))
+            if given is None: raise RuntimeError('no station posteriors for this message')
+        for i, lst in enumerate(given):
+            for j, p in lst: P[i, j] = p
+        return P
+
+    def read(self, words, gaps, beam=1, stations=None):
         t0 = time.perf_counter()
         n = len(words)
-        kap = self.sc.kinds(words)
+        kap = self.sc.kinds(words, self.stations(words, stations) if getattr(self.sc, 'hmm', False) else None)
         NT = n  # index of the "no token" row
         S0 = State(words, gaps)
         beam_ = [(0.0, S0, [], 0)]        # (log score, state, moves, next handle)

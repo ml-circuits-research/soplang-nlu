@@ -2,7 +2,8 @@
 
   python train.py --model vsa|logreg --data distill[,labels] --out <dir> [--epochs 2] [--D 1024] [--C 64]
                   [--batch 96] [--max-words N] [--minutes M]
-Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py). dev-B is always the distill dev-B (spaCy).
+Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py). dev-B is the distill dev-B (spaCy) of --dev
+(default distill2 for view 2, distill for view 1).
 """
 import argparse, json, math, os, sys, time
 import numpy as np
@@ -92,11 +93,32 @@ def tranges(starts, lens):
     return torch.repeat_interleave(starts - ex, lens) + torch.arange(tot, device=lens.device)
 
 
+NST = 25            # hmm-rules' stations
+BYDEC = None
+STATIONS = None     # key (words joined by U+0001) -> per word [[station, p], ...]
+
+
+def load_stations(path):
+    global STATIONS
+    STATIONS = {}
+    for line in open(path):
+        o = json.loads(line); STATIONS[o['key']] = o['post']
+
+
+def post_rows(words):
+    """(len(words), NST) station posteriors of one message (zeros when unknown)"""
+    P = np.zeros((len(words), NST), np.float32)
+    for i, lst in enumerate(STATIONS.get('\u0001'.join(words), []) if STATIONS is not None else []):
+        for j, p in lst: P[i, j] = p
+    return P
+
+
 class Data:
     def __init__(self, R, wid, aid, dev):
         self.n = len(R['words'])
         t = lambda a, dt=torch.int64: torch.as_tensor(np.asarray(a), dtype=dt, device=dev)
         self.tok = t([wid[w] for ws in R['words'] for w in ws])
+        self.post = torch.as_tensor(np.concatenate([post_rows(ws) for ws in R['words']]), device=dev) if STATIONS is not None else None
         self.msg = t(R['msg']); self.origin = t(R['origin'])
         for k in ('ex_label', 'ex_type', 'ex_bw', 'ex_bt', 'ex_tstart', 'ex_nt'): setattr(self, k, t(R[k]))
         self.term_part = t(R['term_part']); self.term_off = t(R['term_off'], torch.int16); self.term_tok = t(R['term_tok'])
@@ -122,7 +144,7 @@ class Data:
         ttok = torch.where(tt >= 0, base[emsg[tex]] + tt, torch.full_like(tt, NTOK))
         def bind(x, msgs):
             return torch.where(x >= 0, base[msgs] + x, torch.full_like(x, NTOK))
-        b = dict(wid=self.tok[tidx], left=left, right=right, NTOK=NTOK,
+        b = dict(wid=self.tok[tidx], post=self.post[tidx] if self.post is not None else None, left=left, right=right, NTOK=NTOK,
                  ex=tex, part=self.term_part[trm], atom=self.term_atom[trm], off=self.term_off[trm], tok=ttok,
                  bw=bind(self.ex_bw[eidx], emsg), bt=bind(self.ex_bt[eidx], emsg),
                  label=self.ex_label[eidx], type=self.ex_type[eidx], w=self.origin[mi][emsg], NE=len(eidx), emsg=emsg)
@@ -177,15 +199,15 @@ def main():
     ap.add_argument('--P', type=int, default=4)
     ap.add_argument('--batch', type=int, default=96); ap.add_argument('--max-words', type=int, default=0); ap.add_argument('--minutes', type=float, default=1e9)
     ap.add_argument('--lr', type=float, default=0.02); ap.add_argument('--lr-scalar', type=float, default=0.005); ap.add_argument('--seed', type=int, default=1)
-    ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0)
+    ap.add_argument('--dev-limit', type=int, default=4000); ap.add_argument('--triples', action='store_true'); ap.add_argument('--sit', type=int, default=0); ap.add_argument('--lex', action='store_true'); ap.add_argument('--dev', default=''); ap.add_argument('--k2', type=int, default=0); ap.add_argument('--eval-train', type=int, default=0); ap.add_argument('--by-decision', action='store_true'); ap.add_argument('--hmm', default='', help='station posteriors (data/stations.mjs output)')
     ap.add_argument('--eval-only', action='store_true'); ap.add_argument('--replace', action='store_true'); ap.add_argument('--confusion', action='store_true')
     a = ap.parse_args()
     torch.manual_seed(a.seed); np.random.seed(a.seed)
     os.makedirs(a.out, exist_ok=True)
-    dev = torch.device('cuda')
+    dev = torch.device(os.environ.get('RVSS_TRAIN_DEVICE', 'cuda'))   # cpu for a small --eval-only check
     labels = json.load(open(L + 'labels.json'))
     meta = json.load(open(L + a.data.split(',')[0] + '.meta.json')); a.view = meta.get('view', 1)
-    dvname = 'distill2' if a.view == 2 else 'distill'
+    dvname = a.dev or ('distill2' if a.view == 2 else 'distill')
     allowed = {}
     for name in a.data.split(','):
         for k, c in json.load(open(L + name + '.meta.json'))['allowed'].items():
@@ -194,6 +216,7 @@ def main():
     for t, labs in allowed.items():
         for lab in labs: mask[TYPES.index(t), labels.index(lab)] = True
     t0 = time.time()
+    if a.hmm: load_stations(a.hmm); print('stations', len(STATIONS), flush=True)
     parts = [load(n, 'train', a.max_words) for n in a.data.split(',')]
     if a.replace and len(parts) == 2:
         # mixed.jsonl.gz: a message with a label is learned from its label only (spaCy's line is dropped)
@@ -218,7 +241,7 @@ def main():
     if a.model == 'vsa':
         W = np.stack([S.f(w) for w in vocab]); A = np.stack([seeded('rvss-atom-id:%d' % int(x), a.D) for x in atoms])
         print('stars', W.shape, A.shape, f'{time.time()-t1:.0f}s', flush=True)
-        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit).to(dev)
+        model = VSA(len(labels), a.D, a.C, a.P, torch.as_tensor(A), torch.as_tensor(W), torch.as_tensor(S.phi_s), torch.as_tensor(S.perm), sit=a.sit, lex=a.lex, k2=a.k2, hmm=NST if a.hmm else 0).to(dev)
         opt = torch.optim.Adam([{'params': model.phase_params(), 'lr': a.lr}, {'params': model.scalar_params(), 'lr': a.lr_scalar}])
     else:
         import zlib
@@ -231,7 +254,7 @@ def main():
 
     def forward(b):
         if a.model == 'vsa':
-            kap, _ = model.kinds(b['wid'], b['left'], b['right'])
+            kap, _ = model.kinds(b['wid'], b['left'], b['right'], b['post'])
             lg = model.act_logits(kap, b['ex'], b['part'], b['atom'], b['off'], b['tok'], b['bw'], b['bt'])
             cl = model.cand_logits(kap, b['cidx'], b['cpart'], b['catom'], b['coff'], b['ctok'], b['ckind'], b['cbw'], b['cbt']) if b['NC'] else None
         else:
@@ -250,22 +273,52 @@ def main():
                 lg, cl = forward(b)
                 right = lg.argmax(1) == b['label']
                 ok += int(right.sum()); tot += len(right)
+                if BYDEC is not None:
+                    # per decision family (gold label's first part) and distance from the word to the opener of the wire it acts on
+                    dist = torch.where((b['bw'] < b['NTOK']) & (b['bt'] < b['NTOK']), b['bw'] - b['bt'], torch.full_like(b['bw'], -1))
+                    for g_, r_, d_ in zip(b['label'].tolist(), right.tolist(), dist.tolist()):
+                        fam = labels[g_].split(':')[0]
+                        db = 'after the last word, or no wire open' if d_ < 0 else '0' if d_ == 0 else '1' if d_ == 1 else '2-3' if d_ <= 3 else '4-7' if d_ <= 7 else '8+'
+                        for k_ in ((fam, 'all'), (fam, db), ('all', 'all')):
+                            c_ = BYDEC.setdefault(k_, [0, 0]); c_[0] += int(r_); c_[1] += 1
                 if CONF is not None:
                     for g_, p_ in zip(b['label'][~right].tolist(), lg.argmax(1)[~right].tolist()): CONF[(labels[g_], labels[p_])] = CONF.get((labels[g_], labels[p_]), 0) + 1
                 wrong = torch.zeros(len(idx[s:s + 256]), device=dev).index_add_(0, b['emsg'], (~right).float())
                 if cl is not None:
                     _, p_, g_ = group_loss(cl, b); pr[0] += p_[0]; pr[1] += p_[1]; ga[0] += g_[0]; ga[1] += g_[1]
+                    if BYDEC is not None:
+                        # which item a claim / reopen / point takes, by kind (softmax within the group)
+                        for kk, kn in enumerate(['claim (which item)', 'reopen (which wire)', 'point (which wire)']):
+                            sel = (b['ckind'] == kk)
+                            if not sel.any(): continue
+                            gs = torch.unique(b['cgrp'][sel])
+                            for gi in gs.tolist():
+                                m_ = b['cgrp'] == gi
+                                c_ = BYDEC.setdefault((kn, 'all'), [0, 0]); c_[0] += int(b['cgold'][m_][cl[m_].argmax()] == 1); c_[1] += 1
                 msg_ok += int((wrong == 0).sum()); msg_tot += len(wrong)
         model.train()
         return {'act': ok / max(tot, 1), 'acts': tot, 'pointer': pr[0] / max(pr[1], 1), 'pointers': pr[1], 'gather': ga[0] / max(ga[1], 1), 'gathers': ga[1],
                 'messages_all_acts_right': msg_ok / max(msg_tot, 1)}
 
     CONF = {} if a.confusion else None
+    global BYDEC
+    BYDEC = {} if a.by_decision else None
     if a.eval_only:
         ck = torch.load(a.out + '/model.pt', map_location=dev, weights_only=False)
         model.load_state_dict(ck['state'], strict=False)
         res = {}
         nw = np.array([len(w) for w in dv['words']])
+        if a.by_decision:
+            evaluate(Dv, 10 ** 9)
+            out = {f'{k[0]} | {k[1]}': {'right': v[0], 'n': v[1], 'acc': round(v[0] / v[1], 4)} for k, v in sorted(BYDEC.items())}
+            print(json.dumps(out, indent=0)); json.dump(out, open(a.out + '/by-decision.json', 'w'), indent=1); return
+        if a.eval_train:
+            # teacher forcing on train messages (every 37th, up to N): fitting against generalising
+            sel = np.arange(0, len(tr['words']), 37)[:a.eval_train]
+            res['train sample'] = evaluate(Data(_reindex(tr, sel), vocab, aid, dev), 10 ** 9); res['train sample']['messages'] = len(sel)
+            sel = np.arange(len(dv['words']))[:a.eval_train]
+            res['dev-B sample'] = evaluate(Data(_reindex(dv, sel), vocab, aid, dev), 10 ** 9); res['dev-B sample']['messages'] = len(sel)
+            print(json.dumps(res, indent=1)); return
         for name, keep in [('<=12 words', nw <= 12), ('>12 words', nw > 12), ('all', nw > 0)]:
             res[name] = evaluate(Data(_reindex(dv, np.nonzero(keep)[0]), vocab, aid, dev), 10 ** 9); res[name]['messages'] = int(keep.sum())
         print(json.dumps(res, indent=1)); json.dump(res, open(a.out + '/tf-by-length.json', 'w'), indent=1)

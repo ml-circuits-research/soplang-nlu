@@ -4,6 +4,7 @@
 // trained to reproduce the spaCy strategy's circuits (distillation). The circuit is read back from the pilot's
 // own constellations and atlas (the m1star decoder) and written with writeCircuit. A Python worker holds the model:
 // numpy on the CPU, one thread (the default), or with device 'cuda' the VSA move scores on the GPU through torch.
+// Each request also carries the hmm-rules station HMM's posterior per word (data/stations.mjs), the HMM half of the kinds.
 //   options / environment: modelPath (SOP_NLU_RVSS_MODEL, default .local-data/rvss/model/current: the model chosen on dev-B, see README.md),
 //   python (SOP_NLU_RVSS_PYTHON, default python3; it needs numpy and torch), device (SOP_NLU_RVSS_DEVICE, cpu | cuda,
 //   default cpu), timeoutMs.
@@ -12,6 +13,7 @@ import {createInterface} from 'node:readline'
 import {fileURLToPath} from 'node:url'
 import {wordsOf} from '../../lib/syntax.mjs'
 import {writeNodes} from './writer.mjs'
+import {stationPosteriors} from './data/stations.mjs'
 
 const workerPath = fileURLToPath(new URL('./worker.py', import.meta.url))
 export const installedModel = fileURLToPath(new URL('../../.local-data/rvss/model/current', import.meta.url))
@@ -62,7 +64,8 @@ export const rvss = {
       try {
         const input = inputOf(text)
         if (!input.words.length) throw Object.assign(Error('The message has no words.'), {status: 'no-graph'})
-        const res = await worker.ask(input)
+        // the station HMM's posterior per word (the HMM half of the kinds; a model trained without it ignores them)
+        const res = await worker.ask({...input, stations: stationPosteriors(text).post})
         if (res.error) throw Error(res.error)
         return {analyses: [{sop: writeNodes(text, res.nodes)}], analysisDiagnostics: {...diagnostics, status: 'ok', readback: res.readback, msPilot: res.ms_pilot, msReadback: res.ms_readback}}
       } catch (error) {

@@ -32,9 +32,9 @@ def off_index(off):
 
 
 class VSA(nn.Module):
-    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0):
+    def __init__(self, nlabels, D=1024, C=64, P=4, atoms=None, wordstars=None, phi_s=None, perm=None, ntypes=5, sit=0, lex=False, k2=0, hmm=0):
         super().__init__()
-        self.D, self.C, self.P, self.L, self.sit = D, C, P, nlabels, sit
+        self.D, self.C, self.P, self.L, self.sit, self.lex, self.k2, self.hmm = D, C, P, nlabels, sit, lex, k2, hmm
         # fixed stars (not learned): atom stars, word stars, smooth positions, window permutations
         self.register_buffer('atomstars', atoms)                       # (A, D) complex
         self.register_buffer('wordstars', wordstars)                   # (V, D) complex
@@ -51,6 +51,22 @@ class VSA(nn.Module):
         self.lam = nn.Parameter(torch.tensor([0.35, 0.6, 1.0, 2.0, 1.0, 0.6, 0.35]))
         self.K = nn.Parameter(torch.rand(C, D) * 2 * math.pi)
         self.beta_k = nn.Parameter(torch.tensor(30.0))
+        # lex: the word's own fixed star added to its kind with a learned weight (the kind keeps the context, the
+        # word star its form), so that prototypes can also answer to a particular word form, as the control's features do
+        if lex: self.gam = nn.Parameter(torch.tensor(0.5))
+        # k2: kinds of kinds (a second level, DESIGN 5.4): the window -3..+3 of the first-level kinds, permutation-coded
+        # as the words are, cleaned up against k2 learned stars; added to the first-level kind with a learned weight, so
+        # a word's kind also tells the wider context (up to six words away) it stands in
+        # hmm: the HMM half of the kinds (owner, 2026-11-28): each word's posterior over the hmm-rules station HMM's
+        # stations (forward-backward, data/stations.mjs), bundled from fixed station stars, enters the kind window beside
+        # the word stars, with its own weight per window position (7 learned scalars; the station stars are not learned)
+        if hmm:
+            self.register_buffer('Hs', torch.stack([torch.as_tensor(seeded_np('rvss-station:%d' % j, D)) for j in range(hmm)]))
+            self.lamh = nn.Parameter(torch.tensor([0.35, 0.6, 1.0, 2.0, 1.0, 0.6, 0.35]))
+        if k2:
+            self.lam2 = nn.Parameter(torch.tensor([0.5, 0.7, 1.0, 1.0, 1.0, 0.7, 0.5]))
+            self.K2 = nn.Parameter(torch.rand(k2, D) * 2 * math.pi)
+            self.beta_k2 = nn.Parameter(torch.tensor(30.0)); self.g2 = nn.Parameter(torch.tensor(0.5))
         nparts = len(ACT_PARTS) + len(BOUND) + (1 if sit else 0)
         if sit:
             # the situation memory (DESIGN 9.1): the whole view, each part bound with a fixed part star, read
@@ -69,10 +85,10 @@ class VSA(nn.Module):
         self.biasg = nn.Parameter(torch.zeros(4))
 
     def phase_params(self):
-        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else [])
+        return [self.K, self.Pr, self.G] + ([self.SQ, self.SV] if self.sit else []) + ([self.K2] if self.k2 else [])
 
     def scalar_params(self):
-        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else [])
+        return [self.lam, self.beta_k, self.u, self.beta, self.bias, self.ug, self.betag, self.biasg] + ([self.beta_s] if self.sit else []) + ([self.gam] if self.lex else []) + ([self.lam2, self.beta_k2, self.g2] if self.k2 else []) + ([self.lamh] if self.hmm else [])
 
     def situation(self, V):
         """V (N, parts, D) -> (N, 1, D)"""
@@ -81,19 +97,32 @@ class VSA(nn.Module):
         a = torch.softmax(self.beta_s * (Vall @ Q.conj().T).real / self.D * math.sqrt(self.D), -1)
         return (a.to(torch.complex64) @ Vv)[:, None]
 
-    def kinds(self, wid, left, right):
-        """wid: (T,) word ids; left/right: (T,) how many neighbours exist on each side (window +-3)"""
+    def kinds(self, wid, left, right, post=None):
+        """wid: (T,) word ids; left/right: (T,) how many neighbours exist on each side (window +-3); post: (T, stations)"""
         x = 0
+        hv = (post.to(torch.complex64) @ self.Hs) if self.hmm else None
         for j, d in enumerate(range(-3, 4)):
             ok = (left >= -d) if d < 0 else (right >= d) if d > 0 else torch.ones_like(left, dtype=torch.bool)
             idx = (torch.arange(len(wid), device=wid.device) + d).clamp(0, len(wid) - 1)
             w = self.wordstars[wid[idx]][:, self.rho[j]]
             x = x + self.lam[j] * w * ok[:, None]
+            if self.hmm: x = x + self.lamh[j] * hv[idx][:, self.rho[j]] * ok[:, None]
         x = x / x.abs().clamp_min(1e-6)
         Kc = torch.polar(torch.ones_like(self.K), self.K)
         sim = (x @ Kc.conj().T).real / self.D
         pi = torch.softmax(self.beta_k * sim, -1)
         kap = pi.to(torch.complex64) @ Kc
+        if self.k2:
+            x2 = 0
+            for j, d in enumerate(range(-3, 4)):
+                ok = (left >= -d) if d < 0 else (right >= d) if d > 0 else torch.ones_like(left, dtype=torch.bool)
+                idx = (torch.arange(len(wid), device=wid.device) + d).clamp(0, len(wid) - 1)
+                x2 = x2 + self.lam2[j] * kap[idx][:, self.rho[j]] * ok[:, None]
+            x2 = x2 / x2.abs().clamp_min(1e-6)
+            K2c = torch.polar(torch.ones_like(self.K2), self.K2)
+            pi2 = torch.softmax(self.beta_k2 * (x2 @ K2c.conj().T).real / self.D, -1)
+            kap = kap + self.g2 * (pi2.to(torch.complex64) @ K2c)
+        if self.lex: kap = kap + self.gam * self.wordstars[wid]
         return torch.cat([kap, torch.ones(1, self.D, dtype=kap.dtype, device=kap.device)]), pi   # last row: no token
 
     def bundle(self, kap, nparts, ex, part, atom, off, tok):

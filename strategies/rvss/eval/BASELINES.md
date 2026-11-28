@@ -21,7 +21,7 @@ node strategies/rvss/eval/evaluate-dev.mjs <outputs.jsonl> <targets.jsonl.gz> [-
 #    writes .local-data/rvss/eval/dev/<name>.json
 
 # 3. speed and size of any strategy module, on CPU
-source <scratchpad>/round-env.sh; unset SOP_KNOWLEDGE_DIR    # what spaCy and DistilBERT need on this machine
+. ~/models/sop-nlu-trf/env.sh    # what spaCy and DistilBERT need on this machine (it unsets SOP_KNOWLEDGE_DIR)
 node strategies/rvss/eval/speed.mjs strategies/spacy/index.mjs [--threads 1] [--limit 400]
 #    writes .local-data/rvss/eval/speed/<name>-cpu[-<n>thread].json
 

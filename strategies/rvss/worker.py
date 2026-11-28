@@ -14,12 +14,12 @@ def main():
     device = a[a.index('--device') + 1] if '--device' in a else os.environ.get('SOP_NLU_RVSS_DEVICE', 'cpu')
     from decode import Pilot
     P = Pilot(model, device)
-    P.read(['warm', 'up'], ['', '', ''])
+    P.read(['warm', 'up'], ['', '', ''], 1, [[], []])
     print(json.dumps({'ready': True, 'device': P.device, 'model': model, 'kind': P.kind}), flush=True)
     for line in sys.stdin:
         req = json.loads(line)
         try:
-            r = P.read(req['words'], req['gaps'])
+            r = P.read(req['words'], req['gaps'], 1, req.get('stations'))
             out = {'id': req['id'], 'nodes': r['nodes'], 'readback': r['readback'], 'forced': r['forced'],
                    'ms_pilot': r['ms_pilot'], 'ms_readback': r['ms_readback']}
         except Exception as e:
