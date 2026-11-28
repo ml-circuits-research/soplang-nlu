@@ -1,7 +1,8 @@
 """rvss M2b data: teacher-forced decision examples from the derived moves.
 
   python prep.py <export.jsonl> <out-prefix> [--workers 18] [--max-words N]
-writes <out-prefix>.<split>.npz and <out-prefix>.meta.json (labels, allowed labels per top type, counts).
+writes <out-prefix>.<split>.npz and <out-prefix>.meta.json (labels: the set's own move-label list, which ex_label
+indexes; allowed labels per top type, counts). No label list is kept outside the set.
 
 Every gold move gives one act example (the view of the state before it, the gold label, the top's type);
 claim, reopen and point give a pointer group (candidates found from the state, the gold one marked), and a
@@ -112,9 +113,7 @@ def main():
     chunks = [lines[i:i + 1000] for i in range(0, len(lines), 1000)]
     import functools
     from train import concat
-    vocab_path = prefix.rsplit('/', 1)[0] + '/labels.json'
-    try: labels = {l: i for i, l in enumerate(json.load(open(vocab_path)))}
-    except FileNotFoundError: labels = {}
+    labels = {}      # the set's own move-label list, in order of first appearance; ex_label indexes it (meta.json 'labels')
     allowed = collections.Counter(); bad = collections.Counter(); packs = collections.defaultdict(list); words = collections.defaultdict(list)
     n = 0
     with Pool(workers) as pool:
@@ -130,7 +129,6 @@ def main():
                 if not sel: continue
                 R = pack(sel, lambda w: 0, None); R['words'] = [m['words'] for m in sel]
                 packs[split].append(R); words[split].extend(R['words'])
-    json.dump(sorted(labels, key=labels.get), open(vocab_path, 'w'))
     meta = {'view': view, 'labels': sorted(labels, key=labels.get), 'bad': bad, 'messages': n,
             'allowed': {f'{t}|{l}': c for (t, l), c in allowed.items()}}
     for split in sorted(packs):

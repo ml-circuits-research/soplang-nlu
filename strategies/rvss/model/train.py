@@ -4,8 +4,10 @@
                   [--batch 96] [--max-words N] [--minutes M]
 Reads .local-data/rvss/model/<data>.{train,dev-B}.npz (prep.py; rollin.py gives a train part only). dev-B is the
 spaCy dev-B of --dev (default d12: the targets of the writer at 195075d, view 2).
---init <dir>: start from that model (fine-tuning); parameters indexed by label are copied row by row (labels.json only
-grows), the others where the shapes agree. --data-weight w1,w2,...: how often each data part is drawn (repeats).
+--init <dir>: start from that model (fine-tuning); parameters indexed by label are copied row by row by the label's
+name, the others where the shapes agree. The move-label list is computed, never stored apart: each prepared set's
+meta.json carries its own list ('labels', which its ex_label indexes); the run's list is the --init or --eval-only
+checkpoint's list, extended in order by every label of the sets read, and each set's labels are mapped onto it. --data-weight w1,w2,...: how often each data part is drawn (repeats).
 """
 import argparse, json, math, os, sys, time
 import numpy as np
@@ -208,9 +210,23 @@ def main():
     torch.manual_seed(a.seed); np.random.seed(a.seed)
     os.makedirs(a.out, exist_ok=True)
     dev = torch.device(os.environ.get('RVSS_TRAIN_DEVICE', 'cuda'))   # cpu for a small --eval-only check
-    labels = json.load(open(L + 'labels.json'))
     meta = json.load(open(L + a.data.split(',')[0] + '.meta.json')); a.view = meta.get('view', 1)
     dvname = a.dev or 'd12'
+    # the move-label list: the checkpoint's (eval-only, or init), then every set's own list (meta.json), in order
+    def set_labels(name):
+        m = json.load(open(L + name + '.meta.json'))
+        if 'labels' not in m: raise SystemExit(name + '.meta.json has no labels (prepare it again with prep.py / rollin.py)')
+        return m['labels']
+    ck_src = a.out if a.eval_only else a.init
+    labels = list(torch.load(ck_src + '/model.pt', map_location='cpu', weights_only=False)['labels']) if ck_src else []
+    for name in a.data.split(',') + [dvname]:
+        for lab in set_labels(name):
+            if lab not in labels:
+                if a.eval_only: raise SystemExit('label %r of %s is not in the model' % (lab, name))
+                labels.append(lab)
+    def remap(R, name):
+        lut = np.array([labels.index(lab) for lab in set_labels(name)], np.int64)
+        R['ex_label'] = lut[R['ex_label']]; return R
     allowed = {}
     for name in a.data.split(','):
         for k, c in json.load(open(L + name + '.meta.json'))['allowed'].items():
@@ -220,7 +236,7 @@ def main():
         for lab in labs: mask[TYPES.index(t), labels.index(lab)] = True
     t0 = time.time()
     if a.hmm: load_stations(a.hmm); print('stations', len(STATIONS), flush=True)
-    parts = [load(n, 'train', a.max_words) for n in a.data.split(',')]
+    parts = [remap(load(n, 'train', a.max_words), n) for n in a.data.split(',')]
     if a.replace and len(parts) == 2:
         # mixed.jsonl.gz: a message with a label is learned from its label only (spaCy's line is dropped)
         lab = {tuple(w) for w in parts[1]['words']}
@@ -231,7 +247,7 @@ def main():
         reps = [int(x) for x in a.data_weight.split(',')]
         parts = [p for p, r in zip(parts, reps) for _ in range(r)]
     tr = concat(parts)
-    dv = load(dvname, a.dev_split, a.max_words)
+    dv = remap(load(dvname, a.dev_split, a.max_words), dvname)
     dv = _reindex(dv, np.arange(min(len(dv['words']), 10 ** 9)))
     print('loaded', len(tr['words']), 'train messages', len(tr['ex_label']), 'acts;', len(dv['words']), 'dev-B', f'{time.time()-t0:.0f}s', flush=True)
     # vocabularies of fixed stars

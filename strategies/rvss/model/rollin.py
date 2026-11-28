@@ -123,7 +123,8 @@ def main():
     json.dump(W, open(prefix + '.' + split + '.words.json', 'w'))
     if split != 'train' and os.path.exists(prefix + '.meta.json'): prefix_meta = prefix + '.' + split + '.meta.json'
     else: prefix_meta = prefix + '.meta.json'
-    meta = {'view': VIEW['version'], 'model': md, 'source': src, 'stride': stride, 'follow': follow, 'counts': dict(count),
+    labels = torch.load(os.path.join(md, 'model.pt'), map_location='cpu', weights_only=False)['labels']   # ex_label indexes the model's list
+    meta = {'view': VIEW['version'], 'labels': labels, 'model': md, 'source': src, 'stride': stride, 'follow': follow, 'counts': dict(count),
             'allowed': {f'{t}|{l}': n for (t, l), n in allowed.items()}, split: {'messages': len(W), 'acts': int(len(R['ex_label']))}}
     json.dump(meta, open(prefix_meta, 'w'), indent=1)
     print(json.dumps({k: v for k, v in meta.items() if k != 'allowed'}))
