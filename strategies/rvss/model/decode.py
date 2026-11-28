@@ -17,6 +17,7 @@ m1star = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(m1star
 
 TYPES = ['M', 'nominal', 'relation', 'clause', 'coordination']
 KIND = {'claim': 0, 'reopen': 1, 'point': 2, 'gather': 3}
+BEAM_SYNC = os.environ.get('RVSS_BEAM_SYNC') == '1'; BEAM_NORM = os.environ.get('RVSS_BEAM_NORM') == '1'
 ACT_PARTS = [0, 1, 2, 3, 4, 5, 6]; BOUND = [1, 2, 3]; NPARTS = 8
 
 
@@ -51,6 +52,12 @@ class VSAScorer:
         if self.sit:
             self.Sk = st['Sk']; self.SQc = np.conj(np.exp(1j * st['SQ'])).T.astype(np.complex64).copy(); self.SV = np.exp(1j * st['SV']).astype(np.complex64)
             self.beta_s = float(st['beta_s'])
+
+    def to_device(self, dev):
+        import torch
+        self.torch, self.dev = torch, torch.device(dev)
+        self.tPRL = torch.as_tensor(self.PRL, device=self.dev)
+        self.tbias, self.tu, self.tbeta = (torch.as_tensor(np.asarray(x, np.float32), device=self.dev) for x in (self.bias, self.u, self.beta))
 
     def atom(self, a):
         v = self.acache.get(a)
@@ -89,6 +96,14 @@ class VSAScorer:
             parts = np.concatenate([parts, (z.astype(np.complex64) @ self.SV)[None]])
         X = np.concatenate([parts.real, parts.imag], 1).astype(np.float32)          # (parts, 2D)
         idx = np.nonzero(ok)[0] if ok is not None else np.arange(self.L)
+        if getattr(self, 'tPRL', None) is not None:
+            # the same scores on the GPU (worker --device cuda): one batched product over the legal labels
+            T = self.torch
+            Xt = T.as_tensor(X, device=self.dev); it = T.as_tensor(idx, device=self.dev)
+            s = T.einsum('pd,ipdq->ipq', Xt, self.tPRL[it]) * (self.sq / self.D)
+            sc = self.tbias[it] + (self.tu[None, :] * T.logsumexp(self.tbeta[None, :, None] * s, -1) / self.tbeta[None, :]).sum(1)
+            out = np.full(self.L, -1e30); out[idx] = sc.cpu().numpy()
+            return out
         Xr = X[:, None, :]
         s = np.stack([np.matmul(Xr, self.PRL[i])[:, 0] for i in idx]) * (self.sq / self.D)   # (n, parts, P)
         b = self.beta[None, :, None]
@@ -156,6 +171,9 @@ class Pilot:
         self.labels = ck['labels']; self.allowed = {t: set(v) for t, v in ck['allowed'].items()}
         self.kind = ck['args']['model']; VIEW['version'] = ck['args'].get('view', 1)
         self.sc = VSAScorer(ck) if self.kind == 'vsa' else LogRegScorer(ck)
+        self.device = 'cpu'
+        if device != 'cpu' and self.kind == 'vsa':
+            self.sc.to_device(device); self.device = device
         self.rb = m1star.Space(1024)
 
     def read(self, words, gaps, beam=1):
@@ -169,16 +187,25 @@ class Pilot:
         while True:
             if all(b[1].done() for b in beam_): break
             steps += 1
-            if steps > 10 * n + 40: raise RuntimeError('too many moves')
+            if steps > (10 * n + 40) * (beam if BEAM_SYNC else 1): raise RuntimeError('too many moves')
             nxt = []
+            live = [b[1].p for b in beam_ if not b[1].done()]
+            pmin = min(live) if live else None
             for sc0, S, mv, h in beam_:
-                if S.done(): nxt.append((sc0, S, mv, h)); continue
+                if S.done() or (BEAM_SYNC and S.p > pmin): nxt.append((sc0, S, mv, h)); continue
                 for lp, m, h2 in self.expand(S, kap, NT, h, k=1 if beam == 1 else 3, forced=forced):
                     S2 = S if beam == 1 else S.clone()
                     S2.apply(m); nxt.append((sc0 + lp, S2, mv + [m], h2))
             if not nxt: raise RuntimeError('no legal move')
-            nxt.sort(key=lambda b: -b[0]); beam_ = nxt[:beam]
-        best = max(beam_, key=lambda b: b[0]); S, moves = best[1], best[2]; forced = forced[0]
+            # word-synchronous pruning (BEAM_SYNC=1): hypotheses compete only with those at the same word, so
+            # that one with fewer moves so far is not preferred for having fewer log probabilities summed
+            if BEAM_SYNC:
+                buckets = {}
+                for b in sorted(nxt, key=lambda b: -b[0]): buckets.setdefault(('done' if b[1].done() else b[1].p), []).append(b)
+                beam_ = [b for v in buckets.values() for b in v[:beam]]
+            else:
+                nxt.sort(key=lambda b: -b[0]); beam_ = nxt[:beam]
+        best = max(beam_, key=lambda b: b[0] / (BEAM_NORM and max(1, len(b[2])) or 1)); S, moves = best[1], best[2]; forced = forced[0]
         t1 = time.perf_counter()
         nodes = {str(k): {'type': nd.t, 'words': nd.words, 'atoms': nd.atoms, 'refs': nd.refs, 'parent': nd.parent, 'key': nd.key}
                  for k, nd in S.nodes.items()}

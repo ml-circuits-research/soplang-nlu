@@ -2,10 +2,11 @@
 // constellations (open, place, close, claim, gather, reopen, point); its decisions are VSA scores (kinds from a
 // permutation-coded window of fixed word stars, views bundled by parts, prototypes per outcome, choice stars),
 // trained to reproduce the spaCy strategy's circuits (distillation). The circuit is read back from the pilot's
-// own constellations and atlas (the m1star decoder) and written with writeCircuit. A Python worker (numpy, CPU,
-// one thread) holds the model.
+// own constellations and atlas (the m1star decoder) and written with writeCircuit. A Python worker holds the model:
+// numpy on the CPU, one thread (the default), or with device 'cuda' the VSA move scores on the GPU through torch.
 //   options / environment: modelPath (SOP_NLU_RVSS_MODEL, default .local-data/rvss/model/current: the model chosen on dev-B, see README.md),
-//   python (SOP_NLU_RVSS_PYTHON, default python3; it needs numpy and torch), timeoutMs.
+//   python (SOP_NLU_RVSS_PYTHON, default python3; it needs numpy and torch), device (SOP_NLU_RVSS_DEVICE, cpu | cuda,
+//   default cpu), timeoutMs.
 import {spawn} from 'node:child_process'
 import {createInterface} from 'node:readline'
 import {fileURLToPath} from 'node:url'
@@ -22,8 +23,8 @@ function inputOf(text) {
   return {words: ws.map(w => w.text), gaps}
 }
 
-async function openWorker({python = process.env.SOP_NLU_RVSS_PYTHON ?? 'python3', modelPath = process.env.SOP_NLU_RVSS_MODEL ?? installedModel, timeoutMs = 60000} = {}) {
-  const child = spawn(python, ['-u', workerPath, '--model', modelPath], {stdio: ['pipe', 'pipe', 'pipe']})
+async function openWorker({python = process.env.SOP_NLU_RVSS_PYTHON ?? 'python3', modelPath = process.env.SOP_NLU_RVSS_MODEL ?? installedModel, device = process.env.SOP_NLU_RVSS_DEVICE ?? 'cpu', timeoutMs = 60000} = {}) {
+  const child = spawn(python, ['-u', workerPath, '--model', modelPath, '--device', device], {stdio: ['pipe', 'pipe', 'pipe']})
   let stderr = ''
   child.stderr.setEncoding('utf8').on('data', c => { stderr = (stderr + c).slice(-2000) })
   child.stdin.on('error', () => {})

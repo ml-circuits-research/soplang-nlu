@@ -612,13 +612,13 @@ export function wiresOf(units) {
       // labels on"), unless the noun is a later item of a list, which the phrase places ("…, above the sailboat, two small gulls")
       const fronted = before && units.slice(lastOf(part) + 1, head.index).some(other => !other.word)
       const item = ['conj', 'appos'].includes(head.dep) && head.head < head.index
-      return prepositional(part, fronted && !item ? home : wire, home)
+      return prepositional(part, fronted && !item ? home : listBefore(wire, head, part) ?? wire, home)
     }
     // a clause that describes the nominal hangs on it; an adverbial clause hangs on the clause the nominal stands in
     // In a group of words with no verb, joined nominals each keep the adverbial clause that follows them ("how many
     // removals until the row is down to half its length, and how many removals until half of the row is gone?")
     const own = dep === 'advcl' && part.index > head.index && home.form === 'fragment' && (head.dep === 'conj' || under(head).some(other => other.dep === 'conj'))
-    if (heads(part)) return subordinate((dep === 'advcl' || dep === 'parataxis' || dep === 'dep') && !own ? home : wire, part, home)
+    if (heads(part)) return subordinate((dep === 'advcl' || dep === 'parataxis' || dep === 'dep') && !own ? home : listBefore(wire, head, part) ?? wire, part, home)
     if (markedFragment(part, home)) return
     if (interjection(part)) return discourse(home, part)
     if (dep === 'poss') {
@@ -684,6 +684,19 @@ export function wiresOf(units) {
     // ordinal numerals are the words of order an adjective's tag may hide.
     if (wire.role === 'marked' && !under(part).length && (part.pos === 'ADV' && part.dep === 'advmod' || ORDINAL.has(part.lower))) return describe(home, part)
     inside(wire, part)
+  }
+
+  /**
+   * A phrase that follows the last item of a list describes the whole list when the parser hung it on the first item:
+   * English hangs no word on one item across the items after it ("a pie chart of 40 and 60 for Q1 and Q2": "for Q1 and
+   * Q2" goes with "40 and 60", not with "40"; "arrange r1 and r2 in a row").
+   * @returns the coordination of the list, or null when the phrase does not follow it
+   */
+  function listBefore(wire, head, part) {
+    const items = under(head).filter(other => other.dep === 'conj')
+    if (part.index < head.index || !items.length || items.some(item => lastOf(item) > part.index)) return null
+    const group = groupOf.get(wire)
+    return group?.members.includes(wire) && group.members.every(member => member.type === 'nominal') ? group : null
   }
 
   // ----- relations with a marker ---------------------------------------------------------------
